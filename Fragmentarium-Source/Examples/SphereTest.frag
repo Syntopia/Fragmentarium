@@ -13,6 +13,4 @@ float DE(vec3 z)
 	return d;
 }
 
-
-
-
+#include "main3D.frag"

@@ -56,3 +56,4 @@ float DE(vec3 z)
 	return (length(z) ) * pow(Scale, float(-n));
 }
 
+#include "main3D.frag"

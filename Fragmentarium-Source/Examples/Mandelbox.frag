@@ -47,3 +47,4 @@ float DE(vec3 pos) {
 	return ((length(p.xyz) - absScalem1) / p.w - AbsScaleRaisedTo1mIters);
 }
 
+#include "main3D.frag"

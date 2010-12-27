@@ -41,7 +41,7 @@ float DE(vec3 z)
 	int n = 0;
 	while (n < Iterations) {
 		// Fold
-		if (mod(float(n),2.0)==1) {
+		if (mod(float(n),2.0)==1.0) {
 			z*= fracRotation2;
 		}  else {
 			z*= fracRotation1;
@@ -64,3 +64,4 @@ float DE(vec3 z)
 	return (length(z) ) * pow(Scale, float(-n));
 }
 
+#include "main3D.frag"

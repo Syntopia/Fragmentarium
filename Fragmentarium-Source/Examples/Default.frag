@@ -47,3 +47,8 @@ vec3 getColor2D(vec2 z) {
 	return (triangleType == 0) ? vec3(1,0.8,0.4) :  vec3(0,0,0)  ;
 }
 
+
+void main(void)
+{
+	gl_FragColor = vec4(getColor2Daa(coord.xy + vec2(0.7,0.3)),1.0);
+}

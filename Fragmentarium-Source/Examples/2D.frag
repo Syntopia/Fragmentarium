@@ -19,8 +19,8 @@ vec3 getColor2Daa(vec2 z) {
 	return v/(float(AntiAlias)*float(AntiAlias));
 }
 
-void main(void)
+void main();/*(void)
 {
 	gl_FragColor = vec4(getColor2Daa(coord.xy + vec2(0.7,0.3)),1.0);
-}
+}*/
 

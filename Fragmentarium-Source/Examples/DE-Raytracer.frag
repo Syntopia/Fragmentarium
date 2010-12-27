@@ -118,7 +118,7 @@ vec3 trace(vec3 from, vec3 to) {
 	color += Glow*GlowColor*stepFactor;
 	return color;
 }
-
+/*
 void main() {
 	vec3 color = vec3(0,0,0);
 	for (int x = 1; x<=AntiAlias; x++) {
@@ -131,3 +131,4 @@ void main() {
 	}
 	gl_FragColor = vec4(color, 1.0)/float(AntiAlias*AntiAlias);
 }
+*/

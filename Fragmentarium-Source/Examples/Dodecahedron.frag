@@ -77,3 +77,5 @@ float DE(vec3 z)
        // Works better when subtracting -1
 	return (length(z) ) * pow(Scale,  float(-n-1));
 }
+
+#include "main3D.frag"
