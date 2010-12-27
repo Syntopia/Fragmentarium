@@ -1,0 +1,52 @@
+26-12-10 Added simple Copy/Paste of parameters.
+[1h]     Fixed missing .0 in vertex shaders.
+
+22-12-10 Fixed anti-alias aspect ratio
+[2h]	 Refactor 2D include
+		 3D: AO/Glow divider
+		  
+		  
+21-12-10 Fixed anti-alias 3D
+[2h]	 Fixed double buffering
+		 New Sphere sample
+		 Renamed raytracer	
+		
+20-12-10 Fixed looses persistence when building uniforms.
+[2h]	 Fixed spaceritems  
+		 Fixed colorchoosers initial value
+
+19-12-10 Added support for uniform groups.
+[2h]	 Added specular lighting to raytracer.
+
+17-12-10 Added 3D anti-alias support.
+[4h]     Updated 3D raytracer.
+		 Added SphereSponger Example.
+		 Began Uniform Groups.
+
+13-12-10 Added color sliders.
+[1½h]
+
+12-12-10 My first GLSL 3D raytracer is up and running. 
+         Ported Menger + Icosa. 
+         Writes OpenGL versions. 
+         Added #info command
+         Added Vec3 GUI Uniforms
+[5h]
+
+07-12-10 Starting working on 3D camera. Toggled with '#camera 3D'.
+[2h]
+
+06-12-10 Reset uniforms. Reindent. 
+[2h]
+
+04-12-10 First SVN commit. User Uniforms working.
+[3h] 
+
+02-12-10 Splashscreen. Some GLSL syntax highlightning. Preprocessor.
+[3h]
+
+29-11-10 First prototype-shader working. Got Penrose Tiles working with mouse-control.
+[2h]
+
+28-11-10 Ported some Structure Synth code. Setup GLSL view.
+[2h]

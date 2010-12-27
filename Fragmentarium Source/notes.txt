@@ -1,0 +1,31 @@
+TODO list and scratch pad for Fragmentarium. /Mikael
+
+Clipping planes for 3D Camera!
+Naming: user uniforms...
+Reset Uniforms | Reset Tab
+Fix: mousewheel on 2D Camera
+Fix: 'group' should be default (or file).
+Fix: Icon
+
+Mouse Sensitivity [---x------]
+
+Different rendering modes:
+[Automatic Render]
+[Manual Render] - for long renders.
+[Continuous Render] - for showing time and FPS.
+[Tilebased Render]
+
+#camera 3D
+uniform vec3 from,to,fromDx,fromDy,toDx,toDy;
+
+#camera 2D
+uniform vec2 coord,pixelSize;
+
+// Other magic uniforms
+uniform float time;
+
+#include ".frag"
+
+#replace "de (vec3" "de2 (vec3"
+
+#info made by createtw 

@@ -1,0 +1,33 @@
+Roadmap.
+--------
++ #Include "x.frag"
++ #info "..."
+- #replace "x.frag" "t.frag"
++ ShaderSource class
++ 2D CameraControl
+  + Antialias
+/ 3D CameraControl
+  + Antialias
+  - Rotate about Z
+- Mouse sensitivity
++ Magic Uniforms
+  + vec2 pixelsize (in model-coordinates)
+  - float time (seconds)
++ GUI Uniforms
+  + uniform float a; slider[-2,3,3]
+  + uniform int a; slider[-2,3,3]
+  + Comments before GUI uniforms should become tooltips
+  + uniform vec3 a; colorchooser[1,0.9,0.8]
+  + uniform vec3 a; slider[(0,0,0),(0.5,0.5,0.5),(1,1,1)]
+  - uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
+  + Groups
+  
+- Better Syntax Highligtning.
+- Control of line numbers.
+- Simple website.
+
+== First Release (0.5) == 
+
+- Textures.
+- Multipass / progressive renders.
+- Hires renders.
