@@ -1,0 +1,725 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02073A0E2A7500C54E949E46 /* DisplayWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 57CEF87C424592EFAF698519 /* DisplayWidget.cpp */; settings = {ATTRIBUTES = (); }; };
+		062AD7282D39867FB4510CDA /* Preprocessor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C8975FA9CF391332A5FC91CD /* Preprocessor.cpp */; settings = {ATTRIBUTES = (); }; };
+		069D05B0128AE5DC7EE31738 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */; };
+		089A6EAF44E0921D78EA2DE1 /* Persistence.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 53AC7F668EE1CF92AF920696 /* Persistence.cpp */; settings = {ATTRIBUTES = (); }; };
+		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
+		1E31F25D6BE765DAE38D3C5D /* MainWindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A03C1CD753C997AE1BD51239 /* MainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		212B5DB9B5A30DB4AEC1A18B /* VariableEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 2565F385DC84F56596B5D50B /* VariableEditor.cpp */; settings = {ATTRIBUTES = (); }; };
+		21B30E783DA541AC32ADEB25 /* ColorUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 454234532F7BC67C76999CE2 /* ColorUtils.cpp */; settings = {ATTRIBUTES = (); }; };
+		401AA282866C7B78309AF083 /* Version.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0A174DE8CAFDEC575663081D /* Version.cpp */; settings = {ATTRIBUTES = (); }; };
+		4AAC12D38368D928642D256C /* Random.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0AC3AE332F5A20333EB479C5 /* Random.cpp */; settings = {ATTRIBUTES = (); }; };
+		501667F26B3C1FF6767A7C12 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B36DA7E32F0304E780E7972 /* QtGui.framework */; };
+		51DD101F9289F8FDB4DCBF7F /* ListWidgetLogger.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A63344F09B44B470D1C8B739 /* ListWidgetLogger.cpp */; settings = {ATTRIBUTES = (); }; };
+		5C0A0AD360CF52FB51307455 /* Main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EF19F05E5CD7CF54F921EBDC /* Main.cpp */; settings = {ATTRIBUTES = (); }; };
+		99F00765612BE8E039E49285 /* moc_VariableEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 82BED1A5AB8D99DA768493DD /* moc_VariableEditor.cpp */; settings = {ATTRIBUTES = (); }; };
+		9DEB82E75765DF5035930524 /* Logging.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 75E35665849E876D8F7C00DD /* Logging.cpp */; settings = {ATTRIBUTES = (); }; };
+		A4582233947FB7FB159573BB /* moc_MainWindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 26827F2FC4DC4FBB23DE8287 /* moc_MainWindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
+		C05DBDAB5C76A5BF86A89FCA /* qrc_Fragmentarium.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 92918225FFC69DC7005144CE /* qrc_Fragmentarium.cpp */; settings = {ATTRIBUTES = (); }; };
+		C7BC15B6F8F8050C9C594B68 /* MiniParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4F2A25D207B50558AD2859FA /* MiniParser.cpp */; settings = {ATTRIBUTES = (); }; };
+		E13D81D83FEFC5E41B415845 /* Matrix4.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 722640DC4D03858149E2430C /* Matrix4.cpp */; settings = {ATTRIBUTES = (); }; };
+		E263E73212C9125D0052EBA9 /* Fragmentarium.app in Project Copy */ = {isa = PBXBuildFile; fileRef = E263E72F12C9125D0052EBA9 /* Fragmentarium.app */; };
+		E263E75712C913540052EBA9 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E263E75612C913540052EBA9 /* QtOpenGL.framework */; };
+		E263E75912C913540052EBA9 /* QtScript.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E263E75812C913540052EBA9 /* QtScript.framework */; };
+		E263E75B12C913540052EBA9 /* QtXml.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E263E75A12C913540052EBA9 /* QtXml.framework */; };
+		E263E78712C916FE0052EBA9 /* Info.plist in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E263E78612C916FE0052EBA9 /* Info.plist */; };
+		F03EC253D903C2088F686982 /* Vector3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = AFF785FE5D519883B0DA908D /* Vector3.cpp */; settings = {ATTRIBUTES = (); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F6069D5A5DA8AA28EDB8B3C6 /* Project Copy */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "/Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source";
+			dstSubfolderSpec = 0;
+			files = (
+				E263E73212C9125D0052EBA9 /* Fragmentarium.app in Project Copy */,
+			);
+			name = "Project Copy";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		020AFFD514E0231E632B8F12 /* ListWidgetLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ListWidgetLogger.h; path = SyntopiaCore/Logging/ListWidgetLogger.h; sourceTree = "<group>"; };
+		02B5B722C6868CD368BABE73 /* Fragmentarium.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fragmentarium.pro; sourceTree = "<group>"; };
+		0A174DE8CAFDEC575663081D /* Version.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Version.cpp; path = SyntopiaCore/Misc/Version.cpp; sourceTree = "<group>"; };
+		0AC3AE332F5A20333EB479C5 /* Random.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Random.cpp; path = SyntopiaCore/Math/Random.cpp; sourceTree = "<group>"; };
+		11EE2C5673F87C7E57EE599B /* DisplayWidget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DisplayWidget.h; path = Fragmentarium/GUI/DisplayWidget.h; sourceTree = "<group>"; };
+		1201FB78C0720814C670B446 /* MiniParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MiniParser.h; path = SyntopiaCore/Misc/MiniParser.h; sourceTree = "<group>"; };
+		1B74E99CA4EBE377884E820F /* ColorUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ColorUtils.h; path = SyntopiaCore/Misc/ColorUtils.h; sourceTree = "<group>"; };
+		2565F385DC84F56596B5D50B /* VariableEditor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VariableEditor.cpp; path = Fragmentarium/GUI/VariableEditor.cpp; sourceTree = "<group>"; };
+		26827F2FC4DC4FBB23DE8287 /* moc_MainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_MainWindow.cpp; sourceTree = "<group>"; };
+		37DBEDCC4F43FE5A5C63191F /* Exception.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = SyntopiaCore/Exceptions/Exception.h; sourceTree = "<group>"; };
+		3B017ABD43C477127C833DBC /* resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
+		4080FFC045E7CCD3EF99B0DA /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Logging.h; path = SyntopiaCore/Logging/Logging.h; sourceTree = "<group>"; };
+		454234532F7BC67C76999CE2 /* ColorUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ColorUtils.cpp; path = SyntopiaCore/Misc/ColorUtils.cpp; sourceTree = "<group>"; };
+		492F9926315E981F5E44530A /* Persistence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Persistence.h; path = SyntopiaCore/Misc/Persistence.h; sourceTree = "<group>"; };
+		4F2A25D207B50558AD2859FA /* MiniParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MiniParser.cpp; path = SyntopiaCore/Misc/MiniParser.cpp; sourceTree = "<group>"; };
+		53AC7F668EE1CF92AF920696 /* Persistence.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Persistence.cpp; path = SyntopiaCore/Misc/Persistence.cpp; sourceTree = "<group>"; };
+		57CEF87C424592EFAF698519 /* DisplayWidget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DisplayWidget.cpp; path = Fragmentarium/GUI/DisplayWidget.cpp; sourceTree = "<group>"; };
+		6855533F0F9C4F5C82F4665A /* Preprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Preprocessor.h; path = Fragmentarium/Parser/Preprocessor.h; sourceTree = "<group>"; };
+		722640DC4D03858149E2430C /* Matrix4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Matrix4.cpp; path = SyntopiaCore/Math/Matrix4.cpp; sourceTree = "<group>"; };
+		75E35665849E876D8F7C00DD /* Logging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Logging.cpp; path = SyntopiaCore/Logging/Logging.cpp; sourceTree = "<group>"; };
+		7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = /Library/Frameworks/QtCore.framework; sourceTree = "<absolute>"; };
+		82BED1A5AB8D99DA768493DD /* moc_VariableEditor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_VariableEditor.cpp; sourceTree = "<group>"; };
+		8C541DCB1BA2CF323125B6E4 /* Matrix4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Matrix4.h; path = SyntopiaCore/Math/Matrix4.h; sourceTree = "<group>"; };
+		92918225FFC69DC7005144CE /* qrc_Fragmentarium.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = qrc_Fragmentarium.cpp; sourceTree = "<group>"; };
+		973BFA7708D2F75F0B9E9BB8 /* MersenneTwister.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MersenneTwister.h; path = ThirdPartyCode/MersenneTwister/MersenneTwister.h; sourceTree = "<group>"; };
+		9B36DA7E32F0304E780E7972 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = /Library/Frameworks/QtGui.framework; sourceTree = "<absolute>"; };
+		A03C1CD753C997AE1BD51239 /* MainWindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainWindow.cpp; path = Fragmentarium/GUI/MainWindow.cpp; sourceTree = "<group>"; };
+		A30A78602395616113EF598A /* Version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Version.h; path = SyntopiaCore/Misc/Version.h; sourceTree = "<group>"; };
+		A5868AC1647BCA5553A3BF49 /* MainWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MainWindow.h; path = Fragmentarium/GUI/MainWindow.h; sourceTree = "<group>"; };
+		A63344F09B44B470D1C8B739 /* ListWidgetLogger.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ListWidgetLogger.cpp; path = SyntopiaCore/Logging/ListWidgetLogger.cpp; sourceTree = "<group>"; };
+		AFF785FE5D519883B0DA908D /* Vector3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Vector3.cpp; path = SyntopiaCore/Math/Vector3.cpp; sourceTree = "<group>"; };
+		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		C8975FA9CF391332A5FC91CD /* Preprocessor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Preprocessor.cpp; path = Fragmentarium/Parser/Preprocessor.cpp; sourceTree = "<group>"; };
+		D0B3AC999ABA0AB3B23286B1 /* VariableEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VariableEditor.h; path = Fragmentarium/GUI/VariableEditor.h; sourceTree = "<group>"; };
+		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		DD431E0C0294BB02E3D9EB23 /* Vector3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Vector3.h; path = SyntopiaCore/Math/Vector3.h; sourceTree = "<group>"; };
+		E263E72F12C9125D0052EBA9 /* Fragmentarium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fragmentarium.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E263E75612C913540052EBA9 /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = /Library/Frameworks/QtOpenGL.framework; sourceTree = "<absolute>"; };
+		E263E75812C913540052EBA9 /* QtScript.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtScript.framework; path = /Library/Frameworks/QtScript.framework; sourceTree = "<absolute>"; };
+		E263E75A12C913540052EBA9 /* QtXml.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtXml.framework; path = /Library/Frameworks/QtXml.framework; sourceTree = "<absolute>"; };
+		E263E78612C916FE0052EBA9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E8DE3A1FDB22ED1A1C5A2935 /* Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Random.h; path = SyntopiaCore/Math/Random.h; sourceTree = "<group>"; };
+		EF19F05E5CD7CF54F921EBDC /* Main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		FAC7FAE3D66044649F572A23 /* Fragmentarium.qrc */ = {isa = PBXFileReference; lastKnownFileType = text; path = Fragmentarium.qrc; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2A1043669E6E5A7426EA502A /* Frameworks & Libraries */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */,
+				0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */,
+				501667F26B3C1FF6767A7C12 /* QtGui.framework in Frameworks & Libraries */,
+				069D05B0128AE5DC7EE31738 /* QtCore.framework in Frameworks & Libraries */,
+				E263E75712C913540052EBA9 /* QtOpenGL.framework in Frameworks & Libraries */,
+				E263E75912C913540052EBA9 /* QtScript.framework in Frameworks & Libraries */,
+				E263E75B12C913540052EBA9 /* QtXml.framework in Frameworks & Libraries */,
+			);
+			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05596AB53D8D521C69802C27 /* Fragmentarium */ = {
+			isa = PBXGroup;
+			children = (
+				E263E78612C916FE0052EBA9 /* Info.plist */,
+				FB61758D0F0FDA4BA867C3D5 /* Sources */,
+				46E892BBB6BB6952967E0561 /* Temporary Sources */,
+				883D7615C4D2DE3FA1218F12 /* Headers */,
+				7CABE3C80E79AD2B307756D2 /* Sources [qmake] */,
+				52C235EBF1C9B07808119459 /* Sources [RCC] */,
+				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
+				E263E73012C9125D0052EBA9 /* Products */,
+			);
+			name = Fragmentarium;
+			sourceTree = "<group>";
+		};
+		07789605F9503AD80EB4ADB8 /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				454234532F7BC67C76999CE2 /* ColorUtils.cpp */,
+				4F2A25D207B50558AD2859FA /* MiniParser.cpp */,
+				53AC7F668EE1CF92AF920696 /* Persistence.cpp */,
+				0A174DE8CAFDEC575663081D /* Version.cpp */,
+			);
+			name = Misc;
+			sourceTree = "<group>";
+		};
+		32932713BDAD376497F40FFF /* Fragmentarium */ = {
+			isa = PBXGroup;
+			children = (
+				9F538A6502965ECC0E117B93 /* GUI */,
+				FD6E9601D3667190DE524B39 /* Parser */,
+			);
+			name = Fragmentarium;
+			sourceTree = "<group>";
+		};
+		43E78447B9AAEBAC81931265 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				020AFFD514E0231E632B8F12 /* ListWidgetLogger.h */,
+				4080FFC045E7CCD3EF99B0DA /* Logging.h */,
+			);
+			name = Logging;
+			sourceTree = "<group>";
+		};
+		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
+			isa = PBXGroup;
+			children = (
+				26827F2FC4DC4FBB23DE8287 /* moc_MainWindow.cpp */,
+				82BED1A5AB8D99DA768493DD /* moc_VariableEditor.cpp */,
+				92918225FFC69DC7005144CE /* qrc_Fragmentarium.cpp */,
+			);
+			name = "Temporary Sources";
+			sourceTree = "<group>";
+		};
+		4E6A68472CF05EC4DD4D43B5 /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				C8975FA9CF391332A5FC91CD /* Preprocessor.cpp */,
+			);
+			name = Parser;
+			sourceTree = "<group>";
+		};
+		52C235EBF1C9B07808119459 /* Sources [RCC] */ = {
+			isa = PBXGroup;
+			children = (
+				FAC7FAE3D66044649F572A23 /* Fragmentarium.qrc */,
+			);
+			name = "Sources [RCC]";
+			sourceTree = "<group>";
+		};
+		7551812CEF4AFF1EA3D18630 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				722640DC4D03858149E2430C /* Matrix4.cpp */,
+				0AC3AE332F5A20333EB479C5 /* Random.cpp */,
+				AFF785FE5D519883B0DA908D /* Vector3.cpp */,
+			);
+			name = Math;
+			sourceTree = "<group>";
+		};
+		7CABE3C80E79AD2B307756D2 /* Sources [qmake] */ = {
+			isa = PBXGroup;
+			children = (
+				02B5B722C6868CD368BABE73 /* Fragmentarium.pro */,
+			);
+			name = "Sources [qmake]";
+			sourceTree = "<group>";
+		};
+		8576B541A7199F840DD6553A /* SyntopiaCore */ = {
+			isa = PBXGroup;
+			children = (
+				C79B213FCDE2467A61EC8B1B /* Logging */,
+				7551812CEF4AFF1EA3D18630 /* Math */,
+				07789605F9503AD80EB4ADB8 /* Misc */,
+			);
+			name = SyntopiaCore;
+			sourceTree = "<group>";
+		};
+		883D7615C4D2DE3FA1218F12 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				3B017ABD43C477127C833DBC /* resource.h */,
+				32932713BDAD376497F40FFF /* Fragmentarium */,
+				B9B8585D29050660F21EC355 /* SyntopiaCore */,
+				F4264FBC7ECD94354DA84B4B /* ThirdPartyCode */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		8BE01D402B8D2DAB5AD30D00 /* MersenneTwister */ = {
+			isa = PBXGroup;
+			children = (
+				973BFA7708D2F75F0B9E9BB8 /* MersenneTwister.h */,
+			);
+			name = MersenneTwister;
+			sourceTree = "<group>";
+		};
+		9F538A6502965ECC0E117B93 /* GUI */ = {
+			isa = PBXGroup;
+			children = (
+				11EE2C5673F87C7E57EE599B /* DisplayWidget.h */,
+				A5868AC1647BCA5553A3BF49 /* MainWindow.h */,
+				D0B3AC999ABA0AB3B23286B1 /* VariableEditor.h */,
+			);
+			name = GUI;
+			sourceTree = "<group>";
+		};
+		A0B941E73F8F6D27FAADC4AE /* GUI */ = {
+			isa = PBXGroup;
+			children = (
+				57CEF87C424592EFAF698519 /* DisplayWidget.cpp */,
+				A03C1CD753C997AE1BD51239 /* MainWindow.cpp */,
+				2565F385DC84F56596B5D50B /* VariableEditor.cpp */,
+			);
+			name = GUI;
+			sourceTree = "<group>";
+		};
+		B9B8585D29050660F21EC355 /* SyntopiaCore */ = {
+			isa = PBXGroup;
+			children = (
+				BCE0E16692CB94074BA9D7D1 /* Exceptions */,
+				43E78447B9AAEBAC81931265 /* Logging */,
+				D0D01546F61B7A6A3FA30921 /* Math */,
+				C4E39869CD5B76CD31DF9F2A /* Misc */,
+			);
+			name = SyntopiaCore;
+			sourceTree = "<group>";
+		};
+		BCE0E16692CB94074BA9D7D1 /* Exceptions */ = {
+			isa = PBXGroup;
+			children = (
+				37DBEDCC4F43FE5A5C63191F /* Exception.h */,
+			);
+			name = Exceptions;
+			sourceTree = "<group>";
+		};
+		C4E39869CD5B76CD31DF9F2A /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				1B74E99CA4EBE377884E820F /* ColorUtils.h */,
+				1201FB78C0720814C670B446 /* MiniParser.h */,
+				492F9926315E981F5E44530A /* Persistence.h */,
+				A30A78602395616113EF598A /* Version.h */,
+			);
+			name = Misc;
+			sourceTree = "<group>";
+		};
+		C70A3A14D13303DD37AC1E4C /* Fragmentarium */ = {
+			isa = PBXGroup;
+			children = (
+				A0B941E73F8F6D27FAADC4AE /* GUI */,
+				4E6A68472CF05EC4DD4D43B5 /* Parser */,
+			);
+			name = Fragmentarium;
+			sourceTree = "<group>";
+		};
+		C79B213FCDE2467A61EC8B1B /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				A63344F09B44B470D1C8B739 /* ListWidgetLogger.cpp */,
+				75E35665849E876D8F7C00DD /* Logging.cpp */,
+			);
+			name = Logging;
+			sourceTree = "<group>";
+		};
+		D0D01546F61B7A6A3FA30921 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				8C541DCB1BA2CF323125B6E4 /* Matrix4.h */,
+				E8DE3A1FDB22ED1A1C5A2935 /* Random.h */,
+				DD431E0C0294BB02E3D9EB23 /* Vector3.h */,
+			);
+			name = Math;
+			sourceTree = "<group>";
+		};
+		E263E73012C9125D0052EBA9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E263E72F12C9125D0052EBA9 /* Fragmentarium.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DA18A6831232F53228631AD1 /* OpenGL.framework */,
+				C6766F86E49E9C8701C8E637 /* AGL.framework */,
+				9B36DA7E32F0304E780E7972 /* QtGui.framework */,
+				7BC2E65A5E699A5E5D834CA2 /* QtCore.framework */,
+				E263E75612C913540052EBA9 /* QtOpenGL.framework */,
+				E263E75812C913540052EBA9 /* QtScript.framework */,
+				E263E75A12C913540052EBA9 /* QtXml.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		F4264FBC7ECD94354DA84B4B /* ThirdPartyCode */ = {
+			isa = PBXGroup;
+			children = (
+				8BE01D402B8D2DAB5AD30D00 /* MersenneTwister */,
+			);
+			name = ThirdPartyCode;
+			sourceTree = "<group>";
+		};
+		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				EF19F05E5CD7CF54F921EBDC /* Main.cpp */,
+				C70A3A14D13303DD37AC1E4C /* Fragmentarium */,
+				8576B541A7199F840DD6553A /* SyntopiaCore */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		FD6E9601D3667190DE524B39 /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				6855533F0F9C4F5C82F4665A /* Preprocessor.h */,
+			);
+			name = Parser;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D4B5226E62144D0CC117564A /* Fragmentarium */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E263E74312C9128B0052EBA9 /* Build configuration list for PBXNativeTarget "Fragmentarium" */;
+			buildPhases = (
+				D7BA7D76DAB5DD13389D6332 /* Qt Qmake */,
+				A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */,
+				F6069D5A5DA8AA28EDB8B3C6 /* Project Copy */,
+				C29B8785722055ED95EF7B57 /* Build Sources */,
+				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
+				3787F99312C85FF0073FD7BA /* Bundle Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Fragmentarium;
+			productName = Fragmentarium;
+			productReference = E263E72F12C9125D0052EBA9 /* Fragmentarium.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		91B15E841AA80083484172DE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 2A951308CDB28F104D0A4BD2 /* Build configuration list for PBXProject "Fragmentarium" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 05596AB53D8D521C69802C27 /* Fragmentarium */;
+			productRefGroup = E263E73012C9125D0052EBA9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D4B5226E62144D0CC117564A /* Fragmentarium */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3787F99312C85FF0073FD7BA /* Bundle Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E263E78712C916FE0052EBA9 /* Info.plist in Bundle Resources */,
+			);
+			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Preprocessors";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source -f 'Fragmentarium.xcodeproj/qt_preprocess.mak'";
+		};
+		D7BA7D76DAB5DD13389D6332 /* Qt Qmake */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Qt Qmake";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -C /Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source -f 'Fragmentarium.xcodeproj/qt_makeqmake.mak'";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C29B8785722055ED95EF7B57 /* Build Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C0A0AD360CF52FB51307455 /* Main.cpp in Build Sources */,
+				02073A0E2A7500C54E949E46 /* DisplayWidget.cpp in Build Sources */,
+				1E31F25D6BE765DAE38D3C5D /* MainWindow.cpp in Build Sources */,
+				212B5DB9B5A30DB4AEC1A18B /* VariableEditor.cpp in Build Sources */,
+				062AD7282D39867FB4510CDA /* Preprocessor.cpp in Build Sources */,
+				51DD101F9289F8FDB4DCBF7F /* ListWidgetLogger.cpp in Build Sources */,
+				9DEB82E75765DF5035930524 /* Logging.cpp in Build Sources */,
+				E13D81D83FEFC5E41B415845 /* Matrix4.cpp in Build Sources */,
+				4AAC12D38368D928642D256C /* Random.cpp in Build Sources */,
+				F03EC253D903C2088F686982 /* Vector3.cpp in Build Sources */,
+				21B30E783DA541AC32ADEB25 /* ColorUtils.cpp in Build Sources */,
+				C7BC15B6F8F8050C9C594B68 /* MiniParser.cpp in Build Sources */,
+				089A6EAF44E0921D78EA2DE1 /* Persistence.cpp in Build Sources */,
+				401AA282866C7B78309AF083 /* Version.cpp in Build Sources */,
+				A4582233947FB7FB159573BB /* moc_MainWindow.cpp in Build Sources */,
+				99F00765612BE8E039E49285 /* moc_VariableEditor.cpp in Build Sources */,
+				C05DBDAB5C76A5BF86A89FCA /* qrc_Fragmentarium.cpp in Build Sources */,
+			);
+			name = "Build Sources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8DB1DD96F65B1BF1FFC506E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		95E1EB2E5DDD587BE5B3E548 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E263E73E12C9125F0052EBA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_ROOT = "/Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source";
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					/usr/include/QtCore,
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					/usr/include/QtGui,
+					/usr/include,
+					.,
+					"Fragmentarium/**",
+					"SyntopiaCore/**",
+					ThirdPartyCode/MersenneTwister,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Qt4.7/mkspecs/macx-xcode",
+					/Library/Frameworks/QtOpenGL.framework/Headers,
+					/Library/Frameworks/QtXML.framework/Headers,
+					/Library/Frameworks/QtScript.framework/Headers,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					/Library/Frameworks,
+					/System/Library/Frameworks/,
+					"/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L/Library/Frameworks",
+					"-F/Library/Frameworks",
+					"-L/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+					"-F/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Fragmentarium;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Debug;
+		};
+		E263E73F12C9125F0052EBA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_ROOT = "/Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source";
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					/usr/include/QtCore,
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					/usr/include/QtGui,
+					/usr/include,
+					.,
+					"Fragmentarium/**",
+					"SyntopiaCore/**",
+					ThirdPartyCode/MersenneTwister,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Qt4.7/mkspecs/macx-xcode",
+					/Library/Frameworks/QtOpenGL.framework/Headers,
+					/Library/Frameworks/QtScript.framework/Headers,
+					/Library/Frameworks/QtXML.framework/Headers,
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					/Library/Frameworks,
+					/System/Library/Frameworks/,
+					"/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L/Library/Frameworks",
+					"-F/Library/Frameworks",
+					"-L/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+					"-F/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Fragmentarium;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Release;
+		};
+		E263E74012C9125F0052EBA9 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_ROOT = "/Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source";
+				DYLIB_COMPATIBILITY_VERSION = 1.0;
+				DYLIB_CURRENT_VERSION = 1.0.0;
+				HEADER_SEARCH_PATHS = (
+					/Library/Frameworks/QtCore.framework/Versions/4/Headers,
+					/usr/include/QtCore,
+					/Library/Frameworks/QtGui.framework/Versions/4/Headers,
+					/usr/include/QtGui,
+					/usr/include,
+					.,
+					Fragmentarium/GUI,
+					SyntopiaCore/Logging,
+					SyntopiaCore/Math,
+					Fragmentarium/Parser,
+					SyntopiaCore/Exceptions,
+					SyntopiaCore/Misc,
+					ThirdPartyCode/MersenneTwister,
+					/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers,
+					/System/Library/Frameworks/AGL.framework/Headers,
+					.,
+					/usr/local/include,
+					/System/Library/Frameworks/CarbonCore.framework/Headers,
+					"/usr/local/Qt4.7/mkspecs/macx-xcode",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LEXFLAGS = "";
+				LIBRARY_SEARCH_PATHS = (
+					/Library/Frameworks,
+					/System/Library/Frameworks/,
+					"/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-L/Library/Frameworks",
+					"-F/Library/Frameworks",
+					"-L/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+					"-F/tmp/qt-stuff-6474/source/qt-everywhere-opensource-src-4.7.0/lib",
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Fragmentarium;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				YACCFLAGS = "-d";
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2A951308CDB28F104D0A4BD2 /* Build configuration list for PBXProject "Fragmentarium" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8DB1DD96F65B1BF1FFC506E0 /* Debug */,
+				95E1EB2E5DDD587BE5B3E548 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E263E74312C9128B0052EBA9 /* Build configuration list for PBXNativeTarget "Fragmentarium" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E263E73E12C9125F0052EBA9 /* Debug */,
+				E263E73F12C9125F0052EBA9 /* Release */,
+				E263E74012C9125F0052EBA9 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 91B15E841AA80083484172DE /* Project object */;
+}

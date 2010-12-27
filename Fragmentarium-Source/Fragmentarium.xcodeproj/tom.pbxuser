@@ -1,0 +1,260 @@
+// !$*UTF8*$!
+{
+	57CEF87C424592EFAF698519 /* DisplayWidget.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {720, 6604}}";
+			sepNavSelRange = "{3983, 6}";
+			sepNavVisRange = "{3735, 462}";
+		};
+	};
+	91B15E841AA80083484172DE /* Project object */ = {
+		activeBuildConfigurationName = Release;
+		activeExecutable = E263E73112C9125D0052EBA9 /* Fragmentarium */;
+		activeTarget = D4B5226E62144D0CC117564A /* Fragmentarium */;
+		addToTargets = (
+			D4B5226E62144D0CC117564A /* Fragmentarium */,
+		);
+		codeSenseManager = E263E74512C9128B0052EBA9 /* Code sense */;
+		executables = (
+			E263E73112C9125D0052EBA9 /* Fragmentarium */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					760,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXSymbolsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXSymbolsDataSource_SymbolNameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					16,
+					200,
+					50,
+					379,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXSymbolsDataSource_SymbolTypeIconID,
+					PBXSymbolsDataSource_SymbolNameID,
+					PBXSymbolsDataSource_SymbolTypeID,
+					PBXSymbolsDataSource_ReferenceNameID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 315168675;
+			PBXWorkspaceStateSaveDate = 315168675;
+		};
+		perUserProjectItems = {
+			E20A0E4512C917C2001CF5A0 /* PBXTextBookmark */ = E20A0E4512C917C2001CF5A0 /* PBXTextBookmark */;
+			E20A0E5612C91838001CF5A0 /* PBXTextBookmark */ = E20A0E5612C91838001CF5A0 /* PBXTextBookmark */;
+			E20A0E5812C91838001CF5A0 /* PBXTextBookmark */ = E20A0E5812C91838001CF5A0 /* PBXTextBookmark */;
+			E20A0E5D12C91855001CF5A0 /* PBXTextBookmark */ = E20A0E5D12C91855001CF5A0 /* PBXTextBookmark */;
+			E20A0E5E12C91855001CF5A0 /* PBXTextBookmark */ = E20A0E5E12C91855001CF5A0 /* PBXTextBookmark */;
+			E20A0E5F12C91855001CF5A0 /* PBXTextBookmark */ = E20A0E5F12C91855001CF5A0 /* PBXTextBookmark */;
+			E263E78E12C9177A0052EBA9 = E263E78E12C9177A0052EBA9 /* PBXTextBookmark */;
+			E263E78F12C9177A0052EBA9 = E263E78F12C9177A0052EBA9 /* PlistBookmark */;
+			E263E79012C9177A0052EBA9 = E263E79012C9177A0052EBA9 /* PBXTextBookmark */;
+			E263E79212C9177A0052EBA9 = E263E79212C9177A0052EBA9 /* PBXTextBookmark */;
+		};
+		sourceControlManager = E263E74412C9128B0052EBA9 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	A03C1CD753C997AE1BD51239 /* MainWindow.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {617, 14703}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1680}";
+		};
+	};
+	A5868AC1647BCA5553A3BF49 /* MainWindow.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {836, 2379}}";
+			sepNavSelRange = "{144, 0}";
+			sepNavVisRange = "{0, 493}";
+		};
+	};
+	D4B5226E62144D0CC117564A /* Fragmentarium */ = {
+		activeExec = 0;
+		executables = (
+			E263E73112C9125D0052EBA9 /* Fragmentarium */,
+		);
+	};
+	E20A0E4512C917C2001CF5A0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = EF19F05E5CD7CF54F921EBDC /* Main.cpp */;
+		name = "Main.cpp: 4";
+		rLen = 0;
+		rLoc = 76;
+		rType = 0;
+		vrLen = 1446;
+		vrLoc = 0;
+	};
+	E20A0E5612C91838001CF5A0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E20A0E5712C91838001CF5A0 /* DisplayWidget.cpp */;
+		rLen = 6;
+		rLoc = 3983;
+		rType = 0;
+	};
+	E20A0E5712C91838001CF5A0 /* DisplayWidget.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = DisplayWidget.cpp;
+		path = "/Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source/Fragmentarium/GUI/DisplayWidget.cpp";
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {938, 6357}}";
+			sepNavSelRange = "{4361, 0}";
+			sepNavVisRange = "{3622, 1753}";
+		};
+	};
+	E20A0E5812C91838001CF5A0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 57CEF87C424592EFAF698519 /* DisplayWidget.cpp */;
+		name = "DisplayWidget.cpp: 122";
+		rLen = 6;
+		rLoc = 3983;
+		rType = 0;
+		vrLen = 462;
+		vrLoc = 3735;
+	};
+	E20A0E5D12C91855001CF5A0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = EF19F05E5CD7CF54F921EBDC /* Main.cpp */;
+		name = "Main.cpp: 4";
+		rLen = 0;
+		rLoc = 76;
+		rType = 0;
+		vrLen = 1506;
+		vrLoc = 0;
+	};
+	E20A0E5E12C91855001CF5A0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A03C1CD753C997AE1BD51239 /* MainWindow.cpp */;
+		name = "MainWindow.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1680;
+		vrLoc = 0;
+	};
+	E20A0E5F12C91855001CF5A0 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E20A0E5712C91838001CF5A0 /* DisplayWidget.cpp */;
+		name = "DisplayWidget.cpp: 135";
+		rLen = 0;
+		rLoc = 4361;
+		rType = 0;
+		vrLen = 1753;
+		vrLoc = 3622;
+	};
+	E263E73112C9125D0052EBA9 /* Fragmentarium */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = Fragmentarium;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	E263E74412C9128B0052EBA9 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	E263E74512C9128B0052EBA9 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	E263E78E12C9177A0052EBA9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A5868AC1647BCA5553A3BF49 /* MainWindow.h */;
+		name = "MainWindow.h: 12";
+		rLen = 1;
+		rLoc = 244;
+		rType = 0;
+		vrLen = 913;
+		vrLoc = 0;
+	};
+	E263E78F12C9177A0052EBA9 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = E263E78612C916FE0052EBA9 /* Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+		);
+		name = "/Users/tom/Dropbox/Code/Fragmentarium/Fragmentarium-Source/Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775808;
+	};
+	E263E79012C9177A0052EBA9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = EF19F05E5CD7CF54F921EBDC /* Main.cpp */;
+		name = "Main.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 980;
+		vrLoc = 0;
+	};
+	E263E79212C9177A0052EBA9 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = EF19F05E5CD7CF54F921EBDC /* Main.cpp */;
+		name = "Main.cpp: 4";
+		rLen = 0;
+		rLoc = 76;
+		rType = 0;
+		vrLen = 980;
+		vrLoc = 0;
+	};
+	EF19F05E5CD7CF54F921EBDC /* Main.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {617, 767}}";
+			sepNavSelRange = "{76, 0}";
+			sepNavVisRange = "{0, 1506}";
+		};
+	};
+}
