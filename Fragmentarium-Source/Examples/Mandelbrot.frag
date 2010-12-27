@@ -23,7 +23,7 @@ vec3 getColor2D(vec2 c) {
 	if (i < iterations) {	
              // The color scheme here is based on one
 		// from Inigo Quilez's Shader Toy:
-		float co = i + 1.0 - log2(.5*log2(dot(z,z)));
+		float co = float( i) + 1.0 - log2(.5*log2(dot(z,z)));
 		co = sqrt(co/256.0);
 		return vec3( .5+.5*cos(6.2831*co+r),
 		.5+.5*cos(6.2831*co+g),

@@ -613,6 +613,11 @@ namespace Fragmentarium {
 			resetViewAction->setStatusTip(tr("Resets the viewport"));
 			connect(resetViewAction, SIGNAL(triggered()), this, SLOT(resetView()));
 
+			moveMainAction = new QAction("Move main() to end", this);
+			moveMainAction->setCheckable(true);
+			moveMainAction->setChecked(true);
+			moveMainAction->setStatusTip(tr("For compatibility with some GPU's."));
+			
 			aboutAction = new QAction(QIcon(":/images/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Show the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -671,6 +676,8 @@ namespace Fragmentarium {
 			renderMenu->addAction(fullScreenAction);
 			renderMenu->addAction(resetViewAction);
 			renderMenu->addSeparator();
+			renderMenu->addAction(moveMainAction);
+			
 			
 			
 
@@ -875,7 +882,7 @@ namespace Fragmentarium {
 
 			Preprocessor p;
 			try {
-				FragmentSource fs = p.Parse(inputText,f);
+				FragmentSource fs = p.Parse(inputText,f, moveMainAction->isChecked());
 
 				bool showGUI = false;
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);

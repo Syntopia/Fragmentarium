@@ -152,6 +152,7 @@ namespace Fragmentarium {
 			QAction *aboutAction;
 
 			QAction *renderAction;
+			QAction *moveMainAction;
 			QAction *resetViewAction;
 			DisplayWidget* engine;
 			QTabBar* tabBar;

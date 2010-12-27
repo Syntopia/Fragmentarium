@@ -50,16 +50,16 @@ float DE2(vec3 z)
 		if (z.x<z.y){ z.xy = z.yx;}
 		if (z.x< z.z){ z.xz = z.zx;}
 		if (z.y<z.z){ z.yz = z.zy;}
-		z.x=(Scale+1)* z.x-Offset.x*(Scale);
-		z.y=(Scale+1)* z.y-Offset.y*(Scale);
-		z.z=(Scale+1)* z.z;
+		z.x=(Scale+1.0)* z.x-Offset.x*(Scale);
+		z.y=(Scale+1.0)* z.y-Offset.y*(Scale);
+		z.z=(Scale+1.0)* z.z;
 		if( z.z>0.5*Offset.z*(Scale))  z.z-=Offset.z*(Scale);	
 		
 		r = dot(z, z);
 		n++;
 	}
 	
-	return (length(z) ) * pow((Scale+1), float(-n));
+	return (length(z) ) * pow((Scale+1.0), float(-n));
 }
 
 float DE3(vec3 z)

@@ -9,7 +9,7 @@ uniform float AntiAliasScale;slider[0.0,1,5];
 vec3 getColor2D(vec2 z) ;
 
 vec3 getColor2Daa(vec2 z) {
-	vec3 v = vec3(0,0,0);
+	vec3 v = vec3(0.0,0.0,0.0);
 	for (int x=1; x <=AntiAlias;x++) {
 		for (int y=1; y <=AntiAlias;y++) {
 			v +=  getColor2D(z+vec2(x,y)*pixelSize*0.33*AntiAliasScale);
@@ -19,8 +19,8 @@ vec3 getColor2Daa(vec2 z) {
 	return v/(float(AntiAlias)*float(AntiAlias));
 }
 
-void main(void)
+void main()
 {
-	gl_FragColor = vec4(getColor2Daa(coord.xy + vec2(0.7,0.3)),1.0);
+	gl_FragColor = vec4(getColor2Daa(coord.xy),1.0);
 }
 

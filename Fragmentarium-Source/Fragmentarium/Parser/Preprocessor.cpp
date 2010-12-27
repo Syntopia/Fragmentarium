@@ -77,7 +77,7 @@ namespace Fragmentarium {
 		// We leak here, but fs's are copied!
 		FragmentSource::~FragmentSource() { /*foreach (QFile* f, sourceFiles) delete(f);*/ }
 
-		FragmentSource Preprocessor::Parse(QString input, QFile* file) {
+		FragmentSource Preprocessor::Parse(QString input, QFile* file, bool moveMain) {
 
 			FragmentSource fs;
 
@@ -96,6 +96,7 @@ namespace Fragmentarium {
 			QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+			QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
 
 			QString lastComment;
 			QString currentGroup;
@@ -113,6 +114,9 @@ namespace Fragmentarium {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#info");
 					INFO(c);
+				} else if (moveMain && main.indexIn(s) != -1) {
+					INFO("Found main: " + s );
+					fs.source[i] = s.replace(" main", " fragmentariumMain");
 				} else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);
 					fs.source[i] = "uniform float " + name + ";";
@@ -182,7 +186,12 @@ namespace Fragmentarium {
 				}
 			}
 
-
+			// To ensure main is called as the last command.
+			if (moveMain) {
+				fs.source.append("");
+				fs.source.append("void main() { fragmentariumMain(); }");
+				fs.source.append("");
+			}
 
 			return fs;
 		}

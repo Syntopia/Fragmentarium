@@ -21,7 +21,7 @@ float DE(vec3 z)
 	z+=vec3(1.0,1.0,1.0);
 	float modi=4.0;
 	float k=2.0;
-	float d=0;
+	float d=0.0;
 	for (int l = 0; l < Iterations ; l++)
 	{
 		vec3 p2 = mod(z*k, modi) - 0.5*modi;

@@ -131,8 +131,8 @@ namespace Fragmentarium {
 						"void main(void)\n"
 						"{\n"
 						"   gl_Position =  gl_Vertex;\n"
-						"   float fx = 2;\n"
-						"   float fy = 2;\n"
+						"   float fx = 2.0;\n"
+						"   float fy = 2.0;\n"
 						"   from = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y, 1.0,1.0)).xyz;\n"
 						"   to = (gl_ModelViewMatrix*vec4(gl_Vertex.x*fx, gl_Vertex.y*fy, -1.0,1.0)).xyz;\n"
 						"   fromDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y+pixelSize.y, 1.0,1.0)).xyz - from;\n"
@@ -309,14 +309,20 @@ namespace Fragmentarium {
 			}
 			delete(shaderProgram);
 			shaderProgram = new QGLShaderProgram(this);
+
+			// Vertex shader
 			bool s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,
 				cameraControl->getVertexShader());
 			if (!s) WARNING("Could not create vertex shader: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
+			if (!shaderProgram->log().isEmpty()) INFO("Vertex shader compiled with warnings: " + shaderProgram->log());
+
+			// Fragment shader
 			s = shaderProgram->addShaderFromSourceCode(QGLShader::Fragment,
 				fragmentSource.getText());
 			if (!s) WARNING("Could not create fragment shader: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
+			if (!shaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + shaderProgram->log());
 
 			s = shaderProgram->link();
 			if (!s) WARNING("Could not link shaders: " + shaderProgram->log());

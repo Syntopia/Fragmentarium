@@ -106,7 +106,7 @@ namespace Fragmentarium {
 		public:
 			Preprocessor() {};
 			
-			FragmentSource Parse(QString input, QFile* f);
+			FragmentSource Parse(QString input, QFile* f, bool moveMain);
 			
 		private:
 			
