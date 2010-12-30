@@ -1,7 +1,7 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
 
+Resize trigger many updates (hang)
 Clipping planes for 3D Camera!
-Naming: user uniforms...
 Reset Uniforms | Reset Tab
 Fix: mousewheel on 2D Camera
 Fix: 'group' should be default (or file).

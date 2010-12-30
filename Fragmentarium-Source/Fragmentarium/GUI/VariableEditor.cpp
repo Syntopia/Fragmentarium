@@ -456,7 +456,7 @@ namespace Fragmentarium {
 			while (it.hasNext()) {
 				it.next();
 				if (it.value() == false) {
-					INFO("Deleting "+ it.key());
+					//INFO("Deleting "+ it.key());
 					spacers.remove(tabs[it.key()]);
 					delete(tabs[it.key()]);
 					tabs.remove(it.key());

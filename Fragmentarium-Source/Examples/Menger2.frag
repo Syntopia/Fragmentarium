@@ -1,5 +1,6 @@
 #info Menger Distance Estimator.
-#include "DE-Raytracer.frag"
+#include "include/DE-Raytracer.frag"
+#include "include/Matrix.frag"
 #group Menger
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/
@@ -10,21 +11,8 @@ uniform int Iterations;  slider[0,13,100]
 // Scale parameter. A perfect Menger is 3.0
 uniform float Scale; slider[0.00,3.0,4.00]
 
-
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
-
-// Return rotation matrix for rotating around vector v by angle
-mat3  rotationMatrix3(vec3 v, float angle)
-{
-	float c = cos(radians(angle));
-	float s = sin(radians(angle));
-	
-	return mat3(c + (1.0 - c) * v.x * v.x, (1.0 - c) * v.x * v.y - s * v.z, (1.0 - c) * v.x * v.z + s * v.y,
-		(1.0 - c) * v.x * v.y + s * v.z, c + (1.0 - c) * v.y * v.y, (1.0 - c) * v.y * v.z - s * v.x,
-		(1.0 - c) * v.x * v.z - s * v.y, (1.0 - c) * v.y * v.z + s * v.x, c + (1.0 - c) * v.z * v.z
-		);
-}
 
 uniform float Angle1; slider[-180,0,180]
 uniform vec3 Rot1; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
@@ -55,8 +43,7 @@ float DE(vec3 z)
 		z.y=Scale* z.y-Offset.y*(Scale-1.0);
 		z.z=Scale* z.z;
 		if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
-		
-		
+				
 		//r = dot(z, z);
 		n++;
 	}

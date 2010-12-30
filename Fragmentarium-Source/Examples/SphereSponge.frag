@@ -1,11 +1,9 @@
 #info SphereSponge Distance Estimator.
-#include "DE-Raytracer.frag"
+#include "include/DE-Raytracer.frag"
 #group Sphere sponge
 
 // Based on a fractal proposed by Buddhi, with a DE outlined by Knighty:
 // http://www.fractalforums.com/3d-fractal-generation/revenge-of-the-half-eaten-menger-sponge/
-//
-// Notice: not sure I quit this one completely right.
 
 // Number of iterations.
 uniform int Iterations;  slider[0,10,100]

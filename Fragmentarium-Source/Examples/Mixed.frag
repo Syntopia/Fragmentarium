@@ -1,25 +1,12 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
-#include "DE-Raytracer.frag"
+#include "include/DE-Raytracer.frag"
+#include "include/matrix.frag"
 #group Mixed DE
 
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/
 
 uniform float Scale; slider[0.00,3.0,4.00]
-
-mat4 translate(vec3 v) {
-	return mat4(1.0,0.0,0.0,0.0,
-		0.0,1.0,0.0,0.0,
-		0.0,0.0,1.0,0.0,
-		v.x,v.y,v.z,1.0);
-}
-
-mat4 scale4(float s) {
-	return mat4(s,0.0,0.0,0.0,
-		0.0,s,0.0,0.0,
-		0.0,0.0,s,0.0,
-		0.0,0.0,0.0,1.0);
-}
 
 uniform float phi; slider[-5,1.618,5]
 

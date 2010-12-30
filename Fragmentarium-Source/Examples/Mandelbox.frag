@@ -1,5 +1,5 @@
 #info Mandelbox Distance Estimator (Rrrola's version).
-#include "DE-Raytracer.frag"
+#include "include/DE-Raytracer.frag"
 #group Mandelbox
 
 /*
@@ -26,7 +26,7 @@ uniform int iters;  slider[0,13,100]
 float minRad2 =  0.25;
 
 // Scale parameter. A perfect Menger is 3.0
-uniform float Scale;  slider[-2.00,-1.77,3]
+uniform float Scale;  slider[-3.0,3.0,5.0]
 vec4 scale = vec4(Scale, Scale, Scale, abs(Scale)) / minRad2;
 
 // precomputed constants

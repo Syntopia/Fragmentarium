@@ -115,7 +115,7 @@ namespace Fragmentarium {
 					QString c = s.remove("#info");
 					INFO(c);
 				} else if (moveMain && main.indexIn(s) != -1) {
-					INFO("Found main: " + s );
+					//INFO("Found main: " + s );
 					fs.source[i] = s.replace(" main", " fragmentariumMain");
 				} else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);
