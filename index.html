@@ -1,80 +1,291 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+          This webdesign was based on;
+	terrafirma1.0 by nodethirtythree design
+	http://www.nodethirtythree.com
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	(It was later modifed by me (mikael(at)hvidtfeldts.net) )
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head >
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<title>Fragmentarium</title>
+<meta name="keywords" content="Generative Art, Fragmentarium, 3D art, Fragmentariumesis, povray, CFDG, Context Free," />
+<meta name="description" content="Fragmentarium is a tool for creating 3D structures from a set of user specified rules." />
+<link rel="stylesheet" type="text/css" href="default.css" />
 
-	<title>Syntopia/Fragmentarium @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #5ab05c;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #a54fa3; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #a54fa3; }
-    h3 { text-align: center; color: #a54fa3; }
-    a { color: #a54fa3; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
+<script type="text/javascript">
+    var GB_ROOT_DIR = "greybox/";
+</script>
+
+<script type="text/javascript" src="greybox/AJS.js"></script>
+<script type="text/javascript" src="greybox/AJS_fx.js"></script>
+
+<script type="text/javascript" src="greybox/gb_scripts.js"></script>
+<link href="greybox/gb_styles.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="_inc/swfobject.js"></script>
+
+<script type="text/javascript">
+
+/***********************************************
+* Cool DHTML tooltip script II- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+var offsetfromcursorX=12 //Customize x offset of tooltip
+var offsetfromcursorY=10 //Customize y offset of tooltip
+
+var offsetdivfrompointerX=10 //Customize x offset of tooltip DIV relative to pointer image
+var offsetdivfrompointerY=14 //Customize y offset of tooltip DIV relative to pointer image. Tip: Set it to (height_of_pointer_image-1).
+
+document.write('<div id="dhtmltooltip"></div>') //write out tooltip DIV
+document.write('<img id="dhtmlpointer" src="arrow2.gif">') //write out pointer image
+
+var ie=document.all
+var ns6=document.getElementById && !document.all
+var enabletip=false
+if (ie||ns6)
+var tipobj=document.all? document.all["dhtmltooltip"] : document.getElementById? document.getElementById("dhtmltooltip") : ""
+
+var pointerobj=document.all? document.all["dhtmlpointer"] : document.getElementById? document.getElementById("dhtmlpointer") : ""
+
+function ietruebody(){
+return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+}
+
+function ddrivetip(thetext, thewidth, thecolor){
+if (ns6||ie){
+if (typeof thewidth!="undefined") tipobj.style.width=thewidth+"px"
+if (typeof thecolor!="undefined" && thecolor!="") tipobj.style.backgroundColor=thecolor
+tipobj.innerHTML=thetext
+enabletip=true
+return false
+}
+}
+
+function positiontip(e){
+if (enabletip){
+var nondefaultpos=false
+var curX=(ns6)?e.pageX : event.clientX+ietruebody().scrollLeft;
+var curY=(ns6)?e.pageY : event.clientY+ietruebody().scrollTop;
+//Find out how close the mouse is to the corner of the window
+var winwidth=ie&&!window.opera? ietruebody().clientWidth : window.innerWidth-20
+var winheight=ie&&!window.opera? ietruebody().clientHeight : window.innerHeight-20
+
+var rightedge=ie&&!window.opera? winwidth-event.clientX-offsetfromcursorX : winwidth-e.clientX-offsetfromcursorX
+var bottomedge=ie&&!window.opera? winheight-event.clientY-offsetfromcursorY : winheight-e.clientY-offsetfromcursorY
+
+var leftedge=(offsetfromcursorX<0)? offsetfromcursorX*(-1) : -1000
+
+//if the horizontal distance isn't enough to accomodate the width of the context menu
+if (rightedge<tipobj.offsetWidth){
+//move the horizontal position of the menu to the left by it's width
+tipobj.style.left=curX-tipobj.offsetWidth+"px"
+nondefaultpos=true
+}
+else if (curX<leftedge)
+tipobj.style.left="5px"
+else{
+//position the horizontal position of the menu where the mouse is positioned
+tipobj.style.left=curX+offsetfromcursorX-offsetdivfrompointerX+"px"
+pointerobj.style.left=curX+offsetfromcursorX+"px"
+}
+
+//same concept with the vertical position
+if (bottomedge<tipobj.offsetHeight){
+tipobj.style.top=curY-tipobj.offsetHeight-offsetfromcursorY+"px"
+nondefaultpos=true
+}
+else{
+tipobj.style.top=curY+offsetfromcursorY+offsetdivfrompointerY+"px"
+pointerobj.style.top=curY+offsetfromcursorY+"px"
+}
+tipobj.style.visibility="visible"
+if (!nondefaultpos)
+pointerobj.style.visibility="visible"
+else
+pointerobj.style.visibility="hidden"
+}
+}
+
+function hideddrivetip(){
+if (ns6||ie){
+enabletip=false
+tipobj.style.visibility="hidden"
+pointerobj.style.visibility="hidden"
+tipobj.style.left="-1000px"
+tipobj.style.backgroundColor=''
+tipobj.style.width=''
+}
+}
+
+document.onmousemove=positiontip
+
+</script>
+
 </head>
-
 <body>
-  <a href="http://github.com/Syntopia/Fragmentarium"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
-  <div id="container">
+<div id="outer">
 
-    <div class="download">
-      <a href="http://github.com/Syntopia/Fragmentarium/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/Syntopia/Fragmentarium/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
+	<div id="upbg"></div>
 
-    <h1><a href="http://github.com/Syntopia/Fragmentarium">Fragmentarium</a>
-      <span class="small">by <a href="http://github.com/Syntopia">Syntopia</a></span></h1>
+	<div id="inner">
 
-    <div class="description">
-      A tool for exploring GPU pixel graphics!
-    </div>
+		
+		<div id="splash"></div>
+	
+		<div id="menu">
+			<ul>
+				<li class="first"><a href="index.html">home</a></li>
+				<li><a href="get.html">get</a></li>
+			</ul>
 
-    <h2>Authors</h2>
-<p>Mikael Hvidtfeldt Christensen (mikaelhc@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Mikael Hvidtfeldt Christensen (mikaelhc@gmail.com)<br/>      </p>
+		</div>
+	
 
+		<div id="primarycontent">
+		
+			<!-- primary content start -->
+	
+			<div class="post">
+				<div class="header">
+					<h3>About</h3>
+					
+				</div>
+				<div class="content">
+					
+					<p>Fragmentarium is a cross-platform application for exploring pixel based graphics on the GPU. </p>
+					<p>It is similar to Adobe's <a href="http://www.adobe.com/devnet/pixelbender.html">Pixel Bender</a>, but uses pure GLSL.
+					<p><b>Features:</b></p>
+					<ul>
+					<li>Multi-tabbed IDE</li>
+					<li>User widgets to manipulate parameter settings.</li>
+					<li>GLSL syntax high-lighting</li>
+					<li>Different 'mouse to GLSL' mapping schemes</li>
+					<li>Modular GLSL programming - include other fragments</li>
+					<li>Includes simple raytracer for distance estimated systems</li>
+					</ul>
+<p>Fragmentarium is built in C++, OpenGL/GLSL, and Qt 4. </p>
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/Syntopia/Fragmentarium/zipball/master">zip</a> or
-      <a href="http://github.com/Syntopia/Fragmentarium/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/Syntopia/Fragmentarium</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/Syntopia/Fragmentarium">Syntopia/Fragmentarium</a>
-    </div>
-
-  </div>
+<p>Fragmentarium is currently at the prototype stage: syntax and UI is likely to change, and there are probably plenty of errors. If this doesn't scare you, read more about getting Fragmentarium <a href="get.html">here</a>. Even though it is a prototype, it is relatively stable and useable. 
+				<p/>
+				
+<p>
+The progress and design considerations can be tracked at the <a href="http://blog.hvidtfeldts.net/index.php/category/structure-synth/">Syntopia blog</a>.</p>
 
   
+ 
+
+				</div>			
+			</div>
+
+	
+
+		<div class="post">
+				<div class="header">
+					<h3>News</h3>
+				</div>
+				<div class="content">
+				<dl  class="oneline">
+				
+<dt>28 Nov 10</dt><dd>First lines of code added.</dd>
+</dl>
+
+				</div>
+			</div>
+	
+	
+			
+		<div class="post">
+				<div class="header">
+					<h3>Gallery</h3>
+					
+				</div>
+				<div class="content">
+				<p>A public gallery is now available at Flickr:<br /><a href="http://flickr.com/groups/fragmentarium/">http://flickr.com/groups/fragmentarium/</a>.</p>
+				<p>Everyone is welcome to upload their Fragmentarium creations here, preferably with the script included.</p>
+				<p>
+				
+			
+			
+<div id="PictoBrowser101229002424">Get the flash player here: http://www.adobe.com/flashplayer</div><script type="text/javascript" src="http://www.db798.com/pictobrowser/swfobject.js"></script><script type="text/javascript">var so = new SWFObject("http://www.db798.com/pictobrowser.swf", "PictoBrowser", "450", "439", "8", "#DDDDDD"); so.addParam("quality", "low"); so.addParam("scale", "noscale"); so.addParam("align", "mid"); so.addVariable("ids", "1554549@N24"); so.addVariable("names", "Fragmentarium"); so.addVariable("userName", "Syntopia"); so.addVariable("userId", "12131226@N03"); so.addVariable("source", "groups"); so.write("PictoBrowser101229002424");	</script>
+			
+			
+				
+			</p>
+			</div></div>
+
+					<div class="post">
+				<div class="header">
+					<h3>Acknowledgements</h3>
+					
+				</div>
+				<div class="content">
+				<p>Fragmentarium is being developed by Mikael Hvidtfeldt Christensen (mail: mikael<span /> (at) hvidtfeldts.net). It is free software, licensed under the GPL/LPGL license.</p>
+			
+				<p>The icons in the GUI are part of the <a href="http://www.everaldo.com/crystal/">Everaldo: Crystal</a> project. Fragmentarium is built using the <a href="http://trolltech.com/developer/downloads/qt/index">Qt cross-platform GUI framework</a>. </p>
+			
+<p>The website uses an <a href="http://www.openwebdesign.org/viewdesign.phtml?id=3045&referer=%2Fuserinfo.phtml%3Fuser%3Dnode33">Open Web Design</a> by <a href="http://www.nodethirtythree.com/">NodeThirtyThree</a>. It also uses <a href="http://orangoo.com/labs/GreyBox/">GreyBox</a> JavaScript. The Flickr slideshow is powered by <a href="http://www.db798.com/pictobrowser/">PictoBrowser</a>.</p>
+			</div></div>
+
+			
+			<!-- primary content end -->
+	
+		</div>
+		
+		<div id="secondarycontent">
+
+			<!-- secondary content start -->
+		
+			<h3>Examples</h3>
+			<div class="content">
+			<a class="snap_noshots" href="images/frag3.jpg" rel="gb_imageset[shots]" title="Fragmentarium (OpenGL)">	<img class="picB"  src="images/frag3s.jpg"  alt="" /></a>
+			<a class="snap_noshots" href="images/frag1.jpg" rel="gb_imageset[shots]" title="Fragmentarium IDE (Vista)">	<img class="picB" src="images/frag1s.jpg"  alt="" /></a>
+			<a class="snap_noshots" href="images/frag2.jpg" rel="gb_imageset[shots]" title="Fragmentarium (rendered in SunFlow)">	<img class="picB"  src="images/frag2s.jpg"  alt="" /></a>
+			
+				
+			</div>
+			
+			<h3>Links</h3>
+			<div class="content">
+			    <p>Fragmentarium Links</p>
+				<ul class="linklist">
+					<li class="first"><a href="https://github.com/Syntopia/Fragmentarium">Github project page</a></li>
+					<li><a href="get.php">Download</a></li>
+					<li><a href="http://flickr.com/groups/fragmentarium/">Flickr group</a></li>
+				</ul>
+				<p>&nbsp;</p> <!-- Hey, I'm not a web designer :-) -->
+				<p>Related Links</p>
+				<ul class="linklist">
+					<li class="first"><a href="http://blog.hvidtfeldts.net/">Syntopia Blog</a></li>
+					<li><a href="http://structuresynth.sourceforge.net/">Structure Synth</a></li>
+					<li><a href="http://labs.adobe.com/technologies/pixelbenderplugin/">Pixel Bender</a></li>
+					<li><a href="http://www.subblue.com/projects">Subblue's PB Scripts</a></li>
+					<li><a href="http://sourceforge.net/projects/boxplorer/">Boxplorer</a></li>
+					
+				</ul>
+				<p>&nbsp;</p> 
+				
+			</div>
+
+			<!-- secondary content end -->
+	<!-- secondary content end -->
+
+		</div>
+	
+		<div id="footer">
+		
+			Fragmentarium 2011. <br /> 
+			Web pages based on a design by <a href="http://www.nodethirtythree.com/">NodeThirtyThree</a>.
+		
+		</div>
+
+	</div>
+
+</div>
+
 </body>
 </html>

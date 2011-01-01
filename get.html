@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+          This webdesign was based on;
+	terrafirma1.0 by nodethirtythree design
+	http://www.nodethirtythree.com
+
+	(It was later modifed by me (mikael(at)hvidtfeldts.net) )
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head >
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<title>Fragmentarium</title>
+<meta name="keywords" content="Generative Art, Fragmentarium, 3D art, Fragmentariumesis, povray, CFDG, Context Free," />
+<meta name="description" content="Fragmentarium is a tool for creating 3D structures from a set of user specified rules." />
+<link rel="stylesheet" type="text/css" href="default.css" />
+
+<script type="text/javascript">
+    var GB_ROOT_DIR = "greybox/";
+</script>
+
+<script type="text/javascript" src="greybox/AJS.js"></script>
+<script type="text/javascript" src="greybox/AJS_fx.js"></script>
+
+<script type="text/javascript" src="greybox/gb_scripts.js"></script>
+<link href="greybox/gb_styles.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="_inc/swfobject.js"></script>
+
+<script type="text/javascript">
+
+/***********************************************
+* Cool DHTML tooltip script II- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+var offsetfromcursorX=12 //Customize x offset of tooltip
+var offsetfromcursorY=10 //Customize y offset of tooltip
+
+var offsetdivfrompointerX=10 //Customize x offset of tooltip DIV relative to pointer image
+var offsetdivfrompointerY=14 //Customize y offset of tooltip DIV relative to pointer image. Tip: Set it to (height_of_pointer_image-1).
+
+document.write('<div id="dhtmltooltip"></div>') //write out tooltip DIV
+document.write('<img id="dhtmlpointer" src="arrow2.gif">') //write out pointer image
+
+var ie=document.all
+var ns6=document.getElementById && !document.all
+var enabletip=false
+if (ie||ns6)
+var tipobj=document.all? document.all["dhtmltooltip"] : document.getElementById? document.getElementById("dhtmltooltip") : ""
+
+var pointerobj=document.all? document.all["dhtmlpointer"] : document.getElementById? document.getElementById("dhtmlpointer") : ""
+
+function ietruebody(){
+return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+}
+
+function ddrivetip(thetext, thewidth, thecolor){
+if (ns6||ie){
+if (typeof thewidth!="undefined") tipobj.style.width=thewidth+"px"
+if (typeof thecolor!="undefined" && thecolor!="") tipobj.style.backgroundColor=thecolor
+tipobj.innerHTML=thetext
+enabletip=true
+return false
+}
+}
+
+function positiontip(e){
+if (enabletip){
+var nondefaultpos=false
+var curX=(ns6)?e.pageX : event.clientX+ietruebody().scrollLeft;
+var curY=(ns6)?e.pageY : event.clientY+ietruebody().scrollTop;
+//Find out how close the mouse is to the corner of the window
+var winwidth=ie&&!window.opera? ietruebody().clientWidth : window.innerWidth-20
+var winheight=ie&&!window.opera? ietruebody().clientHeight : window.innerHeight-20
+
+var rightedge=ie&&!window.opera? winwidth-event.clientX-offsetfromcursorX : winwidth-e.clientX-offsetfromcursorX
+var bottomedge=ie&&!window.opera? winheight-event.clientY-offsetfromcursorY : winheight-e.clientY-offsetfromcursorY
+
+var leftedge=(offsetfromcursorX<0)? offsetfromcursorX*(-1) : -1000
+
+//if the horizontal distance isn't enough to accomodate the width of the context menu
+if (rightedge<tipobj.offsetWidth){
+//move the horizontal position of the menu to the left by it's width
+tipobj.style.left=curX-tipobj.offsetWidth+"px"
+nondefaultpos=true
+}
+else if (curX<leftedge)
+tipobj.style.left="5px"
+else{
+//position the horizontal position of the menu where the mouse is positioned
+tipobj.style.left=curX+offsetfromcursorX-offsetdivfrompointerX+"px"
+pointerobj.style.left=curX+offsetfromcursorX+"px"
+}
+
+//same concept with the vertical position
+if (bottomedge<tipobj.offsetHeight){
+tipobj.style.top=curY-tipobj.offsetHeight-offsetfromcursorY+"px"
+nondefaultpos=true
+}
+else{
+tipobj.style.top=curY+offsetfromcursorY+offsetdivfrompointerY+"px"
+pointerobj.style.top=curY+offsetfromcursorY+"px"
+}
+tipobj.style.visibility="visible"
+if (!nondefaultpos)
+pointerobj.style.visibility="visible"
+else
+pointerobj.style.visibility="hidden"
+}
+}
+
+function hideddrivetip(){
+if (ns6||ie){
+enabletip=false
+tipobj.style.visibility="hidden"
+pointerobj.style.visibility="hidden"
+tipobj.style.left="-1000px"
+tipobj.style.backgroundColor=''
+tipobj.style.width=''
+}
+}
+
+document.onmousemove=positiontip
+
+</script>
+
+</head>
+<body>
+
+<div id="outer">
+
+	<div id="upbg"></div>
+
+	<div id="inner">
+
+		
+		<div id="splash"></div>
+	
+		<div id="menu">
+			<ul>
+				<li class="first"><a href="index.html">home</a></li>
+				<li><a href="get.html">get</a></li>
+			</ul>
+
+		</div>
+	
+
+		<div id="primarycontent">
+		
+			<!-- primary content start -->
+	
+			<div class="post">
+				<div class="header">
+					<h3>Get</h3>
+					
+				</div>
+				<div class="content">
+				<p>Fragmentarium is currently at the prototype stage: syntax and UI is likely to change, and there are probably plenty of errors. It is, however, relatively stable, and already quite useful. When this project is a bit more mature, I'll release some binary builds, but for now you will have to build Fragmentarium from source.
+				<p/>
+				<p>The source code can be found here:<br /><a href="https://github.com/Syntopia/Fragmentarium">https://github.com/Syntopia/Fragmentarium</a></p>
+				
+				<table class="download"><tr><td><img src="images/windows.png" width="85px" /></td><td>
+				<p><b>Windows build</b> (for XP, Vista, and 7):</p>
+				
+	<p>Zip-archive (portable, just extract and run):<br />No files available yet</p>
+				</td></tr><tr><td><img src="images/apple.png" width="85px" /></td><td>
+	
+		<p><b>Mac build</b> (Universal binary, Mac OS 10.5 and later):</p>
+	<p>No files available</p>
+	
+	</td></tr><tr><td><img src="images/tux.png" width="85px" /></td><td>
+	
+	<p><b>Linux</b>:</p> 
+	<p>No files available</p> 
+
+ </td></tr></table>
+	
+
+  </div>
+  </div>
+  
+ 
+ 
+ <div class="post">
+				<div class="header">
+					<h3>Build Instructions (Windows XP, Vista, and 7)</h3>
+				</div>
+				<div class="content">
+  
+  <p>
+    A Visual Studio 2008 solution file is part of the project. The free <a href="http://msdn2.microsoft.com/en-us/express/default.aspx">Visual Studio Express C++ 2008</a> can be used to build Fragmentarium.
+  </p>
+  <p>You will need to install the <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=0BAF2B35-C656-4969-ACE8-E4C0C0716ADB&amp;displaylang=en">Microsoft Windows Platform SDK</a> since this is not part of the Express editions of Visual Studio - notice that 'Windows 2003 SDK...' is the correct version for Windows XP. On Windows Vista use the <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=E6E1C3DF-A74F-4207-8586-711EBE331CDC&displaylang=en">Windows SDK for Windows Server 2008</a>.
+  </p>
+  <p>
+  You will also need to download Qt 4. Make sure you get a version for Visual C++. Precompiled version for Mingw will not work.
+  </p>
+  <p>
+ For a guide to installing and compiling Qt, see this <a href="http://tom.paschenda.org/blog/?p=28">Qt installation guide</a>. (Update: Nokia provides precompiled builds for Windows now)
+  </p>
+ 
+  </div></div>
+ 
+ 
+  
+  <div class="post">
+   <div class="header">
+					<h3>Build Instructions (Linux)</h3>
+				</div>
+				<div class="content">
+				
+				<p>
+				These instructions should work for Ubuntu 10.10 (but will likely work on other distributions as well). If you encounter graphics trouble, you might have to turn off any advanced 3D desktop effects.
+				</p>
+				<p>
+You will need to have a C++ compiler, X11, Qt4, and OpenGL development libs (and Git if fetching the source directly from the repository):</p>
+
+ <code>
+# sudo apt-get install build-essential libx11-dev mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev libxext-dev libqt4-opengl-dev <br/>
+</code>
+<p>(No line breaks!)</p>
+
+<p>Get the source. Build Fragmentarium. Navigate to the 'Build/Linux' directory and run the build script:</p>
+<code>$ sh build.sh
+</code>
+  <p><br />That's it. Enjoy.</p>
+<p>Notice: if you build Qt from the <a href="http://trolltech.com/developer/downloads/qt/x11">sources</a>, remember to enable OpenGL support, e.g.:</p>
+<pre>
+./configure -opengl -nomake examples -nomake demos
+make 
+sudo make install
+</pre>
+
+
+
+  </div></div>
+
+  <div class="post">
+				<div class="header">
+					<h3>Build Instructions (Mac OS X)</h3>
+				</div>
+				<div class="content">
+				
+				<p>
+First install <a href="http://www.qtsoftware.com/downloads">Qt Open Source</a> for Mac (version 4.5.0 or later). 
+</p><p>
+Now check out the source (see the Linux build instructions), and type the following:
+</p>
+<p><pre>
+qmake -project -after "CONFIG += opengl" 
+qmake -spec macx-xcode
+</pre></p>
+<p>
+Now an XCode project file has been created (mac.xcodeproj - actually a dir). 
+Open this file in XCode. 
+</p><p>
+Open the 'mac' project, go to "External Frameworks and Libraries" and add QtScript.framework, QtOpenGL.framework and QtXml.framework by browsing to their locations. The header files now need to be added: go to 'Project | Edit Active Target 'mac'' and go to the Build tab. Add the following header search paths:</p>
+<p><pre>'(qt_dir)/lib/QtOpenGL.framework/Versions/4/Headers' <br/>'(qt_dir)/lib/QtScript.framework/Versions/4/Headers' <br/>'(qt_dir)/Qt-4.3.4/lib/QtXML.framework/Versions/4/Headers'  </pre>
+</p>
+<p>It should now be possible to compile and run Fragmentarium from XCode.</p>
+  </div></div>
+ 
+ 
+  	
+		</div>
+		
+		<div id="secondarycontent">
+
+			<!-- secondary content start -->
+		
+			<h3>Links</h3>
+			<div class="content">
+			<a href="https://github.com/Syntopia/Fragmentarium">Github</a>
+			</div>
+
+			<!-- secondary content end -->
+
+  	</div>
+	
+		<div id="footer">
+		
+			Fragmentarium 2011. <br /> 
+			Web pages based on a design by <a href="http://www.nodethirtythree.com/">NodeThirtyThree</a>.
+		
+		</div>
+
+	</div>
+
+</div>
