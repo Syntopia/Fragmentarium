@@ -6,6 +6,8 @@ Reset Uniforms | Reset Tab
 Fix: mousewheel on 2D Camera
 Fix: 'group' should be default (or file).
 Fix: Icon
+Set Include Path?
+Check for updates
 
 Mouse Sensitivity [---x------]
 
