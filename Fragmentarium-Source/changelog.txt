@@ -5,7 +5,6 @@
 [2h]	 Refactor 2D include
 		 3D: AO/Glow divider
 		  
-		  
 21-12-10 Fixed anti-alias 3D
 [2h]	 Fixed double buffering
 		 New Sphere sample
