@@ -35,7 +35,7 @@ float DE(vec3 z)
 		z.x=Scale* z.x-Offset.x*(Scale-1.0);
 		z.y=Scale* z.y-Offset.y*(Scale-1.0);
 		z.z=Scale* z.z;
-		z = rot*z;
+		z = rot *z;
 		if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
 		
 		r = dot(z, z);

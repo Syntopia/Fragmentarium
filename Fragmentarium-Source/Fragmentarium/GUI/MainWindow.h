@@ -108,7 +108,7 @@ namespace Fragmentarium {
 			QList<QWidget *> disabledWidgets;
 			
 			void setRecentFile(const QString &fileName);
-			void insertTabPage(QString filename);
+			QTextEdit* insertTabPage(QString filename);
 			QTextEdit* getTextEdit();
 			void init();
 			void createActions();
@@ -153,6 +153,7 @@ namespace Fragmentarium {
 
 			QAction *renderAction;
 			QAction *moveMainAction;
+			QAction *debugAction;
 			QAction *resetViewAction;
 			DisplayWidget* engine;
 			QTabBar* tabBar;

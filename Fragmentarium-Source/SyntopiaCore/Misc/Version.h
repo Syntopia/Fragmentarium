@@ -27,9 +27,9 @@ namespace SyntopiaCore {
 			QList<Version> GetNewVersions(QString url) const;
 
 			/// Comparisons
-			bool operator<(const Version &rhs);
-			bool operator>(const Version &rhs);
-			bool operator==(const Version &rhs);
+			bool operator<(const Version &rhs) const;
+			bool operator>(const Version &rhs) const;
+			bool operator==(const Version &rhs) const;
 
 		private:
 			int major;

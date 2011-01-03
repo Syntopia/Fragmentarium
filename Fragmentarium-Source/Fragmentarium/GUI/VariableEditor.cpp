@@ -23,7 +23,7 @@ namespace Fragmentarium {
 		/// Widget editor base class.
 		class VariableWidget : public QWidget {
 		public:
-			VariableWidget(QWidget* parent, QString name) : QWidget(parent), name(name) {
+			VariableWidget(QWidget* parent, QString name) : QWidget(parent), name(name), updated(false) {
 
 			};
 
@@ -41,7 +41,6 @@ namespace Fragmentarium {
 			QString name;
 			QString group;
 			bool updated;
-			QWidget* widget;
 		};
 
 

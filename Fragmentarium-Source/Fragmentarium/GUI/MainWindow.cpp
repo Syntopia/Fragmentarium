@@ -618,6 +618,11 @@ namespace Fragmentarium {
 			moveMainAction->setChecked(true);
 			moveMainAction->setStatusTip(tr("For compatibility with some GPU's."));
 			
+			debugAction = new QAction("Debug final GLSL script", this);
+			debugAction->setCheckable(true);
+			debugAction->setChecked(false);
+			debugAction->setStatusTip(tr("Opens the combined and preprocessed GLSL script in a new tab."));
+			
 			aboutAction = new QAction(QIcon(":/images/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Show the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -677,6 +682,7 @@ namespace Fragmentarium {
 			renderMenu->addAction(resetViewAction);
 			renderMenu->addSeparator();
 			renderMenu->addAction(moveMainAction);
+			renderMenu->addAction(debugAction);
 			
 			
 			
@@ -884,6 +890,11 @@ namespace Fragmentarium {
 			try {
 				FragmentSource fs = p.Parse(inputText,f, moveMainAction->isChecked());
 
+				if (debugAction->isChecked()) {
+					INFO("Debug is checked: showing final output in new tab.");
+					insertTabPage("")->setText(fs.getText());
+				}
+
 				bool showGUI = false;
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);
 				editorDockWidget->setHidden(!showGUI);
@@ -944,7 +955,7 @@ namespace Fragmentarium {
 			statusBar()->showMessage(QString("Position: %1, Line: %2").arg(pos).arg(blockNumber+1), 5000);
 		}
 
-		void MainWindow::insertTabPage(QString filename) {
+		QTextEdit* MainWindow::insertTabPage(QString filename) {
 			QTextEdit* textEdit = new TextEdit();
 			connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
 
@@ -1008,6 +1019,7 @@ namespace Fragmentarium {
 			tabBar->setCurrentIndex(tabBar->addTab(strippedName(tabTitle)));
 
 			connect(textEdit->document(), SIGNAL(contentsChanged()), this, SLOT(documentWasModified()));
+			return textEdit;
 		}
 
 		void MainWindow::tabChanged(int index) {

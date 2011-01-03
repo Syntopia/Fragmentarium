@@ -35,7 +35,7 @@ namespace Fragmentarium {
 			};
 
 
-			void ParseSource(FragmentSource* fs,QString input, QFile* file) {
+			void ParseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly) {
 				fs->sourceFiles.append(file);
 				int sf = fs->sourceFiles.count()-1;
 
@@ -46,11 +46,20 @@ namespace Fragmentarium {
 				QList<int> source;
 				for (int i = 0; i < in.count(); i++) source.append(sf);
 
-				QRegExp includeCommand("^#include\\s\"([^\\s]+)\"\\s*$"); // Look for #include "test.frag"
-
+				QRegExp includeCommand("^#include(.*)\\s\"([^\\s]+)\"\\s*$"); // Look for #include "test.frag"
+				
 				for (int i = 0; i < in.count(); i++) {
 					if (includeCommand.indexIn(in[i]) != -1) {	
-						QString fileName =  includeCommand.cap(1);
+						if (includeOnly) continue;
+						QString fileName =  includeCommand.cap(2);
+						QString post = includeCommand.cap(1);
+						bool only = false;
+						if (post == "") {
+						} else if (post == "only") {
+							only = true;
+						} else {
+							throw Exception("'#include' or '#includeonly' expected");
+						}
 						QFile* f = new QFile(fileName);
 						if (!QFileInfo(fileName).isAbsolute() && file) {
 							QDir d = QFileInfo(*file).absolutePath();
@@ -62,7 +71,7 @@ namespace Fragmentarium {
 
 						INFO("Including file: " + QFileInfo(*f).absolutePath());
 						QString a = f->readAll();
-						ParseSource(fs, a, f);
+						ParseSource(fs, a, f, only);
 					} else {
 						fs->lines.append(lines[i]);
 						fs->sourceFile.append(source[i]);
@@ -82,7 +91,7 @@ namespace Fragmentarium {
 			FragmentSource fs;
 
 			// Step one: resolve includes:
-			ParseSource(&fs, input, file);
+			ParseSource(&fs, input, file, false);
 
 			// Step two: resolve magic uniforms:
 			// (pixelsize, 
@@ -97,11 +106,24 @@ namespace Fragmentarium {
 			QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
+			QRegExp replace("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
 
 			QString lastComment;
 			QString currentGroup;
+			QMap<QString, QString> replaceMap;
 			for (int i = 0; i < fs.source.count(); i++) {
 				QString s = fs.source[i];
+
+				if (!s.contains("#replace")) {
+					for (QMap<QString, QString>::const_iterator it = replaceMap.constBegin(); it != replaceMap.constEnd(); ++it) 
+					{
+						if (s.contains(it.key())) {
+							fs.source[i] = s.replace(it.key(),replaceMap[it.key()]);
+							//INFO("Replacing: " + s + " --> " + fs.source[i]);
+							s = fs.source[i];
+						}
+					}
+				}
 				if (s.trimmed().startsWith("#camera")) {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#camera");
@@ -117,6 +139,13 @@ namespace Fragmentarium {
 				} else if (moveMain && main.indexIn(s) != -1) {
 					//INFO("Found main: " + s );
 					fs.source[i] = s.replace(" main", " fragmentariumMain");
+				}  else if (replace.indexIn(s) != -1) {
+					QString from = replace.cap(1);
+					QString to = replace.cap(2);
+					fs.source[i] = "//" + fs.source[i];
+					INFO("Replace rule: '" + from + "' --> '" + to + "'.");
+					replaceMap[from] = to;
+					
 				} else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);
 					fs.source[i] = "uniform float " + name + ";";

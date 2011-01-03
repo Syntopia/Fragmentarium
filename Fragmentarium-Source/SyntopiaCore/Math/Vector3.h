@@ -61,21 +61,21 @@ namespace SyntopiaCore {
 				return QString("[%1 %2 %3]").arg(s[0]).arg(s[1]).arg(s[2]);
 			}
 
-			Vector3<scalar> cross(const Vector3<scalar> b) const { 
+			Vector3<scalar> cross(const Vector3<scalar>& b) const { 
 				return Vector3<scalar>(
 					s[1]*b.s[2] - s[2]*b.s[1] ,
 					s[2]*b.s[0] - s[0]*b.s[2] ,
 					s[0]*b.s[1] - s[1]*b.s[0]);
 			}
 
-			static Vector3<scalar> cross(const Vector3<scalar> a, const Vector3<scalar> b) {
+			static Vector3<scalar> cross(const Vector3<scalar>& a, const Vector3<scalar>& b) {
 				return Vector3<scalar>(
 					a.s[1]*b.s[2] - a.s[2]*b.s[1] ,
 					a.s[2]*b.s[0] - a.s[0]*b.s[2] ,
 					a.s[0]*b.s[1] - a.s[1]*b.s[0]);
 			}
 
-			static scalar dot(const Vector3<scalar> a, const Vector3<scalar> b) { 
+			static scalar dot(const Vector3<scalar>& a, const Vector3<scalar>& b) { 
 				return a.s[0]*b.s[0] + a.s[1]*b.s[1] + a.s[2]*b.s[2] ;
 			}
 

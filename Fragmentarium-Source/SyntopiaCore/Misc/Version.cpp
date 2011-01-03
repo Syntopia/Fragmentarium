@@ -31,7 +31,7 @@ namespace SyntopiaCore {
 			return s;
 		}
 
-		bool Version::operator<(const Version &rhs) {
+		bool Version::operator<(const Version &rhs) const {
 			if (major == rhs.major) {
 				if (minor == rhs.minor) {
 					if (revision == rhs.revision) {
@@ -48,12 +48,12 @@ namespace SyntopiaCore {
 
 		}
 
-		bool Version::operator>(const Version &rhs) {
+		bool Version::operator>(const Version &rhs) const {
 			if ( (*this) == rhs ) return false;
 			return !((*this)<rhs);
 		}
 
-		bool Version::operator==(const Version &rhs) {
+		bool Version::operator==(const Version &rhs) const {
 			return ((major == rhs.major) && (minor == rhs.minor) && (revision == rhs.revision) && (build == rhs.build));
 		}
 

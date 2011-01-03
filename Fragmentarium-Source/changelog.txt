@@ -1,6 +1,13 @@
+03-01-10 Changed to GitHub for main development.
+[6h]	 Added '#replace' command. This will perform a search'n'replace in all *later* code lines. Notice the two arguments must be double-quoted.
+		 Added '#includeonly' command. Works like the normal '#include', but will ignore '#include's in the included file.
+		 Added Octahedron example.
+		 Refactored examples a bit.
+		 Created initial web site skeleton.
+		
 26-12-10 Added simple Copy/Paste of parameters.
 [1h]     Fixed missing .0 in vertex shaders.
-
+ 
 22-12-10 Fixed anti-alias aspect ratio
 [2h]	 Refactor 2D include
 		 3D: AO/Glow divider
