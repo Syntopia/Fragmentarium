@@ -8,6 +8,7 @@ Fix: 'group' should be default (or file).
 Fix: Icon
 Set Include Path?
 Check for updates
+#info should have another color
 
 Mouse Sensitivity [---x------]
 

@@ -751,7 +751,7 @@ namespace Fragmentarium {
 			helpMenu->addAction(aboutAction);
 			helpMenu->addSeparator();
 			helpMenu->addAction(sfHomeAction);
-			helpMenu->addAction(referenceAction);
+			//helpMenu->addAction(referenceAction);
 			helpMenu->addAction(galleryAction);
 		}
 
@@ -1055,13 +1055,13 @@ namespace Fragmentarium {
 
 		void MainWindow::launchSfHome() {
 			INFO("Launching web browser...");
-			bool s = QDesktopServices::openUrl(QUrl("http://fragmentarium.sourceforge.net/"));
+			bool s = QDesktopServices::openUrl(QUrl("http://syntopia.github.com/Fragmentarium/"));
 			if (!s) WARNING("Failed to open browser...");
 		}
 
 		void MainWindow::launchReferenceHome() {
 			INFO("Launching web browser...");
-			bool s = QDesktopServices::openUrl(QUrl("http://fragmentarium.sourceforge.net/reference.php"));
+			bool s = QDesktopServices::openUrl(QUrl("http://syntopia.github.com/Fragmentarium/"));
 			if (!s) WARNING("Failed to open browser...");
 		}
 
