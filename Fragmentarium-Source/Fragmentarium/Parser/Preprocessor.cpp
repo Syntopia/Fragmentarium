@@ -40,11 +40,15 @@ namespace Fragmentarium {
 				int sf = fs->sourceFiles.count()-1;
 
 				QStringList in = input.split(QRegExp("\r\n|\r|\n"));
+				in.append("#group default"); // make sure we fall back to the default group after including a file.
+
 				QList<int> lines;
 				for (int i = 0; i < in.count(); i++) lines.append(i);
+				lines.append(-1);
 
 				QList<int> source;
 				for (int i = 0; i < in.count(); i++) source.append(sf);
+				source.append(-1);
 
 				QRegExp includeCommand("^#include(.*)\\s\"([^\\s]+)\"\\s*$"); // Look for #include "test.frag"
 				
@@ -105,6 +109,7 @@ namespace Fragmentarium {
 			QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+			QRegExp boolChooser("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
 			QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
 			QRegExp replace("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
 
@@ -134,8 +139,8 @@ namespace Fragmentarium {
 					currentGroup = c.trimmed();
 				} else if (s.trimmed().startsWith("#info")) {
 					fs.source[i] = "// " + s;
-					QString c = s.remove("#info");
-					INFO(c);
+					QString c = s.remove("#info").trimmed();
+					SCRIPTINFO(c);
 				} else if (moveMain && main.indexIn(s) != -1) {
 					//INFO("Found main: " + s );
 					fs.source[i] = s.replace(" main", " fragmentariumMain");
@@ -205,7 +210,26 @@ namespace Fragmentarium {
 
 					IntParameter* ip= new IntParameter(currentGroup, name, lastComment, from, to, def);
 					fs.params.append(ip);
+				} else if (boolChooser.indexIn(s) != -1) {
+
+					QString name = boolChooser.cap(1);
+					fs.source[i] = "uniform bool " + name + ";";
+					QString defS = boolChooser.cap(2).toLower().trimmed();
+				
+					bool def = false;
+					if (defS == "true") {
+						def = true;
+					} else if (defS == "false") {
+						def = false;
+					} else {
+						WARNING("Could not parse boolean value for uniform: " + name);
+						continue;
+					}
+
+					BoolParameter* bp= new BoolParameter(currentGroup, name, lastComment, def);
+					fs.params.append(bp);
 				}
+
 
 				if (s.trimmed().startsWith("//")) {
 					QString c = s.remove("//");

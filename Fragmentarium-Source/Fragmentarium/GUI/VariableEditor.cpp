@@ -250,6 +250,46 @@ namespace Fragmentarium {
 			int max;
 		};
 
+		class BoolWidget : public VariableWidget {
+		public:
+			BoolWidget(QWidget* parent, QWidget* variableEditor, QString name, bool defaultValue) 
+				: VariableWidget(parent, name)  {
+					QHBoxLayout* l = new QHBoxLayout(this);
+					l->setSpacing(2);
+					l->setContentsMargins (0,0,0,0);
+					checkBox = new QCheckBox(this);
+					checkBox->setText(name);
+					checkBox->setChecked(defaultValue);
+					connect(checkBox, SIGNAL(clicked()), variableEditor, SLOT(childChanged()));
+					l->addWidget(checkBox);
+			};
+
+			virtual QString getUniqueName() { return QString("%0:%1").arg(group).arg(getName()); }
+			virtual QString getValueAsText() { return (checkBox->isChecked()?"true":"false"); };
+
+			virtual QString toString() {
+				return (checkBox->isChecked()?"true":"false"); 
+			};
+
+			virtual void fromString(QString string) {
+				bool v = false;
+				if (string.toLower().trimmed() == "true") v = true;
+				checkBox->setChecked(v);
+			};
+
+			virtual void setUserUniform(QGLShaderProgram* shaderProgram) {
+				int l = shaderProgram->uniformLocation(name);
+				if (l == -1) {
+					WARNING("Could not find :" + name);
+				} else {
+					shaderProgram->setUniformValue(l, (bool)(checkBox->isChecked()));
+				}
+			}
+		private:
+			QCheckBox* checkBox;
+		};
+
+
 
 		VariableEditor::VariableEditor(QWidget* parent, MainWindow* mainWindow) : QWidget(parent) {
 			this->mainWindow = mainWindow;
@@ -428,6 +468,15 @@ namespace Fragmentarium {
 						variables.append(f3w);
 						f3w->setUpdated(true);
 						currentWidget->layout()->addWidget(f3w);
+					} else if (dynamic_cast<Parser::BoolParameter*>(ps[i])) {
+						Parser::BoolParameter* bp = dynamic_cast<Parser::BoolParameter*>(ps[i]);
+						QString name = bp->getName();
+						BoolWidget* bw = new BoolWidget(currentWidget, this, name, bp->getDefaultValue());
+						bw->setToolTip(bp->getTooltip());
+						bw->setGroup(bp->getGroup());
+						variables.append(bw);
+						bw->setUpdated(true);
+						currentWidget->layout()->addWidget(bw);
 					} else {
 						WARNING("Unsupported parameter");
 					}

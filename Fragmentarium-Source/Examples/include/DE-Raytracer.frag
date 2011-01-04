@@ -9,6 +9,7 @@ varying vec3 fromDy,toDy;
 
 // Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
 uniform int AntiAlias;slider[1,1,5];
+// Smoothens the image (when AA is enabled)
 uniform float AntiAliasScale;slider[0.0,1,5];
 
 // Distance to object at which raymarching stops.
@@ -17,9 +18,13 @@ uniform float LogMinDist;slider[-7,-2.6,0];
 // Distance at which normal is evaluated
 uniform float LogNormalDist;slider[-7,-4.0,0];
 
+// The maximum distance rays are traced
 uniform float MaxDist;slider[0,6,20];
 
+// Use this to adjust clipping planes
 uniform float MoveBack;slider[-10,0,10];
+
+// Lower this if the system is missing details
 uniform float Limiter;slider[0,1,1];
 
 float minDist = pow(10.0,LogMinDist);
@@ -39,22 +44,29 @@ uniform float AO; slider[0,1,1]
 // Ambient Occlusion color
 uniform vec3 AOColor; color[0.0,0.0,0.0];
 
-// The object color
+// The intensity of the directional ligt
 uniform float SpotLight; slider[0,1.0,1.0];
+// The specular intensity of the directional light
 uniform float Specular; slider[0,1.0,4.0];
+// The specular exponent
 uniform float SpecularExp; slider[0,5.0,100.0];
+// Color of the directional light
 uniform vec3 SpotLightColor; color[0.3,0.4,1];
+// Direction to the spot light
 uniform vec3 SpotLightDir;  slider[(-10,-10,-10),(1,1,1),(10,10,10)]
-
+// Light coming from the camera position (diffuse lightning)
 uniform float CamLight; slider[0,1,1];
+// Color of the diffuse lightning
 uniform vec3 CamLightColor; color[1.0,1.0,1.0];
 
 // Glow based on the number of raymarching steps
 uniform float Glow; slider[0,0.0,1]
 // Glow color
 uniform vec3 GlowColor; color[0.3,1.0,0.4];
-
+// Background color
 uniform vec3 BackgroundColor; color[0.0,0.0,0.0]
+// A 'looney tunes' gradient background
+uniform bool GradientBackground; checkbox[false]
 
 float DE(vec3 pos) ; // Must be implemented in other file
 
@@ -96,19 +108,19 @@ vec3 trace(vec3 from, vec3 to) {
 	int steps;
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		dist = DE(from + totalDist * direction)*Limiter;
-             if (dist>MaxDist*Limiter) dist = MaxDist*Limiter;
+		dist = clamp(dist, 0.0, MaxDist);     
 		if (dist < minDist ||  totalDist >MaxDist) break;           
 		totalDist += dist;
 	}
 	
 	// Backtrack to improve the gradient based normal estimatation:
 	// otherwise,
-	totalDist-=2.0*(minDist-dist);
+	totalDist-=1.0*(minDist-dist); // TODO: is this necessary?
 	
 	vec3 color = BackgroundColor;
 	
-	float stepFactor =clamp(MaxRayStepsDiv*float(steps)/float(MaxRaySteps),0.0,1.0);
-	if (dist < MaxDist) {
+	float stepFactor = clamp(MaxRayStepsDiv*float(steps)/float(MaxRaySteps),0.0,1.0);
+	if (GradientBackground || totalDist < MaxDist) {
 		vec3 hit = from + totalDist * direction;
 		color = coloring(hit,  direction, steps);
 		float ao = 1.0- AO*stepFactor ;

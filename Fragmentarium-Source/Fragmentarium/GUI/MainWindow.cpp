@@ -872,11 +872,7 @@ namespace Fragmentarium {
 			logger->getListWidget()->clear();
 
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
-
-
-			INFO("Build...!");
 			QString inputText = getTextEdit()->toPlainText();
-			
 			
 			QFile* f = 0;
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
@@ -903,9 +899,7 @@ namespace Fragmentarium {
 
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
-			}
-			
-				
+			}	
 		}
 
 		namespace {

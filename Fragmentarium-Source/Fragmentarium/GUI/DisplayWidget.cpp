@@ -104,11 +104,7 @@ namespace Fragmentarium {
 					//Vector3f translation = Vector3f(0,0,-20);
 					glScalef( scale, scale, scale );
 					glMultMatrixf(rotation.getArray());
-
 					glTranslatef( translation.x(), translation.y(), translation.z() );
-
-
-
 					glScalef( 1.0, (height/(float)width), 1.0);
 					
 					glGetDoublev(GL_MODELVIEW_MATRIX, modelViewCache );
@@ -183,7 +179,12 @@ namespace Fragmentarium {
 				};
 
 				virtual void wheel(double /*x*/, double /*y*/, double val) {
-					scale*=(val/10);
+					if (val > 0) {
+						scale/=(1.0+val/10);
+					} else {
+						scale*=(1.0-val/10);
+					}
+					
 				};
 
 				virtual Vector3f transform(int width, int height) {

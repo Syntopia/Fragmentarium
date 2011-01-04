@@ -32,6 +32,7 @@ namespace SyntopiaCore {
 		/// Useful aliases
 		void Debug(QString text) { LOG(text, DebugLevel); }
 		void INFO(QString text) { LOG(text, InfoLevel); }
+		void SCRIPTINFO(QString text) { LOG(text, ScriptInfoLevel); }
 		void WARNING(QString text) { LOG(text, WarningLevel); }
 		void CRITICAL(QString text) { LOG(text, CriticalLevel); }
 		

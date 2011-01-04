@@ -26,8 +26,14 @@ Roadmap.
 - Control of line numbers.
 - Simple website.
 
-== First Release (0.5) == 
+== First Release: Version 0.5s == 
 
+- Hires renders.
+- Better cameras
+  - A 3D camera suitable for deep zooming
+  - A 2D camera which scales from the current mouse position
+
+== Version 0.7 ==
+ 
 - Textures.
 - Multipass / progressive renders.
-- Hires renders.

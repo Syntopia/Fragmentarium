@@ -8,7 +8,7 @@
 namespace SyntopiaCore {
 	namespace Logging {	
 		/// Predefined logging levels
-		enum LogLevel { NoneLevel, DebugLevel, TimingLevel, InfoLevel, WarningLevel, CriticalLevel, AllLevel };
+		enum LogLevel { NoneLevel, DebugLevel, TimingLevel, InfoLevel, ScriptInfoLevel, WarningLevel, CriticalLevel, AllLevel };
 
 		/// Abstract base class for all loggers
 		class Logger {
@@ -42,6 +42,7 @@ namespace SyntopiaCore {
 		/// Useful aliases
 		void Debug(QString text);
 		void INFO(QString text);
+		void SCRIPTINFO(QString text);
 		void TIME(QString text);
 		void TIME(int repetitions = 0); // End time...
 		void WARNING(QString text);

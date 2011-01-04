@@ -8,15 +8,19 @@
 
 #include "../../SyntopiaCore/Exceptions/Exception.h"
 #include "../../SyntopiaCore/Math/Vector3.h"
+#include "../../SyntopiaCore/Logging/Logging.h"
 
 namespace Fragmentarium {
 	namespace Parser {	
 
 		using namespace SyntopiaCore::Math;
+		using namespace SyntopiaCore::Logging;
 
 		class GuiParameter {
 		public:
-			GuiParameter(QString group, QString name, QString tooltip) : group(group), name(name), tooltip(tooltip) {};
+			GuiParameter(QString group, QString name, QString tooltip) : group(group), name(name), tooltip(tooltip) {
+			};
+
 			virtual QString getName() { return name; }
 			virtual QString getGroup() { return group; }
 			virtual QString getUniqueName() = 0;
@@ -68,6 +72,18 @@ namespace Fragmentarium {
 			Vector3f defaultValue;
 		};
 
+		class BoolParameter : public GuiParameter {
+		public:
+			BoolParameter(QString group, QString name, QString tooltip,bool defaultValue) :
+					GuiParameter(group, name, tooltip), defaultValue(defaultValue) {};
+			
+			virtual QString getUniqueName() { return QString("%0:%1").arg(group).arg(getName()); }
+			bool getDefaultValue() { return defaultValue; }
+		private:
+			bool defaultValue;
+		};
+
+	
 		class IntParameter : public GuiParameter {
 		public:
 			IntParameter(QString group, QString name, QString tooltip, int from, int to, int defaultValue) :

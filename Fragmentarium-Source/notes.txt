@@ -1,16 +1,20 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
 
 Resize trigger many updates (hang)
-Clipping planes for 3D Camera!
 Reset Uniforms | Reset Tab
-Fix: mousewheel on 2D Camera
-Fix: 'group' should be default (or file).
 Fix: Icon
-Set Include Path?
 Check for updates
-#info should have another color
 
 Mouse Sensitivity [---x------]
+
+include
+2D Systems
+Historical 3D Fractals
+Kaleidoscopic IFS
+Experimental
+
+Example Path : examples/
+Include Paths: .;examples/include
 
 Different rendering modes:
 [Automatic Render]

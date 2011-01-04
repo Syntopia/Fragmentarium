@@ -1,3 +1,9 @@
+04-01-10 Script INFO has blue color
+[2h]	 Updated Mandelbulb & raytracer scripts (now gradient background can be toggled)
+		 Fix: 'default' should be default group name.
+		 Added 4D Quaternion Julia script.
+		 Support for user uniforms: uniform bool GradientBackground; checkbox[false]
+		 
 26-01-10->03-01-10
 [6h]	 Changed to GitHub for main development.
 		 Added '#replace' command. This will perform a search'n'replace in all *later* code lines. Notice the two arguments must be double-quoted.
