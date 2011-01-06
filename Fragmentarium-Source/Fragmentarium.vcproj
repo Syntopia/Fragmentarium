@@ -309,6 +309,14 @@
 				Name="ThirdPartyCode"
 				>
 				<File
+					RelativePath=".\ThirdPartyCode\glextensions.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ThirdPartyCode\glextensions.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ThirdPartyCode\MersenneTwister\MersenneTwister.h"
 					>
 				</File>

@@ -112,7 +112,8 @@ namespace Fragmentarium {
 			QRegExp boolChooser("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
 			QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
 			QRegExp replace("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
-
+            QRegExp sampler2D("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$"); 
+			
 			QString lastComment;
 			QString currentGroup;
 			QMap<QString, QString> replaceMap;
@@ -148,10 +149,21 @@ namespace Fragmentarium {
 					QString from = replace.cap(1);
 					QString to = replace.cap(2);
 					fs.source[i] = "//" + fs.source[i];
-					INFO("Replace rule: '" + from + "' --> '" + to + "'.");
+					//INFO("Replace rule: '" + from + "' --> '" + to + "'.");
 					replaceMap[from] = to;
 					
-				} else if (floatSlider.indexIn(s) != -1) {
+				} else if (sampler2D.indexIn(s) != -1) {
+					QString name = sampler2D.cap(1);
+					fs.source[i] = "uniform sampler2D " + name + ";";
+					QString file = sampler2D.cap(2);
+					if (!QFile::exists(file)) {
+						WARNING("Could not find texture file: " + QFileInfo(file).absoluteFilePath());
+						continue;
+					}
+					INFO("Added texture: " + name + " -> " + file);
+					fs.textures[name] = file;
+				} 
+				else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);
 					fs.source[i] = "uniform float " + name + ";";
 					QString fromS = floatSlider.cap(2);

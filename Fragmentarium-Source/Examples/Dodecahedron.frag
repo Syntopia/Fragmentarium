@@ -8,14 +8,14 @@
 
 uniform float Scale; slider[0.0,2.617924,4.00]
 
-uniform float phi; slider[-5,1.618,5]
+uniform float Phi; slider[-5,1.618,5]
 
-uniform float bailout; slider[4,9,12]
-float bailout2 = pow(10.0,bailout);
+uniform float Bailout; slider[4,9,12]
+float bailout2 = pow(10.0,Bailout);
 
-vec3 n1 = normalize(vec3(-1.0,phi-1.0,1.0/(phi-1.0)));
-vec3 n2 = normalize(vec3(phi-1.0,1.0/(phi-1.0),-1.0));
-vec3 n3 = normalize(vec3(1.0/(phi-1.0),-1.0,phi-1.0));
+vec3 n1 = normalize(vec3(-1.0,Phi-1.0,1.0/(Phi-1.0)));
+vec3 n2 = normalize(vec3(Phi-1.0,1.0/(Phi-1.0),-1.0));
+vec3 n3 = normalize(vec3(1.0/(Phi-1.0),-1.0,Phi-1.0));
        
 vec3 offset = vec3(1.0,1.0,1.0);
 

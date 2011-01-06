@@ -78,6 +78,7 @@ namespace Fragmentarium {
 
 		public slots:
 			void indent();
+			void preferences();
 			void insertText();
 			void variablesChanged();
 			
@@ -90,6 +91,7 @@ namespace Fragmentarium {
 			void closeTab();
 			void launchSfHome();
 			void launchGallery();
+			void launchGLSLSpecs();
 			void launchReferenceHome();
 			
 			void openFile();
@@ -131,6 +133,7 @@ namespace Fragmentarium {
 			QAction* fullScreenAction;
 			QAction* screenshotAction;
 			QAction* sfHomeAction;
+			QAction* glslHomeAction;
 			QAction* referenceAction;
 			QAction* galleryAction;
 			QMenu *fileMenu;
@@ -152,8 +155,6 @@ namespace Fragmentarium {
 			QAction *aboutAction;
 
 			QAction *renderAction;
-			QAction *moveMainAction;
-			QAction *debugAction;
 			QAction *resetViewAction;
 			DisplayWidget* engine;
 			QTabBar* tabBar;

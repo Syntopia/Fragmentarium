@@ -1,5 +1,6 @@
 #include "DisplayWidget.h"
 #include "MainWindow.h"
+#include "../../ThirdPartyCode/glextensions.h"
 
 using namespace SyntopiaCore::Math;
 using namespace SyntopiaCore::Logging;
@@ -8,6 +9,8 @@ using namespace SyntopiaCore::Logging;
 #include <QStatusBar>
 #include <QMenu>
 #include <QVector2D>
+
+#include <QFileInfo>
 
 namespace Fragmentarium {
 	namespace GUI {
@@ -46,7 +49,7 @@ namespace Fragmentarium {
 
 				virtual void reset() { 
 					rotation = Matrix4f::Identity();
-					scale = 0.4f;
+					scale = 1.0f;
 					translation = Vector3f(0,0,0);
 				}
 
@@ -68,6 +71,8 @@ namespace Fragmentarium {
 
 				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
 					translation = translation + 5.0*Vector3f(-rx,ry,0);
+					if (statusBar) statusBar->showMessage(QString("Translation: %1").arg(translation.toString()),5000);
+			
 				};
 
 				virtual void bothMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
@@ -77,11 +82,13 @@ namespace Fragmentarium {
 						scale*=(1.0-2*ry);
 					}
 					translation = translation + 10.0*Vector3f(0,0,rx);
+					
 				};
 
 				virtual void wheel(double /*x*/, double /*y*/, double val) {	
 					if ( scale <= val ) return;
 					scale -= val;
+					
 				};
 
 				virtual Vector3f transform(int width, int height) {
@@ -102,16 +109,17 @@ namespace Fragmentarium {
 					//glTranslatef( -pivot.x(), -pivot.y(), -pivot.z() );
 					//Vector3f pivot = Vector3f(0,0,0);	
 					//Vector3f translation = Vector3f(0,0,-20);
-					glScalef( scale, scale, scale );
 					glMultMatrixf(rotation.getArray());
 					glTranslatef( translation.x(), translation.y(), translation.z() );
-					glScalef( 1.0, (height/(float)width), 1.0);
+					//glScalef( 1.0, (height/(float)width), 1.0);
+					glScalef( scale, scale*(height/(float)width), 1.0 );
 					
 					glGetDoublev(GL_MODELVIEW_MATRIX, modelViewCache );
 					glGetDoublev(GL_PROJECTION_MATRIX, projectionCache );
 					glGetIntegerv(GL_VIEWPORT, viewPortCache);
 
-					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
+					if (statusBar) statusBar->showMessage(QString("Scale: %0, Translation: %1").arg(scale).arg(translation.toString()),5000);
+			
 					return Vector3f(1.0,1.0,1.0);
 				};
 
@@ -293,6 +301,7 @@ namespace Fragmentarium {
 				}
 			}
 
+
 			requireRedraw();
 			setupFragmentShader();
 		}
@@ -333,7 +342,33 @@ namespace Fragmentarium {
 			if (!s) WARNING("Could not bind shaders: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
 
+			// Setup textures.
+			int u = 0;
+			for (QMap<QString, QString>::iterator it = fragmentSource.textures.begin(); it!=fragmentSource.textures.end(); it++) {
+				QImage im(it.value());
+				if (im.isNull()) {
+					WARNING("Failed to load texture: " + QFileInfo(it.value()).absoluteFilePath());
+				} else {
+
+					int l = shaderProgram->uniformLocation(it.key());
+					if (l != -1) {
+						glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
+						GLuint i = bindTexture(it.value(), GL_TEXTURE_2D, GL_RGBA);
+						glBindTexture(GL_TEXTURE_2D,i);
+
+						shaderProgram->setUniformValue(l, (GLuint)u);
+						INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i));
+						
+					} else {
+						WARNING("Could not locate sampler2D uniform: " + it.key());
+					}
+					u++;
+				}
+				
+			}
+			
 		}
+
 
 
 

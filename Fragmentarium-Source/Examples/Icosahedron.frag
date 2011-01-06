@@ -7,10 +7,10 @@
 
 uniform float Scale; slider[0.00,3.0,4.00]
 
-uniform float phi; slider[-5,1.618,5]
+uniform float Phi; slider[-5,1.618,5]
 
-vec3 n1 = normalize(vec3(-phi,phi-1.0,1.0));
-vec3 n2 = normalize(vec3(1.0,-phi,phi+1.0));
+vec3 n1 = normalize(vec3(-Phi,Phi-1.0,1.0));
+vec3 n2 = normalize(vec3(1.0,-Phi,Phi+1.0));
 vec3 n3 = normalize(vec3(0.0,0.0,-1.0));
 
 uniform vec3 Offset; slider[(0,0,0),(0.850650808,0.525731112,0),(1,1,1)]

@@ -12,7 +12,7 @@ uniform int Iterations;  slider[0,10,100]
 uniform float Scale; slider[0.00,3.0,4.00]
 
 // Size of bubbles
-uniform float intrad; slider[1,2,3];
+uniform float BubbleSize; slider[1,2,3];
 
 float DE(vec3 z)
 {
@@ -23,7 +23,7 @@ float DE(vec3 z)
 	for (int l = 0; l < Iterations ; l++)
 	{
 		vec3 p2 = mod(z*k, modi) - 0.5*modi;
-		d=max(d,(intrad-length(p2))/k);//intersect
+		d=max(d,(BubbleSize-length(p2))/k);//intersect
 		k *= Scale;
 	}
       

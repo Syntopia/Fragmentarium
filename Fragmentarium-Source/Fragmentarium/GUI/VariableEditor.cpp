@@ -437,6 +437,7 @@ namespace Fragmentarium {
 						QString name = fp->getName();
 						FloatWidget* fw = new FloatWidget(currentWidget, this, name, fp->getDefaultValue(), fp->getFrom(), fp->getTo());
 						fw->setToolTip(fp->getTooltip());
+						fw->setStatusTip(fp->getTooltip());
 						fw->setGroup(fp->getGroup());
 						variables.append(fw);
 						fw->setUpdated(true);
@@ -447,6 +448,7 @@ namespace Fragmentarium {
 						IntWidget* iw = new IntWidget(currentWidget, this, name, ip->getDefaultValue(), ip->getFrom(), ip->getTo());
 						iw->setGroup(ip->getGroup());
 						iw->setToolTip(ip->getTooltip());
+						iw->setStatusTip(ip->getTooltip());
 						variables.append(iw);
 						iw->setUpdated(true);
 						currentWidget->layout()->addWidget(iw);
@@ -456,6 +458,7 @@ namespace Fragmentarium {
 						ColorWidget* cw = new ColorWidget(currentWidget, this, name, cp->getDefaultValue());
 						cw->setGroup(cp->getGroup());
 						cw->setToolTip(cp->getTooltip());
+						cw->setStatusTip(cp->getTooltip());
 						variables.append(cw);
 						cw->setUpdated(true);
 						currentWidget->layout()->addWidget(cw);
@@ -464,6 +467,7 @@ namespace Fragmentarium {
 						QString name = f3p->getName();
 						Float3Widget* f3w = new Float3Widget(currentWidget, this, name, f3p->getDefaultValue(), f3p->getFrom(), f3p->getTo());
 						f3w->setToolTip(f3p->getTooltip());
+						f3w->setStatusTip(f3p->getTooltip());
 						f3w->setGroup(f3p->getGroup());
 						variables.append(f3w);
 						f3w->setUpdated(true);
@@ -473,6 +477,7 @@ namespace Fragmentarium {
 						QString name = bp->getName();
 						BoolWidget* bw = new BoolWidget(currentWidget, this, name, bp->getDefaultValue());
 						bw->setToolTip(bp->getTooltip());
+						bw->setStatusTip(bp->getTooltip());
 						bw->setGroup(bp->getGroup());
 						variables.append(bw);
 						bw->setUpdated(true);

@@ -18,7 +18,7 @@ mat3 fracRotation2 = rotationMatrix3(normalize(Rot2), Angle2);
 mat3 fracRotation1 = rotationMatrix3(normalize(Rot1), Angle1);
 
 // Number of fractal iterations.
-uniform int iters;  slider[0,13,100]
+uniform int Iterations;  slider[0,13,100]
 
 // The fractal distance estimation calculation
 float DE(vec3 z)
@@ -27,16 +27,15 @@ float DE(vec3 z)
 	
 	// Iterate to compute the distance estimator.
 	int n = 0;
-	while (n < iters) {
+	while (n < Iterations) {
 		z *= fracRotation1;
-	
-	if (z.x+z.y<0.0) z.xy = -z.yx;
+		
+		if (z.x+z.y<0.0) z.xy = -z.yx;
 		if (z.x+z.z<0.0) z.xz = -z.zx;
 		if (z.x-z.y<0.0) z.xy = z.yx;
 		if (z.x-z.z<0.0) z.xz = z.zx;
 		
 		z = z*Scale - Offset*(Scale-1.0);
-		
 		z *= fracRotation2;
 		
 		r = dot(z, z);

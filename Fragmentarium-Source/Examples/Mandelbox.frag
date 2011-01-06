@@ -22,7 +22,7 @@ PERFORMANCE OF THIS SOFTWARE.
 */
 
 // Number of fractal iterations.
-uniform int iters;  slider[0,13,100]   
+uniform int Iterations;  slider[0,13,100]   
 float minRad2 =  0.25;
 
 // Scale parameter. A perfect Menger is 3.0
@@ -32,13 +32,13 @@ vec4 scale = vec4(Scale, Scale, Scale, abs(Scale)) / minRad2;
 // precomputed constants
 
 float absScalem1 = abs(Scale - 1.0);
-float AbsScaleRaisedTo1mIters = pow(abs(Scale), float(1-iters));
+float AbsScaleRaisedTo1mIters = pow(abs(Scale), float(1-Iterations));
 
 // Compute the distance from `pos` to the Mandelbox.
 float DE(vec3 pos) {
 	vec4 p = vec4(pos,1), p0 = p;  // p.w is the distance estimate
 	
-	for (int i=0; i<iters; i++) {
+	for (int i=0; i<Iterations; i++) {
 		p.xyz = clamp(p.xyz, -1.0, 1.0) * 2.0 - p.xyz;  // min;max;mad
 		float r2 = dot(p.xyz, p.xyz);
 		p *= clamp(max(minRad2/r2, minRad2), 0.0, 1.0);  // dp3,div,max.sat,mul

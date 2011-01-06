@@ -5,6 +5,7 @@
 #include <QList>
 #include <QFile>
 #include <QVector>
+#include <QMap>
 
 #include "../../SyntopiaCore/Exceptions/Exception.h"
 #include "../../SyntopiaCore/Math/Vector3.h"
@@ -113,6 +114,7 @@ namespace Fragmentarium {
 			bool hasPixelSizeUniform;
 			QString camera;
 			QVector<GuiParameter*> params;
+			QMap<QString, QString> textures; // "Uniform name" -> "File"
 		};
 
 		/// The preprocessor is responsible for expanding '#define'

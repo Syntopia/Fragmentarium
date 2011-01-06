@@ -11,15 +11,15 @@ uniform int Iterations;  slider[0,13,100]
 // Scale parameter. A perfect Menger is 3.0
 uniform float Scale; slider[0.00,3.0,4.00]
 
-uniform vec3 rotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
+uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
 
 // Scale parameter. A perfect Menger is 3.0
-uniform float rotAngle; slider[0.00,0,180]
+uniform float RotAngle; slider[0.00,0,180]
 
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
 
-mat3 rot = rotationMatrix(normalize(rotVector), rotAngle);
+mat3 rot = rotationMatrix(normalize(RotVector), RotAngle);
 
 float DE(vec3 z)
 {

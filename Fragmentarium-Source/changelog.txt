@@ -1,3 +1,7 @@
+06-01-10 Added texture support (required the non-standard Qt glextensions.cpp file)
+[2h]	 Texture usage: uniform sampler2D texture3; file[Examples/texture.jpg]
+		 Added MandelbrotOrbitTrap example.
+		 
 04-01-10 Script INFO has blue color
 [2h]	 Updated Mandelbulb & raytracer scripts (now gradient background can be toggled)
 		 Fix: 'default' should be default group name.

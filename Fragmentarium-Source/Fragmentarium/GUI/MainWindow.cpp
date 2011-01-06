@@ -10,6 +10,19 @@
 #include <QPixmap>
 #include <QDialogButtonBox>
 
+
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSpacerItem>
+#include <QTabWidget>
+#include <QVBoxLayout>
+
+
 #include "MainWindow.h"
 #include "VariableEditor.h"
 #include "../../SyntopiaCore/Logging/ListWidgetLogger.h"
@@ -18,6 +31,8 @@
 #include "../../SyntopiaCore/Math/Vector3.h"
 #include "../../SyntopiaCore/Math/Random.h"
 #include "../../SyntopiaCore/Math/Matrix4.h"
+#include "../../ThirdPartyCode/glextensions.h"
+
 
 using namespace SyntopiaCore::Math;
 using namespace SyntopiaCore::Logging;
@@ -30,112 +45,111 @@ namespace Fragmentarium {
 		namespace {
 			int MaxRecentFiles = 5;
 
-		
+			class PreferencesDialog : public QDialog
+			{
+			public:
+				PreferencesDialog(QWidget* parent) : QDialog(parent) 
+				{
+					setObjectName("Dialog");
+					resize(415, 335);
+					setSizeGripEnabled(true);
+					setModal(true);
+					verticalLayout_2 = new QVBoxLayout(this);
+					verticalLayout_2->setObjectName("verticalLayout_2");
+					tabWidget = new QTabWidget(this);
+					tabWidget->setObjectName("tabWidget");
+					tab = new QWidget();
+					tab->setObjectName(QString::fromUtf8("tab"));
+					verticalLayout = new QVBoxLayout(tab);
+					verticalLayout->setObjectName("verticalLayout");
+					checkBox = new QCheckBox(tab);
+					checkBox->setObjectName("checkBox");
+
+					verticalLayout->addWidget(checkBox);
+
+					checkBox_2 = new QCheckBox(tab);
+					checkBox_2->setObjectName("checkBox_2");
+
+					verticalLayout->addWidget(checkBox_2);
+
+					horizontalLayout = new QHBoxLayout();
+					horizontalLayout->setObjectName("horizontalLayout");
+					label = new QLabel(tab);
+					label->setObjectName("label");
+					horizontalLayout->addWidget(label);
+					lineEdit = new QLineEdit(tab);
+					lineEdit->setObjectName("lineEdit");
+					horizontalLayout->addWidget(lineEdit);
+					verticalLayout->addLayout(horizontalLayout);
+					verticalSpacer = new QSpacerItem(20, 167, QSizePolicy::Minimum, QSizePolicy::Expanding);
+					verticalLayout->addItem(verticalSpacer);
+
+					tabWidget->addTab(tab, QString());
+					
+					verticalLayout_2->addWidget(tabWidget);
+
+					buttonBox = new QDialogButtonBox(this);
+					buttonBox->setObjectName("buttonBox");
+					buttonBox->setOrientation(Qt::Horizontal);
+					buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+
+					verticalLayout_2->addWidget(buttonBox);
+					QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+					QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+					tabWidget->setCurrentIndex(0);
+					QMetaObject::connectSlotsByName(this);
+					setWindowTitle("Preferences");
+					checkBox->setText("Move main() to end");
+					checkBox->setStatusTip(tr("For compatibility with some GPU's."));
+
+					checkBox_2->setText("Debug final GLSL script");
+					checkBox_2->setStatusTip(tr("Opens the combined and preprocessed GLSL script in a new tab."));
+					label->setText("Include paths:");
+					tabWidget->setTabText(tabWidget->indexOf(tab),  "Main");
+
+					QSettings settings;
+					checkBox_2->setChecked(settings.value("debugScript", false).toBool());
+					checkBox->setChecked(settings.value("moveMain", true).toBool());
+					lineEdit->setText(settings.value("includePaths", "Examples/include;").toString());
+				} 
+
+				virtual void accept() {
+					saveSettings();
+					QDialog::accept();
+				}
+
+				void saveSettings() {
+					QSettings settings;
+					settings.setValue("debugScript", checkBox_2->isChecked());
+					settings.setValue("moveMain", checkBox->isChecked());
+					settings.setValue("includePaths", lineEdit->text());
+				}
+
+				QVBoxLayout *verticalLayout_2;
+				QTabWidget *tabWidget;
+				QWidget *tab;
+				QVBoxLayout *verticalLayout;
+				QCheckBox *checkBox;
+				QCheckBox *checkBox_2;
+				QHBoxLayout *horizontalLayout;
+				QLabel *label;
+				QLineEdit *lineEdit;
+				QSpacerItem *verticalSpacer;
+				QWidget *tab_2;
+				QDialogButtonBox *buttonBox;
+			};
+
 		}
 
 		namespace {
 
 			void createCommandHelpMenu(QMenu* menu, QWidget* textEdit) {
-				QMenu *raytraceMenu = new QMenu("Raytracer Commands", 0);
-				raytraceMenu->addAction("set raytracer::ambient-occlusion-samples 0 // turn off AO", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::samples 4 // for anti-alias and DOF", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::dof [0.4,0.1] // focal-plane distance, strength", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::shadows false", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::reflection 0.5", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::phong [0.6,0.6,0.3]", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::size [800x600]", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::size [0x800] // auto-calc proper width", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::size [800x0] // auto-calc proper height", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::max-threads 2", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::light [0,0,-29]", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::voxel-steps 30", textEdit , SLOT(insertText()));
-				raytraceMenu->addAction("set raytracer::max-depth 5", textEdit , SLOT(insertText()));
-				
-				QMenu *modifierMenu = new QMenu("Rule Modifiers", 0);
-				modifierMenu->addAction("weight", textEdit , SLOT(insertText()));
-				modifierMenu->addAction("maxdepth", textEdit , SLOT(insertText()));
-				modifierMenu->addAction("maxdepth > newRule", textEdit , SLOT(insertText()));
-
-				QMenu *transformationMenu = new QMenu("Transformations", 0);
-				transformationMenu->addAction("x 1 // translations", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("y 1", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("z 1", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("rx 45 // rotate angle around x-axis", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("ry 45", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("rz 45", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("hue 0.9", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("sat 0.9", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("brightness 0.9", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("color white // static color", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("color random // use color pool", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("blend red 0.5 // blend color with strength 0.5", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("alpha 0.9 // make transparent", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("matrix ", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("size 2 // uniform scaling", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("size 1 1 1.2 // non-uniform scaling", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("reflect", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("fx // mirror in yz-plane", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("fy", textEdit , SLOT(insertText()));
-				transformationMenu->addAction("fz", textEdit , SLOT(insertText()));
-
-				QMenu *setMenu = new QMenu("Set Commands", 0);
-				setMenu->addAction("set maxdepth 100", textEdit , SLOT(insertText()));
-				setMenu->addAction("set maxobjects 100", textEdit , SLOT(insertText()));
-				setMenu->addAction("set maxsize 10 // maximum object size", textEdit , SLOT(insertText()));
-				setMenu->addAction("set minsize 0.1 // minimum object size", textEdit , SLOT(insertText()));
-				setMenu->addAction("set background #fff", textEdit , SLOT(insertText()));
-				setMenu->addAction("set seed 45", textEdit , SLOT(insertText()));
-
-				QMenu *colorMenu = new QMenu("Set Colorpool Commands", 0);
-				colorMenu->addAction("set colorpool randomrgb", textEdit , SLOT(insertText()));
-				colorMenu->addAction("set colorpool randomhue", textEdit , SLOT(insertText()));
-				colorMenu->addAction("set colorpool list:orange,yellow,blue // sample from list", textEdit , SLOT(insertText()));
-				colorMenu->addAction("set colorpool image:test.png // sample from image", textEdit , SLOT(insertText()));
-
-				QMenu *set2Menu = new QMenu("Exotic Set Commands", 0);
-				set2Menu->addAction("set seed initial // reset random seed", textEdit , SLOT(insertText()));
-				set2Menu->addAction("set recursion depth // traverse depth-first", textEdit , SLOT(insertText()));
-				set2Menu->addAction("set rng old // old random generator", textEdit , SLOT(insertText()));
-				set2Menu->addAction("set syncrandom true", textEdit , SLOT(insertText()));				
-
-				QMenu *setCMenu = new QMenu("Camera Commands", 0);
-				setCMenu->addAction("set scale 0.5", textEdit , SLOT(insertText()));
-				setCMenu->addAction("set pivot [0 0 0]", textEdit , SLOT(insertText()));
-				setCMenu->addAction("set translation [0 0 -20]", textEdit , SLOT(insertText()));
-				setCMenu->addAction("set rotation  [1 0 0 0 1 0 0 0 1]", textEdit , SLOT(insertText()));
-				setCMenu->addAction("set perspective-angle 70", textEdit , SLOT(insertText()));
-
-				QMenu *pMenu = new QMenu("Preprocessor Commands", 0);
-				pMenu->addAction("#define myAngle 45", textEdit , SLOT(insertText()));
-				pMenu->addAction("#define angle 20 (float:0-90) // create slider with default value 20", textEdit , SLOT(insertText()));
-				pMenu->addAction("#define iterations 20 (int:0-23) // create slider with default value 20", textEdit , SLOT(insertText()));
-
-				QMenu *p2Menu = new QMenu("JavaScript Commands", 0);
-				p2Menu->addAction("Builder.load(\"system.frag\");", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.define(\"_rotation\", 34);", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.prepend(\"sometext\");", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.append(\"sometext\");", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.build();", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.renderToFile(\"out.png\", overwrite);", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.raytraceToFile(\"out.png\", overwrite);", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.templateRenderToFile(\"Sunflow-Colored.rendertemplate\", \"sunflow.sc\", overwrite);", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.execute('\"%JAVAPATH%/java\"', '-Xmx1G -server -jar \"%SUNFLOW%/sunflow.jar\" sunflow.sc -nogui -o sunflow.png\", true);", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.reset();", textEdit , SLOT(insertText()));
-				p2Menu->addAction("Builder.setSize(640,0);", textEdit , SLOT(insertText()));
-				
+				QMenu *preprocessorMenu = new QMenu("Preprocessor", 0);
+				preprocessorMenu->addAction("#include ...", textEdit , SLOT(insertText()));
 				QAction* before = 0;
 				if (menu->actions().count() > 0) before = menu->actions()[0];
-				menu->insertMenu(before, modifierMenu);
-				menu->insertMenu(before, transformationMenu);
-				menu->insertMenu(before, setMenu);
-				menu->insertMenu(before, set2Menu);
-				menu->insertMenu(before, colorMenu);
-				menu->insertMenu(before, raytraceMenu);
-				menu->insertMenu(before, setCMenu);
-				menu->insertMenu(before, pMenu);
-				menu->insertMenu(before, p2Menu);
+				menu->insertMenu(before, preprocessorMenu);
 				menu->insertSeparator(before);
-
 			}
 		}
 		void TextEdit::contextMenuEvent(QContextMenuEvent *event)
@@ -409,7 +423,13 @@ namespace Fragmentarium {
 			QGLFormat format;
 			//format.setDoubleBuffer(false);
 			engine = new DisplayWidget(format, this,splitter);
-
+			engine->makeCurrent();
+			if (!getGLExtensionFunctions().resolve(engine->context())) {
+				QMessageBox::critical(0, "OpenGL features missing",
+					"Failed to resolve OpenGL functions required to run this application.\n"
+					"The program will now exit.");
+				exit(0);
+			}
 			tabBar = new QTabBar(this);
 
 #if QT_VERSION >= 0x040500
@@ -430,7 +450,7 @@ namespace Fragmentarium {
 			splitter->setSizes(l);
 
 			createActions();
-			
+
 			QDir d(getExamplesDir());
 
 			// Log widget (in dockable window)
@@ -470,7 +490,7 @@ namespace Fragmentarium {
 
 			editorDockWidget->setHidden(true);
 			setMouseTracking(true);
-			
+
 			INFO(QString("Welcome to Fragmentarium version %1. A Syntopia Project.").arg(version.toLongString()));
 			INFO("This version is VERY alpha!");
 			INFO("");
@@ -489,7 +509,7 @@ namespace Fragmentarium {
 			createToolBars();
 			createStatusBar();
 			createMenus();
-			
+
 		}
 
 		void MainWindow::setUserUniforms(QGLShaderProgram* shaderProgram) {
@@ -504,7 +524,7 @@ namespace Fragmentarium {
 
 		void MainWindow::createOpenGLContextMenu() {
 			openGLContextMenu = new QMenu();			
-			
+
 			openGLContextMenu->addAction(fullScreenAction);
 			openGLContextMenu->addAction(screenshotAction);
 			openGLContextMenu->addAction(resetViewAction);
@@ -613,16 +633,6 @@ namespace Fragmentarium {
 			resetViewAction->setStatusTip(tr("Resets the viewport"));
 			connect(resetViewAction, SIGNAL(triggered()), this, SLOT(resetView()));
 
-			moveMainAction = new QAction("Move main() to end", this);
-			moveMainAction->setCheckable(true);
-			moveMainAction->setChecked(true);
-			moveMainAction->setStatusTip(tr("For compatibility with some GPU's."));
-			
-			debugAction = new QAction("Debug final GLSL script", this);
-			debugAction->setCheckable(true);
-			debugAction->setChecked(false);
-			debugAction->setStatusTip(tr("Opens the combined and preprocessed GLSL script in a new tab."));
-			
 			aboutAction = new QAction(QIcon(":/images/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Show the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -638,6 +648,10 @@ namespace Fragmentarium {
 			galleryAction = new QAction(QIcon(":/images/agt_internet.png"), tr("&Flickr Fragmentarium Group (web link)"), this);
 			galleryAction->setStatusTip(tr("Opens the main Flickr group for Fragmentarium creations."));
 			connect(galleryAction, SIGNAL(triggered()), this, SLOT(launchGallery()));
+
+			glslHomeAction = new QAction(QIcon(":/images/agt_internet.png"), tr("&GLSL Specifications (web link)"), this);
+			glslHomeAction->setStatusTip(tr("The official specifications for all GLSL versions."));
+			connect(glslHomeAction, SIGNAL(triggered()), this, SLOT(launchGLSLSpecs()));
 
 			for (int i = 0; i < MaxRecentFiles; ++i) {
 				QAction* a = new QAction(this);
@@ -670,6 +684,8 @@ namespace Fragmentarium {
 			editMenu->addAction(pasteAction);
 			editMenu->addSeparator();
 			editMenu->addAction("Indent Script", this, SLOT(indent()));
+			editMenu->addSeparator();
+			editMenu->addAction("Preferences...", this, SLOT(preferences()));
 			//QMenu* m = editMenu->addMenu("Insert Command");
 			//createCommandHelpMenu(m, this);
 
@@ -680,14 +696,11 @@ namespace Fragmentarium {
 			renderMenu->addSeparator();
 			renderMenu->addAction(fullScreenAction);
 			renderMenu->addAction(resetViewAction);
-			renderMenu->addSeparator();
-			renderMenu->addAction(moveMainAction);
-			renderMenu->addAction(debugAction);
-			
-			
-			
-
 		
+
+
+
+
 			// -- Examples Menu --
 			QStringList filters;
 			QMenu* examplesMenu = menuBar()->addMenu(tr("&Examples"));
@@ -753,6 +766,7 @@ namespace Fragmentarium {
 			helpMenu->addAction(sfHomeAction);
 			//helpMenu->addAction(referenceAction);
 			helpMenu->addAction(galleryAction);
+			helpMenu->addAction(glslHomeAction);
 		}
 
 		void MainWindow::createToolBars()
@@ -768,7 +782,7 @@ namespace Fragmentarium {
 			editToolBar->addAction(pasteAction);
 
 
-			
+
 			renderToolBar = addToolBar(tr("Render Toolbar"));
 			renderToolBar->addAction(renderAction);
 			renderToolBar->addWidget(new QLabel("Build    ", this));
@@ -776,7 +790,7 @@ namespace Fragmentarium {
 			pb->setText("Reset View");
 			renderToolBar->addWidget(pb);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetView()));
-			
+
 		}
 
 		void MainWindow::disableAllExcept(QWidget* w) {
@@ -790,7 +804,7 @@ namespace Fragmentarium {
 		void MainWindow::enableAll() {
 			foreach (QWidget* w, disabledWidgets) w->setEnabled(true);
 		}
-	
+
 
 		void MainWindow::createStatusBar()
 		{
@@ -799,7 +813,7 @@ namespace Fragmentarium {
 
 		void MainWindow::readSettings()
 		{
-			QSettings settings("Syntopia Software", "Fragmentarium");
+			QSettings settings;
 			QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
 			QSize size = settings.value("size", QSize(1024, 800)).toSize();
 			move(pos);
@@ -866,27 +880,31 @@ namespace Fragmentarium {
 		}
 
 
-		
+
 
 		void MainWindow::render() {
 			logger->getListWidget()->clear();
 
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 			QString inputText = getTextEdit()->toPlainText();
-			
+
 			QFile* f = 0;
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
 			bool hasBeenSavedOnce = tabInfo[tabBar->currentIndex()].hasBeenSavedOnce;
-        
+
 			if (hasBeenSavedOnce) {
 				f = new QFile(filename);
 			}
 
+			QSettings settings;
+			bool debug = settings.value("debugScript", false).toBool();
+			bool moveMain = settings.value("moveMain", true).toBool();
+					
 			Preprocessor p;
 			try {
-				FragmentSource fs = p.Parse(inputText,f, moveMainAction->isChecked());
+				FragmentSource fs = p.Parse(inputText,f,moveMain);
 
-				if (debugAction->isChecked()) {
+				if (debug) {
 					INFO("Debug is checked: showing final output in new tab.");
 					insertTabPage("")->setText(fs.getText());
 				}
@@ -1053,6 +1071,13 @@ namespace Fragmentarium {
 			if (!s) WARNING("Failed to open browser...");
 		}
 
+		void MainWindow::launchGLSLSpecs() {
+			INFO("Launching web browser...");
+			bool s = QDesktopServices::openUrl(QUrl("http://www.opengl.org/registry/"));
+			if (!s) WARNING("Failed to open browser...");
+		}
+
+
 		void MainWindow::launchReferenceHome() {
 			INFO("Launching web browser...");
 			bool s = QDesktopServices::openUrl(QUrl("http://syntopia.github.com/Fragmentarium/"));
@@ -1167,6 +1192,12 @@ namespace Fragmentarium {
 			QString text = ((QAction*)sender())->text();
 			getTextEdit()->insertPlainText(text.section("//",0,0)); // strip comments
 		}
+
+		void MainWindow::preferences() {
+			PreferencesDialog pd(this);
+			pd.exec();
+		}
+
 		void MainWindow::indent() {
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 
@@ -1181,7 +1212,7 @@ namespace Fragmentarium {
 				out.append(outS);
 				indent += (s.count("{")+s.count("("));
 				if (!startWith) indent -= (s.count("}")+s.count(")"));
-				
+
 			}
 			getTextEdit()->setText(out.join("\n"));
 		}
