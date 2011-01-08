@@ -39,10 +39,7 @@ float DE(vec3 z)
 		z *= fracRotation2;
 		
 		r = dot(z, z);
-             mDist = min(mDist, r);
-		
-
-	
+             minDist2 = min(minDist2, r);
 	
 		n++;
 	}

@@ -10,8 +10,8 @@ uniform float Scale; slider[0.00,3.0,4.00]
 
 uniform float Phi; slider[-5,1.618,5]
 
-vec3 n1 = normalize(vec3(-phi,phi-1.0,1.0));
-vec3 n2 = normalize(vec3(1.0,-phi,phi+1.0));
+vec3 n1 = normalize(vec3(-Phi,Phi-1.0,1.0));
+vec3 n2 = normalize(vec3(1.0,-Phi,Phi+1.0));
 vec3 n3 = normalize(vec3(0.0,0.0,-1.0));
 vec3 offset = vec3(0.850650808,0.525731112,0.0);
 
@@ -28,9 +28,7 @@ uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
 
 float DE2(vec3 z)
 {
-	float r;
-	
-      int n = 0;
+	int n = 0;
       while (n < iters) {
 		// Fold
 		z = abs(z);
@@ -42,7 +40,7 @@ float DE2(vec3 z)
 		z.z=(Scale+1.0)* z.z;
 		if( z.z>0.5*Offset.z*(Scale))  z.z-=Offset.z*(Scale);	
 		
-		r = dot(z, z);
+		minDist2 = min(minDist2, dot(z,z));
 		n++;
 	}
 	
@@ -51,7 +49,6 @@ float DE2(vec3 z)
 
 float DE3(vec3 z)
 {
-	float r;
 	float mindist = 1000.0;
 	
 	// Prefolds.
@@ -72,10 +69,8 @@ float DE3(vec3 z)
 		// Rotate, scale, rotate (we need to cast to a 4-component vector).
 		p4.xyz = z; p4.w = 1.0;
 		z = (M*p4).xyz;
-		
 		// Record minimum orbit for colouring
-		r = dot(z, z);
-		mindist = min(mindist, r);
+		minDist2 = min(minDist2, dot(z,z));
 		n++;
 	}
 	

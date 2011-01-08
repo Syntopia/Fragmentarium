@@ -26,7 +26,9 @@ float DE(vec3 pos) {
 	for (int i = 0; i < Iterations; i++) {
 		dp = 2.0* vec4(p.x*dp.x-dot(p.yzw, dp.yzw), p.x*dp.yzw+dp.x*p.yzw+cross(p.yzw, dp.yzw));
 		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) + c;	
-		if (dot(p, p) > Threshold) break;
+		float p2 = dot(p,p);
+		minDist2 = min(minDist2, p2);		
+		if (p2 > Threshold) break;
 	}
 	float r = length(p);
 	return  0.5 * r * log(r) / length(dp);

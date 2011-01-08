@@ -49,7 +49,7 @@ float DE(vec3 z)
 		// Rotate, scale, rotate (we need to cast to a 4-component vector).
 		z = (M*vec4(z,1.0)).xyz;
 		n++;
-		mDist = min(mDist, dot(z,z));
+		minDist2 = min(minDist2, dot(z,z));
 	}
 	
 	return (length(z) ) * pow(Scale,  float(-n));

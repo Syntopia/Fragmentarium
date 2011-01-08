@@ -1,4 +1,8 @@
-43 
+45
+
+09-01-10 Added orbit trap coloring support to 3D DE raytracer.
+[2h]	 Added include path support
+		 Refactored examples
 
 06-01-10 Added texture support (required the non-standard Qt glextensions.cpp file)
 [2h]	 Texture usage: uniform sampler2D texture3; file[Examples/texture.jpg]

@@ -13,6 +13,7 @@ uniform float Scale; slider[0.00,3.0,4.00]
 
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
+uniform vec3 Offset2; slider[(0,0,0),(1,1,1),(1,1,1)]
 
 uniform float Angle1; slider[-180,0,180]
 uniform vec3 Rot1; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
@@ -24,8 +25,6 @@ mat3 fracRotation1 = rotationMatrix3(normalize(Rot1), Angle1);
 
 float DE(vec3 z)
 {
-	//float r;
-	
 	int n = 0;
 	while (n < Iterations) {
 		// Fold
@@ -39,12 +38,18 @@ float DE(vec3 z)
 		if (z.x<z.y){ z.xy = z.yx;}
 		if (z.x< z.z){ z.xz = z.zx;}
 		if (z.y<z.z){ z.yz = z.zy;}
-		z.x=Scale* z.x-Offset.x*(Scale-1.0);
-		z.y=Scale* z.y-Offset.y*(Scale-1.0);
-		z.z=Scale* z.z;
-		if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
-				
-		//r = dot(z, z);
+		if (mod(float(n),2.0)==1.0) {	
+			z.x=Scale* z.x-Offset.x*(Scale-1.0);
+			z.y=Scale* z.y-Offset.y*(Scale-1.0);
+			z.z=Scale* z.z;	
+			if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
+		} else {
+			z.x=Scale* z.x-Offset2.x*(Scale-1.0);
+			z.y=Scale* z.y-Offset2.y*(Scale-1.0);
+			z.z=Scale* z.z;	
+			if( z.z>0.5*Offset2.z*(Scale-1.0))  z.z-=Offset2.z*(Scale-1.0);
+		}
+		minDist2 = min(minDist2,  dot(z, z));
 		n++;
 	}
 	

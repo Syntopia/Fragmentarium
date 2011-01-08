@@ -13,7 +13,7 @@ uniform int AntiAlias;slider[1,1,5];
 uniform float AntiAliasScale;slider[0.0,1,5];
 
 // Distance to object at which raymarching stops.
-uniform float LogMinDist;slider[-7,-2.6,0];
+uniform float LogMinDist;slider[-7,-3.0,0];
 
 // Distance at which normal is evaluated
 uniform float LogNormalDist;slider[-7,-4.0,0];
@@ -68,15 +68,15 @@ uniform vec3 BackgroundColor; color[0.0,0.0,0.0]
 // A 'looney tunes' gradient background
 uniform bool GradientBackground; checkbox[false]
 
-float mDist = 10000.0;
+float minDist2 = 10000.0;
 
-#group orbit
+#group Orbit Coloring
 
+uniform float OrbitStrength; slider[0,0.5,1]
+uniform float OrbitMultiplier; slider[0,1,10]
 uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
-uniform float OrbitStrength; slider[0,0.5,1]
-uniform float OrbitMultiplier; slider[0,1,10]
 
 float DE(vec3 pos) ; // Must be implemented in other file
 
@@ -109,7 +109,7 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 trace(vec3 from, vec3 to) {
-	mDist = 10000.0;
+	minDist2 = 10000.0;
 	vec3 direction = normalize(to-from);
 	from -= direction*MoveBack;
 	
@@ -139,7 +139,7 @@ vec3 trace(vec3 from, vec3 to) {
 		float ao = 1.0- AO*stepFactor ;
 		color = mix(AOColor, color,ao);
 		if (totalDist< MaxDist) {
-			float co = (mDist*OrbitMultiplier);
+			float co = (minDist2*OrbitMultiplier);
 			colorBase = vec3( .5+.5*cos(6.2831*co+R),
 				.5+.5*cos(6.2831*co+G),
 				.5+.5*cos(6.2831*co+B) );

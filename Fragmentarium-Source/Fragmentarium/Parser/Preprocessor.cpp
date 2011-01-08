@@ -40,9 +40,9 @@ namespace Fragmentarium {
 
 		FragmentSource::FragmentSource() : hasPixelSizeUniform(false) {};
 
-		QFile* Preprocessor::resolveName(QString fileName, QFile* file) {
+		QString Preprocessor::resolveName(QString fileName, QFile* file) {
 			// First check absolute filenames
-			if (QFileInfo(fileName).isAbsolute()) return new QFile(fileName);
+			if (QFileInfo(fileName).isAbsolute()) return fileName;
 
 			QStringList pathsTried;
 
@@ -50,8 +50,7 @@ namespace Fragmentarium {
 			if (file) {
 				QDir d = QFileInfo(*file).absolutePath();
 				QString path = d.absoluteFilePath(fileName);
-				if (QFileInfo(path).exists()) 
-					return new QFile(path);
+				if (QFileInfo(path).exists()) return path;
 				pathsTried.append(path);
 			} 
 			
@@ -59,8 +58,7 @@ namespace Fragmentarium {
 			foreach (QString p, includePaths) {
 				QDir d(p);
 				QString path = d.absoluteFilePath(fileName);
-				if (QFileInfo(path).exists()) 
-					return new QFile(path);
+				if (QFileInfo(path).exists()) return path;
 				pathsTried.append(path);
 			}
 
@@ -100,7 +98,7 @@ namespace Fragmentarium {
 						} else {
 							throw Exception("'#include' or '#includeonly' expected");
 						}
-						QFile* f = resolveName(fileName, file);
+						QFile* f = new QFile(resolveName(fileName, file));
 						
 						if (!f->open(QIODevice::ReadOnly | QIODevice::Text))
 							throw Exception("Unable to open: " +  QFileInfo(*f).absoluteFilePath());
@@ -184,13 +182,10 @@ namespace Fragmentarium {
 				} else if (sampler2D.indexIn(s) != -1) {
 					QString name = sampler2D.cap(1);
 					fs.source[i] = "uniform sampler2D " + name + ";";
-					QString file = sampler2D.cap(2);
-					if (!QFile::exists(file)) {
-						WARNING("Could not find texture file: " + QFileInfo(file).absoluteFilePath());
-						continue;
-					}
-					INFO("Added texture: " + name + " -> " + file);
-					fs.textures[name] = file;
+					QString fileName = resolveName(sampler2D.cap(2),file);
+				
+					INFO("Added texture: " + name + " -> " + fileName);
+					fs.textures[name] = fileName;
 				} 
 				else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);

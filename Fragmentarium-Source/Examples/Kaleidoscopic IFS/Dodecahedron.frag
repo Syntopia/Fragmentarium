@@ -52,7 +52,7 @@ float DE(vec3 z)
 		z = z*Scale - offset*(Scale-1.0);
 		z *= fracRotation2;		
 		r = dot(z, z);
-       	mDist = min(mDist, r);
+       	minDist2 = min(minDist2, r);
 		if (r > bailout2) break;
 		n++;
 	}

@@ -35,7 +35,7 @@ float DE(vec3 pos) {
 		powN1(z,r,dr);
 		z+=pos;
 		r=length(z);
-		mDist = min(mDist, r*r);
+		minDist2 = min(minDist2, r*r);
 	}
 	
 	return 0.5*log(r)*r/dr;

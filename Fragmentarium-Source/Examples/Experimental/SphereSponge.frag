@@ -12,7 +12,7 @@ uniform int Iterations;  slider[0,10,100]
 uniform float Scale; slider[0.00,3.0,4.00]
 
 // Size of bubbles
-uniform float BubbleSize; slider[1,2,3];
+uniform float BubbleSize; slider[1,2.07,3];
 
 float DE(vec3 z)
 {
@@ -25,6 +25,7 @@ float DE(vec3 z)
 		vec3 p2 = mod(z*k, modi) - 0.5*modi;
 		d=max(d,(BubbleSize-length(p2))/k);//intersect
 		k *= Scale;
+             minDist2 = min(minDist2,  dot(p2, p2));
 	}
       
        // Use this to crop to a sphere:

@@ -899,7 +899,7 @@ namespace Fragmentarium {
 			QSettings settings;
 			bool debug = settings.value("debugScript", false).toBool();
 			bool moveMain = settings.value("moveMain", true).toBool();
-			QStringList includePaths = settings.value("includePaths").toString().split(";");
+			QStringList includePaths = settings.value("includePaths").toString().split(";", QString::SkipEmptyParts);
 			Preprocessor p(includePaths);
 			try {
 				FragmentSource fs = p.parse(inputText,f,moveMain);

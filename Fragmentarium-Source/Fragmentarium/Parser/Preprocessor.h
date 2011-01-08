@@ -126,7 +126,7 @@ namespace Fragmentarium {
 			
 			FragmentSource parse(QString input, QFile* f, bool moveMain);
 			void parseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly);
-			QFile* resolveName(QString fileName, QFile* file) ;
+			QString resolveName(QString fileName, QFile* file) ;
 		
 		private:
 			QStringList includePaths;
