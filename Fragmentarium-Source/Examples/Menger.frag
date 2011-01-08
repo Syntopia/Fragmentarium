@@ -1,6 +1,6 @@
 #info Menger Distance Estimator.
-#include "include/DE-Raytracer.frag"
-#include "include/Matrix.frag"
+#include "DE-Raytracer.frag"
+#include "Matrix.frag"
 #group Menger
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/
@@ -37,7 +37,7 @@ float DE(vec3 z)
 		z.z=Scale* z.z;
 		z = rot *z;
 		if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
-		
+		mDist = min(mDist, r*r);
 		r = dot(z, z);
 		n++;
 	}

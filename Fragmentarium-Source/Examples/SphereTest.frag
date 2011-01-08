@@ -1,5 +1,5 @@
 #info Sphere test
-#include "include/DE-raytracer.frag"
+#include "DE-raytracer.frag"
 
 float DE(vec3 z)
 {

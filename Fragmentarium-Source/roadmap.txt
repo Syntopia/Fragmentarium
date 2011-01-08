@@ -2,7 +2,7 @@ Roadmap.
 --------
 + #Include "x.frag"
 + #info "..."
-- #replace "x.frag" "t.frag"
++ #replace "x.frag" "t.frag"
 + ShaderSource class
 + 2D CameraControl
   + Antialias
@@ -21,6 +21,7 @@ Roadmap.
   + uniform vec3 a; slider[(0,0,0),(0.5,0.5,0.5),(1,1,1)]
   - uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
   + Groups
++ Textures.
   
 - Better Syntax Highligtning.
 - Control of line numbers.
@@ -35,5 +36,4 @@ Roadmap.
 
 == Version 0.7 ==
  
-- Textures.
 - Multipass / progressive renders.

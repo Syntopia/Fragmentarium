@@ -1,5 +1,5 @@
 #info Mandelbox Distance Estimator (Rrrola's version).
-#include "include/DE-Raytracer.frag"
+#include "DE-Raytracer.frag"
 #group Mandelbox
 
 /*
@@ -41,8 +41,10 @@ float DE(vec3 pos) {
 	for (int i=0; i<Iterations; i++) {
 		p.xyz = clamp(p.xyz, -1.0, 1.0) * 2.0 - p.xyz;  // min;max;mad
 		float r2 = dot(p.xyz, p.xyz);
+		mDist = min(mDist,r2);
 		p *= clamp(max(minRad2/r2, minRad2), 0.0, 1.0);  // dp3,div,max.sat,mul
 		p = p*scale + p0;
+
 	}
 	return ((length(p.xyz) - absScalem1) / p.w - AbsScaleRaisedTo1mIters);
 }

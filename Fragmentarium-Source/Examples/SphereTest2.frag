@@ -1,5 +1,5 @@
 #info Sphere test
-#include "include/DE-Raytracer.frag"
+#include "DE-Raytracer.frag"
 #group Sphere Test
 uniform float Scale; slider[0,1.3,15]
 

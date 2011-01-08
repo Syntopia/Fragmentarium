@@ -1,11 +1,11 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
-#include "include/DE-Raytracer.frag"
-#include "include/matrix.frag"
+#include "DE-Raytracer.frag"
+#include "matrix.frag"
 #group Icosahedron
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/
 
-uniform float Scale; slider[0.00,3.0,4.00]
+uniform float Scale; slider[0.00,2.0,4.00]
 
 uniform float Phi; slider[-5,1.618,5]
 
@@ -30,27 +30,26 @@ uniform int iters;  slider[0,13,100]
 
 float DE(vec3 z)
 {	
+       float t;
+	
 	// Prefolds.
 	z = abs(z);
-	float t;
 	t=dot(z,n1); if (t>0.0) { z-=2.0*t*n1; }
 	t=dot(z,n2); if (t>0.0) { z-=2.0*t*n2; }
-	
+	t =dot(z,n3); if (t>0.0) { z-=2.0*t*n3; }
+	t =dot(z,n2); if (t>0.0) { z-=2.0*t*n2; }
+
 	// Iterate to compute the distance estimator.
 	int n = 0;
-	vec4 p4;
 	while (n < iters) {
 		// Fold
-		z = abs(z);
+              z = abs(z);
 		t =dot(z,n1); if (t>0.0) { z-=2.0*t*n1; }
-		t =dot(z,n2); if (t>0.0) { z-=2.0*t*n2; }
-		t =dot(z,n3); if (t>0.0) { z-=2.0*t*n3; }
 		
 		// Rotate, scale, rotate (we need to cast to a 4-component vector).
-		p4.xyz = z; p4.w = 1.0;
-		z = (M*p4).xyz;
-		
+		z = (M*vec4(z,1.0)).xyz;
 		n++;
+		mDist = min(mDist, dot(z,z));
 	}
 	
 	return (length(z) ) * pow(Scale,  float(-n));

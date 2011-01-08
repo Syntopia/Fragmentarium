@@ -1,5 +1,5 @@
 #info SphereSponge Distance Estimator.
-#include "include/DE-Raytracer.frag"
+#include "DE-Raytracer.frag"
 #group Sphere sponge
 
 // Based on a fractal proposed by Buddhi, with a DE outlined by Knighty:

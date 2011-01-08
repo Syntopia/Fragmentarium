@@ -2,7 +2,7 @@ TODO list and scratch pad for Fragmentarium. /Mikael
 
 Resize trigger many updates (hang)
 Reset Uniforms | Reset Tab
-Fix: Icon
+Fix: Icon/Splash
 Check for updates
 
 Mouse Sensitivity [---x------]
@@ -14,7 +14,7 @@ Kaleidoscopic IFS
 Experimental
 
 Example Path : examples/
-Include Paths: .;examples/include
+Include Paths: .;examples/include (also for images!)
 
 Different rendering modes:
 [Automatic Render]
@@ -32,6 +32,8 @@ uniform vec2 coord,pixelSize;
 uniform float time;
 
 #include ".frag"
+
+#includeonly ".frag"
 
 #replace "de (vec3" "de2 (vec3"
 

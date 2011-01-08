@@ -899,10 +899,10 @@ namespace Fragmentarium {
 			QSettings settings;
 			bool debug = settings.value("debugScript", false).toBool();
 			bool moveMain = settings.value("moveMain", true).toBool();
-					
-			Preprocessor p;
+			QStringList includePaths = settings.value("includePaths").toString().split(";");
+			Preprocessor p(includePaths);
 			try {
-				FragmentSource fs = p.Parse(inputText,f,moveMain);
+				FragmentSource fs = p.parse(inputText,f,moveMain);
 
 				if (debug) {
 					INFO("Debug is checked: showing final output in new tab.");

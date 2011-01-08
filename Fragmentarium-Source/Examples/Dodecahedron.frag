@@ -1,6 +1,6 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
-#include "include/DE-Raytracer.frag"
-#include "include/matrix.frag"
+#include "DE-Raytracer.frag"
+#include "matrix.frag"
 #group Dodecahedron
 
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
@@ -52,6 +52,7 @@ float DE(vec3 z)
 		z = z*Scale - offset*(Scale-1.0);
 		z *= fracRotation2;		
 		r = dot(z, z);
+       	mDist = min(mDist, r);
 		if (r > bailout2) break;
 		n++;
 	}

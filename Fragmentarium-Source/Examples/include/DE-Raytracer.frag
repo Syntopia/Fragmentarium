@@ -68,11 +68,21 @@ uniform vec3 BackgroundColor; color[0.0,0.0,0.0]
 // A 'looney tunes' gradient background
 uniform bool GradientBackground; checkbox[false]
 
+float mDist = 10000.0;
+
+#group orbit
+
+uniform float R; slider[0,0,1]
+uniform float G; slider[0,0.4,1]
+uniform float B; slider[0,0.7,1]
+uniform float OrbitStrength; slider[0,0.5,1]
+uniform float OrbitMultiplier; slider[0,1,10]
+
 float DE(vec3 pos) ; // Must be implemented in other file
 
 vec3 coloring(vec3 pos, vec3 dir, int steps) {
 	vec3 e = vec3(0,normalE,0);
-     vec3 spotDir =normalize( SpotLightDir);
+	vec3 spotDir =normalize( SpotLightDir);
 	vec3 n;
 	if (steps < 1) {
 		n = dir; // for clipping normals
@@ -85,8 +95,8 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 	
 	// Calculate perfectly reflected light:
 	// NB: there is a reflect command in GLSL
-     vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
-      float s = max(0.0,dot(dir,-r));
+	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
+	float s = max(0.0,dot(dir,-r));
 	
 	float diffuse = max(0.0,dot(n,spotDir))*SpotLight;
 	float ambient = max(0.0,dot(n, dir))*CamLight;
@@ -94,22 +104,25 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 	
 	return SpotLightColor*diffuse+CamLightColor*ambient
 	+ specular*SpotLightColor;
-
+	
 }
+vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 trace(vec3 from, vec3 to) {
-	
+	mDist = 10000.0;
 	vec3 direction = normalize(to-from);
-       from -= direction*MoveBack;
+	from -= direction*MoveBack;
 	
 	float dist = 0.0;
 	float totalDist = 0.0;
 	
 	int steps;
+	colorBase = vec3(0.0,0.0,0.0);
+	
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		dist = DE(from + totalDist * direction)*Limiter;
-		dist = clamp(dist, 0.0, MaxDist);     
-		if (dist < minDist ||  totalDist >MaxDist) break;           
+		dist = clamp(dist, 0.0, MaxDist);
+		if (dist < minDist ||  totalDist >MaxDist) break;
 		totalDist += dist;
 	}
 	
@@ -125,7 +138,18 @@ vec3 trace(vec3 from, vec3 to) {
 		color = coloring(hit,  direction, steps);
 		float ao = 1.0- AO*stepFactor ;
 		color = mix(AOColor, color,ao);
+		if (totalDist< MaxDist) {
+			float co = (mDist*OrbitMultiplier);
+			colorBase = vec3( .5+.5*cos(6.2831*co+R),
+				.5+.5*cos(6.2831*co+G),
+				.5+.5*cos(6.2831*co+B) );
+			colorBase = normalize(colorBase);
+			color = mix(ao*colorBase, color, OrbitStrength);
+			
+		}
 	}
+	
+	
 	
 	color += Glow*GlowColor*stepFactor;
 	return color;

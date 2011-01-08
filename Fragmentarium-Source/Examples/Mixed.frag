@@ -1,6 +1,6 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
-#include "include/DE-Raytracer.frag"
-#include "include/matrix.frag"
+#include "DE-Raytracer.frag"
+#include "matrix.frag"
 #group Mixed DE
 
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:

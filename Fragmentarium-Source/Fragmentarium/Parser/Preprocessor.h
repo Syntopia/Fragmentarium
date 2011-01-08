@@ -122,12 +122,14 @@ namespace Fragmentarium {
 		class Preprocessor {
 
 		public:
-			Preprocessor() {};
+			Preprocessor(QStringList includePaths) : includePaths(includePaths) {};
 			
-			FragmentSource Parse(QString input, QFile* f, bool moveMain);
-			
+			FragmentSource parse(QString input, QFile* f, bool moveMain);
+			void parseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly);
+			QFile* resolveName(QString fileName, QFile* file) ;
+		
 		private:
-			
+			QStringList includePaths;
 		};
 
 	}

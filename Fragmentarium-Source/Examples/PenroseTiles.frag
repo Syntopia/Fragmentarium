@@ -1,4 +1,4 @@
-#include "include/2D.frag"
+#include "2D.frag"
 #info Penrose-like Tilings (based on formula by tomkh)
 #group Penrose Tilings
 

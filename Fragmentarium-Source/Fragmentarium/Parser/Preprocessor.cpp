@@ -35,7 +35,43 @@ namespace Fragmentarium {
 			};
 
 
-			void ParseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly) {
+			
+		}
+
+		FragmentSource::FragmentSource() : hasPixelSizeUniform(false) {};
+
+		QFile* Preprocessor::resolveName(QString fileName, QFile* file) {
+			// First check absolute filenames
+			if (QFileInfo(fileName).isAbsolute()) return new QFile(fileName);
+
+			QStringList pathsTried;
+
+			// Check relative to current file
+			if (file) {
+				QDir d = QFileInfo(*file).absolutePath();
+				QString path = d.absoluteFilePath(fileName);
+				if (QFileInfo(path).exists()) 
+					return new QFile(path);
+				pathsTried.append(path);
+			} 
+			
+			// Check relative to files in include path
+			foreach (QString p, includePaths) {
+				QDir d(p);
+				QString path = d.absoluteFilePath(fileName);
+				if (QFileInfo(path).exists()) 
+					return new QFile(path);
+				pathsTried.append(path);
+			}
+
+			// We failed.
+			foreach (QString s, pathsTried) {
+				INFO("Tried path: " + s);
+			}
+			throw Exception("Could not resolve path for file: " + fileName);
+		};
+
+		void Preprocessor::parseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly) {
 				fs->sourceFiles.append(file);
 				int sf = fs->sourceFiles.count()-1;
 
@@ -64,18 +100,14 @@ namespace Fragmentarium {
 						} else {
 							throw Exception("'#include' or '#includeonly' expected");
 						}
-						QFile* f = new QFile(fileName);
-						if (!QFileInfo(fileName).isAbsolute() && file) {
-							QDir d = QFileInfo(*file).absolutePath();
-							delete(f);
-							f = new QFile(d.absoluteFilePath(fileName));
-						} 
+						QFile* f = resolveName(fileName, file);
+						
 						if (!f->open(QIODevice::ReadOnly | QIODevice::Text))
 							throw Exception("Unable to open: " +  QFileInfo(*f).absoluteFilePath());
 
 						INFO("Including file: " + QFileInfo(*f).absolutePath());
 						QString a = f->readAll();
-						ParseSource(fs, a, f, only);
+						parseSource(fs, a, f, only);
 					} else {
 						fs->lines.append(lines[i]);
 						fs->sourceFile.append(source[i]);
@@ -83,19 +115,16 @@ namespace Fragmentarium {
 					}
 				}
 			}
-		}
-
-		FragmentSource::FragmentSource() : hasPixelSizeUniform(false) {};
 
 		// We leak here, but fs's are copied!
 		FragmentSource::~FragmentSource() { /*foreach (QFile* f, sourceFiles) delete(f);*/ }
 
-		FragmentSource Preprocessor::Parse(QString input, QFile* file, bool moveMain) {
+		FragmentSource Preprocessor::parse(QString input, QFile* file, bool moveMain) {
 
 			FragmentSource fs;
 
 			// Step one: resolve includes:
-			ParseSource(&fs, input, file, false);
+			parseSource(&fs, input, file, false);
 
 			// Step two: resolve magic uniforms:
 			// (pixelsize, 

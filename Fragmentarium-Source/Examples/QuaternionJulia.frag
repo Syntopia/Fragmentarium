@@ -1,5 +1,5 @@
 #info 4D Quaternion Julia Distance Estimator
-#include "include/DE-Raytracer.frag"
+#include "DE-Raytracer.frag"
 #group 4D Quaternion Julia
 
 // The DE implementation here is based on the implementation by Subblue:
