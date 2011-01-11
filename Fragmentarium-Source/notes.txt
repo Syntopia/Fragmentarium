@@ -7,20 +7,9 @@ Check for updates
 
 Mouse Sensitivity [---x------]
 
-include
-2D Systems
-Historical 3D Fractals
-Kaleidoscopic IFS
-Experimental
-
 Example Path : examples/
-Include Paths: .;examples/include (also for images!)
 
-Different rendering modes:
-[Automatic Render]
-[Manual Render] - for long renders.
-[Continuous Render] - for showing time and FPS.
-[Tilebased Render]
+
 
 #camera 3D
 uniform vec3 from,to,fromDx,fromDy,toDx,toDy;

@@ -49,7 +49,11 @@ namespace Fragmentarium {
 			void setContextMenu(QMenu* contextMenu) { this->contextMenu = contextMenu; }
 			void setDisabled(bool disabled) { this->disabled = disabled; }
 			void setFragmentShader(FragmentSource fs);
-			void setupFragmentShader(); 
+			void setupFragmentShader();
+			void setContinuous(bool value) { continuous = value; }
+			void setDisableRedraw(bool value) { disableRedraw = value; }
+			void resetTime() { time = QTime::currentTime(); }
+		
 		protected:
 			void mouseMoveEvent(QMouseEvent* ev) ; 
 			void contextMenuEvent (QContextMenuEvent* ev);
@@ -65,8 +69,9 @@ namespace Fragmentarium {
 			void resizeGL(int w, int h);
 			void wheelEvent(QWheelEvent* e);
 			
-		
 		private:
+			bool continuous;
+			bool disableRedraw;
 			bool fragmentShader;
 			QGLShaderProgram* shaderProgram;
 		
@@ -90,6 +95,9 @@ namespace Fragmentarium {
 			MainWindow* mainWindow;
 			CameraControl* cameraControl;
 			FragmentSource fragmentSource;
+			QTime time;
+			QTime fpsTimer;
+			int fpsCounter;
 		};
 	};
 

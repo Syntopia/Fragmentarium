@@ -139,7 +139,7 @@ vec3 trace(vec3 from, vec3 to) {
 		float ao = 1.0- AO*stepFactor ;
 		color = mix(AOColor, color,ao);
 		if (totalDist< MaxDist) {
-			float co = (minDist2*OrbitMultiplier);
+			float co = (log(minDist2)*OrbitMultiplier);
 			colorBase = vec3( .5+.5*cos(6.2831*co+R),
 				.5+.5*cos(6.2831*co+G),
 				.5+.5*cos(6.2831*co+B) );

@@ -437,6 +437,9 @@ namespace Fragmentarium {
 			connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 #endif 
 
+			fpsLabel = new QLabel(this);
+			statusBar()->addPermanentWidget(fpsLabel);
+
 			QFrame* f = new QFrame(this);
 			frameMainWindow = new QVBoxLayout();
 			frameMainWindow->setSpacing(0);
@@ -546,6 +549,7 @@ namespace Fragmentarium {
 				editToolBar->show();
 				renderToolBar->show();
 				tabBar->show();
+				renderModeToolBar->show();
 			} else {
 				frameMainWindow->setMargin(0);
 				fullScreenAction->setChecked(true);
@@ -559,6 +563,7 @@ namespace Fragmentarium {
 				fileToolBar->hide();
 				editToolBar->hide();
 				renderToolBar->hide();
+				renderModeToolBar->hide();
 				showFullScreen();
 			}
 		}
@@ -698,6 +703,19 @@ namespace Fragmentarium {
 			renderMenu->addAction(resetViewAction);
 		
 
+			// -- Render Menu --
+			QMenu* parametersMenu = menuBar()->addMenu(tr("&Parameters"));
+			parametersMenu->addAction("Reset All", variableEditor, SLOT(reset()));
+			parametersMenu->addSeparator();
+			parametersMenu->addAction("Copy to Clipboard", variableEditor, SLOT(copy()));
+			parametersMenu->addAction("Paste from Clipboard", variableEditor, SLOT(paste()));
+			parametersMenu->addAction("Paste from Selected Text", this, SLOT(pasteSelected()));
+			parametersMenu->addSeparator();
+			parametersMenu->addAction("Save to File", this, SLOT(saveParameters()));
+			parametersMenu->addAction("Load from File", this, SLOT(loadParameters()));
+			parametersMenu->addSeparator();
+
+			
 
 
 
@@ -769,6 +787,55 @@ namespace Fragmentarium {
 			helpMenu->addAction(glslHomeAction);
 		}
 
+		void MainWindow::pasteSelected() {
+			QString settings = getTextEdit()->textCursor().selectedText();		
+			variableEditor->setSettings(settings);
+			statusBar()->showMessage(tr("Pasted selected settings"), 2000);
+		}
+		
+		void MainWindow::saveParameters() {
+			QString filter = "Fragment Parameters (*.fragparams);;All Files (*.*)";
+			QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), "", filter);
+			if (fileName.isEmpty())
+				return;
+		
+			QFile file(fileName);
+			if (!file.open(QFile::WriteOnly | QFile::Text)) {
+				QMessageBox::warning(this, tr("Fragmentarium"),
+					tr("Cannot write file %1:\n%2.")
+					.arg(fileName)
+					.arg(file.errorString()));
+				return;
+			}
+
+			QTextStream out(&file);
+			out << variableEditor->getSettings();			
+			statusBar()->showMessage(tr("Settings saved to file"), 2000);
+		}
+		
+		void MainWindow::loadParameters() {
+			QString filter = "Fragment Parameters (*.fragparams);;All Files (*.*)";
+			QString fileName = QFileDialog::getOpenFileName(this, tr("Load"), "", filter);
+			if (fileName.isEmpty())
+				return;
+		
+			QFile file(fileName);
+			if (!file.open(QFile::ReadOnly | QFile::Text)) {
+				QMessageBox::warning(this, tr("Fragmentarium"),
+					tr("Cannot read file %1:\n%2.")
+					.arg(fileName)
+					.arg(file.errorString()));
+				return;
+			}
+
+			QTextStream in(&file);
+			QString settings = in.readAll();	
+			variableEditor->setSettings(settings);
+			statusBar()->showMessage(tr("Settings loaded from file"), 2000);
+		}
+		
+			
+			
 		void MainWindow::createToolBars()
 		{
 			fileToolBar = addToolBar(tr("File Toolbar"));
@@ -781,8 +848,6 @@ namespace Fragmentarium {
 			editToolBar->addAction(copyAction);
 			editToolBar->addAction(pasteAction);
 
-
-
 			renderToolBar = addToolBar(tr("Render Toolbar"));
 			renderToolBar->addAction(renderAction);
 			renderToolBar->addWidget(new QLabel("Build    ", this));
@@ -791,6 +856,52 @@ namespace Fragmentarium {
 			renderToolBar->addWidget(pb);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetView()));
 
+			renderModeToolBar = addToolBar(tr("Rendering Mode"));
+			
+			renderModeToolBar->addWidget(new QLabel("Screen update:", this));
+			
+			renderCombo= new QComboBox(renderModeToolBar);
+			renderCombo->addItem("Automatic");
+			renderCombo->addItem("Manual");
+			renderCombo->addItem("Continuous");
+			//renderCombo->addItem("Custom Resolution");
+			connect(renderCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(renderModeChanged(int)));
+			renderModeToolBar->addWidget(renderCombo);
+
+			renderButton = new QPushButton(renderModeToolBar);
+			renderButton->setText("Redraw");
+			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
+			renderModeToolBar->addWidget(renderButton);
+			renderModeChanged(0);
+
+		}
+
+		void MainWindow::renderModeChanged(int) {
+			int i = renderCombo->currentIndex() ;
+			if (i == 1) {
+				INFO("Automatic screen updates. Every time a parameter or camera changes, an update is triggered.");
+			} else if (i == 2) {
+				INFO("Manual screen updates. Press 'update' to refresh the screen.");
+			} else if (i == 3) {
+				INFO("Continuous screen updates. Updates at a fixed interval.");
+			}
+			renderButton->setEnabled(i!=0);
+			renderButton->setText( (i==2) ? "Reset Time" : "Update");
+			engine->setContinuous(i == 2);
+			engine->setDisableRedraw(i == 1);
+
+			if (i!=2) setFPS(0);
+		}
+
+		void MainWindow::callRedraw() {
+			int i = renderCombo->currentIndex() ;
+			engine->setDisableRedraw(false);
+			if (i==2) {
+				engine->resetTime();
+			} else {
+				engine->requireRedraw();
+			}
+			engine->setDisableRedraw(true);
 		}
 
 		void MainWindow::disableAllExcept(QWidget* w) {
@@ -1007,7 +1118,7 @@ namespace Fragmentarium {
 					unique = true;
 					for (int i = 0; i < tabInfo.size(); i++) {
 						if (tabInfo[i].filename == suggestedName) {
-							INFO("equal");
+							//INFO("equal");
 							unique = false;
 							break;
 						}	
@@ -1216,6 +1327,19 @@ namespace Fragmentarium {
 			}
 			getTextEdit()->setText(out.join("\n"));
 		}
+
+		void MainWindow::setFPS(float fps) {
+			
+			if (renderCombo->currentIndex()!=2) {
+				fpsLabel->setText("FPS: n.a.");
+				return;
+			}
+			
+			if (fps>0) {
+				fpsLabel->setText("FPS: " + QString::number(fps, 'f' ,1) + " (" +  QString::number(1.0/fps, 'f' ,1) + "s)");
+			}
+		}
+			
 
 	}
 

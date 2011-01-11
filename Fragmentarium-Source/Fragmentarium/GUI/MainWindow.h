@@ -6,6 +6,8 @@
 #include <QTextEdit>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QComboBox>
+#include <QLabel>
 #include <QGLShaderProgram>
 
 #include "DisplayWidget.h"
@@ -58,6 +60,7 @@ namespace Fragmentarium {
 
 			DisplayWidget* getEngine() { return engine; };
 			static QString getExamplesDir();
+			void setFPS(float fps);
 			static QString getMiscDir();
 			static QString getTemplateDir();
 			void saveImage(QImage im);
@@ -77,6 +80,12 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 
 		public slots:
+			void callRedraw();
+			
+			void pasteSelected();
+			void renderModeChanged(int);
+			void saveParameters();
+			void loadParameters();
 			void indent();
 			void preferences();
 			void insertText();
@@ -142,6 +151,10 @@ namespace Fragmentarium {
 			QMenu *helpMenu;
 			QToolBar *fileToolBar;
 			QToolBar *renderToolBar;
+			QToolBar *renderModeToolBar;
+			QComboBox* renderCombo;
+			QPushButton* renderButton;
+
 			QToolBar *editToolBar;
 			QAction *newAction;
 			QAction *openAction;
@@ -175,6 +188,7 @@ namespace Fragmentarium {
 
 			QVector<QAction*> recentFileActions;
 			QAction* recentFileSeparator;
+			QLabel* fpsLabel;
 		};
 
 	

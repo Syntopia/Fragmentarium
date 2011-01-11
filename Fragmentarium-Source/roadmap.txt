@@ -12,7 +12,7 @@ Roadmap.
 - Mouse sensitivity
 + Magic Uniforms
   + vec2 pixelsize (in model-coordinates)
-  - float time (seconds)
+  + float time (seconds)
 + GUI Uniforms
   + uniform float a; slider[-2,3,3]
   + uniform int a; slider[-2,3,3]

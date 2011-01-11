@@ -125,9 +125,8 @@ namespace Fragmentarium {
 			parseSource(&fs, input, file, false);
 
 			// Step two: resolve magic uniforms:
-			// (pixelsize, 
-			QRegExp includeCommand("^\\s*uniform\\s+vec2\\s+pixelSize.*$"); // Look for 'uniform vec2 pixelSize'
-			if (fs.source.indexOf(includeCommand)!=-1) {
+			QRegExp pixelSizeCommand("^\\s*uniform\\s+vec2\\s+pixelSize.*$"); // Look for 'uniform vec2 pixelSize'
+			if (fs.source.indexOf(pixelSizeCommand)!=-1) {
 				fs.hasPixelSizeUniform = true;
 			} 
 

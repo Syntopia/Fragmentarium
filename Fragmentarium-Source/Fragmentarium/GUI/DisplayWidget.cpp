@@ -227,13 +227,18 @@ namespace Fragmentarium {
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
 			: QGLWidget(parent), mainWindow(mainWindow) 
 		{
+			resetTime();
+			fpsTimer = QTime::currentTime();
+			fpsCounter = 0;
+			continuous = false;
+			disableRedraw = false;
 			cameraControl = new Camera2D(mainWindow->statusBar());
 			disabled = false;
 			updatePerspective();
 
 			pendingRedraws = 0;
-			requiredRedraws = 1; // for double buffering
-			startTimer( 10 );
+			requiredRedraws = 1; // 2 for double buffering?
+			startTimer( 20 );
 			oldPos = QPoint(0,0);
 
 
@@ -308,6 +313,7 @@ namespace Fragmentarium {
 
 
 		void DisplayWidget::requireRedraw() {
+			if (disableRedraw) return;
 			pendingRedraws = requiredRedraws;
 		}
 
@@ -373,15 +379,17 @@ namespace Fragmentarium {
 
 
 		void DisplayWidget::paintGL() {
+			// Show info first time we display something...
+
 			static bool shownInfo = false;
 			if (!shownInfo) {
 				shownInfo = true;
 				INFO("This video card supports: " + GetOpenGLFlags().join(", "));
 			}
-			static int count = 0;
-			count++;
-
+		
 			if (pendingRedraws > 0) pendingRedraws--;
+			static int count = 0;
+			//INFO(QString("frame:%1").arg(count++));
 
 			if (disabled || !shaderProgram) {
 				qglClearColor(backgroundColor);
@@ -389,6 +397,7 @@ namespace Fragmentarium {
 				return;
 			}
 			
+			QTime t = QTime::currentTime();
 			if (shaderProgram) {
 				glDisable( GL_CULL_FACE );
 				glDisable( GL_LIGHTING );
@@ -407,15 +416,41 @@ namespace Fragmentarium {
 						shaderProgram->setUniformValue(l, (float)(scale.x()/width()),(float)(scale.y()/height()));
 					}
 				}
+
+				int l = shaderProgram->uniformLocation("time");
+				if (l != -1) {
+					float t = (time.msecsTo(QTime::currentTime())/1000.0);
+					shaderProgram->setUniformValue(l, (float)t);
+					//INFO(QString("Time:%1").arg(t));
+				}
+
 				// Setup User Uniforms
 				mainWindow->setUserUniforms(shaderProgram);
 				glColor3d(1.0,1.0,1.0);
 				glRectf(-1,-1,1,1); 
-
-				return;
 			}
 
+			QTime cur = QTime::currentTime();
+			long ms = t.msecsTo(cur);
+			fpsCounter++;
+			
+			float fps = -1;
 
+			// If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
+			if (ms>500) {
+				fps = 1.0/500;
+				//INFO("MS:" + QString::number(ms));
+			} else {
+				// Else measure over two seconds.
+				long ms2 = fpsTimer.msecsTo(cur);
+				if (ms2>2000 || ms2<0) {
+					fps = fpsCounter/(ms2/1000.0);
+					fpsTimer = cur;
+					fpsCounter = 0;
+				}
+				//
+			}
+			mainWindow->setFPS(fps);
 		};
 
 		void DisplayWidget::resizeGL( int /* width */, int /* height */) {
@@ -456,7 +491,7 @@ namespace Fragmentarium {
 				requireRedraw();
 			}
 
-			if (pendingRedraws) updateGL();
+			if (pendingRedraws || continuous) updateGL();
 		}
 
 

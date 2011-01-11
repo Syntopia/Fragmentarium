@@ -36,6 +36,9 @@ namespace Fragmentarium {
 
 			void updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI);
 			void setUserUniforms(QGLShaderProgram* shaderProgram);
+			QString getSettings();
+			void setSettings(QString text);
+
 		signals:
 			void changed();
 

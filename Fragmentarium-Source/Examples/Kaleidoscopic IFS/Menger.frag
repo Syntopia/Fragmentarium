@@ -37,8 +37,8 @@ float DE(vec3 z)
 		z.z=Scale* z.z;
 		z = rot *z;
 		if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
-		minDist2 = min(minDist2, r*r);
 		r = dot(z, z);
+		minDist2 = min(minDist2, r*r);
 		n++;
 	}
 	

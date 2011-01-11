@@ -1,3 +1,5 @@
+11-01-10 Added different rendering modes: automatic, manual, and continuous (with FPS count).
+[3h]	 Added parameter menu.
 45
 
 09-01-10 Added orbit trap coloring support to 3D DE raytracer.

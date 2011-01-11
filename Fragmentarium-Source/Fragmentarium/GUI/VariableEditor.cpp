@@ -347,44 +347,14 @@ namespace Fragmentarium {
 		}
 
 		void VariableEditor::copy() {
-			QStringList l;
-			for (int i = 0; i < variables.count(); i++) {
-				QString name = variables[i]->getName();
-				QString val = variables[i]->toString();
-				l.append(name + " = " + val);
-			}
-
 			QClipboard *cb = QApplication::clipboard();
-			cb->setText( l.join("\n"),QClipboard::Clipboard );
+			cb->setText( getSettings(),QClipboard::Clipboard );
 		}
 
 		void VariableEditor::paste() {
 			QClipboard *cb = QApplication::clipboard();
 			QString text = cb->text(QClipboard::Clipboard);
-			QStringList l = text.split("\n");
-			QMap<QString, QString> maps;
-			foreach (QString s, l) {
-				QStringList l2 = s.split("=");
-				if (l2.count()!=2) {
-					WARNING("Expected a key value pair, found: " + s);
-					continue;
-				}
-				QString first = l2[0].trimmed();
-				QString second = l2[1].trimmed();
-				maps[first] = second;
-			}
-
-			for (int i = 0; i < variables.count(); i++) {
-				if (maps.contains(variables[i]->getName())) {
-					variables[i]->fromString(maps[variables[i]->getName()]);
-					INFO("Found: "+variables[i]->getName());
-					maps.remove(variables[i]->getName());
-				}
-			}
-
-			foreach (QString s, maps.keys()) {
-				WARNING("Could not find: " + s);
-			}
+			setSettings(text);
 		}
 
 		void VariableEditor::updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI) {
@@ -523,6 +493,44 @@ namespace Fragmentarium {
 
 		}
 
+		QString VariableEditor::getSettings() {
+			QStringList l;
+			for (int i = 0; i < variables.count(); i++) {
+				QString name = variables[i]->getName();
+				QString val = variables[i]->toString();
+				l.append(name + " = " + val);
+			}
+			return l.join("\n");
+		};
+
+		void VariableEditor::setSettings(QString text) {
+			QStringList l = text.split("\n");
+			QMap<QString, QString> maps;
+			foreach (QString s, l) {
+				if (s.trimmed().startsWith("#")) continue;
+
+				QStringList l2 = s.split("=");
+				if (l2.count()!=2) {
+					WARNING("Expected a key value pair, found: " + s);
+					continue;
+				}
+				QString first = l2[0].trimmed();
+				QString second = l2[1].trimmed();
+				maps[first] = second;
+			}
+
+			for (int i = 0; i < variables.count(); i++) {
+				if (maps.contains(variables[i]->getName())) {
+					variables[i]->fromString(maps[variables[i]->getName()]);
+					INFO("Found: "+variables[i]->getName());
+					maps.remove(variables[i]->getName());
+				}
+			}
+
+			foreach (QString s, maps.keys()) {
+				WARNING("Could not find: " + s);
+			}
+		};
 
 
 	}
