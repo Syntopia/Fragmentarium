@@ -611,54 +611,54 @@ namespace Fragmentarium {
 			screenshotAction = new QAction(tr("&Save as Bitmap..."), this);
 			connect(screenshotAction, SIGNAL(triggered()), this, SLOT(makeScreenshot()));
 
-			newAction = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
+			newAction = new QAction(QIcon(":/Icons/new.png"), tr("&New"), this);
 			newAction->setShortcut(tr("Ctrl+N"));
 			newAction->setStatusTip(tr("Create a new file"));
 			connect(newAction, SIGNAL(triggered()), this, SLOT(newFile()));
 
-			openAction = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+			openAction = new QAction(QIcon(":/Icons/open.png"), tr("&Open..."), this);
 			openAction->setShortcut(tr("Ctrl+O"));
 			openAction->setStatusTip(tr("Open an existing file"));
 			connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
-			saveAction = new QAction(QIcon(":/images/save.png"), tr("&Save"), this);
+			saveAction = new QAction(QIcon(":/Icons/save.png"), tr("&Save"), this);
 			saveAction->setShortcut(tr("Ctrl+S"));
 			saveAction->setStatusTip(tr("Save the script to disk"));
 			connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
-			saveAsAction = new QAction(QIcon(":/images/filesaveas.png"), tr("Save &As..."), this);
+			saveAsAction = new QAction(QIcon(":/Icons/filesaveas.png"), tr("Save &As..."), this);
 			saveAsAction->setStatusTip(tr("Save the script under a new name"));
 			connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
 
-			closeAction = new QAction(QIcon(":/images/fileclose.png"), tr("&Close Tab"), this);
+			closeAction = new QAction(QIcon(":/Icons/fileclose.png"), tr("&Close Tab"), this);
 			closeAction->setShortcut(tr("Ctrl+W"));
 			closeAction->setStatusTip(tr("Close this tab"));
 			connect(closeAction, SIGNAL(triggered()), this, SLOT(closeTab()));
 
-			exitAction = new QAction(QIcon(":/images/exit.png"), tr("E&xit Application"), this);
+			exitAction = new QAction(QIcon(":/Icons/exit.png"), tr("E&xit Application"), this);
 			exitAction->setShortcut(tr("Ctrl+Q"));
 			exitAction->setStatusTip(tr("Exit the application"));
 			connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-			cutAction = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
+			cutAction = new QAction(QIcon(":/Icons/cut.png"), tr("Cu&t"), this);
 			cutAction->setShortcut(tr("Ctrl+X"));
 			cutAction->setStatusTip(tr("Cut the current selection's contents to the "
 				"clipboard"));
 			connect(cutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
-			copyAction = new QAction(QIcon(":/images/copy.png"), tr("&Copy"), this);
+			copyAction = new QAction(QIcon(":/Icons/copy.png"), tr("&Copy"), this);
 			copyAction->setShortcut(tr("Ctrl+C"));
 			copyAction->setStatusTip(tr("Copy the current selection's contents to the "
 				"clipboard"));
 			connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
 
-			pasteAction = new QAction(QIcon(":/images/paste.png"), tr("&Paste"), this);
+			pasteAction = new QAction(QIcon(":/Icons/paste.png"), tr("&Paste"), this);
 			pasteAction->setShortcut(tr("Ctrl+V"));
 			pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current "
 				"selection"));
 			connect(pasteAction, SIGNAL(triggered()), this, SLOT(paste()));
 
-			renderAction = new QAction(QIcon(":/images/render.png"), tr("&Build System"), this);
+			renderAction = new QAction(QIcon(":/Icons/render.png"), tr("&Build System"), this);
 			renderAction->setShortcut(tr("F5"));
 			renderAction->setStatusTip(tr("Render the current ruleset"));
 			connect(renderAction, SIGNAL(triggered()), this, SLOT(render()));
@@ -668,23 +668,23 @@ namespace Fragmentarium {
 			resetViewAction->setStatusTip(tr("Resets the viewport"));
 			connect(resetViewAction, SIGNAL(triggered()), this, SLOT(resetView()));
 
-			aboutAction = new QAction(QIcon(":/images/documentinfo.png"), tr("&About"), this);
+			aboutAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Show the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
-			sfHomeAction = new QAction(QIcon(":/images/agt_internet.png"), tr("&Project Homepage (web link)"), this);
+			sfHomeAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Project Homepage (web link)"), this);
 			sfHomeAction->setStatusTip(tr("Open the SourceForge project page in a browser."));
 			connect(sfHomeAction, SIGNAL(triggered()), this, SLOT(launchSfHome()));
 
-			referenceAction = new QAction(QIcon(":/images/agt_internet.png"), tr("&Fragmentarium Reference (web link)"), this);
+			referenceAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Fragmentarium Reference (web link)"), this);
 			referenceAction->setStatusTip(tr("Open a Fragmentarium reference web page in a browser."));
 			connect(referenceAction, SIGNAL(triggered()), this, SLOT(launchReferenceHome()));
 
-			galleryAction = new QAction(QIcon(":/images/agt_internet.png"), tr("&Flickr Fragmentarium Group (web link)"), this);
+			galleryAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Flickr Fragmentarium Group (web link)"), this);
 			galleryAction->setStatusTip(tr("Opens the main Flickr group for Fragmentarium creations."));
 			connect(galleryAction, SIGNAL(triggered()), this, SLOT(launchGallery()));
 
-			glslHomeAction = new QAction(QIcon(":/images/agt_internet.png"), tr("&GLSL Specifications (web link)"), this);
+			glslHomeAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&GLSL Specifications (web link)"), this);
 			glslHomeAction->setStatusTip(tr("The official specifications for all GLSL versions."));
 			connect(glslHomeAction, SIGNAL(triggered()), this, SLOT(launchGLSLSpecs()));
 
@@ -695,7 +695,7 @@ namespace Fragmentarium {
 				recentFileActions.append(a);				
 			}
 
-			qApp->setWindowIcon(QIcon(":/images/fragmentarium.png"));
+			qApp->setWindowIcon(QIcon(":/Icons/fragmentarium.png"));
 		}
 
 		void MainWindow::createMenus()
@@ -780,7 +780,7 @@ namespace Fragmentarium {
 						QString absPath = QDir(path + QDir::separator() +  sl[i]).absolutePath();
 						menuMap[absPath] = menu;
 						currentMenu->addMenu(menu);
-						menu->setIcon(QIcon(":/images/folder.png"));
+						menu->setIcon(QIcon(":/Icons/folder.png"));
 						pathStack.push(absPath);
 					}
 
@@ -789,7 +789,7 @@ namespace Fragmentarium {
 					sl = dir.entryList();
 					for (int i = 0; i < sl.size(); i++) {
 						QAction* a = new QAction(sl[i], this);
-						a->setIcon(QIcon(":/images/mail_new.png"));
+						a->setIcon(QIcon(":/Icons/mail_new.png"));
 
 
 						QString absPath = QDir(path ).absoluteFilePath(sl[i]);

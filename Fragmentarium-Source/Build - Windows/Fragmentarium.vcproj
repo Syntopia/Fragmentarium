@@ -337,7 +337,7 @@
 						Name="VCCustomBuildTool"
 						Description="RCC Fragmentarium.qrc"
 						CommandLine="$(QT4DIR)\bin\rcc.exe -name Fragmentarium Fragmentarium.qrc -o tmp\rcc\debug_shared\qrc_Fragmentarium.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QT4DIR)\bin\rcc.exe;images\new.png;images\copy.png;images\cut.png;images\save.png;images\paste.png;images\open.png"
+						AdditionalDependencies="$(QT4DIR)\bin\rcc.exe;Icons\new.png;Icons\copy.png;Icons\cut.png;Icons\save.png;Icons\paste.png;Icons\open.png"
 						Outputs="tmp\rcc\debug_shared\qrc_Fragmentarium.cpp"
 					/>
 				</FileConfiguration>
@@ -348,7 +348,7 @@
 						Name="VCCustomBuildTool"
 						Description="RCC Fragmentarium.qrc"
 						CommandLine="$(QT4DIR)\bin\rcc.exe -name Fragmentarium ..\Fragmentarium.qrc -o tmp\rcc\release_shared\qrc_Fragmentarium.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QT4DIR)\bin\rcc.exe;images\new.png;images\copy.png;images\cut.png;images\save.png;images\paste.png;images\open.png"
+						AdditionalDependencies="$(QT4DIR)\bin\rcc.exe;Icons\new.png;Icons\copy.png;Icons\cut.png;Icons\save.png;Icons\paste.png;Icons\open.png"
 						Outputs="tmp\rcc\release_shared\qrc_Fragmentarium.cpp"
 					/>
 				</FileConfiguration>
@@ -509,39 +509,39 @@
 			Name="Resource Files"
 			>
 			<File
-				RelativePath="..\images\agt_internet.png"
+				RelativePath="..\Icons\agt_internet.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\copy.png"
+				RelativePath="..\Icons\copy.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\cut.png"
+				RelativePath="..\Icons\cut.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\documentinfo.png"
+				RelativePath="..\Icons\documentinfo.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\exit.png"
+				RelativePath="..\Icons\exit.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\fileclose.png"
+				RelativePath="..\Icons\fileclose.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\filesaveas.png"
+				RelativePath="..\Icons\filesaveas.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\folder.png"
+				RelativePath="..\Icons\folder.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\Fragmentarium.png"
+				RelativePath="..\Icons\Fragmentarium.png"
 				>
 			</File>
 			<File
@@ -549,23 +549,23 @@
 				>
 			</File>
 			<File
-				RelativePath="..\images\mail_new.png"
+				RelativePath="..\Icons\mail_new.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\new.png"
+				RelativePath="..\Icons\new.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\open.png"
+				RelativePath="..\Icons\open.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\paste.png"
+				RelativePath="..\Icons\paste.png"
 				>
 			</File>
 			<File
-				RelativePath="..\images\render.png"
+				RelativePath="..\Icons\render.png"
 				>
 			</File>
 			<File
@@ -573,7 +573,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\images\save.png"
+				RelativePath="..\Icons\save.png"
 				>
 			</File>
 		</Filter>

@@ -1,19 +1,19 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>images/copy.png</file>
-    <file>images/cut.png</file>
-    <file>images/new.png</file>
-    <file>images/open.png</file>
-    <file>images/paste.png</file>
-    <file>images/save.png</file>
-  <file>images/filesaveas.png</file>
-  <file>images/folder.png</file>
-  <file>images/mail_new.png</file>
-	<file>images/render.png</file>
-  <file>images/agt_internet.png</file>
-  <file>images/exit.png</file>
-  <file>images/fileclose.png</file>
-  <file>images/documentinfo.png</file>
-  <file>images/fragmentarium.png</file>
+    <file>Icons/copy.png</file>
+    <file>Icons/cut.png</file>
+    <file>Icons/new.png</file>
+    <file>Icons/open.png</file>
+    <file>Icons/paste.png</file>
+    <file>Icons/save.png</file>
+  <file>Icons/filesaveas.png</file>
+  <file>Icons/folder.png</file>
+  <file>Icons/mail_new.png</file>
+	<file>Icons/render.png</file>
+  <file>Icons/agt_internet.png</file>
+  <file>Icons/exit.png</file>
+  <file>Icons/fileclose.png</file>
+  <file>Icons/documentinfo.png</file>
+  <file>Icons/fragmentarium.png</file>
 </qresource>
 </RCC>
