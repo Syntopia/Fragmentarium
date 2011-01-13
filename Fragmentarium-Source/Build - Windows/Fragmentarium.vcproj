@@ -143,7 +143,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(QT4DIR)\include\QtScript&quot;;&quot;$(QT4DIR)\include\QtCore&quot;;&quot;$(QT4DIR)\include\QtXml&quot;;&quot;$(QT4DIR)\include\QtGui&quot;;&quot;$(QT4DIR)\include&quot;;&quot;$(QT4DIR)\include\ActiveQt&quot;;tmp\moc\debug_shared;.;&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot;;&quot;$(QT4DIR)\include\QtOpenGL&quot;"
+				AdditionalIncludeDirectories="..;&quot;$(QT4DIR)\include\QtScript&quot;;&quot;$(QT4DIR)\include\QtCore&quot;;&quot;$(QT4DIR)\include\QtXml&quot;;&quot;$(QT4DIR)\include\QtGui&quot;;&quot;$(QT4DIR)\include&quot;;&quot;$(QT4DIR)\include\ActiveQt&quot;;tmp\moc\debug_shared;.;&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot;;&quot;$(QT4DIR)\include\QtOpenGL&quot;"
 				PreprocessorDefinitions="NDEBUG,_WINDOWS,UNICODE,QT_LARGEFILE_SUPPORT,WIN32,_CRT_SECURE_NO_DEPRECATE,_CRT_NONSTDC_NO_DEPRECATE,QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
@@ -218,19 +218,19 @@
 				Name="Logging"
 				>
 				<File
-					RelativePath=".\SyntopiaCore\Logging\ListWidgetLogger.cpp"
+					RelativePath="..\SyntopiaCore\Logging\ListWidgetLogger.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Logging\ListWidgetLogger.h"
+					RelativePath="..\SyntopiaCore\Logging\ListWidgetLogger.h"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Logging\Logging.cpp"
+					RelativePath="..\SyntopiaCore\Logging\Logging.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Logging\Logging.h"
+					RelativePath="..\SyntopiaCore\Logging\Logging.h"
 					>
 				</File>
 			</Filter>
@@ -238,27 +238,27 @@
 				Name="Math"
 				>
 				<File
-					RelativePath=".\SyntopiaCore\Math\Matrix4.cpp"
+					RelativePath="..\SyntopiaCore\Math\Matrix4.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Math\Matrix4.h"
+					RelativePath="..\SyntopiaCore\Math\Matrix4.h"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Math\Random.cpp"
+					RelativePath="..\SyntopiaCore\Math\Random.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Math\Random.h"
+					RelativePath="..\SyntopiaCore\Math\Random.h"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Math\Vector3.cpp"
+					RelativePath="..\SyntopiaCore\Math\Vector3.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Math\Vector3.h"
+					RelativePath="..\SyntopiaCore\Math\Vector3.h"
 					>
 				</File>
 			</Filter>
@@ -266,7 +266,7 @@
 				Name="Exceptions"
 				>
 				<File
-					RelativePath=".\SyntopiaCore\Exceptions\Exception.h"
+					RelativePath="..\SyntopiaCore\Exceptions\Exception.h"
 					>
 				</File>
 			</Filter>
@@ -274,35 +274,35 @@
 				Name="Misc"
 				>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\ColorUtils.cpp"
+					RelativePath="..\SyntopiaCore\Misc\ColorUtils.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\ColorUtils.h"
+					RelativePath="..\SyntopiaCore\Misc\ColorUtils.h"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\MiniParser.cpp"
+					RelativePath="..\SyntopiaCore\Misc\MiniParser.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\MiniParser.h"
+					RelativePath="..\SyntopiaCore\Misc\MiniParser.h"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\Persistence.cpp"
+					RelativePath="..\SyntopiaCore\Misc\Persistence.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\Persistence.h"
+					RelativePath="..\SyntopiaCore\Misc\Persistence.h"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\Version.cpp"
+					RelativePath="..\SyntopiaCore\Misc\Version.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\SyntopiaCore\Misc\Version.h"
+					RelativePath="..\SyntopiaCore\Misc\Version.h"
 					>
 				</File>
 			</Filter>
@@ -310,15 +310,15 @@
 				Name="ThirdPartyCode"
 				>
 				<File
-					RelativePath=".\ThirdPartyCode\glextensions.cpp"
+					RelativePath="..\ThirdPartyCode\glextensions.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\ThirdPartyCode\glextensions.h"
+					RelativePath="..\ThirdPartyCode\glextensions.h"
 					>
 				</File>
 				<File
-					RelativePath=".\ThirdPartyCode\MersenneTwister\MersenneTwister.h"
+					RelativePath="..\ThirdPartyCode\MersenneTwister\MersenneTwister.h"
 					>
 				</File>
 			</Filter>
@@ -328,7 +328,7 @@
 			Filter="cpp;c;cxx;moc;h;qrc;def;odl;idl;res"
 			>
 			<File
-				RelativePath="Fragmentarium.qrc"
+				RelativePath="..\Fragmentarium.qrc"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -347,9 +347,21 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="RCC Fragmentarium.qrc"
-						CommandLine="$(QT4DIR)\bin\rcc.exe -name Fragmentarium Fragmentarium.qrc -o tmp\rcc\release_shared\qrc_Fragmentarium.cpp&#x0D;&#x0A;"
+						CommandLine="$(QT4DIR)\bin\rcc.exe -name Fragmentarium ..\Fragmentarium.qrc -o tmp\rcc\release_shared\qrc_Fragmentarium.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="$(QT4DIR)\bin\rcc.exe;images\new.png;images\copy.png;images\cut.png;images\save.png;images\paste.png;images\open.png"
 						Outputs="tmp\rcc\release_shared\qrc_Fragmentarium.cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="tmp\moc\debug_shared\moc_MainWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
 			</File>
@@ -366,7 +378,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmp\moc\debug_shared\moc_MainWindow.cpp"
+				RelativePath="tmp\rcc\debug_shared\qrc_Fragmentarium.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -401,18 +413,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmp\rcc\debug_shared\qrc_Fragmentarium.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\tmp\moc\rmoc_VariableEditor.cpp"
 				>
 			</File>
@@ -421,26 +421,26 @@
 			Name="Fragmentarium"
 			>
 			<File
-				RelativePath="Main.cpp"
+				RelativePath="..\Fragmentarium\Main.cpp"
 				>
 			</File>
 			<Filter
 				Name="GUI"
 				>
 				<File
-					RelativePath=".\Fragmentarium\GUI\DisplayWidget.cpp"
+					RelativePath="..\Fragmentarium\GUI\DisplayWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Fragmentarium\GUI\DisplayWidget.h"
+					RelativePath="..\Fragmentarium\GUI\DisplayWidget.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Fragmentarium\GUI\MainWindow.cpp"
+					RelativePath="..\Fragmentarium\GUI\MainWindow.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Fragmentarium\GUI\MainWindow.h"
+					RelativePath="..\Fragmentarium\GUI\MainWindow.h"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -458,17 +458,17 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Moc&apos;ing MainWindow"
-							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_release&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; Fragmentarium/GUI/MainWindow.h -o tmp\moc\release_shared\moc_MainWindow.cpp&#x0D;&#x0A;"
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_release&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/MainWindow.h -o tmp\moc\release_shared\moc_MainWindow.cpp&#x0D;&#x0A;"
 							Outputs="tmp\moc\release_shared\moc_MainWindow.cpp"
 						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Fragmentarium\GUI\VariableEditor.cpp"
+					RelativePath="..\Fragmentarium\GUI\VariableEditor.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Fragmentarium\GUI\VariableEditor.h"
+					RelativePath="..\Fragmentarium\GUI\VariableEditor.h"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -486,7 +486,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="moc variableEditor"
-							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; Fragmentarium/GUI/VariableEditor.h -o tmp\moc\rmoc_VariableEditor.cpp&#x0D;&#x0A;"
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/VariableEditor.h -o tmp\moc\rmoc_VariableEditor.cpp&#x0D;&#x0A;"
 							Outputs="tmp\moc\rmoc_VariableEditor.cpp"
 						/>
 					</FileConfiguration>
@@ -496,11 +496,11 @@
 				Name="Parser"
 				>
 				<File
-					RelativePath=".\Fragmentarium\Parser\Preprocessor.cpp"
+					RelativePath="..\Fragmentarium\Parser\Preprocessor.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Fragmentarium\Parser\Preprocessor.h"
+					RelativePath="..\Fragmentarium\Parser\Preprocessor.h"
 					>
 				</File>
 			</Filter>
@@ -509,92 +509,92 @@
 			Name="Resource Files"
 			>
 			<File
-				RelativePath=".\images\agt_internet.png"
+				RelativePath="..\images\agt_internet.png"
 				>
 			</File>
 			<File
-				RelativePath="images\copy.png"
+				RelativePath="..\images\copy.png"
 				>
 			</File>
 			<File
-				RelativePath="images\cut.png"
+				RelativePath="..\images\cut.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\documentinfo.png"
+				RelativePath="..\images\documentinfo.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\exit.png"
+				RelativePath="..\images\exit.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\fileclose.png"
+				RelativePath="..\images\fileclose.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\filesaveas.png"
+				RelativePath="..\images\filesaveas.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\folder.png"
+				RelativePath="..\images\folder.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\Fragmentarium.png"
+				RelativePath="..\images\Fragmentarium.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Fragmentarium.rc"
+				RelativePath="Fragmentarium.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\images\mail_new.png"
+				RelativePath="..\images\mail_new.png"
 				>
 			</File>
 			<File
-				RelativePath="images\new.png"
+				RelativePath="..\images\new.png"
 				>
 			</File>
 			<File
-				RelativePath="images\open.png"
+				RelativePath="..\images\open.png"
 				>
 			</File>
 			<File
-				RelativePath="images\paste.png"
+				RelativePath="..\images\paste.png"
 				>
 			</File>
 			<File
-				RelativePath=".\images\render.png"
+				RelativePath="..\images\render.png"
 				>
 			</File>
 			<File
-				RelativePath=".\resource.h"
+				RelativePath="resource.h"
 				>
 			</File>
 			<File
-				RelativePath="images\save.png"
+				RelativePath="..\images\save.png"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\bugs.txt"
+			RelativePath="..\bugs.txt"
 			>
 		</File>
 		<File
-			RelativePath=".\BuildProcedure.txt"
+			RelativePath="..\BuildProcedure.txt"
 			>
 		</File>
 		<File
-			RelativePath=".\changelog.txt"
+			RelativePath="..\changelog.txt"
 			>
 		</File>
 		<File
-			RelativePath=".\notes.txt"
+			RelativePath="..\notes.txt"
 			>
 		</File>
 		<File
-			RelativePath=".\roadmap.txt"
+			RelativePath="..\roadmap.txt"
 			>
 		</File>
 	</Files>
