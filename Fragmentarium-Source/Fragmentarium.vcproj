@@ -178,6 +178,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(QT4DIR)\lib"
 				GenerateDebugInformation="false"
+				AssemblyDebug="0"
 				ProgramDatabaseFile=""
 				SubSystem="2"
 				RandomizedBaseAddress="1"

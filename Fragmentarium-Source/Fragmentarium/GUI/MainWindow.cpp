@@ -182,11 +182,23 @@ namespace Fragmentarium {
 				warningFormat.setBackground(QBrush(Qt::yellow));
 				preprocessorFormat.setForeground(QBrush(Qt::blue));
 				preprocessorFormat.setFontWeight(QFont::Bold);
+				preprocessor2Format.setForeground(QBrush(Qt::darkRed));
+				preprocessor2Format.setFontWeight(QFont::Bold);
+
 
 				expression = QRegExp("(uniform|attribute|bool|break|bvec2|bvec3|bvec4|const|continue|discard|do|else|false|float|for|if|in|inout|int|ivec2|ivec3|ivec4|main|mat2|mat3|mat4|out|return|true|uniorm|varying|vec2|vec3|vec4|void|while|sampler1D|sampler2D|sampler3Dsampler2DShadow|struct)");
 				primitives = QRegExp("(abs|acos|all|any|asin|atan|ceil|sin|clamp|cos|cross|dFdx|dFdy|degrees|distance|dot|equal|exp|exp2|faceforward|floor|fract|ftransform|fwidth|greaterThan|greaterThanqual|inversesqrt|length|lessThan|lessThanEqual|log|log2|matrixCompMult|max|min|mix|mod|noise1|noise2|noise3|noise4|normalize|not|notEqual|pow|radians|reflect|reract|shadow1D|shadow1DLod|shadow1DProj|shadow1DProjLod|shadow2D|shadow2DLod|shadow2DProj|shadow2DProjLod|sign|sin|smoothstep|sqrt|step|tan|texture1D|texture1DLod|texture1DProj|texture1DProjLod|texture2D|texture2DLod|texture2DProj|texture2DProjLod|texture3D|texture3DLod|texture3DProj|texture3DProjLod|textureCube|textureCubeLod)");
 				randomNumber = QRegExp("(random\\[[-+]?[0-9]*\\.?[0-9]+,[-+]?[0-9]*\\.?[0-9]+\\])"); // random[-2.3,3.4]
 
+
+				float3Slider = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$"); 
+				colorChooser = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+				floatSlider = QRegExp("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+				intSlider = QRegExp("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+				boolChooser = QRegExp("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
+				replace = QRegExp("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
+				sampler2D = QRegExp("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$"); 
+				
 				expression.setCaseSensitivity(Qt::CaseInsensitive);
 				primitives.setCaseSensitivity(Qt::CaseInsensitive);
 				randomNumber.setCaseSensitivity(Qt::CaseInsensitive);
@@ -219,7 +231,16 @@ namespace Fragmentarium {
 				// Line parsing
 				QString current;
 				int startMatch = 0;
+
+				
+				if (float3Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
+				intSlider.exactMatch(text) || boolChooser.exactMatch(text) || replace.exactMatch(text) ||
+				sampler2D.exactMatch(text)) {
+					setFormat(0, text.length()-1, preprocessor2Format);
+				}
+
 				for (int i = 0; i < text.length(); i++) {
+
 					if ((i > 0) && text.at(i) == '*' && text.at(i-1) == '/') {
 						// Multi-line comment begins
 						setFormat(i-1, text.length()-i+1, commentFormat);
@@ -248,7 +269,7 @@ namespace Fragmentarium {
 						break;
 					}
 
-					bool delimiter = (text.at(i) == '(' || text.at(i) == ')' || text.at(i) == '{' || text.at(i) == '\t' || text.at(i) == '}' || text.at(i) == ' '  || (text.at(i) == '\r') || (text.at(i) == '\n'));
+					bool delimiter = !text.at(i).isLetterOrNumber();//(text.at(i) == '(' || text.at(i) == ')' || text.at(i) == '{' || text.at(i) == '\t' || text.at(i) == '}' || text.at(i) == ' '  || (text.at(i) == '\r') || (text.at(i) == '\n'));
 					bool lastChar = (i==text.length()-1);
 					if (delimiter || lastChar) {
 						if (lastChar && !delimiter) current += text.at(i);
@@ -272,6 +293,15 @@ namespace Fragmentarium {
 			QTextCharFormat commentFormat;
 			QTextCharFormat warningFormat;
 			QTextCharFormat preprocessorFormat;
+			QTextCharFormat preprocessor2Format;
+			
+			QRegExp float3Slider;
+			QRegExp colorChooser;
+			QRegExp floatSlider;
+			QRegExp intSlider;
+			QRegExp boolChooser;
+			QRegExp replace;
+			QRegExp sampler2D;
 
 			QRegExp expression;
 			QRegExp primitives;
@@ -878,11 +908,11 @@ namespace Fragmentarium {
 
 		void MainWindow::renderModeChanged(int) {
 			int i = renderCombo->currentIndex() ;
-			if (i == 1) {
+			if (i == 0) {
 				INFO("Automatic screen updates. Every time a parameter or camera changes, an update is triggered.");
-			} else if (i == 2) {
+			} else if (i == 1) {
 				INFO("Manual screen updates. Press 'update' to refresh the screen.");
-			} else if (i == 3) {
+			} else if (i == 2) {
 				INFO("Continuous screen updates. Updates at a fixed interval.");
 			}
 			renderButton->setEnabled(i!=0);
@@ -1012,9 +1042,10 @@ namespace Fragmentarium {
 			bool moveMain = settings.value("moveMain", true).toBool();
 			QStringList includePaths = settings.value("includePaths").toString().split(";", QString::SkipEmptyParts);
 			Preprocessor p(includePaths);
+	
 			try {
 				FragmentSource fs = p.parse(inputText,f,moveMain);
-
+				
 				if (debug) {
 					INFO("Debug is checked: showing final output in new tab.");
 					insertTabPage("")->setText(fs.getText());
@@ -1023,7 +1054,6 @@ namespace Fragmentarium {
 				bool showGUI = false;
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);
 				editorDockWidget->setHidden(!showGUI);
-
 				engine->setFragmentShader(fs);
 
 			} catch (Exception& e) {

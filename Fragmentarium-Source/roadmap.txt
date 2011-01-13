@@ -23,7 +23,7 @@ Roadmap.
   + Groups
 + Textures.
   
-- Better Syntax Highligtning.
++ Better Syntax Highligtning.
 - Control of line numbers.
 - Simple website.
 

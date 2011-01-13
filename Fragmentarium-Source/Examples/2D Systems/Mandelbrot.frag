@@ -8,7 +8,6 @@ uniform int  Iterations; slider[10,200,1000]
 uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
-uniform float time;
 
 vec2 complexMul(vec2 a, vec2 b) {
 	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
@@ -26,9 +25,9 @@ vec3 getColor2D(vec2 c) {
 		// from Inigo Quilez's Shader Toy:
 		float co =  float( i) + 1.0 - log2(.5*log2(dot(z,z)));
 		co = sqrt(co/256.0);
-		return vec3( .5+.5*cos(6.2831*co+R+time),
-		.5+.5*cos(6.2831*co+time + G),
-		.5+.5*cos(6.2831*co+time +B) );
+		return vec3( .5+.5*cos(6.2831*co+R),
+		.5+.5*cos(6.2831*co + G),
+		.5+.5*cos(6.2831*co +B) );
 	}  else {
 		return vec3(0.0);
 	}
