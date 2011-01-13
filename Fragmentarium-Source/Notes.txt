@@ -1,0 +1,29 @@
+TODO list and scratch pad for Fragmentarium. /Mikael
+
+Resize trigger many updates (hang)
+Reset Uniforms | Reset Tab
+Fix: Icon/Splash
+Check for updates
+
+Mouse Sensitivity [---x------]
+
+Example Path : examples/
+
+
+
+#camera 3D
+uniform vec3 from,to,fromDx,fromDy,toDx,toDy;
+
+#camera 2D
+uniform vec2 coord,pixelSize;
+
+// Other magic uniforms
+uniform float time;
+
+#include ".frag"
+
+#includeonly ".frag"
+
+#replace "de (vec3" "de2 (vec3"
+
+#info made by createtw 
