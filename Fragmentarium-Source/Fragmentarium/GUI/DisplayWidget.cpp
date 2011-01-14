@@ -67,6 +67,7 @@ namespace Fragmentarium {
 					Matrix4f mx = Matrix4f::Rotation(Vector3f(1.0,0,0), -ry*rotateSpeed);
 					Matrix4f my = Matrix4f::Rotation(Vector3f(0.0,1.0,0), -rx*rotateSpeed);
 					rotation = rotation * my * mx;
+					if (statusBar) statusBar->showMessage(QString("Scale: %0, Translation: %1").arg(scale).arg(translation.toString()),5000);
 				};
 
 				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
@@ -82,6 +83,7 @@ namespace Fragmentarium {
 						scale*=(1.0-2*ry);
 					}
 					translation = translation + 10.0*Vector3f(0,0,rx);
+					if (statusBar) statusBar->showMessage(QString("Scale: %0, Translation: %1").arg(scale).arg(translation.toString()),5000);
 					
 				};
 
@@ -118,7 +120,6 @@ namespace Fragmentarium {
 					glGetDoublev(GL_PROJECTION_MATRIX, projectionCache );
 					glGetIntegerv(GL_VIEWPORT, viewPortCache);
 
-					if (statusBar) statusBar->showMessage(QString("Scale: %0, Translation: %1").arg(scale).arg(translation.toString()),5000);
 			
 					return Vector3f(1.0,1.0,1.0);
 				};
@@ -173,6 +174,8 @@ namespace Fragmentarium {
 				virtual void leftMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
 					this->x+= -rx*scale*2.0;
 					this->y+= ry*scale*2.0;
+					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
+					
 				};
 
 				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double /*ry*/) {
@@ -184,6 +187,8 @@ namespace Fragmentarium {
 					} else {
 						scale*=(1.0-2*ry);
 					}
+					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
+					
 				};
 
 				virtual void wheel(double /*x*/, double /*y*/, double val) {
@@ -192,6 +197,7 @@ namespace Fragmentarium {
 					} else {
 						scale*=(1.0-val/10);
 					}
+					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
 					
 				};
 
@@ -203,7 +209,6 @@ namespace Fragmentarium {
 					glMatrixMode(GL_MODELVIEW);
 					glLoadIdentity();glTranslatef(x,y,0);
 					glScalef(scale,scale*(height/(float)width),scale);
-					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
 					return Vector3f(scale,scale*(height/(float)width),scale);
 				};
 
@@ -225,7 +230,7 @@ namespace Fragmentarium {
 		}
 
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
-			: QGLWidget(parent), mainWindow(mainWindow) 
+			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
 			resetTime();
 			fpsTimer = QTime::currentTime();
@@ -388,9 +393,7 @@ namespace Fragmentarium {
 			}
 		
 			if (pendingRedraws > 0) pendingRedraws--;
-			static int count = 0;
-			//INFO(QString("frame:%1").arg(count++));
-
+			
 			if (disabled || !shaderProgram) {
 				qglClearColor(backgroundColor);
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -402,9 +405,6 @@ namespace Fragmentarium {
 				glDisable( GL_CULL_FACE );
 				glDisable( GL_LIGHTING );
 				glDisable( GL_DEPTH_TEST );
-
-				static int i = 0;
-				//INFO(QString("Drawing: %1").arg(i++));
 
 				// Setup Magic Uniforms
 				Vector3f scale = cameraControl->transform(width(), height())*2;
@@ -464,6 +464,7 @@ namespace Fragmentarium {
 
 			GLfloat w = (float) width() / (float) height();
 			infoText = QString("[%1x%2] Aspect=%3").arg(width()).arg(height()).arg((float)width()/height());
+			mainWindow-> statusBar()->showMessage(infoText, 5000);
 			textTimer = QTime::currentTime();
 			GLfloat h = 1.0;
 
@@ -486,10 +487,12 @@ namespace Fragmentarium {
 			}
 
 			// Check if we are displaying a message.
+			/*
 			if (infoText != "" && abs((int)(textTimer.msecsTo(QTime::currentTime()))>1000)) {
 				infoText = "";
 				requireRedraw();
 			}
+			*/
 
 			if (pendingRedraws || continuous) updateGL();
 		}

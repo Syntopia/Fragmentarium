@@ -7,7 +7,7 @@
 #include <QLabel>
 #include <QApplication>
 #include <QScrollArea>
-#include <QClipBoard>
+#include <QClipboard>
 #include "../../SyntopiaCore/Logging/ListWidgetLogger.h"
 #include "../../SyntopiaCore/Misc/MiniParser.h"
 #include "MainWindow.h"
@@ -303,15 +303,16 @@ namespace Fragmentarium {
 
 			QWidget* w = new QWidget(this);
 			new QHBoxLayout(w);
+			w->layout()->setContentsMargins (0,0,0,0);
 			QPushButton* pb= new QPushButton("Reset", this);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetUniforms()));
 			w->layout()->addWidget(pb);
 
-			pb= new QPushButton("Copy", this);
+			pb= new QPushButton("Copy to CB", this);
 			connect(pb, SIGNAL(clicked()), this, SLOT(copy()));
 			w->layout()->addWidget(pb);
 
-			pb= new QPushButton("Paste", this);
+			pb= new QPushButton("Paste from CB", this);
 			connect(pb, SIGNAL(clicked()), this, SLOT(paste()));
 			w->layout()->addWidget(pb);
 			layout->addWidget(w);
@@ -347,11 +348,13 @@ namespace Fragmentarium {
 		}
 
 		void VariableEditor::copy() {
+			INFO("Copied settings to clipboard");
 			QClipboard *cb = QApplication::clipboard();
 			cb->setText( getSettings(),QClipboard::Clipboard );
 		}
 
 		void VariableEditor::paste() {
+			INFO("Pasted settings from clipboard");
 			QClipboard *cb = QApplication::clipboard();
 			QString text = cb->text(QClipboard::Clipboard);
 			setSettings(text);
@@ -522,7 +525,7 @@ namespace Fragmentarium {
 			for (int i = 0; i < variables.count(); i++) {
 				if (maps.contains(variables[i]->getName())) {
 					variables[i]->fromString(maps[variables[i]->getName()]);
-					INFO("Found: "+variables[i]->getName());
+					//INFO("Found: "+variables[i]->getName());
 					maps.remove(variables[i]->getName());
 				}
 			}

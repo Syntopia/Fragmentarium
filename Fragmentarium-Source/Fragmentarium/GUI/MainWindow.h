@@ -71,7 +71,7 @@ namespace Fragmentarium {
 
 			void disableAllExcept(QWidget* w);
 			void enableAll();
-			
+			void loadParameters(QString fileName);
 		
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);

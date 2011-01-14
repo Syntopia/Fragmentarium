@@ -27,9 +27,10 @@ namespace Fragmentarium {
 			virtual QString getUniqueName() = 0;
 			QString getTooltip() { return tooltip; } 
 		protected:
+
+			QString group;
 			QString name;
 			QString tooltip;
-			QString group;
 		};
 
 		class FloatParameter : public GuiParameter {

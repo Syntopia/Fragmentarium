@@ -1,11 +1,37 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
+-----------
+Install Qt 4.7.1.
+Set the QT4DIR environment variable to the Qt installation directory (Typically: C:\Qt\4.7.1)
+Open the Fragmentarium.sln Visual Studio 2008 solution file (located in the 'Build - Windows' dir).
+
+Now you should be able to compile Fragmentarium.
+
+To run it you must copy the following Qt DLL's from the Qt 'bin' folder (e.g. C:\Qt\4.7.1\bin) to the VS build folder (e.g. 'release'):
+QtCore4.dll, QtOpenGL4.dll, QtGui4.dll
+Notice, that debug DLLs contain a 'd'-suffix (e.g. QtCore4d.dll).
+
+Now Fragmentarium should run from inside Visual Studio, but it will not find its examples unless the working directory is set: Under Project properties, set the "Configuration Properties | Debugging | Working Directory" to ".."
+
+It is possible to create a deployable ....
+------------
+
+Rename dir: "include" -> "Include" (all GLSL scripts)
+Rename matrix.glsl -> MathUtils.glsl
+
+add three glsl output lines -> Plus make it an Run button thingy
+
+Add plane orbit traps to shadering.
+
+Step up from prototype.
+
+Add context menu help...
+-----
+no such slot: makeScreenshot()
 
 Resize trigger many updates (hang)
 Reset Uniforms | Reset Tab
 Fix: Icon/Splash
 Check for updates
-
-Mouse Sensitivity [---x------]
 
 Example Path : examples/
 

@@ -6,10 +6,8 @@ Roadmap.
 + ShaderSource class
 + 2D CameraControl
   + Antialias
-/ 3D CameraControl
++ 3D CameraControl
   + Antialias
-  - Rotate about Z
-- Mouse sensitivity
 + Magic Uniforms
   + vec2 pixelsize (in model-coordinates)
   + float time (seconds)
@@ -19,7 +17,6 @@ Roadmap.
   + Comments before GUI uniforms should become tooltips
   + uniform vec3 a; colorchooser[1,0.9,0.8]
   + uniform vec3 a; slider[(0,0,0),(0.5,0.5,0.5),(1,1,1)]
-  - uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
   + Groups
 + Textures.
   
@@ -29,11 +26,25 @@ Roadmap.
 
 == First Release: Version 0.5s == 
 
+- uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
+- uniform vec4 a; slider[....]
+
+- Mouse sensitivity
 - Hires renders.
 - Better cameras
+  - Sliders for cameras
+  - Rotation in screen space
   - A 3D camera suitable for deep zooming
+  - Clipping planes
   - A 2D camera which scales from the current mouse position
 
 == Version 0.7 ==
  
 - Multipass / progressive renders.
+
+== Version 1.0 ==
+
+Later:
+
+- WebGL export
+- Animation timeline.

@@ -354,18 +354,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmp\moc\debug_shared\moc_MainWindow.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\tmp\moc\release_shared\moc_MainWindow.cpp"
 				>
 				<FileConfiguration
@@ -378,7 +366,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmp\rcc\debug_shared\qrc_Fragmentarium.cpp"
+				RelativePath="tmp\moc\debug_shared\moc_MainWindow.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -409,6 +397,18 @@
 						Name="VCCLCompilerTool"
 						ObjectFile="$(IntDir)\$(InputName)1.obj"
 						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="tmp\rcc\debug_shared\qrc_Fragmentarium.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
 			</File>

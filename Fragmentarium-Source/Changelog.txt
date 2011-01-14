@@ -1,5 +1,12 @@
+14-01-10 Fixed linux compilation errors and warning (untested).
+[2h]	 Fixed registry settings bug (include path not read before opening preferences first time).
+		 Fixed unconnected reset() signal.
+		 Fixed paste from selected text newline bug.
+		 Added drag'n'drop support for 'fragparams' files.
+		 Better window builds and deploy
+
 13-01-10 Updated syntax highlighting.
-[1h]
+[2h]	 Refactoring
 
 11-01-10 Added different rendering modes: automatic, manual, and continuous (with FPS count).
 [3h]	 Added parameter menu.

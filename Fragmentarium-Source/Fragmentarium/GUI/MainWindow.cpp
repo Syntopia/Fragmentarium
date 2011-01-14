@@ -110,7 +110,7 @@ namespace Fragmentarium {
 					QSettings settings;
 					checkBox_2->setChecked(settings.value("debugScript", false).toBool());
 					checkBox->setChecked(settings.value("moveMain", true).toBool());
-					lineEdit->setText(settings.value("includePaths", "Examples/include;").toString());
+					lineEdit->setText(settings.value("includePaths", "Examples/Include;").toString());
 				} 
 
 				virtual void accept() {
@@ -368,6 +368,8 @@ namespace Fragmentarium {
 				toggleFullScreen();
 			} else if (ev->key() == Qt::Key_F5 && fullScreenEnabled) {
 				render();
+			} else if (ev->key() == Qt::Key_F6) {
+				callRedraw();
 			}  else {
 				ev->ignore();
 			}
@@ -673,7 +675,7 @@ namespace Fragmentarium {
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
 			sfHomeAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Project Homepage (web link)"), this);
-			sfHomeAction->setStatusTip(tr("Open the SourceForge project page in a browser."));
+			sfHomeAction->setStatusTip(tr("Open the project page in a browser."));
 			connect(sfHomeAction, SIGNAL(triggered()), this, SLOT(launchSfHome()));
 
 			referenceAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Fragmentarium Reference (web link)"), this);
@@ -735,11 +737,11 @@ namespace Fragmentarium {
 
 			// -- Render Menu --
 			QMenu* parametersMenu = menuBar()->addMenu(tr("&Parameters"));
-			parametersMenu->addAction("Reset All", variableEditor, SLOT(reset()));
+			parametersMenu->addAction("Reset All", variableEditor, SLOT(resetUniforms()), QKeySequence("F1"));
 			parametersMenu->addSeparator();
-			parametersMenu->addAction("Copy to Clipboard", variableEditor, SLOT(copy()));
-			parametersMenu->addAction("Paste from Clipboard", variableEditor, SLOT(paste()));
-			parametersMenu->addAction("Paste from Selected Text", this, SLOT(pasteSelected()));
+			parametersMenu->addAction("Copy to Clipboard", variableEditor, SLOT(copy()), QKeySequence("F2"));
+			parametersMenu->addAction("Paste from Clipboard", variableEditor, SLOT(paste()), QKeySequence("F3"));
+			parametersMenu->addAction("Paste from Selected Text", this, SLOT(pasteSelected()), QKeySequence("F4"));
 			parametersMenu->addSeparator();
 			parametersMenu->addAction("Save to File", this, SLOT(saveParameters()));
 			parametersMenu->addAction("Load from File", this, SLOT(loadParameters()));
@@ -818,7 +820,10 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::pasteSelected() {
-			QString settings = getTextEdit()->textCursor().selectedText();		
+			QString settings = getTextEdit()->textCursor().selectedText();	
+			// Note: If the selection obtained from an editor spans a line break,
+			// the text will contain a Unicode U+2029 paragraph separator character instead of a newline \n character. Use QString::replace() to replace these characters with newlines
+			settings = settings.replace(QChar::ParagraphSeparator,"\n");
 			variableEditor->setSettings(settings);
 			statusBar()->showMessage(tr("Pasted selected settings"), 2000);
 		}
@@ -843,12 +848,7 @@ namespace Fragmentarium {
 			statusBar()->showMessage(tr("Settings saved to file"), 2000);
 		}
 		
-		void MainWindow::loadParameters() {
-			QString filter = "Fragment Parameters (*.fragparams);;All Files (*.*)";
-			QString fileName = QFileDialog::getOpenFileName(this, tr("Load"), "", filter);
-			if (fileName.isEmpty())
-				return;
-		
+		void MainWindow::loadParameters(QString fileName) {
 			QFile file(fileName);
 			if (!file.open(QFile::ReadOnly | QFile::Text)) {
 				QMessageBox::warning(this, tr("Fragmentarium"),
@@ -862,6 +862,15 @@ namespace Fragmentarium {
 			QString settings = in.readAll();	
 			variableEditor->setSettings(settings);
 			statusBar()->showMessage(tr("Settings loaded from file"), 2000);
+		}
+
+		void MainWindow::loadParameters() {
+			QString filter = "Fragment Parameters (*.fragparams);;All Files (*.*)";
+			QString fileName = QFileDialog::getOpenFileName(this, tr("Load"), "", filter);
+			if (fileName.isEmpty())
+				return;
+		
+			loadParameters(fileName);
 		}
 		
 			
@@ -899,7 +908,8 @@ namespace Fragmentarium {
 			renderModeToolBar->addWidget(renderCombo);
 
 			renderButton = new QPushButton(renderModeToolBar);
-			renderButton->setText("Redraw");
+			renderButton->setText("");
+			// renderButton->setShortcut(Qt::Key_F6); doesn't work?
 			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
 			renderModeToolBar->addWidget(renderButton);
 			renderModeChanged(0);
@@ -916,7 +926,7 @@ namespace Fragmentarium {
 				INFO("Continuous screen updates. Updates at a fixed interval.");
 			}
 			renderButton->setEnabled(i!=0);
-			renderButton->setText( (i==2) ? "Reset Time" : "Update");
+			renderButton->setText( (i==2) ? "Reset Time" : "Update (F6)");
 			engine->setContinuous(i == 2);
 			engine->setDisableRedraw(i == 1);
 
@@ -1040,7 +1050,7 @@ namespace Fragmentarium {
 			QSettings settings;
 			bool debug = settings.value("debugScript", false).toBool();
 			bool moveMain = settings.value("moveMain", true).toBool();
-			QStringList includePaths = settings.value("includePaths").toString().split(";", QString::SkipEmptyParts);
+			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
 			Preprocessor p(includePaths);
 	
 			try {
@@ -1293,8 +1303,13 @@ namespace Fragmentarium {
 			if (ev->mimeData()->hasUrls()) {
 				QList<QUrl> urls = ev->mimeData()->urls();
 				for (int i = 0; i < urls.size() ; i++) {
-					INFO("Loading: " + urls[i].toLocalFile());
-					loadFile(urls[i].toLocalFile());
+					QString file = urls[i].toLocalFile();
+					INFO("Loading: " + file);
+					if (file.toLower().endsWith(".fragparams")) {
+						loadParameters(file);
+					} else {
+						loadFile(file);
+					}
 				}
 			} else {
 				INFO("Cannot accept MIME object: " + ev->mimeData()->formats().join(" - "));

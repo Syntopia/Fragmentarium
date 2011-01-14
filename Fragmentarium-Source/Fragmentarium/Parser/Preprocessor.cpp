@@ -84,7 +84,7 @@ namespace Fragmentarium {
 				for (int i = 0; i < in.count(); i++) source.append(sf);
 				source.append(-1);
 
-				QRegExp includeCommand("^#include(.*)\\s\"([^\\s]+)\"\\s*$"); // Look for #include "test.frag"
+				QRegExp includeCommand("^#include(.*)\\s\"([^\"]+)\"\\s*$"); // Look for #include "test.frag"
 				
 				for (int i = 0; i < in.count(); i++) {
 					if (includeCommand.indexIn(in[i]) != -1) {	
