@@ -1,6 +1,8 @@
 #info Sphere test
 #include "DE-raytracer.frag"
 
+// Crank up the 'Glow' and turn down the Limiter for this one.
+
 float DE(vec3 z)
 {
 	float d= abs(length(z)-46.0);

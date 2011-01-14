@@ -22,12 +22,13 @@ PERFORMANCE OF THIS SOFTWARE.
 */
 
 // Number of fractal iterations.
-uniform int Iterations;  slider[0,13,100]   
-float minRad2 =  0.25;
+uniform int Iterations;  slider[0,13,100]
+
+uniform float MinRad2;  slider[0,0.25,2.0]
 
 // Scale parameter. A perfect Menger is 3.0
 uniform float Scale;  slider[-3.0,3.0,5.0]
-vec4 scale = vec4(Scale, Scale, Scale, abs(Scale)) / minRad2;
+vec4 scale = vec4(Scale, Scale, Scale, abs(Scale)) / MinRad2;
 
 // precomputed constants
 
@@ -42,9 +43,9 @@ float DE(vec3 pos) {
 		p.xyz = clamp(p.xyz, -1.0, 1.0) * 2.0 - p.xyz;  // min;max;mad
 		float r2 = dot(p.xyz, p.xyz);
 		minDist2 = min(minDist2,r2);
-		p *= clamp(max(minRad2/r2, minRad2), 0.0, 1.0);  // dp3,div,max.sat,mul
+		p *= clamp(max(MinRad2/r2, MinRad2), 0.0, 1.0);  // dp3,div,max.sat,mul
 		p = p*scale + p0;
-
+		
 	}
 	return ((length(p.xyz) - absScalem1) / p.w - AbsScaleRaisedTo1mIters);
 }

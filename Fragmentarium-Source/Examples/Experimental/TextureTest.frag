@@ -1,6 +1,6 @@
 #include "2D.frag"
-#info Penrose-like Tilings (based on formula by tomkh)
-#group Penrose Tilings
+#info Simple and ugly Texture demo. Should be replaced by something more interesting
+#group Simple Texture demo.
 
 // Iterations. Increase when zooming in.
 uniform int Iterations; slider[0,10,15]
@@ -8,17 +8,11 @@ uniform float Scale; slider[0,1,15]
 
 uniform bool BooleanTest; checkbox[false]
 
-
 uniform sampler2D texture; file[texture2.jpg]
 uniform sampler2D texture3; file[texture.jpg]
 
-
-// An implementation of the system 
-// decribed by 'tomkh' in this thread;
-// http://www.fractalforums.com/new-theories-and-research/procedural-aperiodic-fractals/
-
 // A lot of constants here
-float pi =3.141592653589 ; 
+float pi =3.141592653589 ;
 float sc = 2.0/(sqrt(5.0)-1.0);  // inflation scale
 float d1 = tan(54.0*pi/180.0);
 float d2 = tan(18.0*pi/180.0);
@@ -38,7 +32,7 @@ mat2	m5= mat2(cos2,sin2,-sin2,cos2);
 
 
 vec3 getColor2D(vec2 z) {
-       vec2 d = z*Scale;
+	vec2 d = z*Scale;
 	int triangleType = 0;
 	for(int k=0; k<Iterations; k++) {
 		if (triangleType == 0) {
@@ -57,8 +51,8 @@ vec3 getColor2D(vec2 z) {
 			}
 		}
 	}
-	return (triangleType == 0)  ? texture2D(texture,d).xyz :  
- 		texture2D(texture3,d).xyz  ;
-//vec3(1.0,0.0,0.0);
+	return (triangleType == 0)  ? texture2D(texture,d).xyz :
+	texture2D(texture3,d).xyz  ;
+	//vec3(1.0,0.0,0.0);
 }
 

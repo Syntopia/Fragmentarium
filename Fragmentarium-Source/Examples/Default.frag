@@ -3,7 +3,7 @@
 #group Penrose Tilings
 
 // Iterations. Increase when zooming in.
-uniform int Iterations; slider[0,10,15]
+uniform int Iterations; slider[0,12,15]
 
 // An implementation of the system 
 // decribed by 'tomkh' in this thread;
@@ -30,6 +30,8 @@ mat2	m5= mat2(cos2,sin2,-sin2,cos2);
 
 
 vec3 getColor2D(vec2 z) {
+    z*=0.1;
+ z+=vec2(0.55,0.2);
 	int triangleType = 0;
 	for(int k=0; k<Iterations; k++) {
 		if (triangleType == 0) {

@@ -1,6 +1,6 @@
 #info Octahedron Distance Estimator (Syntopia 2010)
 #include "DE-Raytracer.frag"
-#include "matrix.frag"
+#include "MathUtils.frag"
 #group Octahedron
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/

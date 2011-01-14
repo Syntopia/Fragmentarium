@@ -8,7 +8,7 @@
 // Number of iterations.
 uniform int Iterations;  slider[0,10,100]
 
-// Scale parameter. 
+// Scale parameter.
 uniform float Scale; slider[0.00,3.0,4.00]
 
 // Size of bubbles
@@ -25,10 +25,10 @@ float DE(vec3 z)
 		vec3 p2 = mod(z*k, modi) - 0.5*modi;
 		d=max(d,(BubbleSize-length(p2))/k);//intersect
 		k *= Scale;
-             minDist2 = min(minDist2,  dot(p2, p2));
+		minDist2 = min(minDist2,  dot(p2, p2));
 	}
-      
-       // Use this to crop to a sphere:
+	
+	// Use this to crop to a sphere:
 	//  float e = clamp(length(z)-2.0, 0.0,100.0);
 	//  return max(d,e);// distance estimate
 	return d;

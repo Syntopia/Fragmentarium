@@ -17,6 +17,7 @@ float DE(vec3 z)
 }
 
 /*
+Try using these settings (select them and press F4)
 AntiAlias = 2
 AntiAliasScale = 1.27
 LogMinDist = -2.303

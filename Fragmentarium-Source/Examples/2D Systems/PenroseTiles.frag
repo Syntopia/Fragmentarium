@@ -3,14 +3,14 @@
 #group Penrose Tilings
 
 // Iterations. Increase when zooming in.
-uniform int Iterations; slider[0,10,15]
+uniform int Iterations; slider[0,12,15]
 
-// An implementation of the system 
+// An implementation of the system
 // decribed by 'tomkh' in this thread;
 // http://www.fractalforums.com/new-theories-and-research/procedural-aperiodic-fractals/
 
 // A lot of constants here
-float pi =3.141592653589 ; 
+float pi =3.141592653589 ;
 float sc = 2.0/(sqrt(5.0)-1.0);  // inflation scale
 float d1 = tan(54.0*pi/180.0);
 float d2 = tan(18.0*pi/180.0);
@@ -30,6 +30,8 @@ mat2	m5= mat2(cos2,sin2,-sin2,cos2);
 
 
 vec3 getColor2D(vec2 z) {
+	z*=0.1;
+	z+=vec2(0.55,0.2);
 	int triangleType = 0;
 	for(int k=0; k<Iterations; k++) {
 		if (triangleType == 0) {

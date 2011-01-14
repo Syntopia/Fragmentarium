@@ -1,0 +1,20 @@
+END USER LICENSE AGREEMENT.
+
+Version 1.1.
+
+This software is provided with NO WARRANTY.
+
+That's right: not even if the software is loaded with viruses or crashes your hard-drive, can the author be held responsible. I would never intentionally include malware in the distribution, but I do not control the servers hosting the software, and will not make any guarantees. 
+
+If you do not like this, do not run the software.
+
+If you are okay with this, feel free to run the software on any number of computers and use it any way you want to.
+
+If you do modify or redistribute this software make sure you respect the included GPL license (license.txt).
+
+If you found that this EULA did not exactly ease your mind and you are worried about running this software, here is a few general suggestions:
+(1) Run the software in a sandboxed environment. (VM-Ware Player provides excellent and free virtualization)
+(2) Do not run as administrator, but as a non-privileged user.
+(3) Compile the sources yourself.
+(4) Check the MD5/SHA1 checksums to see if the files have been tampered with.
+(5) Search Google to see if anyone has experienced problems with the software.

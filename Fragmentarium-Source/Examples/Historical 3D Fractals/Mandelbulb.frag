@@ -1,6 +1,6 @@
 #info Mandelbulb Distance Estimator
 #include "DE-Raytracer.frag"
-#include "matrix.frag"
+#include "MathUtils.frag"
 #group Mandelbulb
 
 
@@ -70,8 +70,8 @@ float DE(vec3 pos) {
 	float dr=1.0;
 	int i=Iterations;
 	r=length(z);
-	while(r<Bailout && (i-->0)) {	
-z*=rot;	
+	while(r<Bailout && (i-->0)) {
+		z*=rot;
 		if (AlternateVersion) {
 			powN2(z,r,dr);
 		} else {
@@ -84,8 +84,8 @@ z*=rot;
 	}
 	
 	return 0.5*log(r)*r/dr;
-      /*
-       Use this code for some nice intersections (Power=2)
+	/*
+	Use this code for some nice intersections (Power=2)
 	float a =  max(0.5*log(r)*r/dr, abs(pos.y));
 	float b = 1000;
 	if (pos.y>0)  b = 0.5*log(r)*r/dr;

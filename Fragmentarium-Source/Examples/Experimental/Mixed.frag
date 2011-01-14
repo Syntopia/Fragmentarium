@@ -1,6 +1,6 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
 #include "DE-Raytracer.frag"
-#include "matrix.frag"
+#include "MathUtils.frag"
 #group Mixed DE
 
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
@@ -29,7 +29,7 @@ uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
 float DE2(vec3 z)
 {
 	int n = 0;
-      while (n < iters) {
+	while (n < iters) {
 		// Fold
 		z = abs(z);
 		if (z.x<z.y){ z.xy = z.yx;}
@@ -38,7 +38,7 @@ float DE2(vec3 z)
 		z.x=(Scale+1.0)* z.x-Offset.x*(Scale);
 		z.y=(Scale+1.0)* z.y-Offset.y*(Scale);
 		z.z=(Scale+1.0)* z.z;
-		if( z.z>0.5*Offset.z*(Scale))  z.z-=Offset.z*(Scale);	
+		if( z.z>0.5*Offset.z*(Scale))  z.z-=Offset.z*(Scale);
 		
 		minDist2 = min(minDist2, dot(z,z));
 		n++;
@@ -56,7 +56,7 @@ float DE3(vec3 z)
 	float t;
 	t=dot(z,n1); if (t>0.0) { z-=2.0*t*n1; }
 	t=dot(z,n2); if (t>0.0) { z-=2.0*t*n2; }
-		
+	
 	// Iterate to compute the distance estimator.
 	int n = 0;
 	vec4 p4;
@@ -78,5 +78,5 @@ float DE3(vec3 z)
 }
 
 float DE(vec3 z) {
-  return max(DE2(z),DE3(z));
+	return max(DE2(z),DE3(z));
 }

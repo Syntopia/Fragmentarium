@@ -1,7 +1,6 @@
-// Write fragment code here...
 float DE(vec3 z);
 #replace "float DE(" "float DE1("
-#include "Menger.frag"
+#include "../Kaleidoscopic IFS/Menger.frag"
 #replace "Iterations" "Iterations2"
 #replace "Scale" "Scale2"
 #replace "RotVector" "RotVector2"
@@ -9,7 +8,7 @@ float DE(vec3 z);
 #replace "Offset" "Offset2"
 #replace "rot " "rot2 "
 #replace "float DE(" "float DE2("
-#includeonly "Menger.frag"
+#includeonly "../Kaleidoscopic IFS/Menger.frag"
 #replace "float DE(" "float DE("
 
 float DE(vec3 z) {

@@ -20,17 +20,16 @@ vec3 getColor2D(vec2 c) {
 		z = complexMul(z,z) + c;
 		if (dot(z,z)> 100.0) break;
 	}
-	if (i < Iterations) {	
-             // The color scheme here is based on one
+	if (i < Iterations) {
+		// The color scheme here is based on one
 		// from Inigo Quilez's Shader Toy:
 		float co =  float( i) + 1.0 - log2(.5*log2(dot(z,z)));
 		co = sqrt(co/256.0);
 		return vec3( .5+.5*cos(6.2831*co+R),
-		.5+.5*cos(6.2831*co + G),
-		.5+.5*cos(6.2831*co +B) );
+			.5+.5*cos(6.2831*co + G),
+			.5+.5*cos(6.2831*co +B) );
 	}  else {
 		return vec3(0.0);
 	}
-	
 }
 
