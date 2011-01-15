@@ -27,7 +27,7 @@ float DE(vec3 pos) {
 		dp = 2.0* vec4(p.x*dp.x-dot(p.yzw, dp.yzw), p.x*dp.yzw+dp.x*p.yzw+cross(p.yzw, dp.yzw));
 		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) + c;
 		float p2 = dot(p,p);
-		minDist2 = min(minDist2, p2);
+		orbitTrap = min(orbitTrap, abs(vec4(p.xyz,p2)));
 		if (p2 > Threshold) break;
 	}
 	float r = length(p);

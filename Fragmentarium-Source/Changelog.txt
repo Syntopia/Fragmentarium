@@ -1,3 +1,8 @@
+53
+
+15-01-10 Updated Orbit traps (now distance to three coordinate planes and origin)
+[1h]
+
 14-01-10 Fixed linux compilation errors and warning (untested).
 [2h]	 Fixed registry settings bug (include path not read before opening preferences first time).
 		 Fixed unconnected reset() signal.
@@ -10,7 +15,6 @@
 
 11-01-10 Added different rendering modes: automatic, manual, and continuous (with FPS count).
 [3h]	 Added parameter menu.
-45
 
 09-01-10 Added orbit trap coloring support to 3D DE raytracer.
 [2h]	 Added include path support

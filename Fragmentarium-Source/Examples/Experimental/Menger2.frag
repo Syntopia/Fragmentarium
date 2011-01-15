@@ -49,7 +49,7 @@ float DE(vec3 z)
 			z.z=Scale* z.z;
 			if( z.z>0.5*Offset2.z*(Scale-1.0))  z.z-=Offset2.z*(Scale-1.0);
 		}
-		minDist2 = min(minDist2,  dot(z, z));
+		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
 		n++;
 	}
 	

@@ -15,27 +15,6 @@ Now Fragmentarium should run from inside Visual Studio, but it will not find its
 It is possible to create a deployable ....
 ------------
 
-Rename dir: "include" -> "Include" (all GLSL scripts)
-Rename matrix.glsl -> MathUtils.glsl
-
-add three glsl output lines -> Plus make it an Run button thingy
-
-Add plane orbit traps to shadering.
-
-Step up from prototype.
-
-Add context menu help...
------
-no such slot: makeScreenshot()
-
-Resize trigger many updates (hang)
-Reset Uniforms | Reset Tab
-Fix: Icon/Splash
-Check for updates
-
-Example Path : examples/
-
-
 
 #camera 3D
 uniform vec3 from,to,fromDx,fromDy,toDx,toDy;

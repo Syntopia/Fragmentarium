@@ -25,7 +25,8 @@ float DE(vec3 z)
 		vec3 p2 = mod(z*k, modi) - 0.5*modi;
 		d=max(d,(BubbleSize-length(p2))/k);//intersect
 		k *= Scale;
-		minDist2 = min(minDist2,  dot(p2, p2));
+		
+		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
 	}
 	
 	// Use this to crop to a sphere:

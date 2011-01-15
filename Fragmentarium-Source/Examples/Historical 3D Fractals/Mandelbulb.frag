@@ -79,7 +79,7 @@ float DE(vec3 pos) {
 		}
 		z+=pos;
 		r=length(z);
-		minDist2 = min(minDist2, r*r);
+		orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,r*r)));
 		
 	}
 	

@@ -39,8 +39,8 @@ float DE(vec3 z)
 		z *= fracRotation2;
 		
 		r = dot(z, z);
-             minDist2 = min(minDist2, r);
-	
+             orbitTrap = min(orbitTrap, abs(vec4(z,r)));
+		
 		n++;
 	}
 	

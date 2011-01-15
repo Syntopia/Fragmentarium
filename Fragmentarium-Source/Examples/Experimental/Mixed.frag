@@ -40,7 +40,8 @@ float DE2(vec3 z)
 		z.z=(Scale+1.0)* z.z;
 		if( z.z>0.5*Offset.z*(Scale))  z.z-=Offset.z*(Scale);
 		
-		minDist2 = min(minDist2, dot(z,z));
+		
+		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
 		n++;
 	}
 	
@@ -70,7 +71,8 @@ float DE3(vec3 z)
 		p4.xyz = z; p4.w = 1.0;
 		z = (M*p4).xyz;
 		// Record minimum orbit for colouring
-		minDist2 = min(minDist2, dot(z,z));
+		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
+		
 		n++;
 	}
 	

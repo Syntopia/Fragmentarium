@@ -68,15 +68,28 @@ uniform vec3 BackgroundColor; color[0.0,0.0,0.0]
 // A 'looney tunes' gradient background
 uniform bool GradientBackground; checkbox[false]
 
-float minDist2 = 10000.0;
+vec4 orbitTrap = vec4(10000.0);
 
-#group Orbit Coloring
+#group Orbit Trap
 
+// Determines the mix between pure light coloring and pure orbit trap coloring
 uniform float OrbitStrength; slider[0,0.5,1]
-uniform float OrbitMultiplier; slider[0,1,10]
-uniform float R; slider[0,0,1]
-uniform float G; slider[0,0.4,1]
-uniform float B; slider[0,0.7,1]
+// Closest distance to YZ-plane during orbit
+uniform float XStrength; slider[-1,0.3,1]
+// Closest distance to YZ-plane during orbit
+uniform vec3 X; color[1.0,0.3,0.4];
+// Closest distance to XZ-plane during orbit
+uniform float YStrength; slider[-1,0.3,1]
+// Closest distance to XZ-plane during orbit
+uniform vec3 Y; color[0.4,1.0,0.4];
+// Closest distance to XY-plane during orbit
+uniform float ZStrength; slider[-1,0.3,1]
+// Closest distance to XY-plane during orbit
+uniform vec3 Z; color[0.4,0.3,1.0];
+// Closest distance to origin during orbit
+uniform float RStrength; slider[-1,0.3,1]
+// Closest distance to  origin during orbit
+uniform vec3 R; color[1.0,1.0,1.0];
 
 float DE(vec3 pos) ; // Must be implemented in other file
 
@@ -109,7 +122,7 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 trace(vec3 from, vec3 to) {
-	minDist2 = 10000.0;
+	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(to-from);
 	from -= direction*MoveBack;
 	
@@ -120,6 +133,8 @@ vec3 trace(vec3 from, vec3 to) {
 	colorBase = vec3(0.0,0.0,0.0);
 	
 	for (steps=0; steps<MaxRaySteps; steps++) {
+		orbitTrap = vec4(10000.0);
+	
 		dist = DE(from + totalDist * direction)*Limiter;
 		dist = clamp(dist, 0.0, MaxDist);
 		if (dist < minDist ||  totalDist >MaxDist) break;
@@ -139,19 +154,28 @@ vec3 trace(vec3 from, vec3 to) {
 		float ao = 1.0- AO*stepFactor ;
 		color = mix(AOColor, color,ao);
 		if (totalDist< MaxDist) {
-			float co = (log(minDist2)*OrbitMultiplier);
+/*
+			float co = (log(orbitTrap.w)*OrbitMultiplier);
 			colorBase = vec3( .5+.5*cos(6.2831*co+R),
 				.5+.5*cos(6.2831*co+G),
 				.5+.5*cos(6.2831*co+B) );
 			colorBase = normalize(colorBase);
 			color = mix(ao*colorBase, color, OrbitStrength);
+*/
+			colorBase =X*XStrength*orbitTrap.x +
+				Y*YStrength*orbitTrap.y +
+				Z*ZStrength*orbitTrap.z +
+				R*RStrength*sqrt(orbitTrap.w);
 			
+			color = mix(color, ao*colorBase*3.0,  OrbitStrength);
 		}
 	}
 	
 	
 	
 	color += Glow*GlowColor*stepFactor;
+       color = clamp(color, 0.0, 1.0);
+
 	return color;
 }
 

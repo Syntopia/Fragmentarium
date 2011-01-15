@@ -308,11 +308,11 @@ namespace Fragmentarium {
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetUniforms()));
 			w->layout()->addWidget(pb);
 
-			pb= new QPushButton("Copy to CB", this);
+			pb= new QPushButton("Copy to Clipboard", this);
 			connect(pb, SIGNAL(clicked()), this, SLOT(copy()));
 			w->layout()->addWidget(pb);
 
-			pb= new QPushButton("Paste from CB", this);
+			pb= new QPushButton("Paste from Clipboard", this);
 			connect(pb, SIGNAL(clicked()), this, SLOT(paste()));
 			w->layout()->addWidget(pb);
 			layout->addWidget(w);

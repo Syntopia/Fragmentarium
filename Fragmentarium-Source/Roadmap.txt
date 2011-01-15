@@ -21,10 +21,18 @@ Roadmap.
 + Textures.
   
 + Better Syntax Highligtning.
-- Control of line numbers.
+- Control of line numbers (+GLSL debug working)
 - Simple website.
+- Blending to background seems wrong in raytracer
+- add three glsl output lines -> Plus make it an Run button thingy
+  -> glsl debug doesn't work?
+- Step up from prototype ->0.5.
+- Add context menu help...
+- no such slot: makeScreenshot()
+- Resize trigger many updates (hang)
+- Fix: Icon/Splash
 
-== First Release: Version 0.5s == 
+<-- First Release: Version 0.5 -- 
 
 - uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
 - uniform vec4 a; slider[....]
@@ -38,11 +46,15 @@ Roadmap.
   - Clipping planes
   - A 2D camera which scales from the current mouse position
 
-== Version 0.7 ==
+- Check for updates
+- Example Path : examples/
+
+
+<-- Version 0.7 --
  
 - Multipass / progressive renders.
 
-== Version 1.0 ==
+<-- Version 1.0 --
 
 Later:
 

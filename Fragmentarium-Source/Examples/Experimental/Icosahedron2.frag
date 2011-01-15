@@ -53,7 +53,7 @@ float DE(vec3 z)
 		// Rotate, scale, rotate (we need to cast to a 4-component vector).
 		z = (M*vec4(z,1.0)).xyz;
 		n++;
-		minDist2 = min(minDist2, dot(z,z));
+		orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,dot(z,z))));
 	}
 	
 	return (length(z) ) * pow(Scale,  float(-n));
