@@ -30,7 +30,7 @@ namespace Fragmentarium {
 
 			QString group;
 			QString name;
-			QString tooltip;
+			QString tooltip; 
 		};
 
 		class FloatParameter : public GuiParameter {
@@ -108,7 +108,7 @@ namespace Fragmentarium {
 
 			QString getText() { return source.join("\n"); }
 			QStringList source;
-			QList<QFile*> sourceFiles;
+			QList<QString> sourceFileNames;
 			QList<int> lines;
 			QList<int> sourceFile;
 
@@ -125,9 +125,9 @@ namespace Fragmentarium {
 		public:
 			Preprocessor(QStringList includePaths) : includePaths(includePaths) {};
 			
-			FragmentSource parse(QString input, QFile* f, bool moveMain);
-			void parseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly);
-			QString resolveName(QString fileName, QFile* file) ;
+			FragmentSource parse(QString input, QString fileName, bool moveMain);
+			void parseSource(FragmentSource* fs,QString input, QString fileName, bool includeOnly);
+			QString resolveName(QString fileName, QString originalFileName) ;
 		
 		private:
 			QStringList includePaths;

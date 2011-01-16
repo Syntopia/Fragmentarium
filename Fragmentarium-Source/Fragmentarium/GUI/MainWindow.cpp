@@ -144,11 +144,29 @@ namespace Fragmentarium {
 		namespace {
 
 			void createCommandHelpMenu(QMenu* menu, QWidget* textEdit) {
-				QMenu *preprocessorMenu = new QMenu("Preprocessor", 0);
-				preprocessorMenu->addAction("#include ...", textEdit , SLOT(insertText()));
+				QMenu *preprocessorMenu = new QMenu("Special Includes", 0);
+				preprocessorMenu->addAction("#include \"some.frag\"", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#camera 3D", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#includeonly \"some.frag\"", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#replace \"before\" \"after\"", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#info sometext", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#group parameter group name", textEdit , SLOT(insertText()));
+				
+				QMenu *uniformMenu = new QMenu("Special Uniforms", 0);
+				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform int i; slider[0,1,2]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform float f; slider[0.1,1.1,2.3]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform bool b; checkbox[true]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform sampler2D tex; file[tex.jpg]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform vec3 color; color[0.0,0.0,0.0]", textEdit , SLOT(insertText()));
+				
+
 				QAction* before = 0;
 				if (menu->actions().count() > 0) before = menu->actions()[0];
 				menu->insertMenu(before, preprocessorMenu);
+				menu->insertMenu(before, uniformMenu);
+				
 				menu->insertSeparator(before);
 			}
 		}
@@ -721,11 +739,11 @@ namespace Fragmentarium {
 			editMenu->addAction(pasteAction);
 			editMenu->addSeparator();
 			editMenu->addAction("Indent Script", this, SLOT(indent()));
+			QMenu* m = editMenu->addMenu("Insert Command");
+			createCommandHelpMenu(m, this);
 			editMenu->addSeparator();
 			editMenu->addAction("Preferences...", this, SLOT(preferences()));
-			//QMenu* m = editMenu->addMenu("Insert Command");
-			//createCommandHelpMenu(m, this);
-
+			
 
 			// -- Render Menu --
 			renderMenu = menuBar()->addMenu(tr("&Render"));
@@ -1039,14 +1057,10 @@ namespace Fragmentarium {
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 			QString inputText = getTextEdit()->toPlainText();
 
-			QFile* f = 0;
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
-			bool hasBeenSavedOnce = tabInfo[tabBar->currentIndex()].hasBeenSavedOnce;
+			//bool hasBeenSavedOnce = tabInfo[tabBar->currentIndex()].hasBeenSavedOnce;
 
-			if (hasBeenSavedOnce) {
-				f = new QFile(filename);
-			}
-
+			
 			QSettings settings;
 			bool debug = settings.value("debugScript", false).toBool();
 			bool moveMain = settings.value("moveMain", true).toBool();
@@ -1054,7 +1068,7 @@ namespace Fragmentarium {
 			Preprocessor p(includePaths);
 	
 			try {
-				FragmentSource fs = p.parse(inputText,f,moveMain);
+				FragmentSource fs = p.parse(inputText,filename,moveMain);
 				
 				if (debug) {
 					INFO("Debug is checked: showing final output in new tab.");
@@ -1115,7 +1129,25 @@ namespace Fragmentarium {
 			if (!this->getTextEdit()) return;
 			int pos = this->getTextEdit()->textCursor().position();
 			int blockNumber = this->getTextEdit()->textCursor().blockNumber();
-			statusBar()->showMessage(QString("Position: %1, Line: %2").arg(pos).arg(blockNumber+1), 5000);
+			
+			// Do reverse look up...
+			FragmentSource* fs = engine->getFragmentSource();
+			QString x;
+			QStringList ex;
+			QString filename = tabInfo[tabBar->currentIndex()].filename;
+			
+			for (int i = 0; i < fs->lines.count(); i++) {
+				// fs->sourceFiles[fs->sourceFile[i]]->fileName()
+				if (fs->lines[i] == blockNumber && 
+					(filename == fs->sourceFileNames[fs->sourceFile[i]])) ex.append(QString::number(i+4));
+			}
+			if (ex.count()) {
+				x = " Line in preprocessed script: " + ex.join(",");
+			} else {
+				x = " (Not part of current script) ";
+			}
+
+			statusBar()->showMessage(QString("Position: %1, Line: %2.").arg(pos).arg(blockNumber+1)+x, 5000);
 		}
 
 		QTextEdit* MainWindow::insertTabPage(QString filename) {

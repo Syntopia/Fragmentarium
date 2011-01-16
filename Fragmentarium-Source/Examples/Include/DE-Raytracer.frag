@@ -137,7 +137,7 @@ vec3 trace(vec3 from, vec3 to) {
 	
 		dist = DE(from + totalDist * direction)*Limiter;
 		dist = clamp(dist, 0.0, MaxDist);
-		if (dist < minDist ||  totalDist >MaxDist) break;
+		if (dist <totalDist*minDist ||  totalDist >MaxDist) break;
 		totalDist += dist;
 	}
 	
@@ -146,31 +146,28 @@ vec3 trace(vec3 from, vec3 to) {
 	totalDist-=1.0*(minDist-dist); // TODO: is this necessary?
 	
 	vec3 color = BackgroundColor;
+	 if (GradientBackground) {
+		float t = dot(direction, vec3(1.0,0.0,0.0));
+ 		color = mix(color, SpotLightColor, t);
+	}
 	
 	float stepFactor = clamp(MaxRayStepsDiv*float(steps)/float(MaxRaySteps),0.0,1.0);
-	if (GradientBackground || totalDist < MaxDist) {
+	if ( totalDist < MaxDist) {
 		vec3 hit = from + totalDist * direction;
 		color = coloring(hit,  direction, steps);
 		float ao = 1.0- AO*stepFactor ;
-		color = mix(AOColor, color,ao);
 		if (totalDist< MaxDist) {
-/*
-			float co = (log(orbitTrap.w)*OrbitMultiplier);
-			colorBase = vec3( .5+.5*cos(6.2831*co+R),
-				.5+.5*cos(6.2831*co+G),
-				.5+.5*cos(6.2831*co+B) );
-			colorBase = normalize(colorBase);
-			color = mix(ao*colorBase, color, OrbitStrength);
-*/
+
 			colorBase =X*XStrength*orbitTrap.x +
 				Y*YStrength*orbitTrap.y +
 				Z*ZStrength*orbitTrap.z +
 				R*RStrength*sqrt(orbitTrap.w);
 			
-			color = mix(color, ao*colorBase*3.0,  OrbitStrength);
+			color = mix(color, colorBase*3.0,  OrbitStrength);
 		}
+		color = mix(AOColor, color,ao);
+		
 	}
-	
 	
 	
 	color += Glow*GlowColor*stepFactor;

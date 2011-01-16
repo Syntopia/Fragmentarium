@@ -53,6 +53,8 @@ namespace Fragmentarium {
 			void setContinuous(bool value) { continuous = value; }
 			void setDisableRedraw(bool value) { disableRedraw = value; }
 			void resetTime() { time = QTime::currentTime(); }
+			FragmentSource* getFragmentSource() { return &fragmentSource; }
+	
 		
 		protected:
 			void mouseMoveEvent(QMouseEvent* ev) ; 
@@ -68,7 +70,7 @@ namespace Fragmentarium {
 			/// Triggers a perspective update and a redraw
 			void resizeGL(int w, int h);
 			void wheelEvent(QWheelEvent* e);
-			
+				
 		private:
 			bool continuous;
 			bool disableRedraw;

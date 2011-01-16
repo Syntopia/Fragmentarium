@@ -40,15 +40,15 @@ namespace Fragmentarium {
 
 		FragmentSource::FragmentSource() : hasPixelSizeUniform(false) {};
 
-		QString Preprocessor::resolveName(QString fileName, QFile* file) {
+		QString Preprocessor::resolveName(QString fileName, QString originalFileName) {
 			// First check absolute filenames
 			if (QFileInfo(fileName).isAbsolute()) return fileName;
 
 			QStringList pathsTried;
 
 			// Check relative to current file
-			if (file) {
-				QDir d = QFileInfo(*file).absolutePath();
+			if (!originalFileName.isEmpty()) {
+				QDir d = QFileInfo(originalFileName).absolutePath();
 				QString path = d.absoluteFilePath(fileName);
 				if (QFileInfo(path).exists()) return path;
 				pathsTried.append(path);
@@ -69,9 +69,9 @@ namespace Fragmentarium {
 			throw Exception("Could not resolve path for file: " + fileName);
 		};
 
-		void Preprocessor::parseSource(FragmentSource* fs,QString input, QFile* file, bool includeOnly) {
-				fs->sourceFiles.append(file);
-				int sf = fs->sourceFiles.count()-1;
+		void Preprocessor::parseSource(FragmentSource* fs,QString input, QString originalFileName, bool includeOnly) {
+				fs->sourceFileNames.append(originalFileName);
+				int sf = fs->sourceFileNames.count()-1;
 
 				QStringList in = input.split(QRegExp("\r\n|\r|\n"));
 				in.append("#group default"); // make sure we fall back to the default group after including a file.
@@ -98,14 +98,14 @@ namespace Fragmentarium {
 						} else {
 							throw Exception("'#include' or '#includeonly' expected");
 						}
-						QFile* f = new QFile(resolveName(fileName, file));
-						
-						if (!f->open(QIODevice::ReadOnly | QIODevice::Text))
-							throw Exception("Unable to open: " +  QFileInfo(*f).absoluteFilePath());
+						QString fName = resolveName(fileName, originalFileName);
+						QFile f(fName);
+						if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+							throw Exception("Unable to open: " +  fName);
 
-						INFO("Including file: " + QFileInfo(*f).absolutePath());
-						QString a = f->readAll();
-						parseSource(fs, a, f, only);
+						INFO("Including file: " + fName);
+						QString a = f.readAll();
+						parseSource(fs, a, fName, only);
 					} else {
 						fs->lines.append(lines[i]);
 						fs->sourceFile.append(source[i]);
@@ -117,8 +117,8 @@ namespace Fragmentarium {
 		// We leak here, but fs's are copied!
 		FragmentSource::~FragmentSource() { /*foreach (QFile* f, sourceFiles) delete(f);*/ }
 
-		FragmentSource Preprocessor::parse(QString input, QFile* file, bool moveMain) {
-
+		FragmentSource Preprocessor::parse(QString input, QString file, bool moveMain) {
+			INFO("Parse: " + file);
 			FragmentSource fs;
 
 			// Step one: resolve includes:

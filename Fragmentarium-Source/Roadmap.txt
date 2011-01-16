@@ -21,7 +21,11 @@ Roadmap.
 + Textures.
   
 + Better Syntax Highligtning.
-- Control of line numbers (+GLSL debug working)
++ Control of line numbers 
+  (+GLSL debug working)
+- Write out Camera hints after rendering
+- Better mouse mapping for cameras
+- Clipping?
 - Simple website.
 - Blending to background seems wrong in raytracer
 - add three glsl output lines -> Plus make it an Run button thingy

@@ -9,15 +9,22 @@ uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
 
+uniform bool Julia; checkbox[false]
+uniform float JuliaX; slider[-2,-0.6,2]
+uniform float JuliaY; slider[-2,1.3,2]
+vec2 c2 = vec2(JuliaX,JuliaY);
+
 vec2 complexMul(vec2 a, vec2 b) {
 	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
 }
 
 vec3 getColor2D(vec2 c) {
-	vec2 z = vec2(0,0);
+	vec2 z = Julia ?  c : vec2(0.0,0.0);
+	
 	int i = 0;
 	for (i = 0; i < Iterations; i++) {
-		z = complexMul(z,z) + c;
+		z = complexMul(z,z) + (Julia ? c2 : c);
+		
 		if (dot(z,z)> 100.0) break;
 	}
 	if (i < Iterations) {

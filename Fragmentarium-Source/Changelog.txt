@@ -1,4 +1,11 @@
-53
+55
+
+16-01-10 Now showing the line number for preprocessed scripts making debugging much easier
+[2h]	 Removed QFile pointer madness
+		 Added Julia option to Mandelbrots
+		 Added "linear clarity" to DE-raytracer	
+		 Added smoother gradient background
+
 
 15-01-10 Updated Orbit traps (now distance to three coordinate planes and origin)
 [1h]
