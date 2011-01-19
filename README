@@ -4,16 +4,16 @@ It is similar to Adobe's Pixel Bender, but uses pure GLSL.
 
 Features:
 
- * Multi-tabbed IDE
+ * Multi-tabbed IDE, with GLSL syntax highlighting
  * User widgets to manipulate parameter settings.
- * GLSL syntax high-lighting
  * Different 'mouse to GLSL' mapping schemes
  * Modular GLSL programming - include other fragments
  * Includes simple raytracer for distance estimated systems
+ * Many examples including Mandelbulb, Mandelbox, Kaleidoscopic IFS, and Julia Quaternion.   
 
 Fragmentarium is built in C++, OpenGL/GLSL, and Qt 4.
 
-Fragmentarium is currently at the prototype stage: syntax and UI is likely to change, and there are probably plenty of errors.
+Fragmentarium is currently in the early development phase, so expect some rough edges!
 
 For more information see:
 http://syntopia.github.com/Fragmentarium

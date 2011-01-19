@@ -7,9 +7,9 @@ Windows:
 - Change to 'Release'. Build in VS 2008.
 - Check dependencies in Process Explorer - update Build\Windows\copyWin32Files.bat to reflect this.
 - Run copyWin32Files.bat
-- Zip the content of 'Fragmentarium' and name the files after the following template: "StructureSynth-Windows_Binary_v0.8.0.zip"
+- Zip the content of 'Fragmentarium' and name the files after the following template: "Fragmentarium-Windows_Binary_v0.8.0.zip"
 - Run the Inno Setup installer.
-- Make an 'export' of the Trunk SVN directory (e.g. right-mouse-button-drag the directory to a new location, and use the context menu) into a directory named 'Fragmentarium Source Code' and zip the contents into an archive named "StructureSynth-Source-v0.8.0.zip".
+- Make an 'export' of the Trunk SVN directory (e.g. right-mouse-button-drag the directory to a new location, and use the context menu) into a directory named 'Fragmentarium Source Code' and zip the contents into an archive named "Fragmentarium-Source-v0.8.0.zip".
 - Log onto SourceForge choose 'Admin | File Releases'. Choose 'Fragmentarium | Add Release'. Choose a suitable name: "Version 0.8.0 (Exonautica)"
 
 - Update the SourceForge web pages.
