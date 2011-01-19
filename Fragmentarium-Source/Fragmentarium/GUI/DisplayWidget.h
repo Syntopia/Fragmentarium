@@ -28,6 +28,7 @@ namespace Fragmentarium {
 			virtual void wheel(double x, double y, double val) = 0;
 			virtual SyntopiaCore::Math::Vector3f transform(int width, int height) = 0;
 			virtual void reset() = 0;
+			virtual void printInfo() = 0;
 			virtual QString getVertexShader() =0;
 			virtual QString getID() =0;
 		};

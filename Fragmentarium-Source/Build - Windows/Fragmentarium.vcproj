@@ -582,10 +582,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\BuildProcedure.txt"
-			>
-		</File>
-		<File
 			RelativePath="..\changelog.txt"
 			>
 		</File>

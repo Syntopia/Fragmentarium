@@ -1,5 +1,13 @@
 55
 
+19-01-10 Write out Camera hints after rendering
+[2h]	 Removed 'debug' preference option -> now a menu item.
+		 New splash
+		 Mandelbulb is now default frag
+
+17-01-10 Make screenshot
+[2h]	 Updated 3D raytracer
+
 16-01-10 Now showing the line number for preprocessed scripts making debugging much easier
 [2h]	 Removed QFile pointer madness
 		 Added Julia option to Mandelbrots

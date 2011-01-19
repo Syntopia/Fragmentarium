@@ -67,11 +67,7 @@ namespace Fragmentarium {
 
 					verticalLayout->addWidget(checkBox);
 
-					checkBox_2 = new QCheckBox(tab);
-					checkBox_2->setObjectName("checkBox_2");
-
-					verticalLayout->addWidget(checkBox_2);
-
+	
 					horizontalLayout = new QHBoxLayout();
 					horizontalLayout->setObjectName("horizontalLayout");
 					label = new QLabel(tab);
@@ -102,13 +98,10 @@ namespace Fragmentarium {
 					checkBox->setText("Move main() to end");
 					checkBox->setStatusTip(tr("For compatibility with some GPU's."));
 
-					checkBox_2->setText("Debug final GLSL script");
-					checkBox_2->setStatusTip(tr("Opens the combined and preprocessed GLSL script in a new tab."));
 					label->setText("Include paths:");
 					tabWidget->setTabText(tabWidget->indexOf(tab),  "Main");
 
 					QSettings settings;
-					checkBox_2->setChecked(settings.value("debugScript", false).toBool());
 					checkBox->setChecked(settings.value("moveMain", true).toBool());
 					lineEdit->setText(settings.value("includePaths", "Examples/Include;").toString());
 				} 
@@ -120,7 +113,6 @@ namespace Fragmentarium {
 
 				void saveSettings() {
 					QSettings settings;
-					settings.setValue("debugScript", checkBox_2->isChecked());
 					settings.setValue("moveMain", checkBox->isChecked());
 					settings.setValue("includePaths", lineEdit->text());
 				}
@@ -130,7 +122,6 @@ namespace Fragmentarium {
 				QWidget *tab;
 				QVBoxLayout *verticalLayout;
 				QCheckBox *checkBox;
-				QCheckBox *checkBox_2;
 				QHBoxLayout *horizontalLayout;
 				QLabel *label;
 				QLineEdit *lineEdit;
@@ -330,7 +321,7 @@ namespace Fragmentarium {
 		MainWindow::MainWindow()
 		{
 			init();
-			loadFile(QDir(getExamplesDir()).absoluteFilePath("Default.frag"));
+			loadFile(QDir(getExamplesDir()).absoluteFilePath("Historical 3D Fractals/Mandelbulb.frag"));
 			tabChanged(0); // to update title.
 		}
 
@@ -461,7 +452,7 @@ namespace Fragmentarium {
 			oldDirtyPosition = -1;
 			setFocusPolicy(Qt::StrongFocus);
 
-			version = SyntopiaCore::Misc::Version(0, 0, 1, -1, " (\"ALPHA\")");
+			version = SyntopiaCore::Misc::Version(0, 0, 5, -1, " (\"Orbis Tertius\")");
 			setAttribute(Qt::WA_DeleteOnClose);
 
 			QSplitter*	splitter = new QSplitter(this);
@@ -545,9 +536,7 @@ namespace Fragmentarium {
 			setMouseTracking(true);
 
 			INFO(QString("Welcome to Fragmentarium version %1. A Syntopia Project.").arg(version.toLongString()));
-			INFO("This version is VERY alpha!");
 			INFO("");
-			INFO("Please report bugs and feature requests at the SourceForge forums (weblink at the Help Menu). Enjoy.");
 			//WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
 
 			fullScreenEnabled = false;
@@ -748,6 +737,8 @@ namespace Fragmentarium {
 			// -- Render Menu --
 			renderMenu = menuBar()->addMenu(tr("&Render"));
 			renderMenu->addAction(renderAction);
+			renderMenu->addSeparator();
+			renderMenu->addAction("Output Preprocessed Script (for Debug)", this, SLOT(showDebug()));
 			renderMenu->addSeparator();
 			renderMenu->addAction(fullScreenAction);
 			renderMenu->addAction(resetViewAction);
@@ -1048,38 +1039,46 @@ namespace Fragmentarium {
 			return QFileInfo(fullFileName).fileName();
 		}
 
+		void MainWindow::showDebug() {
+			logger->getListWidget()->clear();
 
-
-
+			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
+			
+			INFO("Showing preprocessed output in new tab");
+			QString inputText = getTextEdit()->toPlainText();
+			QString filename = tabInfo[tabBar->currentIndex()].filename;
+			QSettings settings;
+			bool moveMain = settings.value("moveMain", true).toBool();
+			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
+			Preprocessor p(includePaths);	
+			try {
+				FragmentSource fs = p.parse(inputText,filename,moveMain);
+				QString prepend =  "#define highp\n"
+									"#define mediump\n"
+									"#define lowp\n";
+				insertTabPage("")->setText(prepend+fs.getText());
+			} catch (Exception& e) {
+				WARNING(e.getMessage());
+			}
+		}
+		
 		void MainWindow::render() {
 			logger->getListWidget()->clear();
 
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 			QString inputText = getTextEdit()->toPlainText();
-
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
-			//bool hasBeenSavedOnce = tabInfo[tabBar->currentIndex()].hasBeenSavedOnce;
-
-			
 			QSettings settings;
-			bool debug = settings.value("debugScript", false).toBool();
 			bool moveMain = settings.value("moveMain", true).toBool();
 			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
 			Preprocessor p(includePaths);
 	
 			try {
 				FragmentSource fs = p.parse(inputText,filename,moveMain);
-				
-				if (debug) {
-					INFO("Debug is checked: showing final output in new tab.");
-					insertTabPage("")->setText(fs.getText());
-				}
-
 				bool showGUI = false;
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);
 				editorDockWidget->setHidden(!showGUI);
 				engine->setFragmentShader(fs);
-
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
 			}	
@@ -1273,6 +1272,10 @@ namespace Fragmentarium {
 			if (!s) WARNING("Failed to open browser...");
 		}
 
+		void MainWindow::makeScreenshot() {
+			saveImage(engine->grabFrameBuffer());
+		}
+		
 		void MainWindow::saveImage(QImage image) {
 			QList<QByteArray> a = QImageWriter::supportedImageFormats();
 			QStringList allowedTypesFilter;

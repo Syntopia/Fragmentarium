@@ -80,7 +80,9 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 
 		public slots:
+			void makeScreenshot();
 			void callRedraw();
+			void showDebug();
 			
 			void pasteSelected();
 			void renderModeChanged(int);

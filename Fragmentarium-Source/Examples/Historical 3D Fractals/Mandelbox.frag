@@ -22,7 +22,7 @@ PERFORMANCE OF THIS SOFTWARE.
 */
 
 // Number of fractal iterations.
-uniform int Iterations;  slider[0,13,100]
+uniform int Iterations;  slider[0,17,100]
 
 uniform float MinRad2;  slider[0,0.25,2.0]
 

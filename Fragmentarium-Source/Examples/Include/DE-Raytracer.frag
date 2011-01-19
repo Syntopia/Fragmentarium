@@ -18,6 +18,8 @@ uniform float LogMinDist;slider[-7,-3.0,0];
 // Distance at which normal is evaluated
 uniform float LogNormalDist;slider[-7,-4.0,0];
 
+uniform float ClarityPower;slider[0,1,5];
+
 // The maximum distance rays are traced
 uniform float MaxDist;slider[0,6,20];
 
@@ -32,26 +34,26 @@ float normalE = pow(10.0,LogNormalDist);
 
 
 // Maximum number of  raymarching steps.
-uniform int MaxRaySteps;  slider[0,28,200]
+uniform int MaxRaySteps;  slider[0,56,300]
 
 // Use this to boost Ambient Occlusion and Glow
-uniform float  MaxRayStepsDiv;  slider[1,1,10]
+uniform float  MaxRayStepsDiv;  slider[1,1.8,10]
 
 #group Light
 
 // AO based on the number of raymarching steps
-uniform float AO; slider[0,1,1]
+uniform float AO; slider[0,0.7,1]
 // Ambient Occlusion color
 uniform vec3 AOColor; color[0.0,0.0,0.0];
 
 // The intensity of the directional ligt
 uniform float SpotLight; slider[0,1.0,1.0];
 // The specular intensity of the directional light
-uniform float Specular; slider[0,1.0,4.0];
+uniform float Specular; slider[0,0.3,4.0];
 // The specular exponent
-uniform float SpecularExp; slider[0,5.0,100.0];
+uniform float SpecularExp; slider[0,30.0,100.0];
 // Color of the directional light
-uniform vec3 SpotLightColor; color[0.3,0.4,1];
+uniform vec3 SpotLightColor; color[0.67,0.67,0.67];
 // Direction to the spot light
 uniform vec3 SpotLightDir;  slider[(-10,-10,-10),(1,1,1),(10,10,10)]
 // Light coming from the camera position (diffuse lightning)
@@ -64,30 +66,30 @@ uniform float Glow; slider[0,0.0,1]
 // Glow color
 uniform vec3 GlowColor; color[0.3,1.0,0.4];
 // Background color
-uniform vec3 BackgroundColor; color[0.0,0.0,0.0]
+uniform vec3 BackgroundColor; color[0.6,0.6,0.5]
 // A 'looney tunes' gradient background
-uniform bool GradientBackground; checkbox[false]
+uniform bool GradientBackground; checkbox[true]
 
 vec4 orbitTrap = vec4(10000.0);
 
 #group Orbit Trap
 
 // Determines the mix between pure light coloring and pure orbit trap coloring
-uniform float OrbitStrength; slider[0,0.5,1]
+uniform float OrbitStrength; slider[0,0.7,1]
 // Closest distance to YZ-plane during orbit
 uniform float XStrength; slider[-1,0.3,1]
 // Closest distance to YZ-plane during orbit
-uniform vec3 X; color[1.0,0.3,0.4];
+uniform vec3 X; color[0.5,0.6,0.6];
 // Closest distance to XZ-plane during orbit
 uniform float YStrength; slider[-1,0.3,1]
 // Closest distance to XZ-plane during orbit
-uniform vec3 Y; color[0.4,1.0,0.4];
+uniform vec3 Y; color[1.0,0.9,0.7];
 // Closest distance to XY-plane during orbit
 uniform float ZStrength; slider[-1,0.3,1]
 // Closest distance to XY-plane during orbit
-uniform vec3 Z; color[0.4,0.3,1.0];
+uniform vec3 Z; color[0.8,0.78,1.0];
 // Closest distance to origin during orbit
-uniform float RStrength; slider[-1,0.3,1]
+uniform float RStrength; slider[-1,0.2,1]
 // Closest distance to  origin during orbit
 uniform vec3 R; color[1.0,1.0,1.0];
 
@@ -122,6 +124,7 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 trace(vec3 from, vec3 to) {
+ 
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(to-from);
 	from -= direction*MoveBack;
@@ -131,13 +134,15 @@ vec3 trace(vec3 from, vec3 to) {
 	
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
-	
+
+	// We will adjust the minimum distance based on the current zoom
+	float eps = minDist*( length(fromDx+fromDy)/0.01 );
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		orbitTrap = vec4(10000.0);
 	
 		dist = DE(from + totalDist * direction)*Limiter;
 		dist = clamp(dist, 0.0, MaxDist);
-		if (dist <totalDist*minDist ||  totalDist >MaxDist) break;
+		if (dist <pow(totalDist,ClarityPower)*eps ||  totalDist >MaxDist) break;
 		totalDist += dist;
 	}
 	
@@ -162,6 +167,7 @@ vec3 trace(vec3 from, vec3 to) {
 				Y*YStrength*orbitTrap.y +
 				Z*ZStrength*orbitTrap.z +
 				R*RStrength*sqrt(orbitTrap.w);
+			colorBase /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + sqrt(orbitTrap.w));
 			
 			color = mix(color, colorBase*3.0,  OrbitStrength);
 		}

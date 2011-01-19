@@ -46,11 +46,16 @@ namespace Fragmentarium {
 
 				virtual QString getID() { return "3D"; };
 
+				void printInfo() {
+					INFO("Camera: Left mouse button rotates scene, right mouse button translates.");
+					INFO("Camera: (Both mouse buttons + left/right) controls clipping plane");
+					INFO("Camera: Mousewheel or (both mouse buttons + up/down) zooms");
+				}
 
 				virtual void reset() { 
 					rotation = Matrix4f::Identity();
-					scale = 1.0f;
-					translation = Vector3f(0,0,0);
+					scale = 2.0f;
+					translation = Vector3f(0,0,0.8);
 				}
 
 				Vector3f screenTo3D(int sx, int sy, int sz) {
@@ -171,6 +176,12 @@ namespace Fragmentarium {
 					y = 0;
 				}
 
+				void printInfo() {
+					INFO("Camera: Left mouse button translates scene.");
+					INFO("Camera: Mouse wheel or (right mouse button + up/down) zooms");
+				}
+			
+
 				virtual void leftMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
 					this->x+= -rx*scale*2.0;
 					this->y+= ry*scale*2.0;
@@ -178,14 +189,21 @@ namespace Fragmentarium {
 					
 				};
 
-				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double /*ry*/) {
-				};
-
-				virtual void bothMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double ry) {
+				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double ry) {
 					if (ry > 0) {
 						scale/=(1.0+2*ry);
 					} else {
 						scale*=(1.0-2*ry);
+					}
+					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
+					
+				};
+
+				virtual void bothMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double ry) {
+					if (ry > 0) {
+						scale/=(1.0+2*ry*5);
+					} else {
+						scale*=(1.0-2*ry*5);
 					}
 					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
 					
@@ -232,6 +250,7 @@ namespace Fragmentarium {
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
+			shaderProgram = 0;
 			resetTime();
 			fpsTimer = QTime::currentTime();
 			fpsCounter = 0;
@@ -240,24 +259,15 @@ namespace Fragmentarium {
 			cameraControl = new Camera2D(mainWindow->statusBar());
 			disabled = false;
 			updatePerspective();
-
 			pendingRedraws = 0;
 			requiredRedraws = 1; // 2 for double buffering?
 			startTimer( 20 );
 			oldPos = QPoint(0,0);
-
-
 			setMouseTracking(true);
-
 			backgroundColor = QColor(30,30,30);
 			contextMenu = 0;
-
 			rmbDragging = false;
-
 			doingRotate = false;
-			shaderProgram = 0;
-
-
 			setupFragmentShader();
 		}
 
@@ -265,8 +275,6 @@ namespace Fragmentarium {
 		void DisplayWidget::paintEvent(QPaintEvent * ev) {
 			QGLWidget::paintEvent(ev);
 		}
-
-
 
 		DisplayWidget::~DisplayWidget() {
 		}
@@ -310,6 +318,7 @@ namespace Fragmentarium {
 					WARNING("Unknown camera type: " + fragmentSource.camera);
 				}
 			}
+			cameraControl->printInfo();
 
 
 			requireRedraw();

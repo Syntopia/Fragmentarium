@@ -23,32 +23,33 @@ Roadmap.
 + Better Syntax Highligtning.
 + Control of line numbers 
   (+GLSL debug working)
-- Write out Camera hints after rendering
-- Better mouse mapping for cameras
-- Clipping?
-- Simple website.
-- Blending to background seems wrong in raytracer
-- add three glsl output lines -> Plus make it an Run button thingy
++ Write out Camera hints after rendering
++ Fix: Splash
++ add three glsl output lines -> Plus make it an Run button thingy
   -> glsl debug doesn't work?
-- Step up from prototype ->0.5.
-- Add context menu help...
-- no such slot: makeScreenshot()
-- Resize trigger many updates (hang)
-- Fix: Icon/Splash
+- Simple website.
 
 <-- First Release: Version 0.5 -- 
+
+- Fix: icons
+- Resize trigger many updates (hang)
+- Control FOV for 3D camera
+- Blending to background seems wrong in raytracer
 
 - uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
 - uniform vec4 a; slider[....]
 
 - Mouse sensitivity
 - Hires renders.
-- Better cameras
+- Better cameras (esp. 3D)
+  - Clipping? (What can we do here?)
   - Sliders for cameras
+  - Save to settings
   - Rotation in screen space
   - A 3D camera suitable for deep zooming
   - Clipping planes
   - A 2D camera which scales from the current mouse position
+  - Better mouse mapping for cameras
 
 - Check for updates
 - Example Path : examples/
