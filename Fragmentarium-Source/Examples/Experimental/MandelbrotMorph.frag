@@ -13,6 +13,8 @@ uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
 uniform float time;
 
+void init() {};
+
 vec2 complexMul(vec2 a, vec2 b) {
 	vec2 c =  vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
 	float f = 0.1*time;

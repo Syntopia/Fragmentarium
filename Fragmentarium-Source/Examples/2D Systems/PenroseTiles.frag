@@ -28,6 +28,7 @@ mat2	m3= mat2(cos1,sin1,-sin1,cos1);
 mat2	m4= mat2(-cos2,sin2,sin2,cos2);
 mat2	m5= mat2(cos2,sin2,-sin2,cos2);
 
+void init() {};
 
 vec3 getColor2D(vec2 z) {
 	z*=0.1;

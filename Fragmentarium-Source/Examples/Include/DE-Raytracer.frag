@@ -10,27 +10,28 @@ varying vec3 fromDy,toDy;
 // Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
 uniform int AntiAlias;slider[1,1,5];
 // Smoothens the image (when AA is enabled)
-uniform float AntiAliasScale;slider[0.0,1,5];
+uniform float AntiAliasBlur;slider[0.0,1,5];
 
 // Distance to object at which raymarching stops.
-uniform float LogMinDist;slider[-7,-3.0,0];
+uniform float Detail;slider[-7,-3.0,0];
 
 // Distance at which normal is evaluated
-uniform float LogNormalDist;slider[-7,-4.0,0];
+uniform float DetailNormal;slider[-7,-4.0,0];
 
+// The power of the clarity function
 uniform float ClarityPower;slider[0,1,5];
 
 // The maximum distance rays are traced
 uniform float MaxDist;slider[0,6,20];
 
 // Use this to adjust clipping planes
-uniform float MoveBack;slider[-10,0,10];
+uniform float Clipping;slider[-10,0,10];
 
 // Lower this if the system is missing details
-uniform float Limiter;slider[0,1,1];
+uniform float FudgeFactor;slider[0,1,1];
 
-float minDist = pow(10.0,LogMinDist);
-float normalE = pow(10.0,LogNormalDist);
+float minDist = pow(10.0,Detail);
+float normalE = pow(10.0,DetailNormal);
 
 
 // Maximum number of  raymarching steps.
@@ -127,7 +128,7 @@ vec3 trace(vec3 from, vec3 to) {
  
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(to-from);
-	from -= direction*MoveBack;
+	from -= direction*Clipping;
 	
 	float dist = 0.0;
 	float totalDist = 0.0;
@@ -140,7 +141,7 @@ vec3 trace(vec3 from, vec3 to) {
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		orbitTrap = vec4(10000.0);
 	
-		dist = DE(from + totalDist * direction)*Limiter;
+		dist = DE(from + totalDist * direction)*FudgeFactor;
 		dist = clamp(dist, 0.0, MaxDist);
 		if (dist <pow(totalDist,ClarityPower)*eps ||  totalDist >MaxDist) break;
 		totalDist += dist;
@@ -182,13 +183,17 @@ vec3 trace(vec3 from, vec3 to) {
 	return color;
 }
 
+void init(); // forward declare
+
 void main() {
+	init();
+
 	vec3 color = vec3(0,0,0);
 	for (int x = 1; x<=AntiAlias; x++) {
-		float  dx =  AntiAliasScale*(float(x)-1.0)/float(AntiAlias);
+		float  dx =  AntiAliasBlur*(float(x)-1.0)/float(AntiAlias);
 		
 		for (int y = 1; y<=AntiAlias; y++) {
-			float dy = AntiAliasScale*(float(y)-1.0)/float(AntiAlias);
+			float dy = AntiAliasBlur*(float(y)-1.0)/float(AntiAlias);
 			color += trace(from+fromDx*dx+fromDy*dy,to+toDx*dx+toDy*dy);
 		}
 	}

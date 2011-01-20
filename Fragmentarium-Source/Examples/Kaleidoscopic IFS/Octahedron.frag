@@ -14,8 +14,14 @@ uniform vec3 Rot1; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
 uniform float Angle2; slider[-180,0,180]
 uniform vec3 Rot2; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
 
-mat3 fracRotation2 = rotationMatrix3(normalize(Rot2), Angle2);
-mat3 fracRotation1 = rotationMatrix3(normalize(Rot1), Angle1);
+
+mat3 fracRotation2;
+mat3 fracRotation1;
+
+void init() {
+	fracRotation2 = rotationMatrix3(normalize(Rot2), Angle2);
+	fracRotation1 = rotationMatrix3(normalize(Rot1), Angle1);
+}
 
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,13,100]

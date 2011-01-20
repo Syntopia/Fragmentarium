@@ -31,8 +31,10 @@ uniform vec3 aoColor; color[0.0,0.0,0.0];
 uniform vec3 glowColor; color[0.0,1.0,0.0];
 
 float DE(vec3 pos) ; // Must be implemented in other file
+void init(); // forward declare
 
 void main() {
+	init();
 	vec3 direction = normalize(to-from);
 	
 	float totalD = 0.0, D = 3.4e38, extraD = 0.0, lastD;

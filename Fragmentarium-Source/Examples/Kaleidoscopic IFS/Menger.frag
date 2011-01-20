@@ -19,7 +19,11 @@ uniform float RotAngle; slider[0.00,0,180]
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
 
-mat3 rot = rotationMatrix(normalize(RotVector), RotAngle);
+mat3 rot;
+
+void init() {
+	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+}
 
 float DE(vec3 z)
 {

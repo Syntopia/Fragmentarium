@@ -21,7 +21,11 @@ uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
 // Scale parameter. A perfect Menger is 3.0
 uniform float RotAngle; slider[0.00,0,180]
 
-mat3 rot = rotationMatrix(normalize(RotVector), RotAngle);
+mat3 rot;
+
+void init() {
+	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+}
 
 // This is my power function, based on the standard spherical coordinates as defined here:
 // http://en.wikipedia.org/wiki/Spherical_coordinate_system

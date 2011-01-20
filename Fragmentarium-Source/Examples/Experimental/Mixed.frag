@@ -1,12 +1,14 @@
-#info Icosahedron Distance Estimator (Syntopia 2010)
+#info Mixed Distance Estimator (Syntopia 2010)
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Mixed DE
 
+// This example shows how to mix two different DE's
+
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/
 
-uniform float Scale; slider[0.00,3.0,4.00]
+uniform float Scale; slider[0.00,1.7,4.00]
 
 uniform float Phi; slider[-5,1.618,5]
 
@@ -15,8 +17,7 @@ vec3 n2 = normalize(vec3(1.0,-Phi,Phi+1.0));
 vec3 n3 = normalize(vec3(0.0,0.0,-1.0));
 vec3 offset = vec3(0.850650808,0.525731112,0.0);
 
-//mat4   M = toMatrix4(fracRotation2) * translate(offset) * scale4x4(scale) * translate(-offset) * toMatrix4(fracRotation1);
-mat4   M =  translate(offset) * scale4(Scale) * translate(-offset) ;
+mat4   M ;
 
 // Number of fractal iterations.
 uniform int iters;  slider[0,13,100]
@@ -24,6 +25,9 @@ uniform int iters;  slider[0,13,100]
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
 
+void init() {
+    M =  translate(offset) * scale4(Scale) * translate(-offset) ;
+}
 
 
 float DE2(vec3 z)

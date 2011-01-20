@@ -11,6 +11,8 @@ uniform bool BooleanTest; checkbox[false]
 uniform sampler2D texture; file[texture2.jpg]
 uniform sampler2D texture3; file[texture.jpg]
 
+void init() {};
+
 // A lot of constants here
 float pi =3.141592653589 ;
 float sc = 2.0/(sqrt(5.0)-1.0);  // inflation scale
