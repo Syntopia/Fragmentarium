@@ -1,4 +1,7 @@
-55
+57
+
+20-01-10 Updated all GLSL examples to avoid calling functions in global variable initializers (this did not work on ATI drivers)
+[2h]	 Cleaned up examples a bit.
 
 19-01-10 Write out Camera hints after rendering
 [2h]	 Removed 'debug' preference option -> now a menu item.

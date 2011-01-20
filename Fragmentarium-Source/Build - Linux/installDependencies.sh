@@ -1,0 +1,1 @@
+sudo apt-get install build-essential libx11-dev mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev libxext-dev libqt4-opengl-dev 

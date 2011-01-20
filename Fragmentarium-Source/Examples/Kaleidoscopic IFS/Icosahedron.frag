@@ -30,7 +30,7 @@ void init() {
 
 
 // Number of fractal iterations.
-uniform int iters;  slider[0,13,100]
+uniform int Iterations;  slider[0,13,100]
 
 float DE(vec3 z)
 {
@@ -45,7 +45,7 @@ float DE(vec3 z)
 	
 	// Iterate to compute the distance estimator.
 	int n = 0;
-	while (n < iters) {
+	while (n < Iterations) {
 		// Fold
 		z = abs(z);
 		t =dot(z,n1); if (t>0.0) { z-=2.0*t*n1; }
