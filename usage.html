@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+          This webdesign was based on;
+	terrafirma1.0 by nodethirtythree design
+	http://www.nodethirtythree.com
+
+	(It was later modifed by me (mikael(at)hvidtfeldts.net) )
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head >
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<title>Fragmentarium</title>
+<meta name="keywords" content="Generative Art, Fragmentarium, 3D art, Fragmentariumesis, povray, CFDG, Context Free," />
+<meta name="description" content="Fragmentarium is a tool for creating 3D structures from a set of user specified rules." />
+<link rel="stylesheet" type="text/css" href="default.css" />
+
+<script type="text/javascript">
+    var GB_ROOT_DIR = "greybox/";
+</script>
+
+<script type="text/javascript" src="greybox/AJS.js"></script>
+<script type="text/javascript" src="greybox/AJS_fx.js"></script>
+
+<script type="text/javascript" src="greybox/gb_scripts.js"></script>
+<link href="greybox/gb_styles.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="_inc/swfobject.js"></script>
+
+
+</head>
+<body>
+
+<div id="outer">
+
+	<div id="upbg"></div>
+
+	<div id="inner">
+
+		
+		<div id="splash"></div>
+	
+		<div id="menu">
+			<ul>
+				<li class="first"><a href="index.html">home</a></li>
+				<li><a href="get.html">get</a></li>
+				<li><a href="usage.html">usage</a></li>
+			</ul>
+
+		</div>
+	
+
+		<div id="primarycontent">
+		
+			<!-- primary content start -->
+	
+			<div class="post">
+				<div class="header">
+					<h3>Usage</h3>
+					</div>
+					<div class="content">
+				
+					<p>
+					<i>We need some more documentation here...</i>
+					</p>
+					</div>
+					<div class="header">
+					<h3>New preprocessor commands</h3>
+					</div>
+					<div class="content">
+					<p>Fragmentarium adds a few additional preprocessor commands.</p>
+					
+					<dt>#include "some.frag"</dt><dd>Simply includes the references file. If the filename is a relative filename, Fragmentarium first searches for the file relative to the location of the current executing file (if it is saved), otherwise the paths specified in the 'include path' preference are searched.</dd>
+					<dt>#camera 3D</dt><dd>Tells Fragmentarium to setup a 3D camera model, making it possible to adjust the camera using the mouse on the canvas. The following variables will be available in the shader: vec3 from, to, fromDx, toDx, fromDy, toDy. 'from' and 'to' are the start and endpoint for the camera ray for the current pixel. The '*dx' and '*dy' variables are the offset for neighboring pixels (used for anti-aliasing - normally no need to use manually).</dd>
+					<dt>#camera 2D</dt><dd>Tells Fragmentarium to setup a 2D camera model. A variable, vec2 coord, will contain the model coordinates for the current pixel. The extent of a pixel, can be obtained from the global 'pixelSize' variable.</dd>
+					<dt>#group parameter group name</dt><dd>Makes it possible to order GUI elements in groups.</dd>
+					<dt>#info "hello there"</dt><dd>Outputs info when compiling the fragment. Useful for attributions.</dd>
+					<dt>#includeonly "some.frag"</dt><dd>Experimental. Includes 'some.frag', but will ignore any 'include' commands in that file.</dd>
+					<dt>#replace "before" "after"</dt><dd>Experimental. Replaces the given patterns in all subsequent read lines (not in previously parsed lines).</dd>
+					
+					</div>
+					<div class="header">
+					<h3>Magical Uniforms</h3>
+					</div>
+					<div class="content">
+					<p>A few special variables can just be declared, and are assigned values automatically by Fragmentarium.</p>
+					<dt>uniform float time</dt><dd>Contains the time in seconds since the last 'restart'. Fragmentarium must be running in continuous screen-update mode for this to work.</dd>
+					</div>
+					<div class="header">
+					<h3>GUI Elements</h3>
+					</div>
+					<div class="content">
+				
+					<p>
+					It is possible to map GUI elements (such as sliders) to variables in the GLSL shaders. Notice that if a comment (//) precedes the definition, the comment will appear as a tooltip in the UI.<br>The following GUI mappings are available:
+					</p>
+					<p>
+
+					<dl class="longer">
+					<dt>uniform bool b; checkbox[true]]</dt><dd>Maps a checkbox in the GUI to the boolean variable 'b' in the shader code. The default value is specified in the bracket.<dd>
+					<dt>uniform int i; slider[0,1,2]</dt><dd>Creates a slider for an integer named 'i'. The values in the brackets are minimum, default, and maximum values.</dd>
+					<dt>uniform float f; slider[0.1,1.1,2.3]]</dt><dd>Creates a slider for an single precision floating-point number named 'f'. The values in the brackets are minimum, default, and maximum values.</dd>
+					<dt>uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]]</dt><dd>Creates three slider for the 3D vector named 'v'. The values in the brackets are minimum, default, and maximum vector values.</dd>
+					<dt>uniform vec3 color; color[0.0,0.0,0.0]]</dt><dd>Creates a color-chooser for the 3D vector named 'color'. The values in the brackets are R,G, and B values (in the interval [0;1]).</dd>
+					<dt>uniform sampler2D tex; file[tex.jpg]]</dt><dd>Loads a texture into the sampler named 'text'. Filenames are resolved the same way as for the '#include' command (using the 'include' paths). </dd>
+					</p>
+	</div>
+					<div class="header">
+					<h3>Implementing a simple DE system</h3>
+					</div>
+					<div class="content">
+					<p><i>To-Do...</i></p>
+					</div>
+
+				</div>			
+			</div>
+
+	
+
+	
+			
+			<!-- primary content end -->
+	
+		</div>
+		
+		<div id="secondarycontent">
+
+			<!-- secondary content start -->
+		
+			<!-- secondary content end -->
+	<!-- secondary content end -->
+
+		</div>
+	
+		<div id="footer">
+		
+			Fragmentarium 2011. <br /> 
+			Web pages based on a design by <a href="http://www.nodethirtythree.com/">NodeThirtyThree</a>.
+		
+		</div>
+
+	</div>
+
+</div>
+
+</body>
+</html>
