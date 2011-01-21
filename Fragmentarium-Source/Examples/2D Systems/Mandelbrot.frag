@@ -15,7 +15,7 @@ uniform float JuliaY; slider[-2,1.3,2]
 
 vec2 c2 = vec2(JuliaX,JuliaY);
 
-void init() {};
+void init() {}
 
 vec2 complexMul(vec2 a, vec2 b) {
 	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);

@@ -452,7 +452,7 @@ namespace Fragmentarium {
 			oldDirtyPosition = -1;
 			setFocusPolicy(Qt::StrongFocus);
 
-			version = SyntopiaCore::Misc::Version(0, 5, 5, -1, " (\"Orbis Tertius\")");
+			version = SyntopiaCore::Misc::Version(0, 5, 6, -1, " (\"Orbis Tertius\")");
 			setAttribute(Qt::WA_DeleteOnClose);
 
 			QSplitter*	splitter = new QSplitter(this);

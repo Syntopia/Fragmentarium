@@ -11,7 +11,7 @@ uniform bool BooleanTest; checkbox[false]
 uniform sampler2D texture; file[texture2.jpg]
 uniform sampler2D texture3; file[texture.jpg]
 
-void init() {};
+void init() {}
 
 // A lot of constants here
 float pi =3.141592653589 ;

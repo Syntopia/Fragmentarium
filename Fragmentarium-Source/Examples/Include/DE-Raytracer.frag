@@ -63,9 +63,9 @@ uniform float CamLight; slider[0,1,1];
 uniform vec3 CamLightColor; color[1.0,1.0,1.0];
 
 // Glow based on the number of raymarching steps
-uniform float Glow; slider[0,0.0,1]
+uniform float Glow; slider[0,0.2,1]
 // Glow color
-uniform vec3 GlowColor; color[0.3,1.0,0.4];
+uniform vec3 GlowColor; color[1.0,1.0,1.0];
 // Background color
 uniform vec3 BackgroundColor; color[0.6,0.6,0.5]
 // A 'looney tunes' gradient background
@@ -174,10 +174,11 @@ vec3 trace(vec3 from, vec3 to) {
 		}
 		color = mix(AOColor, color,ao);
 		
+	} else {
+		color += Glow*GlowColor*stepFactor;
 	}
 	
 	
-	color += Glow*GlowColor*stepFactor;
        color = clamp(color, 0.0, 1.0);
 
 	return color;

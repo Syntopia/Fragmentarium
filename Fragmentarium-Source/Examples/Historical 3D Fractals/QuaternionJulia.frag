@@ -18,7 +18,7 @@ uniform float C4; slider[-1,0.16,1]
 
 vec4 c = vec4(C123,C4); // We don't support 4-component sliders yet...
 
-void init() {};
+void init() {}
 
 // The inline expanded quaterion multiplications make this DE
 // look much worse than it actually is.

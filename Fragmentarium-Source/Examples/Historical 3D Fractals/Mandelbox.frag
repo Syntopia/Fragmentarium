@@ -35,7 +35,7 @@ vec4 scale = vec4(Scale, Scale, Scale, abs(Scale)) / MinRad2;
 float absScalem1 = abs(Scale - 1.0);
 float AbsScaleRaisedTo1mIters = pow(abs(Scale), float(1-Iterations));
 
-void init() {};
+void init() {}
 
 // Compute the distance from `pos` to the Mandelbox.
 float DE(vec3 pos) {
