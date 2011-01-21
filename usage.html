@@ -60,7 +60,11 @@
 					<div class="content">
 				
 					<p>
-					<i>We need some more documentation here...</i>
+					All Fragmentarium programs are written in GLSL. A Fragmentarium 'fragment' is always executed for each pixel in the image - there is no OpenGL geometry in the images. So Fragmentarium programs are typically raycasters or raytracers. 
+					<br/><br />
+					One main feature of Fragmentarium is the ability to break up code in smaller fragments and reuse them. Another core feature is the ability to bind custom user interface elements (such as sliders) to variables in the script.
+					<br/><br/>
+					For a quick start, take a look at the examples at the bottom.
 					</p>
 					</div>
 					<div class="header">
@@ -84,6 +88,7 @@
 					<div class="content">
 					<p>A few special variables can just be declared, and are assigned values automatically by Fragmentarium.</p>
 					<dt>uniform float time</dt><dd>Contains the time in seconds since the last 'restart'. Fragmentarium must be running in continuous screen-update mode for this to work.</dd>
+					<dt>uniform float pixelSize</dt><dd>Contains the size of a pixel in 2D model coordinates.</dd>
 					</div>
 					<div class="header">
 					<h3>GUI Elements</h3>
@@ -91,26 +96,81 @@
 					<div class="content">
 				
 					<p>
-					It is possible to map GUI elements (such as sliders) to variables in the GLSL shaders. Notice that if a comment (//) precedes the definition, the comment will appear as a tooltip in the UI.<br>The following GUI mappings are available:
+					It is possible to map GUI elements (such as sliders) to variables in the GLSL shaders. Notice that if a comment (//) precedes the definition, the comment will appear as a tooltip in the UI.<br /><br />The following GUI mappings are available:
 					</p>
 					<p>
 
 					<dl class="longer">
-					<dt>uniform bool b; checkbox[true]]</dt><dd>Maps a checkbox in the GUI to the boolean variable 'b' in the shader code. The default value is specified in the bracket.<dd>
+					<dt>uniform bool b; checkbox[true]</dt><dd>Maps a checkbox in the GUI to the boolean variable 'b' in the shader code. The default value is specified in the bracket.<dd>
 					<dt>uniform int i; slider[0,1,2]</dt><dd>Creates a slider for an integer named 'i'. The values in the brackets are minimum, default, and maximum values.</dd>
-					<dt>uniform float f; slider[0.1,1.1,2.3]]</dt><dd>Creates a slider for an single precision floating-point number named 'f'. The values in the brackets are minimum, default, and maximum values.</dd>
+					<dt>uniform float f; slider[0.1,1.1,2.3]</dt><dd>Creates a slider for an single precision floating-point number named 'f'. The values in the brackets are minimum, default, and maximum values.</dd>
 					<dt>uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]]</dt><dd>Creates three slider for the 3D vector named 'v'. The values in the brackets are minimum, default, and maximum vector values.</dd>
-					<dt>uniform vec3 color; color[0.0,0.0,0.0]]</dt><dd>Creates a color-chooser for the 3D vector named 'color'. The values in the brackets are R,G, and B values (in the interval [0;1]).</dd>
-					<dt>uniform sampler2D tex; file[tex.jpg]]</dt><dd>Loads a texture into the sampler named 'text'. Filenames are resolved the same way as for the '#include' command (using the 'include' paths). </dd>
+					<dt>uniform vec3 color; color[0.0,0.0,0.0]</dt><dd>Creates a color-chooser for the 3D vector named 'color'. The values in the brackets are R,G, and B values (in the interval [0;1]).</dd>
+					<dt>uniform sampler2D tex; file[tex.jpg]</dt><dd>Loads a texture into the sampler named 'text'. Filenames are resolved the same way as for the '#include' command (using the 'include' paths). </dd>
+					<br /><br />
+					
 					</p>
 	</div>
 					<div class="header">
-					<h3>Implementing a simple DE system</h3>
+					<h3>Implementing a Simple 2D System</h3>
 					</div>
 					<div class="content">
-					<p><i>To-Do...</i></p>
+					<p>
+				
+					<pre>
+#include "2D.frag"
+#group Simple Mandelbrot
+
+// Number of iterations
+uniform int Iterations; slider[10,100,1000]
+
+void init() {}
+
+vec3 getColor2D(vec2 c) {
+  vec2 z = vec2(0.0);
+  for (int i = 0; i < Iterations; i++) {
+    z = vec2(z.x*z.x-z.y*z.y,2*z.x*z.y) +  c;
+    if (dot(z,z)> 100.0) {
+      return vec3(float(i)/float(Iterations));
+    }
+  }
+  return vec3(0.0);
+}
+					</pre>
+					The example above demonstrates a very simple system: a monochrome Mandelbrot set.<br/>
+					<img src="images/mandel.png" /><br/>
+					The first line includes the "2D.frag" which is a very simple fragment - its only task is to take care of anti-alias.
+					Using "2D.frag" simply requires that the user implements a function 'getColor2D', which gets the 2D model position as input, and must return a RGB color in a three component vector.<br/><br/>
+					The "void init() {}" line does nothing. It can be used to run initialization code, but is not needed here. Since the 'main' function in "2D.frag" expect this function to be defined, it is necessary to provide it, even though it is empty.<br/><br/>
+
+					Also notice the 'uniform int Iterations' line. This line creates a slider in the Fragmentarium UI, and binds it to the 'Iterations' variable in the GLSL script. The comment line above this line will appear as a tooltip in UI as well.
+					<br /><br />
+					</p>
 					</div>
 
+					<div class="header">
+					<h3>Implementing a Distance Estimated System</h3>
+					</div>
+					<div class="content">
+					<p>
+						The second example shows how to implement a Distance Estimated system. Distance Estimated systems belongs to a special class of systems, defined by a function which is able to calculate an upper bound to the distance to the closest part of the object. Many interesting fractals can be expressed by a distance estimator. In the example below, the distance estimator represents a system of eight spheres located at the corners of a cube.
+					<pre>
+#include "DE-Raytracer.frag"
+
+void init() {}
+
+float DE(vec3 pos) {
+	return abs(length(abs(pos)+vec3(-1.0))-1.2);
+}
+					</pre>
+					<img src="images/balls.png" /><br/>
+					<br/>
+					The first line includes the "DE-Raytracer.frag". In contrast to the 2D example, "DE-Raytracer.frag" takes care of a lot of stuff, including lighting and anti-aliasing. It is, however, very simple to use: simply provide a distance estimator in the function 'DE' which takes a point in space as input and returns the distance (or an upper bound of it) to the closest point on the object.<br/><br/>
+					
+					</p>
+					</div>
+
+					
 				</div>			
 			</div>
 
