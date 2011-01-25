@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
 		// We ignore more then one argument
 		mainWin = new Fragmentarium::GUI::MainWindow(args[1]);
 	}
+	mainWin->setSplashWidget(&splash);
     mainWin->show();
-	splash.show();
 	return app.exec();
 }
 

@@ -101,30 +101,16 @@ namespace Fragmentarium {
 				virtual Vector3f transform(int width, int height) {
 					this->height = height;
 					this->width = width;
-
-					// -- Viewport
-					glViewport( 0, 0, width, height);
-
-					// -- Projection
-					glMatrixMode(GL_PROJECTION);
-					glLoadIdentity();
-					//gluPerspective(23.0,(float) width / (float) height, 5.0, 106.0);
-
+					
 					// -- Modelview
 					glMatrixMode(GL_MODELVIEW);
 					glLoadIdentity();
-					//glTranslatef( -pivot.x(), -pivot.y(), -pivot.z() );
-					//Vector3f pivot = Vector3f(0,0,0);	
-					//Vector3f translation = Vector3f(0,0,-20);
 					glMultMatrixf(rotation.getArray());
 					glTranslatef( translation.x(), translation.y(), translation.z() );
-					//glScalef( 1.0, (height/(float)width), 1.0);
 					glScalef( scale, scale*(height/(float)width), 1.0 );
-					
 					glGetDoublev(GL_MODELVIEW_MATRIX, modelViewCache );
 					glGetDoublev(GL_PROJECTION_MATRIX, projectionCache );
 					glGetIntegerv(GL_VIEWPORT, viewPortCache);
-
 			
 					return Vector3f(1.0,1.0,1.0);
 				};
@@ -141,14 +127,16 @@ namespace Fragmentarium {
 						"void main(void)\n"
 						"{\n"
 						"   gl_Position =  gl_Vertex;\n"
+						"   gl_Vertex = gl_ProjectionMatrix*gl_Vertex; "
+						"   vec2 ps = pixelSize*mat2(gl_ProjectionMatrix); " // extract submatrix to scale pixelsize
 						"   float fx = 2.0;\n"
 						"   float fy = 2.0;\n"
 						"   from = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y, 1.0,1.0)).xyz;\n"
 						"   to = (gl_ModelViewMatrix*vec4(gl_Vertex.x*fx, gl_Vertex.y*fy, -1.0,1.0)).xyz;\n"
-						"   fromDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y+pixelSize.y, 1.0,1.0)).xyz - from;\n"
-						"   toDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x*fx, (gl_Vertex.y+pixelSize.y)*fy, -1.0,1.0)).xyz - to;\n"
-						"   fromDx = (gl_ModelViewMatrix*vec4(gl_Vertex.x+pixelSize.x, gl_Vertex.y, 1.0,1.0)).xyz- from;\n"
-						"   toDx = (gl_ModelViewMatrix*vec4((gl_Vertex.x+pixelSize.x)*fx, gl_Vertex.y*fy, -1.0,1.0)).xyz - to;\n"
+						"   fromDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y+ps.y, 1.0,1.0)).xyz - from;\n"
+						"   toDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x*fx, (gl_Vertex.y+ps.y)*fy, -1.0,1.0)).xyz - to;\n"
+						"   fromDx = (gl_ModelViewMatrix*vec4(gl_Vertex.x+ps.x, gl_Vertex.y, 1.0,1.0)).xyz- from;\n"
+						"   toDx = (gl_ModelViewMatrix*vec4((gl_Vertex.x+ps.x)*fx, gl_Vertex.y*fy, -1.0,1.0)).xyz - to;\n"
 						"}");
 					// 
 				}
@@ -220,10 +208,7 @@ namespace Fragmentarium {
 				};
 
 				virtual Vector3f transform(int width, int height) {
-					glViewport(0,0,width,height);
-					glMatrixMode(GL_PROJECTION);
-					glLoadIdentity();
-					gluOrtho2D(-1,-1,1,1);
+					gluOrtho2D(-1,-1,1,1); // Keep?
 					glMatrixMode(GL_MODELVIEW);
 					glLoadIdentity();glTranslatef(x,y,0);
 					glScalef(scale,scale*(height/(float)width),scale);
@@ -251,6 +236,8 @@ namespace Fragmentarium {
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
 			shaderProgram = 0;
+			tiles = 0;
+			tilesCount = 0;
 			resetTime();
 			fpsTimer = QTime::currentTime();
 			fpsCounter = 0;
@@ -390,6 +377,54 @@ namespace Fragmentarium {
 		}
 
 
+		void DisplayWidget::setupTileRender(int tiles) {
+			this->tiles = tiles;
+			tilesCount = 0;
+			requireRedraw();
+		}
+		
+		void DisplayWidget::tileRender() {
+			glLoadIdentity();
+			if (!tiles) return;
+			requireRedraw();
+			
+			if (tilesCount==tiles*tiles) {
+				INFO("Tile rendering complete");
+				// Now assemble image
+				int w = cachedTileImages[0].width();
+				int h = cachedTileImages[0].height();
+				QImage im(w*tiles,h*tiles,cachedTileImages[0].format());
+				
+				INFO(QString("Created combined image (%1,%2)").arg(im.width()).arg(im.height()));
+				// Isn't there a Qt function to copy entire images?
+				for (int i = 0; i < tiles*tiles; i++) {
+					int dx = (i / tiles);
+					int dy = (tiles-1)-(i % tiles);
+					for (int x = 0; x < w; x++) {
+						for (int y = 0; y < h; y++) {
+							QRgb p = cachedTileImages[i].pixel(x,y);
+							im.setPixel(x+w*dx,y+h*dy,p);
+						}
+					}
+				}
+			
+				cachedTileImages.clear();
+				mainWindow->saveImage(im);
+				tiles = 0;
+				
+				return;
+			}
+			INFO(QString("Rendering tile: %1 of %2").arg(tilesCount+1).arg(tiles*tiles));
+			float x = (tilesCount / tiles) - (tiles-1)/2.0;
+			float y = (tilesCount % tiles) - (tiles-1)/2.0;
+			
+			glTranslatef( x * (2.0/tiles) , y * (2.0/tiles), 1.0);
+			glScalef( 1.0/tiles,1.0/tiles,1.0);	
+			
+			
+			tilesCount++;
+			
+		}
 
 
 		void DisplayWidget::paintGL() {
@@ -415,7 +450,17 @@ namespace Fragmentarium {
 				glDisable( GL_LIGHTING );
 				glDisable( GL_DEPTH_TEST );
 
-				// Setup Magic Uniforms
+				// -- Viewport
+				glViewport( 0, 0, width(), height());
+
+				// -- Projection
+				// The projection mode as used here
+				// allow us to render only a region of the viewport.
+				// This allows us to perform tile based rendering.
+				glMatrixMode(GL_PROJECTION);
+				tileRender();
+				
+					
 				Vector3f scale = cameraControl->transform(width(), height())*2;
 				if (fragmentSource.hasPixelSizeUniform || true) {
 					int l = shaderProgram->uniformLocation("pixelSize");
@@ -436,7 +481,15 @@ namespace Fragmentarium {
 				// Setup User Uniforms
 				mainWindow->setUserUniforms(shaderProgram);
 				glColor3d(1.0,1.0,1.0);
+				
 				glRectf(-1,-1,1,1); 
+
+				if (tiles) {
+					QImage im = grabFrameBuffer();
+					cachedTileImages.append(im);
+					INFO("Stored image: " + QString::number(cachedTileImages.count()));
+				};
+
 			}
 
 			QTime cur = QTime::currentTime();
@@ -469,21 +522,9 @@ namespace Fragmentarium {
 		};
 
 		void DisplayWidget::updatePerspective() {
-			if (height() == 0) return;
-
-			GLfloat w = (float) width() / (float) height();
-			infoText = QString("[%1x%2] Aspect=%3").arg(width()).arg(height()).arg((float)width()/height());
+			if (height() == 0 || width() == 0) return;
+			QString infoText = QString("[%1x%2] Aspect=%3").arg(width()).arg(height()).arg((float)width()/height());
 			mainWindow-> statusBar()->showMessage(infoText, 5000);
-			textTimer = QTime::currentTime();
-			GLfloat h = 1.0;
-
-			glViewport( 0, 0, width(), height() );
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-
-			//settings.perspectiveAngle = 90;
-			//			gluPerspective(settings.perspectiveAngle, w,  (float)settings.nearClipping, (float)settings.farClipping);
-			glOrtho( -w, w, -h, h, (float)0, (float) 60 );
 		}
 
 		void DisplayWidget::timerEvent(QTimerEvent*) {
@@ -492,7 +533,6 @@ namespace Fragmentarium {
 				firstTime = false;
 				updatePerspective(); 
 				requireRedraw();
-				infoText = "";
 			}
 
 			// Check if we are displaying a message.

@@ -53,11 +53,15 @@ namespace Fragmentarium {
 			void setupFragmentShader();
 			void setContinuous(bool value) { continuous = value; }
 			void setDisableRedraw(bool value) { disableRedraw = value; }
+		
+			void setupTileRender(int tiles);
 			void resetTime() { time = QTime::currentTime(); }
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 	
 		
 		protected:
+			void tileRender();
+
 			void mouseMoveEvent(QMouseEvent* ev) ; 
 			void contextMenuEvent (QContextMenuEvent* ev);
 			void mouseReleaseEvent ( QMouseEvent * ev);
@@ -85,13 +89,9 @@ namespace Fragmentarium {
 			QPoint oldPos;
 			QColor backgroundColor;
 
-
-			QString infoText;
-
 			QMenu* contextMenu;
 			bool rmbDragging;
 
-			QTime textTimer;
 			bool disabled;
 			bool doingRotate;
 			
@@ -101,6 +101,9 @@ namespace Fragmentarium {
 			QTime time;
 			QTime fpsTimer;
 			int fpsCounter;
+			int tiles;
+			int tilesCount;
+			QVector<QImage> cachedTileImages;
 		};
 	};
 

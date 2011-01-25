@@ -737,6 +737,7 @@ namespace Fragmentarium {
 			// -- Render Menu --
 			renderMenu = menuBar()->addMenu(tr("&Render"));
 			renderMenu->addAction(renderAction);
+			renderMenu->addAction("Tile Based Render", this, SLOT(tileBasedRender()));
 			renderMenu->addSeparator();
 			renderMenu->addAction("Output Preprocessed Script (for Debug)", this, SLOT(showDebug()));
 			renderMenu->addSeparator();
@@ -826,6 +827,10 @@ namespace Fragmentarium {
 			//helpMenu->addAction(referenceAction);
 			helpMenu->addAction(galleryAction);
 			helpMenu->addAction(glslHomeAction);
+		}
+
+		void MainWindow::tileBasedRender() {
+			engine->setupTileRender(3);
 		}
 
 		void MainWindow::pasteSelected() {
@@ -1375,6 +1380,15 @@ namespace Fragmentarium {
 			for (int j = numRecentFiles; j < MaxRecentFiles; ++j) recentFileActions[j]->setVisible(false);
 
 			recentFileSeparator->setVisible(numRecentFiles > 0);
+		}
+
+		void MainWindow::setSplashWidget(QWidget* w) {
+			splashWidget = w;
+			QTimer::singleShot(3000, this, SLOT(removeSplash()));
+		}
+
+		void MainWindow::removeSplash() {
+			splashWidget->close();
 		}
 
 		void MainWindow::insertText() {

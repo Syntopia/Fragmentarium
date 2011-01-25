@@ -33,12 +33,14 @@ uniform float FudgeFactor;slider[0,1,1];
 float minDist = pow(10.0,Detail);
 float normalE = pow(10.0,DetailNormal);
 
-
 // Maximum number of  raymarching steps.
 uniform int MaxRaySteps;  slider[0,56,300]
 
 // Use this to boost Ambient Occlusion and Glow
-uniform float  MaxRayStepsDiv;  slider[1,1.8,10]
+uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
+
+// If your experience AO banding try adjusting this term
+uniform float BandingSmooth;slider[0,0,4];
 
 #group Light
 
@@ -72,6 +74,7 @@ uniform vec3 BackgroundColor; color[0.6,0.6,0.5]
 uniform bool GradientBackground; checkbox[true]
 
 vec4 orbitTrap = vec4(10000.0);
+float fractionalCount = 0.0;
 
 #group Orbit Trap
 
@@ -125,7 +128,7 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 trace(vec3 from, vec3 to) {
- 
+	
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(to-from);
 	from -= direction*Clipping;
@@ -135,12 +138,12 @@ vec3 trace(vec3 from, vec3 to) {
 	
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
-
+	
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist*( length(fromDx+fromDy)/0.01 );
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		orbitTrap = vec4(10000.0);
-	
+		
 		dist = DE(from + totalDist * direction)*FudgeFactor;
 		dist = clamp(dist, 0.0, MaxDist);
 		if (dist <pow(totalDist,ClarityPower)*eps ||  totalDist >MaxDist) break;
@@ -149,28 +152,31 @@ vec3 trace(vec3 from, vec3 to) {
 	
 	// Backtrack to improve the gradient based normal estimatation:
 	// otherwise,
-	totalDist-=1.0*(minDist-dist); // TODO: is this necessary?
+	totalDist-=(minDist-dist); // TODO: is this necessary?
 	
 	vec3 color = BackgroundColor;
-	 if (GradientBackground) {
+	if (GradientBackground) {
 		float t = dot(direction, vec3(1.0,0.0,0.0));
- 		color = mix(color, SpotLightColor, t);
+		color = mix(color, SpotLightColor, t);
 	}
 	
-	float stepFactor = clamp(MaxRayStepsDiv*float(steps)/float(MaxRaySteps),0.0,1.0);
+	float smoothenedSteps = float(steps)+BandingSmooth*dist/(pow(totalDist,ClarityPower)*eps);
+	float stepFactor = clamp((MaxRayStepsDiv*smoothenedSteps)/float(MaxRaySteps),0.0,1.0);
 	if ( totalDist < MaxDist) {
 		vec3 hit = from + totalDist * direction;
 		color = coloring(hit,  direction, steps);
 		float ao = 1.0- AO*stepFactor ;
 		if (totalDist< MaxDist) {
-
+			
 			colorBase =X*XStrength*orbitTrap.x +
-				Y*YStrength*orbitTrap.y +
-				Z*ZStrength*orbitTrap.z +
-				R*RStrength*sqrt(orbitTrap.w);
+			Y*YStrength*orbitTrap.y +
+			Z*ZStrength*orbitTrap.z +
+			R*RStrength*sqrt(orbitTrap.w);
 			colorBase /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + sqrt(orbitTrap.w));
 			
 			color = mix(color, colorBase*3.0,  OrbitStrength);
+			//color = vec3(0.0);
+			//color = mix(color,mix(X, Y, fractionalCount), OrbitStrength);
 		}
 		color = mix(AOColor, color,ao);
 		
@@ -179,8 +185,8 @@ vec3 trace(vec3 from, vec3 to) {
 	}
 	
 	
-       color = clamp(color, 0.0, 1.0);
-
+	color = clamp(color, 0.0, 1.0);
+	
 	return color;
 }
 
@@ -188,7 +194,7 @@ void init(); // forward declare
 
 void main() {
 	init();
-
+	
 	vec3 color = vec3(0,0,0);
 	for (int x = 1; x<=AntiAlias; x++) {
 		float  dx =  AntiAliasBlur*(float(x)-1.0)/float(AntiAlias);

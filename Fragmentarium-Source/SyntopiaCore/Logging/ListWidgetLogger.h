@@ -3,6 +3,8 @@
 #include <QString>
 #include <QVector>
 #include <QListWidget>
+#include <QContextMenuEvent>
+
 
 #include "Logging.h"
 
@@ -19,7 +21,7 @@ namespace SyntopiaCore {
 			void log(QString message, LogLevel priority);
 
 			QListWidget* getListWidget() { return listWidget; }
-
+			
 		private:
 			QListWidget* listWidget;
 			QWidget* parent;

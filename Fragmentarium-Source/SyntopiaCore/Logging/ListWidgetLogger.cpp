@@ -1,12 +1,45 @@
 #include "ListWidgetLogger.h"
-
-
+#include <QAction>
+#include <QMenu>
+#include <QClipboard>
+#include <QApplication>
 
 namespace SyntopiaCore {
 	namespace Logging {
 
+		namespace {
+			class ListWidget : public QListWidget {
+			public: 
+				ListWidget(QWidget* parent) : QListWidget(parent) {
+				}
+
+				void contextMenuEvent(QContextMenuEvent* ev) {
+					QMenu contextMenu;
+					QAction copyAction("Copy to Clipboard", &contextMenu);
+					QAction clearAction("Clear", &contextMenu);
+					contextMenu.addAction(&copyAction);
+					contextMenu.addAction(&clearAction);
+					QAction* choice = contextMenu.exec(ev->globalPos());
+					if (choice == &copyAction) {
+						QClipboard *clipboard = QApplication::clipboard();
+						QList<QListWidgetItem*> items = selectedItems();
+						QStringList l;
+						foreach (QListWidgetItem* i, items) {
+							l.append(i->text());
+						}
+						INFO(QString("Copied %1 lines to clipboard").arg(l.count()));
+						clipboard->setText(l.join("\n"));
+					
+					} else if (choice == &clearAction) {
+						clear();
+					}
+				}
+			};
+		}
+
 		ListWidgetLogger::ListWidgetLogger(QWidget* parent) : parent(parent) { 	
-			listWidget = new QListWidget(parent);
+			listWidget = new ListWidget(parent); 
+			listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 		}
 
 		ListWidgetLogger::~ListWidgetLogger() { 

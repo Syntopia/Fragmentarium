@@ -72,6 +72,7 @@ namespace Fragmentarium {
 			void disableAllExcept(QWidget* w);
 			void enableAll();
 			void loadParameters(QString fileName);
+			void setSplashWidget(QWidget* w);
 		
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);
@@ -80,6 +81,8 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 
 		public slots:
+			void removeSplash();
+			void tileBasedRender();
 			void makeScreenshot();
 			void callRedraw();
 			void showDebug();
@@ -191,6 +194,7 @@ namespace Fragmentarium {
 			QVector<QAction*> recentFileActions;
 			QAction* recentFileSeparator;
 			QLabel* fpsLabel;
+			QWidget* splashWidget;
 		};
 
 	

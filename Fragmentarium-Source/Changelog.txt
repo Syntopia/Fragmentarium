@@ -1,4 +1,13 @@
-57
+
+
+25-01-10 Added prototype for tilebased render (currently tiles are fixed to 3x3)
+[3h]	 Added context menu with clear and copy to clipboard to log.
+		 Fixed a bug causing resizeGL to crash on some (probably broken) Linux drivers.
+		 Added a 'debanding' term to DE-raytracer.
+		 Added a 3 second time-out to splash-screen.
+		 
+
+Release of Fragmentarium 0.5.6 [57h]
 
 20-01-10 Updated all GLSL examples to avoid calling functions in global variable initializers (this did not work on ATI drivers)
 [2h]	 Cleaned up examples a bit.

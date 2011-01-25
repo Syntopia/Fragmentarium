@@ -75,7 +75,6 @@ float DE(vec3 pos) {
 	int i=Iterations;
 	r=length(z);
 	while(r<Bailout && (i-->0)) {
-		z*=rot;
 		if (AlternateVersion) {
 			powN2(z,r,dr);
 		} else {
@@ -83,6 +82,7 @@ float DE(vec3 pos) {
 		}
 		z+=pos;
 		r=length(z);
+		z*=rot;
 		orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,r*r)));
 		
 	}
