@@ -236,6 +236,7 @@ namespace Fragmentarium {
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
 			shaderProgram = 0;
+			viewFactor = 1.0;
 			tiles = 0;
 			tilesCount = 0;
 			resetTime();
@@ -385,8 +386,12 @@ namespace Fragmentarium {
 		
 		void DisplayWidget::tileRender() {
 			glLoadIdentity();
-			if (!tiles) return;
+			if (!tiles && viewFactor<=1.0) return;
 			requireRedraw();
+			if (viewFactor > 1.0) {
+				glScalef(1.0/viewFactor,1.0/viewFactor,1.0);
+				return;	
+			}
 			
 			if (tilesCount==tiles*tiles) {
 				INFO("Tile rendering complete");
@@ -426,6 +431,11 @@ namespace Fragmentarium {
 			
 		}
 
+		void DisplayWidget::setViewFactor(float val) {
+			viewFactor = val;
+			requireRedraw();
+		}
+			
 
 		void DisplayWidget::paintGL() {
 			// Show info first time we display something...
@@ -451,7 +461,13 @@ namespace Fragmentarium {
 				glDisable( GL_DEPTH_TEST );
 
 				// -- Viewport
-				glViewport( 0, 0, width(), height());
+				if (viewFactor >= 1.0) {
+					glViewport( 0, 0, width(), height());
+				} else {
+					qglClearColor(backgroundColor);
+					glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+					glViewport( 0.5*width()*(1.0-viewFactor), 0.5*height()*(1.0-viewFactor), width()*viewFactor, height()*viewFactor);
+				}
 
 				// -- Projection
 				// The projection mode as used here

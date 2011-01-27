@@ -928,6 +928,23 @@ namespace Fragmentarium {
 			renderModeToolBar->addWidget(renderButton);
 			renderModeChanged(0);
 
+			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
+			viewSlider->setTickInterval(1);
+			viewSlider->setMinimum(-3);
+			viewSlider->setMaximum(3);
+			viewSlider->setTickPosition(QSlider::TicksBelow);
+			viewSlider->setMaximumWidth(100);
+			connect(viewSlider, SIGNAL(valueChanged(int)), this, SLOT(viewSliderChanged(int)));
+			renderModeToolBar->addWidget(viewSlider);
+
+		}
+
+		void MainWindow::viewSliderChanged(int) {
+			float val = viewSlider->value();
+			if (val>0) val=val+1.0;
+			if (val<=0) val = 1.0/(1.0+fabs(val));
+			
+			engine->setViewFactor(val);
 		}
 
 		void MainWindow::renderModeChanged(int) {

@@ -1,3 +1,6 @@
+27-01-10 Added a 'preview' slider to toolbar (in progress)
+		Refactored DE-raytracer in order to separate color and lighting.
+		Now clamps colors after anti-aliased (to prevent killing specular highlights).
 
 
 25-01-10 Added prototype for tilebased render (currently tiles are fixed to 3x3)

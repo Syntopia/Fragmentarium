@@ -56,6 +56,7 @@ namespace Fragmentarium {
 		
 			void setupTileRender(int tiles);
 			void resetTime() { time = QTime::currentTime(); }
+			void setViewFactor(float val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 	
 		
@@ -104,6 +105,7 @@ namespace Fragmentarium {
 			int tiles;
 			int tilesCount;
 			QVector<QImage> cachedTileImages;
+			float viewFactor;
 		};
 	};
 

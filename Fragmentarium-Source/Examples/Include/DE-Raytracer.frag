@@ -76,10 +76,12 @@ uniform bool GradientBackground; checkbox[true]
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
 
-#group Orbit Trap
+#group Coloring
 
+// This is the pure color of object (in white light)
+uniform vec3 BaseColor; color[1.0,0.6,0.6];
 // Determines the mix between pure light coloring and pure orbit trap coloring
-uniform float OrbitStrength; slider[0,0.7,1]
+uniform float OrbitStrength; slider[0,0.7,10]
 // Closest distance to YZ-plane during orbit
 uniform float XStrength; slider[-1,0.3,1]
 // Closest distance to YZ-plane during orbit
@@ -99,9 +101,12 @@ uniform vec3 R; color[1.0,1.0,1.0];
 
 float DE(vec3 pos) ; // Must be implemented in other file
 
-vec3 coloring(vec3 pos, vec3 dir, int steps) {
+vec3 lighting(vec3 color, vec3 pos, vec3 dir, int steps) {
 	vec3 e = vec3(0,normalE,0);
-	vec3 spotDir =normalize( SpotLightDir);
+	vec3 spotDir =-normalize(fromDx)*SpotLightDir.x+
+	normalize(fromDy)*SpotLightDir.y + dir;
+	spotDir = normalize(spotDir);
+	
 	vec3 n;
 	if (steps < 1) {
 		n = dir; // for clipping normals
@@ -121,11 +126,23 @@ vec3 coloring(vec3 pos, vec3 dir, int steps) {
 	float ambient = max(0.0,dot(n, dir))*CamLight;
 	float specular = pow(s,SpecularExp)*Specular;
 	
-	return SpotLightColor*diffuse+CamLightColor*ambient
-	+ specular*SpotLightColor;
+	return (SpotLightColor*diffuse+CamLightColor*ambient
+		+ specular*SpotLightColor)*color;
 	
 }
 vec3 colorBase = vec3(0.0,0.0,0.0);
+
+vec3 getColor(float ao) {
+	orbitTrap.w = sqrt(orbitTrap.w);
+	vec3 orbitColor =X*XStrength*orbitTrap.x +
+	Y*YStrength*orbitTrap.y +
+	Z*ZStrength*orbitTrap.z +
+	R*RStrength*orbitTrap.w;
+	//orbitColor /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + orbitTrap.w);
+	vec3 color = mix(BaseColor, orbitColor,  OrbitStrength);
+	color = mix(AOColor, color,ao);
+	return color;
+}
 
 vec3 trace(vec3 from, vec3 to) {
 	
@@ -143,7 +160,6 @@ vec3 trace(vec3 from, vec3 to) {
 	float eps = minDist*( length(fromDx+fromDy)/0.01 );
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		orbitTrap = vec4(10000.0);
-		
 		dist = DE(from + totalDist * direction)*FudgeFactor;
 		dist = clamp(dist, 0.0, MaxDist);
 		if (dist <pow(totalDist,ClarityPower)*eps ||  totalDist >MaxDist) break;
@@ -154,38 +170,26 @@ vec3 trace(vec3 from, vec3 to) {
 	// otherwise,
 	totalDist-=(minDist-dist); // TODO: is this necessary?
 	
-	vec3 color = BackgroundColor;
-	if (GradientBackground) {
-		float t = dot(direction, vec3(1.0,0.0,0.0));
-		color = mix(color, SpotLightColor, t);
-	}
+	vec3 color;
 	
 	float smoothenedSteps = float(steps)+BandingSmooth*dist/(pow(totalDist,ClarityPower)*eps);
 	float stepFactor = clamp((MaxRayStepsDiv*smoothenedSteps)/float(MaxRaySteps),0.0,1.0);
 	if ( totalDist < MaxDist) {
+		// We hit something, or reached MaxRaySteps
 		vec3 hit = from + totalDist * direction;
-		color = coloring(hit,  direction, steps);
 		float ao = 1.0- AO*stepFactor ;
-		if (totalDist< MaxDist) {
-			
-			colorBase =X*XStrength*orbitTrap.x +
-			Y*YStrength*orbitTrap.y +
-			Z*ZStrength*orbitTrap.z +
-			R*RStrength*sqrt(orbitTrap.w);
-			colorBase /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + sqrt(orbitTrap.w));
-			
-			color = mix(color, colorBase*3.0,  OrbitStrength);
-			//color = vec3(0.0);
-			//color = mix(color,mix(X, Y, fractionalCount), OrbitStrength);
-		}
-		color = mix(AOColor, color,ao);
-		
+		color = getColor(ao);
+		color = lighting(color,  hit,  direction, steps);
 	} else {
+		color = BackgroundColor;
+		if (GradientBackground) {
+			float t = dot(direction, vec3(1.0,0.0,0.0));
+			color = mix(color, SpotLightColor, t);
+		}
 		color += Glow*GlowColor*stepFactor;
 	}
 	
-	
-	color = clamp(color, 0.0, 1.0);
+	 //color = clamp(color, 0.0, 1.0);
 	
 	return color;
 }
@@ -198,11 +202,12 @@ void main() {
 	vec3 color = vec3(0,0,0);
 	for (int x = 1; x<=AntiAlias; x++) {
 		float  dx =  AntiAliasBlur*(float(x)-1.0)/float(AntiAlias);
-		
 		for (int y = 1; y<=AntiAlias; y++) {
 			float dy = AntiAliasBlur*(float(y)-1.0)/float(AntiAlias);
 			color += trace(from+fromDx*dx+fromDy*dy,to+toDx*dx+toDy*dy);
 		}
 	}
-	gl_FragColor = vec4(color, 1.0)/float(AntiAlias*AntiAlias);
+      
+      color = clamp(color/float(AntiAlias*AntiAlias), 0.0, 1.0);
+	gl_FragColor = vec4(color, 1.0);
 }
