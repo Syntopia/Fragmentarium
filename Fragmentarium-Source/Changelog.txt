@@ -1,3 +1,8 @@
+02-02-10 Tilebased render dialog added.
+		 SpotLight is now always on camera-oriented hemisphere (and expressed in spherical coords as a vec2)
+		 Added support for 2D sliders in GUI.
+		 Update DE-raytracer: new background vignette, better normal estimation.
+
 27-01-10 Added a 'preview' slider to toolbar (in progress)
 		Refactored DE-raytracer in order to separate color and lighting.
 		Now clamps colors after anti-aliased (to prevent killing specular highlights).
@@ -9,7 +14,6 @@
 		 Added a 'debanding' term to DE-raytracer.
 		 Added a 3 second time-out to splash-screen.
 		 
-
 Release of Fragmentarium 0.5.6 [57h]
 
 20-01-10 Updated all GLSL examples to avoid calling functions in global variable initializers (this did not work on ATI drivers)

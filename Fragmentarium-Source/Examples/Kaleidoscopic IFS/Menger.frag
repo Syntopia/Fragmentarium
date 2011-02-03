@@ -27,23 +27,16 @@ void init() {
 
 float DE(vec3 z)
 {
-	float r;
-	
 	int n = 0;
 	while (n < Iterations) {
-		// Fold
 		z = abs(z);
 		if (z.x<z.y){ z.xy = z.yx;}
 		if (z.x< z.z){ z.xz = z.zx;}
 		if (z.y<z.z){ z.yz = z.zy;}
-		z.x=Scale* z.x-Offset.x*(Scale-1.0);
-		z.y=Scale* z.y-Offset.y*(Scale-1.0);
-		z.z=Scale* z.z;
+             z = Scale*z-Offset*(Scale-1.0);
+		if( z.z<-0.5*Offset.z*(Scale-1.0))  z.z+=Offset.z*(Scale-1.0);
 		z = rot *z;
-		if( z.z>0.5*Offset.z*(Scale-1.0))  z.z-=Offset.z*(Scale-1.0);
-		r = dot(z, z);
-		orbitTrap = min(orbitTrap, abs(vec4(z,r)));
-		
+		orbitTrap = min(orbitTrap, (vec4(abs(z),dot(z,z))));		
 		n++;
 	}
 	

@@ -1,11 +1,11 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
-- Add UI for Tile render
+Relevant?:
+0(14) : warning C7564: assignment to attribute gl_Vertex
+0(14) : warning C7504: OpenGL does not allow writing to input variable 'gl_Vertex'
+
 - Timeline for $time animations.
-- SpotLight should be screen-space oriented
-  - Change slider (2D slider?)
 - Colors should be lightened...
-- Should 
 
 Update web:
 Install Qt 4.7.1.
@@ -20,7 +20,7 @@ Notice, that debug DLLs contain a 'd'-suffix (e.g. QtCore4d.dll).
 
 Now Fragmentarium should run from inside Visual Studio, but it will not find its examples unless the working directory is set: Under Project properties, set the "Configuration Properties | Debugging | Working Directory" to ".."
 
-It is possible to create a deployable ....
+It is possible to create a deployable by running the 'Build - Windows/createDeploy.bat' script.
 ------------
 
 Tips & Tricks:

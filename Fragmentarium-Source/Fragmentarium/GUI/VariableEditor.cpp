@@ -94,6 +94,60 @@ namespace Fragmentarium {
 			double max;
 		};
 
+		/// A widget editor for a float variable.
+		class Float2Widget : public VariableWidget {
+		public:
+			/// Notice that only x and y components are used here.
+			Float2Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector3f defaultValue, Vector3f min, Vector3f max) 
+				: VariableWidget(parent, name)  {
+					QGridLayout* m = new QGridLayout(this);
+					m->setSpacing(0);
+					m->setContentsMargins (0,0,0,0);
+
+					QLabel* label = new QLabel(this);
+					label->setText(name);
+					m->addWidget(label,0,0);
+					comboSlider1 = new ComboSlider(parent, defaultValue[0], min[0], max[0]);
+					m->addWidget(comboSlider1,0,1);
+					connect(comboSlider1, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+
+					comboSlider2 = new ComboSlider(parent, defaultValue[1], min[1], max[1]);
+					m->addWidget(comboSlider2,1,1);
+					connect(comboSlider2, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+
+					this->min = min;
+					this->max = max;
+			};
+
+			virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(min.toString()).arg(max.toString()); }
+			virtual QString getValueAsText() { return ""; };
+
+			virtual QString toString() {
+				return QString("%1,%2").arg(comboSlider1->getValue()).arg(comboSlider2->getValue());
+			};
+
+			virtual void fromString(QString string) {
+				float f1,f2;
+				MiniParser(string).getFloat(f1).getFloat(f2);
+				comboSlider1->setValue(f1);
+				comboSlider2->setValue(f2);
+			};
+
+			virtual void setUserUniform(QGLShaderProgram* shaderProgram) {
+				int l = shaderProgram->uniformLocation(name);
+				if (l == -1) {
+					WARNING("Could not find :" + name);
+				} else {
+					shaderProgram->setUniformValue(l, (float)(comboSlider1->getValue()),(float)(comboSlider2->getValue()));
+				}
+			}
+		private:
+			ComboSlider* comboSlider1;
+			ComboSlider* comboSlider2;
+			Vector3f min;
+			Vector3f max;
+		};
+
 
 		/// A widget editor for a float variable.
 		class Float3Widget : public VariableWidget {
@@ -445,6 +499,16 @@ namespace Fragmentarium {
 						variables.append(f3w);
 						f3w->setUpdated(true);
 						currentWidget->layout()->addWidget(f3w);
+					} else if (dynamic_cast<Parser::Float2Parameter*>(ps[i])) {
+						Parser::Float2Parameter* f2p = dynamic_cast<Parser::Float2Parameter*>(ps[i]);
+						QString name = f2p->getName();
+						Float2Widget* f2w = new Float2Widget(currentWidget, this, name, f2p->getDefaultValue(), f2p->getFrom(), f2p->getTo());
+						f2w->setToolTip(f2p->getTooltip());
+						f2w->setStatusTip(f2p->getTooltip());
+						f2w->setGroup(f2p->getGroup());
+						variables.append(f2w);
+						f2w->setUpdated(true);
+						currentWidget->layout()->addWidget(f2w);
 					} else if (dynamic_cast<Parser::BoolParameter*>(ps[i])) {
 						Parser::BoolParameter* bp = dynamic_cast<Parser::BoolParameter*>(ps[i]);
 						QString name = bp->getName();

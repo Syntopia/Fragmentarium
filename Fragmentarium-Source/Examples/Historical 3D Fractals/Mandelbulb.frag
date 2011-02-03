@@ -7,6 +7,9 @@
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,9,100]
 
+// Number of color iterations.
+uniform int ColorIterations;  slider[0,9,100]
+
 // Mandelbulb exponent (8 is standard)
 uniform float Power; slider[0,8,16]
 
@@ -72,9 +75,9 @@ float DE(vec3 pos) {
 	vec3 z=pos;
 	float r;
 	float dr=1.0;
-	int i=Iterations;
+	int i=0;
 	r=length(z);
-	while(r<Bailout && (i-->0)) {
+	while(r<Bailout && (i<Iterations)) {
 		if (AlternateVersion) {
 			powN2(z,r,dr);
 		} else {
@@ -83,8 +86,8 @@ float DE(vec3 pos) {
 		z+=pos;
 		r=length(z);
 		z*=rot;
-		orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,r*r)));
-		
+		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,r*r)));
+		i++;
 	}
 	
 	return 0.5*log(r)*r/dr;

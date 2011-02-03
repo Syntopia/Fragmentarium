@@ -57,7 +57,7 @@ float DE(vec3 z)
 		z = z*Scale - offset*(Scale-1.0);
 		z *= fracRotation2;
 		r = dot(z, z);
-		orbitTrap = min(orbitTrap, abs(vec4(z,r)));
+		orbitTrap = min(orbitTrap, abs(vec4(0.0,0.0,0.0,r)));
 		if (r > bailout2) break;
 		n++;
 	}

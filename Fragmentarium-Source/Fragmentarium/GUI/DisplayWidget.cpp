@@ -124,19 +124,20 @@ namespace Fragmentarium {
 						"varying vec3 from;\n"
 						"varying vec3 to;\n"
 						"uniform vec2 pixelSize;\n"
+						"varying vec2 coord;\n"
 						"void main(void)\n"
 						"{\n"
 						"   gl_Position =  gl_Vertex;\n"
-						"   gl_Vertex = gl_ProjectionMatrix*gl_Vertex; "
+						"   coord = (gl_ProjectionMatrix*gl_Vertex).xy; "
 						"   vec2 ps = pixelSize*mat2(gl_ProjectionMatrix); " // extract submatrix to scale pixelsize
 						"   float fx = 2.0;\n"
 						"   float fy = 2.0;\n"
-						"   from = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y, 1.0,1.0)).xyz;\n"
-						"   to = (gl_ModelViewMatrix*vec4(gl_Vertex.x*fx, gl_Vertex.y*fy, -1.0,1.0)).xyz;\n"
-						"   fromDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x, gl_Vertex.y+ps.y, 1.0,1.0)).xyz - from;\n"
-						"   toDy = (gl_ModelViewMatrix*vec4(gl_Vertex.x*fx, (gl_Vertex.y+ps.y)*fy, -1.0,1.0)).xyz - to;\n"
-						"   fromDx = (gl_ModelViewMatrix*vec4(gl_Vertex.x+ps.x, gl_Vertex.y, 1.0,1.0)).xyz- from;\n"
-						"   toDx = (gl_ModelViewMatrix*vec4((gl_Vertex.x+ps.x)*fx, gl_Vertex.y*fy, -1.0,1.0)).xyz - to;\n"
+						"   from = (gl_ModelViewMatrix*vec4(coord.x, coord.y, 1.0,1.0)).xyz;\n"
+						"   to = (gl_ModelViewMatrix*vec4(coord.x*fx, coord.y*fy, -1.0,1.0)).xyz;\n"
+						"   fromDy = (gl_ModelViewMatrix*vec4(coord.x, coord.y+ps.y, 1.0,1.0)).xyz - from;\n"
+						"   toDy = (gl_ModelViewMatrix*vec4(coord.x*fx, (coord.y+ps.y)*fy, -1.0,1.0)).xyz - to;\n"
+						"   fromDx = (gl_ModelViewMatrix*vec4(coord.x+ps.x, coord.y, 1.0,1.0)).xyz- from;\n"
+						"   toDx = (gl_ModelViewMatrix*vec4((coord.x+ps.x)*fx, coord.y*fy, -1.0,1.0)).xyz - to;\n"
 						"}");
 					// 
 				}

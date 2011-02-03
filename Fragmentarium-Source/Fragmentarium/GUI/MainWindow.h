@@ -42,6 +42,21 @@ namespace Fragmentarium {
 			public slots:
 				void insertText();
 		};
+
+		// An input dialog for the tile based render thingy
+		class TileRenderDialog: public QDialog {
+			Q_OBJECT
+		public:
+			TileRenderDialog(QWidget* parent, int w, int h);
+			int getTiles() { return tileSlider->value(); }
+		public slots:
+			void tilesChanged(int);
+		private: 
+			QLabel* tileLabel;
+			QSlider* tileSlider;
+			int w;
+			int h;
+		};
 		
 
 
@@ -125,7 +140,7 @@ namespace Fragmentarium {
 			QList<QWidget *> disabledWidgets;
 			QSlider* viewSlider;
 			
-			
+			QLabel* viewLabel;
 			void setRecentFile(const QString &fileName);
 			QTextEdit* insertTabPage(QString filename);
 			QTextEdit* getTextEdit();

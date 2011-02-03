@@ -4,6 +4,7 @@
 
 // Iterations. Increase when zooming in.
 uniform int Iterations; slider[0,12,15]
+uniform vec2  v2; slider[(0,1),(0,1),(2,2)]
 
 // An implementation of the system
 // decribed by 'tomkh' in this thread;
@@ -32,7 +33,7 @@ void init() {}
 
 vec3 getColor2D(vec2 z) {
 	z*=0.1;
-	z+=vec2(0.55,0.2);
+	z+=vec2(0.55,0.2)+v2;
 	int triangleType = 0;
 	for(int k=0; k<Iterations; k++) {
 		if (triangleType == 0) {

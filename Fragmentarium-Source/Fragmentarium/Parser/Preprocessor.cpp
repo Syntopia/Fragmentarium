@@ -34,6 +34,10 @@ namespace Fragmentarium {
 				return Vector3f(parseFloat(s1), parseFloat(s2), parseFloat(s3));
 			};
 
+			Vector3f parseVector2f(QString s1, QString s2) {
+				return Vector3f(parseFloat(s1), parseFloat(s2),0.0);
+			};
+
 
 			
 		}
@@ -132,6 +136,7 @@ namespace Fragmentarium {
 
 			// Look for 'uniform float varName; slider[0.1;1;2.0]'
 			QRegExp float3Slider("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$"); 
+			QRegExp float2Slider("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
 			QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
@@ -215,6 +220,16 @@ namespace Fragmentarium {
 					Vector3f to = parseVector3f(float3Slider.cap(8), float3Slider.cap(9), float3Slider.cap(10));
 
 					Float3Parameter* fp= new Float3Parameter(currentGroup, name, lastComment, from, to, defaults);
+					fs.params.append(fp);
+				} else if (float2Slider.indexIn(s) != -1) {
+
+					QString name = float2Slider.cap(1);
+					fs.source[i] = "uniform vec2 " + name + ";";
+					Vector3f from = parseVector2f(float2Slider.cap(2), float2Slider.cap(3));
+					Vector3f defaults = parseVector2f(float2Slider.cap(4), float2Slider.cap(5));
+					Vector3f to = parseVector2f(float2Slider.cap(6), float2Slider.cap(7));
+
+					Float2Parameter* fp= new Float2Parameter(currentGroup, name, lastComment, from, to, defaults);
 					fs.params.append(fp);
 				} else if (colorChooser.indexIn(s) != -1) {
 

@@ -1,5 +1,6 @@
 #info Mandelbox Distance Estimator (Rrrola's version).
 #include "DE-Raytracer.frag"
+#include "MathUtils.frag"
 #group Mandelbox
 
 /*
@@ -22,7 +23,7 @@ PERFORMANCE OF THIS SOFTWARE.
 */
 
 // Number of fractal iterations.
-uniform int Iterations;  slider[0,17,100]
+uniform int Iterations;  slider[0,17,300]
 
 uniform float MinRad2;  slider[0,0.25,2.0]
 
@@ -32,16 +33,27 @@ vec4 scale = vec4(Scale, Scale, Scale, abs(Scale)) / MinRad2;
 
 // precomputed constants
 
+uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
+
+// Scale parameter. A perfect Menger is 3.0
+uniform float RotAngle; slider[0.00,0,180]
+
+mat3 rot;
+
+void init() {
+	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+}
+
 float absScalem1 = abs(Scale - 1.0);
 float AbsScaleRaisedTo1mIters = pow(abs(Scale), float(1-Iterations));
 
-void init() {}
 
 // Compute the distance from `pos` to the Mandelbox.
 float DE(vec3 pos) {
 	vec4 p = vec4(pos,1), p0 = p;  // p.w is the distance estimate
 	
 	for (int i=0; i<Iterations; i++) {
+		p.xyz*=rot;
 		p.xyz = clamp(p.xyz, -1.0, 1.0) * 2.0 - p.xyz;  // min;max;mad
 		float r2 = dot(p.xyz, p.xyz);
 		orbitTrap = min(orbitTrap, abs(vec4(p.xyz,r2)));

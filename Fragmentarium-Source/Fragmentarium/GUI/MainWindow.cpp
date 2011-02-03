@@ -201,6 +201,8 @@ namespace Fragmentarium {
 
 
 				float3Slider = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$"); 
+				
+				float2Slider = QRegExp("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
 				colorChooser = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 				floatSlider = QRegExp("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 				intSlider = QRegExp("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
@@ -242,7 +244,7 @@ namespace Fragmentarium {
 				int startMatch = 0;
 
 				
-				if (float3Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
+				if (float2Slider.exactMatch(text) || float3Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
 				intSlider.exactMatch(text) || boolChooser.exactMatch(text) || replace.exactMatch(text) ||
 				sampler2D.exactMatch(text)) {
 					setFormat(0, text.length()-1, preprocessor2Format);
@@ -305,6 +307,7 @@ namespace Fragmentarium {
 			QTextCharFormat preprocessor2Format;
 			
 			QRegExp float3Slider;
+			QRegExp float2Slider;
 			QRegExp colorChooser;
 			QRegExp floatSlider;
 			QRegExp intSlider;
@@ -830,7 +833,35 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::tileBasedRender() {
-			engine->setupTileRender(3);
+			TileRenderDialog td(this, engine->width(), engine->height());
+			if (td.exec() == QDialog::Accepted) {
+				engine->setupTileRender(td.getTiles());
+			};
+			
+		}
+
+		TileRenderDialog::TileRenderDialog(QWidget* parent, int w, int h) : QDialog(parent), w(w), h(h) {
+			setWindowTitle("Select number of tiles");
+			QVBoxLayout* layout = new QVBoxLayout(this);
+			tileLabel = new QLabel("Resolution: XxX", this);
+			layout->addWidget(tileLabel);
+			tileSlider = new QSlider(Qt::Horizontal, this);
+			layout->addWidget(tileSlider);
+			tileSlider->setMinimum(1);
+			tileSlider->setValue(3);
+			tileSlider->setMaximum(20);
+			connect(tileSlider, SIGNAL(valueChanged(int)), this, SLOT(tilesChanged(int)));
+			tilesChanged(0);
+
+			QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+			layout->addWidget(buttonBox);
+			connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+			connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+		}
+
+		void TileRenderDialog::tilesChanged(int) {
+			int t = tileSlider->value();
+			tileLabel->setText(QString("Resolution: %1x%2 (%3 Megapixels)").arg(t*w).arg(t*h).arg((double)((t*w*t*h)/(1024.0*1024.0)),0,'f',1));
 		}
 
 		void MainWindow::pasteSelected() {
@@ -928,6 +959,7 @@ namespace Fragmentarium {
 			renderModeToolBar->addWidget(renderButton);
 			renderModeChanged(0);
 
+			viewLabel = new QLabel("Preview (off)", renderModeToolBar);
 			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
 			viewSlider->setTickInterval(1);
 			viewSlider->setMinimum(-3);
@@ -935,12 +967,23 @@ namespace Fragmentarium {
 			viewSlider->setTickPosition(QSlider::TicksBelow);
 			viewSlider->setMaximumWidth(100);
 			connect(viewSlider, SIGNAL(valueChanged(int)), this, SLOT(viewSliderChanged(int)));
+			renderModeToolBar->addWidget(viewLabel);
 			renderModeToolBar->addWidget(viewSlider);
+			viewSliderChanged(0);
 
 		}
 
 		void MainWindow::viewSliderChanged(int) {
-			float val = viewSlider->value();
+			int v = viewSlider->value();
+			if (v<0) {
+				viewLabel->setText(QString("  Preview (1/%1x)").arg(abs(v)+1));
+			} else if (v>0) {
+				viewLabel->setText(QString("  Preview (%1x)").arg(abs(v+1)));
+			} else {
+				viewLabel->setText(QString("  Preview (off)"));
+			}
+			
+			float val = v;
 			if (val>0) val=val+1.0;
 			if (val<=0) val = 1.0/(1.0+fabs(val));
 			

@@ -6,6 +6,7 @@
 varying vec3 from,to;
 varying vec3 fromDx,toDx;
 varying vec3 fromDy,toDy;
+varying vec2 coord;
 
 // Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
 uniform int AntiAlias;slider[1,1,5];
@@ -13,10 +14,10 @@ uniform int AntiAlias;slider[1,1,5];
 uniform float AntiAliasBlur;slider[0.0,1,5];
 
 // Distance to object at which raymarching stops.
-uniform float Detail;slider[-7,-3.0,0];
+uniform float Detail;slider[-7,-2.3,0];
 
-// Distance at which normal is evaluated
-uniform float DetailNormal;slider[-7,-4.0,0];
+uniform float DetailNormal;slider[-7,-2.8,0];
+uniform float BackStepNormal;slider[0,1,2];
 
 // The power of the clarity function
 uniform float ClarityPower;slider[0,1,5];
@@ -34,7 +35,7 @@ float minDist = pow(10.0,Detail);
 float normalE = pow(10.0,DetailNormal);
 
 // Maximum number of  raymarching steps.
-uniform int MaxRaySteps;  slider[0,56,300]
+uniform int MaxRaySteps;  slider[0,56,6000]
 
 // Use this to boost Ambient Occlusion and Glow
 uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
@@ -50,15 +51,15 @@ uniform float AO; slider[0,0.7,1]
 uniform vec3 AOColor; color[0.0,0.0,0.0];
 
 // The intensity of the directional ligt
-uniform float SpotLight; slider[0,1.0,1.0];
+uniform float SpotLight; slider[0,0.4,1.0];
 // The specular intensity of the directional light
-uniform float Specular; slider[0,0.3,4.0];
+uniform float Specular; slider[0,4.0,10.0];
 // The specular exponent
-uniform float SpecularExp; slider[0,30.0,100.0];
+uniform float SpecularExp; slider[0,16.0,100.0];
 // Color of the directional light
-uniform vec3 SpotLightColor; color[0.67,0.67,0.67];
-// Direction to the spot light
-uniform vec3 SpotLightDir;  slider[(-10,-10,-10),(1,1,1),(10,10,10)]
+uniform vec3 SpotLightColor; color[1.0,1.0,1.0];
+// Direction to the spot light (spherical coordinates)
+uniform vec2 SpotLightDir;  slider[(-1,-1),(0.1,0.1),(1,1)]
 // Light coming from the camera position (diffuse lightning)
 uniform float CamLight; slider[0,1,1];
 // Color of the diffuse lightning
@@ -69,9 +70,9 @@ uniform float Glow; slider[0,0.2,1]
 // Glow color
 uniform vec3 GlowColor; color[1.0,1.0,1.0];
 // Background color
-uniform vec3 BackgroundColor; color[0.6,0.6,0.5]
+uniform vec3 BackgroundColor; color[0.6,0.6,0.45]
 // A 'looney tunes' gradient background
-uniform bool GradientBackground; checkbox[true]
+uniform float GradientBackground; slider[0.0,0.3,5.0]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -79,41 +80,42 @@ float fractionalCount = 0.0;
 #group Coloring
 
 // This is the pure color of object (in white light)
-uniform vec3 BaseColor; color[1.0,0.6,0.6];
+uniform vec3 BaseColor; color[1.0,1.0,1.0];
 // Determines the mix between pure light coloring and pure orbit trap coloring
-uniform float OrbitStrength; slider[0,0.7,10]
+uniform float OrbitStrength; slider[0,0.8,1]
 // Closest distance to YZ-plane during orbit
-uniform float XStrength; slider[-1,0.3,1]
+uniform float XStrength; slider[-1,0.7,1]
 // Closest distance to YZ-plane during orbit
 uniform vec3 X; color[0.5,0.6,0.6];
 // Closest distance to XZ-plane during orbit
-uniform float YStrength; slider[-1,0.3,1]
+uniform float YStrength; slider[-1,0.4,1]
 // Closest distance to XZ-plane during orbit
-uniform vec3 Y; color[1.0,0.9,0.7];
+uniform vec3 Y; color[1.0,0.6,0.0];
 // Closest distance to XY-plane during orbit
-uniform float ZStrength; slider[-1,0.3,1]
+uniform float ZStrength; slider[-1,0.5,1]
 // Closest distance to XY-plane during orbit
 uniform vec3 Z; color[0.8,0.78,1.0];
 // Closest distance to origin during orbit
-uniform float RStrength; slider[-1,0.2,1]
+uniform float RStrength; slider[-1,0.12,1]
 // Closest distance to  origin during orbit
-uniform vec3 R; color[1.0,1.0,1.0];
+uniform vec3 R; color[0.4,0.7,1.0];
 
 float DE(vec3 pos) ; // Must be implemented in other file
 
-vec3 lighting(vec3 color, vec3 pos, vec3 dir, int steps) {
-	vec3 e = vec3(0,normalE,0);
-	vec3 spotDir =-normalize(fromDx)*SpotLightDir.x+
-	normalize(fromDy)*SpotLightDir.y + dir;
+vec3 lighting(float normalDistance, vec3 color, vec3 pos, vec3 dir, int steps) {
+	vec3 e = vec3(0.0,normalDistance,0.0);
+	vec3 spotDir =-normalize(fromDx)*tan(SpotLightDir.x*0.5*3.14)+
+	normalize(fromDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
 	spotDir = normalize(spotDir);
 	
 	vec3 n;
 	if (steps < 1) {
-		n = dir; // for clipping normals
+		n = -dir; // for clipping normals
 	} else {
 		n = vec3(DE(pos-e.yxx)-DE(pos+e.yxx),
 			DE(pos-e.xyx)-DE(pos+e.xyx),
 			DE(pos-e.xxy)-DE(pos+e.xxy));
+		//    if (dot(n, dir)<0)return vec3(1.0,0.0,0.0);
 	}
 	n =  normalize(n);
 	
@@ -130,6 +132,7 @@ vec3 lighting(vec3 color, vec3 pos, vec3 dir, int steps) {
 		+ specular*SpotLightColor)*color;
 	
 }
+
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 getColor(float ao) {
@@ -139,10 +142,13 @@ vec3 getColor(float ao) {
 	Z*ZStrength*orbitTrap.z +
 	R*RStrength*orbitTrap.w;
 	//orbitColor /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + orbitTrap.w);
-	vec3 color = mix(BaseColor, orbitColor,  OrbitStrength);
+	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
 	color = mix(AOColor, color,ao);
 	return color;
 }
+
+
+
 
 vec3 trace(vec3 from, vec3 to) {
 	
@@ -158,38 +164,44 @@ vec3 trace(vec3 from, vec3 to) {
 	
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist*( length(fromDx+fromDy)/0.01 );
+	float epsModified = 0.0;
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		orbitTrap = vec4(10000.0);
 		dist = DE(from + totalDist * direction)*FudgeFactor;
 		dist = clamp(dist, 0.0, MaxDist);
-		if (dist <pow(totalDist,ClarityPower)*eps ||  totalDist >MaxDist) break;
 		totalDist += dist;
+		epsModified = pow(totalDist,ClarityPower)*eps;
+		if (dist < epsModified ||  totalDist >MaxDist) break;
 	}
 	
 	// Backtrack to improve the gradient based normal estimatation:
 	// otherwise,
-	totalDist-=(minDist-dist); // TODO: is this necessary?
+	//totalDist-=(minDist-dist); // TODO: is this necessary?
 	
 	vec3 color;
-	
-	float smoothenedSteps = float(steps)+BandingSmooth*dist/(pow(totalDist,ClarityPower)*eps);
+	float smoothenedSteps = float(steps)+BandingSmooth*dist/epsModified;
 	float stepFactor = clamp((MaxRayStepsDiv*smoothenedSteps)/float(MaxRaySteps),0.0,1.0);
-	if ( totalDist < MaxDist) {
+	if ( dist < epsModified) {
 		// We hit something, or reached MaxRaySteps
-		vec3 hit = from + totalDist * direction;
+		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
 		float ao = 1.0- AO*stepFactor ;
 		color = getColor(ao);
-		color = lighting(color,  hit,  direction, steps);
+		color = lighting(normalE*epsModified/eps, color,  hit,  direction, steps);
+	}  else if (steps==MaxRaySteps) {
+		// Close to something, but too many steps
+	 	color = vec3(0.0,0.0,0.0);
 	} else {
 		color = BackgroundColor;
-		if (GradientBackground) {
-			float t = dot(direction, vec3(1.0,0.0,0.0));
-			color = mix(color, SpotLightColor, t);
+		if (GradientBackground>0.0) {
+			//float t = dot(direction, vec3(1.0,0.0,0.0));
+			float t = length(coord);
+           
+			color = mix(color, vec3(0.0,0.0,0.0), t*GradientBackground);
 		}
 		color += Glow*GlowColor*stepFactor;
 	}
 	
-	 //color = clamp(color, 0.0, 1.0);
+	//color = clamp(color, 0.0, 1.0);
 	
 	return color;
 }
@@ -207,7 +219,7 @@ void main() {
 			color += trace(from+fromDx*dx+fromDy*dy,to+toDx*dx+toDy*dy);
 		}
 	}
-      
-      color = clamp(color/float(AntiAlias*AntiAlias), 0.0, 1.0);
+	
+	color = clamp(color/float(AntiAlias*AntiAlias), 0.0, 1.0);
 	gl_FragColor = vec4(color, 1.0);
 }

@@ -48,6 +48,21 @@ namespace Fragmentarium {
 			double defaultValue;
 		};
 
+		class Float2Parameter : public GuiParameter {
+		public:
+			Float2Parameter(QString group, QString name,QString tooltip,  Vector3f from, Vector3f to, Vector3f defaultValue) :
+					GuiParameter(group, name, tooltip), from(from), to(to), defaultValue(defaultValue) {};
+			
+					virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(from.toString()).arg(to.toString()); }
+			Vector3f getFrom() { return from; }
+			Vector3f getTo() { return to; }
+			Vector3f getDefaultValue() { return defaultValue; }
+		private:
+			Vector3f from;
+			Vector3f to;
+			Vector3f defaultValue;
+		};
+
 		class Float3Parameter : public GuiParameter {
 		public:
 			Float3Parameter(QString group, QString name,QString tooltip,  Vector3f from, Vector3f to, Vector3f defaultValue) :

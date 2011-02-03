@@ -8,7 +8,7 @@
 // My implementation here is very compressed, so take a look at Subblue's above for a much clearer implementation.
 
 // Number of fractal iterations.
-uniform int Iterations;  slider[0,13,100]
+uniform int Iterations;  slider[0,16,100]
 // Breakout distance
 uniform float Threshold; slider[0,10,100]
 // Quaterion Constant (first three components)
