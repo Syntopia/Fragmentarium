@@ -1,60 +1,54 @@
-#include "2D.frag"
-#info Simple and ugly Texture demo. Should be replaced by something more interesting
+varying vec2 coord;
+
+#info SimpleTexture demo.
 #group Simple Texture demo.
 
-// Iterations. Increase when zooming in.
-uniform int Iterations; slider[0,10,15]
-uniform float Scale; slider[0,1,15]
+/*
+Set the render mode to continuous to test this shader.
 
-uniform bool BooleanTest; checkbox[false]
+The deformation is a modified version of
+'Deform' by Inigo Quilez
+(see http://www.iquilezles.org/apps/shadertoy/)
+*/
 
+uniform float time;
 uniform sampler2D texture; file[texture2.jpg]
-uniform sampler2D texture3; file[texture.jpg]
+// You can use multiple textures:
+// uniform sampler2D texture2; file[texture.jpg]
+uniform vec2 params; slider[(-1,-1),(-0.5,0.24),(1,1)]
 
-void init() {}
 
-// A lot of constants here
-float pi =3.141592653589 ;
-float sc = 2.0/(sqrt(5.0)-1.0);  // inflation scale
-float d1 = tan(54.0*pi/180.0);
-float d2 = tan(18.0*pi/180.0);
-float a1 = .5/cos(36.0*pi/180.0);
-float a2 = (1.0+a1)*.5;
-float a3 = tan(36.0*pi/180.0)*a2;
-float cos1 = cos(144.0*pi/180.0)*sc;
-float  sin1 = sin(144.0*pi/180.0)*sc;
-float cos2 = cos(108.0*pi/180.0)*sc;
-float sin2 = sin(108.0*pi/180.0)*sc;
-mat2	m1 = mat2(-sc,0.0, 0,sc);
-vec2	p1 = vec2(-a2,-a3 );
-mat2	m2= mat2(cos1,-sin1,sin1,cos1);
-mat2	m3= mat2(cos1,sin1,-sin1,cos1);
-mat2	m4= mat2(-cos2,sin2,sin2,cos2);
-mat2	m5= mat2(cos2,sin2,-sin2,cos2);
+vec3 a(vec2 z, float t) {
+	vec2 m =  params.xy;
+	float a1 = atan(z.x-m.y,z.x-m.x);
+	float r1 = sqrt(dot(z-m,z-m));
+	float a2 = -atan(z.x+m.y,z.x+m.x);
+	float r2 = sqrt(dot(z+m,z+m));
+	vec2 uv;
+	uv.x = 0.2*t + (r1-r2)*0.25;
+	uv.y = tan(2.0*(a1-a2));
+	float w = r1*r2*0.8;
+	vec3 col = texture2D(texture,uv).xyz;
+	return vec3(col/(.1+w));
+}
 
 
 vec3 getColor2D(vec2 z) {
-	vec2 d = z*Scale;
-	int triangleType = 0;
-	for(int k=0; k<Iterations; k++) {
-		if (triangleType == 0) {
-			if (1.0 - d1*z.y - z.x > 0.0) {
-				z *= m1; z.x += sc;
-		} else if (1.0 - d2*z.y - z.x > 0.0) {
-				z += p1; z *= m2; triangleType = 1;
-			} else {
-				z.x-=(1.0+a1); z*= m3;
-			}
-		} else {
-			if (BooleanTest && d1*z.y - z.x > 0.0) {
-				z*=m4; triangleType = 0;
-			} else {
-				z.x -= a1; z*= m5;
-			}
-		}
+	z.y*=2.0;
+	z.x*=1.5;
+	vec3 acc = vec3(0.0);
+	float wt = 0.0;
+	int iter = 10;
+	for (int i = 0; i< iter; i++) {
+		float w = (float(iter)-float(i))/(float(iter));
+		w= w*w;
+		wt+= w;
+		acc+= a(z.yx,time+(float(i)*0.02))*w;
 	}
-	return (triangleType == 0)  ? texture2D(texture,d).xyz :
-	texture2D(texture3,d).xyz  ;
-	//vec3(1.0,0.0,0.0);
+	return (acc/(wt*2.0));
+}
+
+void main() {
+	gl_FragColor = vec4(getColor2D(coord.xy),1.0);
 }
 

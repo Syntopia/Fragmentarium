@@ -209,7 +209,7 @@ namespace Fragmentarium {
 				};
 
 				virtual Vector3f transform(int width, int height) {
-					gluOrtho2D(-1,-1,1,1); // Keep?
+					//gluOrtho2D(-1,-1,1,1); // Keep?
 					glMatrixMode(GL_MODELVIEW);
 					glLoadIdentity();glTranslatef(x,y,0);
 					glScalef(scale,scale*(height/(float)width),scale);
@@ -441,6 +441,7 @@ namespace Fragmentarium {
 		void DisplayWidget::paintGL() {
 			// Show info first time we display something...
 
+					
 			static bool shownInfo = false;
 			if (!shownInfo) {
 				shownInfo = true;
@@ -482,7 +483,7 @@ namespace Fragmentarium {
 				if (fragmentSource.hasPixelSizeUniform || true) {
 					int l = shaderProgram->uniformLocation("pixelSize");
 					if (l == -1) {
-						WARNING("Could not find pixelSize");
+						//WARNING("Could not find pixelSize");
 					} else {
 						shaderProgram->setUniformValue(l, (float)(scale.x()/width()),(float)(scale.y()/height()));
 					}
@@ -499,7 +500,15 @@ namespace Fragmentarium {
 				mainWindow->setUserUniforms(shaderProgram);
 				glColor3d(1.0,1.0,1.0);
 				
-				glRectf(-1,-1,1,1); 
+				if (disableRedraw) {
+					QTime tx = QTime::currentTime();
+					glRectf(-1,-1,1,1); 
+					glFinish();
+					int msx = tx.msecsTo(QTime::currentTime());
+					INFO(QString("GPU: render took %1 ms.").arg(msx));
+				} else {
+					glRectf(-1,-1,1,1); 
+				}
 
 				if (tiles) {
 					QImage im = grabFrameBuffer();
@@ -529,6 +538,8 @@ namespace Fragmentarium {
 				}
 				//
 			}
+			
+			
 			mainWindow->setFPS(fps);
 		};
 

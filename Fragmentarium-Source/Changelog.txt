@@ -1,11 +1,19 @@
+
+Continouos->reset time trigger time measure
+
+15-02-10 Added animation controller dialog (in progress)
+[3h]	 Updated texture demo
+		 Added experimental/QuaternionMandelbrot4D.frag
+		 GPU/CPU benchmark (in progress)
+
 02-02-10 Tilebased render dialog added.
-		 SpotLight is now always on camera-oriented hemisphere (and expressed in spherical coords as a vec2)
+[3h]	 SpotLight is now always on camera-oriented hemisphere (and expressed in spherical coords as a vec2)
 		 Added support for 2D sliders in GUI.
 		 Update DE-raytracer: new background vignette, better normal estimation.
 
 27-01-10 Added a 'preview' slider to toolbar (in progress)
-		Refactored DE-raytracer in order to separate color and lighting.
-		Now clamps colors after anti-aliased (to prevent killing specular highlights).
+[3h]	 Refactored DE-raytracer in order to separate color and lighting.
+		 Now clamps colors after anti-aliased (to prevent killing specular highlights).
 
 
 25-01-10 Added prototype for tilebased render (currently tiles are fixed to 3x3)

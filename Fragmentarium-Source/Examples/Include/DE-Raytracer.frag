@@ -202,7 +202,7 @@ vec3 trace(vec3 from, vec3 to) {
 	}
 	
 	//color = clamp(color, 0.0, 1.0);
-	
+
 	return color;
 }
 

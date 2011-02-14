@@ -96,6 +96,7 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 
 		public slots:
+			void benchmark();
 			void removeSplash();
 			void viewSliderChanged(int);
 			void tileBasedRender();
@@ -213,6 +214,7 @@ namespace Fragmentarium {
 			QAction* recentFileSeparator;
 			QLabel* fpsLabel;
 			QWidget* splashWidget;
+			QDockWidget* animationController;
 		};
 
 	

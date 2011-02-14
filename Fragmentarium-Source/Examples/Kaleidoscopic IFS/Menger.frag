@@ -36,7 +36,7 @@ float DE(vec3 z)
              z = Scale*z-Offset*(Scale-1.0);
 		if( z.z<-0.5*Offset.z*(Scale-1.0))  z.z+=Offset.z*(Scale-1.0);
 		z = rot *z;
-		orbitTrap = min(orbitTrap, (vec4(abs(z),dot(z,z))));		
+		if (n<2) orbitTrap = min(orbitTrap, (vec4(abs(z),dot(z,z))));		
 		n++;
 	}
 	

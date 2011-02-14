@@ -25,6 +25,7 @@
 
 #include "MainWindow.h"
 #include "VariableEditor.h"
+#include "AnimationController.h"
 #include "../../SyntopiaCore/Logging/ListWidgetLogger.h"
 #include "../../SyntopiaCore/Exceptions/Exception.h"
 #include "../../Fragmentarium/Parser/Preprocessor.h"
@@ -147,8 +148,9 @@ namespace Fragmentarium {
 				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform int i; slider[0,1,2]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform float f; slider[0.1,1.1,2.3]", textEdit , SLOT(insertText()));
-				uniformMenu->addAction("uniform bool b; checkbox[true]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform vec2 v; slider[(0,0),(1,1),(1,1)]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform bool b; checkbox[true]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform sampler2D tex; file[tex.jpg]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec3 color; color[0.0,0.0,0.0]", textEdit , SLOT(insertText()));
 				
@@ -446,6 +448,67 @@ namespace Fragmentarium {
 			tabChanged(tabBar->currentIndex());
 		}
 
+		/*
+			int i = 0;
+			vec2 z = vec2(0.0);
+			for (i = 0; i < 10000; i++) {
+				z = vec2(z.x*z.x - z.y*z.y,2.0*z.x*z.y) + c;
+				if (dot(z,z)> 100.0) break;
+			}
+			if (dot(z,z)> 100.0) {
+				return vec3(1.0) ;
+			}  else {
+				return vec3(0.2);
+			}
+		*/
+
+		void MainWindow::benchmark() {
+			int w = engine->width();
+			int h = engine->height();
+			QImage im(w,h,QImage::Format_RGB32);
+			float* a = new float[w*h];
+			float aspect = (float)(h)/w;
+			QTime start = QTime::currentTime();
+			int loop = 0;
+			for (int _x = 0; _x < w; _x++) {
+				float fx = 2.0f*((float)_x)/w-1.0f; 
+				for (int _y = 0; _y < h; _y++) {
+					float fy = aspect*(2.0f*((float)_y)/h-1.0f); 
+					float x = 0.0f;
+					float y = 0.0f;
+					float tx = 0.0f;
+					int hit = 0.0f;
+					for (int i = 0; i < 1000; i++) {
+						loop++;
+						tx = x*x-y*y+fx;
+						y = 2.0f*x*y+fy;
+						x = tx;
+						if ((x*x+y*y)> 100.0f) { hit=1.0f; x=0.0f; y=0.0f; }
+					}
+					if (hit==1) {
+						a[_x+_y*w]=1.0f;
+					}  else {
+						a[_x+_y*w]=0.0f;
+					}
+				}
+			}
+			int ms  = start.msecsTo(QTime::currentTime());
+			
+			INFO(QString("CPU: Used %1 ms for %2 iterations").arg(ms).arg(loop));
+			for (int x = 0; x < w; x++) {
+				for (int y = 0; y < h; y++) {
+					im.setPixel(x,y,qRgb(255*a[x+y*w],255*a[x+y*w],255*a[x+y*w]));
+				}
+			}
+			QPixmap p = QPixmap::fromImage(im);
+			QMainWindow* d = new QMainWindow(this);
+			QLabel* l = new QLabel(d);
+			l->setPixmap(p);
+			d->setCentralWidget(l);
+			d->show();
+			delete[] a;
+		}
+
 		void MainWindow::init()
 		{
 			setAcceptDrops(true);
@@ -554,6 +617,13 @@ namespace Fragmentarium {
 			createToolBars();
 			createStatusBar();
 			createMenus();
+
+			animationController = new AnimationController(this);
+			animationController->setAllowedAreas(Qt::BottomDockWidgetArea);
+			addDockWidget(Qt::BottomDockWidgetArea, animationController, Qt::Vertical);
+			animationController->setFloating(true);
+			
+			renderModeChanged(0);
 
 		}
 
@@ -825,6 +895,8 @@ namespace Fragmentarium {
 
 			helpMenu = menuBar()->addMenu(tr("&Help"));
 			helpMenu->addAction(aboutAction);
+			helpMenu->addAction("Benchmark", this, SLOT(benchmark()));
+			
 			helpMenu->addSeparator();
 			helpMenu->addAction(sfHomeAction);
 			//helpMenu->addAction(referenceAction);
@@ -942,12 +1014,13 @@ namespace Fragmentarium {
 
 			renderModeToolBar = addToolBar(tr("Rendering Mode"));
 			
-			renderModeToolBar->addWidget(new QLabel("Screen update:", this));
+			renderModeToolBar->addWidget(new QLabel("Render mode:", this));
 			
 			renderCombo= new QComboBox(renderModeToolBar);
 			renderCombo->addItem("Automatic");
 			renderCombo->addItem("Manual");
 			renderCombo->addItem("Continuous");
+			renderCombo->addItem("Animation");
 			//renderCombo->addItem("Custom Resolution");
 			connect(renderCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(renderModeChanged(int)));
 			renderModeToolBar->addWidget(renderCombo);
@@ -957,8 +1030,7 @@ namespace Fragmentarium {
 			// renderButton->setShortcut(Qt::Key_F6); doesn't work?
 			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
 			renderModeToolBar->addWidget(renderButton);
-			renderModeChanged(0);
-
+			
 			viewLabel = new QLabel("Preview (off)", renderModeToolBar);
 			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
 			viewSlider->setTickInterval(1);
@@ -998,8 +1070,16 @@ namespace Fragmentarium {
 				INFO("Manual screen updates. Press 'update' to refresh the screen.");
 			} else if (i == 2) {
 				INFO("Continuous screen updates. Updates at a fixed interval.");
+			}  else if (i == 3) {
+				INFO("Animation mode. Use controller to jump in time.");
 			}
-			renderButton->setEnabled(i!=0);
+			if (i==3) {
+				animationController->show();
+				animationController->resize(animationController->width(), animationController->minimumHeight());
+			} else {
+				animationController->hide();
+			}
+			renderButton->setEnabled(i!=0 && i!=3);
 			renderButton->setText( (i==2) ? "Reset Time" : "Update (F6)");
 			engine->setContinuous(i == 2);
 			engine->setDisableRedraw(i == 1);
