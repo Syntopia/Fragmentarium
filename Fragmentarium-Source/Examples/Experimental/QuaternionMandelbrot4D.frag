@@ -1,7 +1,14 @@
-// Write fragment code here...
 #info 4D Quaternion Mandelbrot Distance Estimator
 #include "DE-Raytracer.frag"
 #group 4D Quaternion Mandelbrot
+
+// This is Mandelbrot variation 
+// of the usual 4D Quaternion Julia
+
+// The straight forward implementation 
+// yields a boring, symmetriical object,
+// but after adding a reflection we
+// get some more Mandelbrot like.
 
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,16,100]

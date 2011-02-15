@@ -8,6 +8,8 @@ namespace SyntopiaCore {
 	namespace Logging {
 
 		namespace {
+
+			
 			class ListWidget : public QListWidget {
 			public: 
 				ListWidget(QWidget* parent) : QListWidget(parent) {
@@ -46,6 +48,15 @@ namespace SyntopiaCore {
 		}
 
 		void ListWidgetLogger::log(QString message, LogLevel priority) {
+			if (listWidget->count() > 50) {
+				listWidget->setUpdatesEnabled(false);
+				while (listWidget->count() > 20) {
+					delete(listWidget->takeItem(0));
+				}
+				listWidget->setUpdatesEnabled(true);
+			}
+		
+
 			QListWidgetItem* i = new QListWidgetItem(message, listWidget);
 
 			// Levels: NoneLevel, DebugLevel, TimingLevel, InfoLevel, WarningLevel, CriticalLevel, AllLevel

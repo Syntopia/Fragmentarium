@@ -1,4 +1,5 @@
 #include "AnimationController.h"
+#include "../../SyntopiaCore/Misc/Misc.h"
 
 using namespace SyntopiaCore::Logging;
 
@@ -198,18 +199,18 @@ namespace Fragmentarium {
 			
 			lengthSpinBox->setMinimum(1);
 			lengthSpinBox->setMaximum(9999);
-			lengthSpinBox->setValue(animationSettings.length);
+			lengthSpinBox->setValue(animationSettings.getLength());
 			
 			fpsSpinBox->setMinimum(1);
 			fpsSpinBox->setMaximum(100);
-			fpsSpinBox->setValue(animationSettings.fps);
+			fpsSpinBox->setValue(animationSettings.getFps());
 			
 			timeSlider->setMinimum(0);
 			timeSlider->setMaximum(animationSettings.totalFrames());
 			timeSlider->setValue(0);
 
 			timeSpinBox->setMinimum(0);
-			timeSpinBox->setMaximum(animationSettings.length);
+			timeSpinBox->setMaximum(animationSettings.getLength());
 			timeSpinBox->setValue(0);
 
 			connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
@@ -221,11 +222,24 @@ namespace Fragmentarium {
 	   	    connect(rewindButton, SIGNAL(clicked()), this, SLOT(rewind()));
 	   	    connect(recButton, SIGNAL(clicked()), this, SLOT(record()));
 
+			connect(&animationSettings, SIGNAL(updateSliders()), this, SLOT(updateSliders()));
 
 	    } 
 
+		void AnimationController::updateSliders() {
+			frameSpinBox->blockSignals(true);
+			timeSlider->blockSignals(true);
+			timeSpinBox->blockSignals(true);
+			timeSlider->setValue(animationSettings.currentFrame());
+			frameSpinBox->setValue(animationSettings.currentFrame());
+			timeSpinBox->setValue(animationSettings.getTime());
+			frameSpinBox->blockSignals(false);
+			timeSlider->blockSignals(false);
+			timeSpinBox->blockSignals(true);
+		}
+
 		void AnimationController::timeChanged(double) {
-			animationSettings.time = timeSpinBox->value();
+			animationSettings.setTime(timeSpinBox->value());
 
 			frameSpinBox->blockSignals(true);
 			timeSlider->blockSignals(true);
@@ -239,10 +253,10 @@ namespace Fragmentarium {
 		}
 
 		void AnimationController::lengthChanged(double) {
-			animationSettings.length = lengthSpinBox->value();
+			animationSettings.setLength(lengthSpinBox->value());
 			timeSpinBox->blockSignals(true);
 			timeSlider->blockSignals(true);
-			timeSpinBox->setMaximum(animationSettings.length);
+			timeSpinBox->setMaximum(animationSettings.getLength());
 			timeSlider->setMaximum(animationSettings.totalFrames());
 			timeSpinBox->blockSignals(false);
 
@@ -257,7 +271,7 @@ namespace Fragmentarium {
 			timeSlider->blockSignals(true);
 			
 			timeSlider->setValue(animationSettings.currentFrame());
-			timeSpinBox->setValue(animationSettings.time);
+			timeSpinBox->setValue(animationSettings.getTime());
 	
 			timeSpinBox->blockSignals(false);
 			timeSlider->blockSignals(false);
@@ -265,7 +279,7 @@ namespace Fragmentarium {
 		}
 
 		void AnimationController::fpsChanged(int) {
-			animationSettings.fps = fpsSpinBox->value();
+			animationSettings.setFps (fpsSpinBox->value());
 				timeSlider->blockSignals(true);
 				timeSlider->blockSignals(true);
 				frameSpinBox->setMaximum(animationSettings.totalFrames());
@@ -286,7 +300,7 @@ namespace Fragmentarium {
 			animationSettings.setFrame(frame);
 			timeSpinBox->blockSignals(true);
 			frameSpinBox->blockSignals(true);
-			timeSpinBox->setValue(animationSettings.time);
+			timeSpinBox->setValue(animationSettings.getTime());
 			frameSpinBox->setValue(animationSettings.currentFrame());
 			timeSpinBox->blockSignals(false);
 			frameSpinBox->blockSignals(false);
@@ -296,17 +310,44 @@ namespace Fragmentarium {
 			animationSettings.setFrame(0);
 			
 			timeSlider->setValue(animationSettings.currentFrame());
-			timeSpinBox->setValue(animationSettings.time);
+			timeSpinBox->setValue(animationSettings.getTime());
 			frameSpinBox->setValue(animationSettings.currentFrame());
 		};
 
 		void AnimationController::play() {
-			animationSettings.setStartTime();
-			animationSettings.setStartAnimTime();
-			animationSettings.setRunning(true);
+			if (animationSettings.isRunning()) {
+				INFO("Stopped animation");
+				animationSettings.setRunning(false);
+			} else {
+				INFO("Started animation");
+				animationSettings.setStartTime();
+				animationSettings.setStartAnimTime();
+				animationSettings.setRunning(true);
+			}
 		};
 
-		void AnimationController::record() {};
+		void AnimationController::record() {
+			if (animationSettings.isRecording()) {
+				INFO("Stopped recording");
+				animationSettings.setRunning(false);
+				animationSettings.setRecording(false);
+			} else {
+				QString filename = SyntopiaCore::Misc::GetImageFileName(this, "Choose image file name:");
+				if (filename.isEmpty()) return;
+				QString extension = "."+filename.section(".", -1,-1);
+				QString base = filename.section(".", 0,-2);
+				INFO("File: " + base + " - " + extension);
+				animationSettings.setFileName(base, extension);
+				rewind();
+				
+				INFO("Started recording");
+				animationSettings.setStartTime();
+				animationSettings.setStartAnimTime();
+				animationSettings.setRunning(true);
+				animationSettings.setRecording(true);
+			}
+			
+		};
 
 	}
 }

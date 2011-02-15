@@ -10,7 +10,7 @@
 #include "SyntopiaCore/Math/Vector3.h"
 #include "SyntopiaCore/Math/Matrix4.h"
 #include "../Parser/Preprocessor.h"
-
+#include "AnimationController.h"
 
 namespace Fragmentarium {
 	namespace GUI {	
@@ -58,7 +58,7 @@ namespace Fragmentarium {
 			void resetTime() { time = QTime::currentTime(); }
 			void setViewFactor(float val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
-	
+			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 		
 		protected:
 			void tileRender();
@@ -106,6 +106,7 @@ namespace Fragmentarium {
 			int tilesCount;
 			QVector<QImage> cachedTileImages;
 			float viewFactor;
+			AnimationSettings* animationSettings;
 		};
 	};
 

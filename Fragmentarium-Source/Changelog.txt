@@ -1,6 +1,9 @@
 
 Continouos->reset time trigger time measure
 
+16-02-10 Animation + export is working now.
+[2h]
+
 15-02-10 Added animation controller dialog (in progress)
 [3h]	 Updated texture demo
 		 Added experimental/QuaternionMandelbrot4D.frag

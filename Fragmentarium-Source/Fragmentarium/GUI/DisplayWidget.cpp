@@ -236,6 +236,7 @@ namespace Fragmentarium {
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
+			animationSettings = 0;
 			shaderProgram = 0;
 			viewFactor = 1.0;
 			tiles = 0;
@@ -491,7 +492,12 @@ namespace Fragmentarium {
 
 				int l = shaderProgram->uniformLocation("time");
 				if (l != -1) {
-					float t = (time.msecsTo(QTime::currentTime())/1000.0);
+					float t = 0;
+					if (animationSettings) {
+						t = animationSettings->getTimeFromDisplay();
+					} else {
+						t = (time.msecsTo(QTime::currentTime())/1000.0);
+					}
 					shaderProgram->setUniformValue(l, (float)t);
 					//INFO(QString("Time:%1").arg(t));
 				}
@@ -505,9 +511,21 @@ namespace Fragmentarium {
 					glRectf(-1,-1,1,1); 
 					glFinish();
 					int msx = tx.msecsTo(QTime::currentTime());
-					INFO(QString("GPU: render took %1 ms.").arg(msx));
+					//INFO(QString("GPU: render took %1 ms.").arg(msx));
 				} else {
 					glRectf(-1,-1,1,1); 
+				}
+
+				if (animationSettings && animationSettings->isRecording()) {
+					QString filename = animationSettings->getFileName();
+					QImage im = grabFrameBuffer();
+					INFO("Saving frame: " + filename );
+					bool succes = im.save(filename);
+					if (succes) {
+						//INFO("Saved screenshot as: " + filename);
+					} else {
+						WARNING("Save failed! Filename: " + filename);
+					}
 				}
 
 				if (tiles) {
@@ -571,7 +589,7 @@ namespace Fragmentarium {
 			}
 			*/
 
-			if (pendingRedraws || continuous) updateGL();
+			if (pendingRedraws || continuous || (animationSettings && animationSettings->isRunning())) updateGL();
 		}
 
 

@@ -27,49 +27,108 @@
 namespace Fragmentarium {
 	namespace GUI {
 
-		struct AnimationSettings {
+		using namespace SyntopiaCore::Logging;
+
+		class AnimationSettings : public QObject {
+			Q_OBJECT
+		public:
 			AnimationSettings() {
-				isRunning = false;
+				running = false;
+				recording = false;
 				time = 0.0;
 				length = 10.0;
 				fps = 25;
+				startFrame = 1;
 			}
 			
-			void setRunning(bool start) {
-				isRunning = start;
+			void setRunning(bool v) {
+				running = v;
 			}
 
 			void setStartTime() {
-				startTime = QDateTime::currentDateTime();
+				startTime = QTime::currentTime();
 			};
 
 			void setStartAnimTime() {
 				startAnimTime = time;
 			};
 
-			void setTime(float t) {
+			QString getFileName() {
+				int digits = QString::number(totalFrames()).length();
+				QString n = QString::number(startFrame);
+				QString f = base + n.rightJustified(digits, '0') + extension;
+				return f;
+			}
+
+			float getTimeFromDisplay() {
+				if (!isRunning()) return time;
+				if (isRecording()) {
+					setFrame(startFrame++);
+				} else {
+					float elapsedTime = startTime.msecsTo(QTime::currentTime())/1000.0;
+					setTime(startAnimTime+elapsedTime, false);
+			    }
+				if (time>=length ) {
+					running = false;
+					recording = false;
+					INFO("Reached end. Stopping...");
+				}
+				emit updateSliders();
+				return time;
+			}
+
+			void setTime(float t, bool checkRunning = true) {
 				if (t>length) t=length;
 				if (t<0) t=0;
 				time = t;
+				if (checkRunning && isRunning()) {
+					// new time - reset start times
+					setStartTime();
+					setStartAnimTime();
+				}
+				emit timeUpdated();
 			};
 
 			void setFrame(int f) {
-				time = f/(double)(fps);
+				setTime((f-1)/(double)(fps));
 			};
 
 
 			int currentFrame() {
-				return (int)(time*fps); // round down
+				int f= (int)(time*fps)+1; // round down
+				return f;
 			};
 
 			int totalFrames() { return (int)(length*fps); }
 
+			float getLength() { return length; } 
+			float getTime() { return time; } 
+			int getFps() { return fps; } 
+			bool isRunning() { return running; } 
+			bool isRecording() { return recording; } 
+			void setRecording(bool r) { recording = r;  startFrame = 0; } 
+			void setLength(float l) { length = l; }
+			void setFps(int f) { fps = f; }
+
+			void setFileName(QString base, QString extension) {
+				this->base = base;
+				this->extension = extension;
+			}
+
+		signals:
+			void timeUpdated();	
+			void updateSliders();
+		private:
+			int startFrame; 
 			float time; // Current time
 			float length;
+			bool recording;
 			int fps;
-			QDateTime startTime;
+			QTime startTime;
 			float startAnimTime;
-			bool isRunning;
+			bool running;
+			QString base;
+			QString extension;
 		};
 
 		class AnimationController : public QDockWidget
@@ -77,6 +136,7 @@ namespace Fragmentarium {
 			Q_OBJECT
 		public:
 			AnimationController(QWidget* parent);
+			AnimationSettings* getAnimationSettings() { return &animationSettings; }
 
 		public slots:
 			void timeChanged(double);
@@ -87,6 +147,7 @@ namespace Fragmentarium {
 			void rewind();
 			void play();
 			void record();
+			void updateSliders();
 
 		private:
 			QWidget *centralwidget;

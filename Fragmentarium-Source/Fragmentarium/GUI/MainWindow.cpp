@@ -33,6 +33,7 @@
 #include "../../SyntopiaCore/Math/Random.h"
 #include "../../SyntopiaCore/Math/Matrix4.h"
 #include "../../ThirdPartyCode/glextensions.h"
+#include "../../SyntopiaCore/Misc/Misc.h"
 
 
 using namespace SyntopiaCore::Math;
@@ -622,6 +623,7 @@ namespace Fragmentarium {
 			animationController->setAllowedAreas(Qt::BottomDockWidgetArea);
 			addDockWidget(Qt::BottomDockWidgetArea, animationController, Qt::Vertical);
 			animationController->setFloating(true);
+			connect(((AnimationController*)animationController)->getAnimationSettings(), SIGNAL(timeUpdated()), this, SLOT(callRedraw()));
 			
 			renderModeChanged(0);
 
@@ -1075,8 +1077,10 @@ namespace Fragmentarium {
 			}
 			if (i==3) {
 				animationController->show();
+				engine->setAnimationSettings(((AnimationController*)animationController)->getAnimationSettings());
 				animationController->resize(animationController->width(), animationController->minimumHeight());
 			} else {
+				engine->setAnimationSettings(0);
 				animationController->hide();
 			}
 			renderButton->setEnabled(i!=0 && i!=3);
@@ -1422,28 +1426,8 @@ namespace Fragmentarium {
 		}
 		
 		void MainWindow::saveImage(QImage image) {
-			QList<QByteArray> a = QImageWriter::supportedImageFormats();
-			QStringList allowedTypesFilter;
-			QStringList allowedTypes;
-			for (int i = 0; i < a.count(); i++) {
-				allowedTypesFilter.append("*."+a[i]);
-				allowedTypes.append(a[i]);
-			}
-			QString filter = "Image Files (" + allowedTypesFilter.join(" ")+")";
-
-			QString filename = QFileDialog::getSaveFileName(this, "Save Screenshot As...", QString(), filter);
-			if (filename.isEmpty()) {
-				INFO("User cancelled save...");
-				return;
-			}
-
-			QString ext = filename.section(".", -1).toLower();
-			if (!allowedTypes.contains(ext)) {
-				WARNING("Invalid image extension.");
-				WARNING("File must be one of the following types: " + allowedTypes.join(","));
-				return;
-			}
-
+			QString filename = SyntopiaCore::Misc::GetImageFileName(this, "Save screenshot as:");
+			if (filename.isEmpty()) return;
 			bool succes = image.save(filename);
 			if (succes) {
 				INFO("Saved screenshot as: " + filename);
