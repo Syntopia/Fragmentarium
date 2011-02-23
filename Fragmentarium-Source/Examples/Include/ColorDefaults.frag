@@ -24,12 +24,32 @@ RStrength = 0.316
 R = 0.4,0.7,1
 #Params
 
+#Params earth-colors
+AO = 0.553
+AOColor = 0,0,0
+SpotLight = 0.402
+Specular = 0.75
+SpecularExp = 16
+SpotLightColor = 1,1,1
+SpotLightDir = 1,0.1
+CamLight = 1
+CamLightColor = 1,1,1
+Glow = 0.2
+GlowColor = 1,1,1
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+BaseColor = 1,1,1
+OrbitStrength = 0.881
+XStrength = 0.478
+X = 0.5,0.6,0.6
+YStrength = 0.044
+Y = 0.458824,0.631373,1
+ZStrength = 0.496
+Z = 0.8,0.78,1
+RStrength = 0.228
+R = 0.666667,0.666667,0.498039
+#endparams
 
-Iterations = 13
-Scale = 1.944
-RotVector = 0.192,0.725,0.483
-RotAngle = 116.64
-Offset = 0.89,0.176,1
 
 AntiAlias = 1
 AntiAliasBlur = 1

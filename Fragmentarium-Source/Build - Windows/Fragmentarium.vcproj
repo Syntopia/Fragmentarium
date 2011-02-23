@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -EHsc"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(QT4DIR)\include\QtScript&quot;;&quot;$(QT4DIR)\include\QtCore&quot;;&quot;$(QT4DIR)\include\QtXml&quot;;&quot;$(QT4DIR)\include\QtGui&quot;;&quot;$(QT4DIR)\include\QtOpenGL&quot;;&quot;$(QT4DIR)\include&quot;;&quot;$(QT4DIR)\include\ActiveQt&quot;;tmp\moc\debug_shared;.;&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot;"
+				AdditionalIncludeDirectories="..;&quot;$(QT4DIR)\include\QtScript&quot;;&quot;$(QT4DIR)\include\QtCore&quot;;&quot;$(QT4DIR)\include\QtXml&quot;;&quot;$(QT4DIR)\include\QtGui&quot;;&quot;$(QT4DIR)\include\QtOpenGL&quot;;&quot;$(QT4DIR)\include&quot;;&quot;$(QT4DIR)\include\ActiveQt&quot;;tmp\moc\debug_shared;.;&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot;"
 				PreprocessorDefinitions="_WINDOWS;UNICODE;QT_LARGEFILE_SUPPORT;WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT"
 				GeneratePreprocessedFile="0"
 				MinimalRebuild="true"
@@ -344,7 +344,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="RCC Fragmentarium.qrc"
-						CommandLine="$(QT4DIR)\bin\rcc.exe -name Fragmentarium Fragmentarium.qrc -o tmp\rcc\debug_shared\qrc_Fragmentarium.cpp&#x0D;&#x0A;"
+						CommandLine="$(QT4DIR)\bin\rcc.exe -name Fragmentarium ..\Fragmentarium.qrc -o tmp\rcc\debug_shared\qrc_Fragmentarium.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="$(QT4DIR)\bin\rcc.exe;Icons\new.png;Icons\copy.png;Icons\cut.png;Icons\save.png;Icons\paste.png;Icons\open.png"
 						Outputs="tmp\rcc\debug_shared\qrc_Fragmentarium.cpp"
 					/>
@@ -428,6 +428,10 @@
 				RelativePath=".\tmp\moc\rmoc_VariableEditor.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\tmp\moc\rmoc_VariableWidget.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Fragmentarium"
@@ -487,7 +491,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Moc&apos;ing MainWindow"
-							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_shared&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; Fragmentarium/GUI/MainWindow.h -o tmp\moc\debug_shared\moc_MainWindow.cpp&#x0D;&#x0A;"
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_shared&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/MainWindow.h -o tmp\moc\debug_shared\moc_MainWindow.cpp&#x0D;&#x0A;"
 							Outputs="tmp\moc\debug_shared\moc_MainWindow.cpp"
 						/>
 					</FileConfiguration>
@@ -515,7 +519,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="moc variableEditor"
-							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; Fragmentarium/GUI/VariableEditor.h -o tmp\moc\rmoc_VariableEditor.cpp&#x0D;&#x0A;"
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/VariableEditor.h -o tmp\moc\rmoc_VariableEditor.cpp&#x0D;&#x0A;"
 							Outputs="tmp\moc\rmoc_VariableEditor.cpp"
 						/>
 					</FileConfiguration>
@@ -527,6 +531,24 @@
 							Description="moc variableEditor"
 							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/VariableEditor.h -o tmp\moc\rmoc_VariableEditor.cpp&#x0D;&#x0A;"
 							Outputs="tmp\moc\rmoc_VariableEditor.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\Fragmentarium\GUI\VariableWidget.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Fragmentarium\GUI\VariableWidget.h"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc VariableWidget.h "
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE -DQT_LARGEFILE_SUPPORT -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/VariableWidget.h -o tmp\moc\rmoc_VariableWidget.cpp"
+							Outputs="tmp\moc\rmoc_VariableWidget.cpp"
 						/>
 					</FileConfiguration>
 				</File>

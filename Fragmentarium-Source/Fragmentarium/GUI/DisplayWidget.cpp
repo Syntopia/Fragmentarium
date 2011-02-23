@@ -1,5 +1,6 @@
 #include "DisplayWidget.h"
 #include "MainWindow.h"
+#include "VariableWidget.h"
 #include "../../ThirdPartyCode/glextensions.h"
 
 using namespace SyntopiaCore::Math;
@@ -40,9 +41,25 @@ namespace Fragmentarium {
 
 			class Camera3D : public CameraControl {
 			public:
-				Camera3D(QStatusBar* statusBar) : statusBar(statusBar) { 
+				Camera3D(QStatusBar* statusBar) : statusBar(statusBar) {
+					fw = 0;
 					reset(); 
 				};
+
+				~Camera3D() {
+//					delete(fw);
+				}
+
+				virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) {
+//					delete(fw);
+					fw = new FloatWidget(group, parent, "My test", 0.5,0.0,1.0);
+					fw->setToolTip("");
+					fw->setStatusTip("");
+					fw->setSystemVariable(true);
+					QVector<VariableWidget*> w;
+					w.append(fw);
+					return w;
+				}
 
 				virtual QString getID() { return "3D"; };
 
@@ -132,7 +149,7 @@ namespace Fragmentarium {
 						"   vec2 ps = pixelSize*mat2(gl_ProjectionMatrix); " // extract submatrix to scale pixelsize
 						"   float fx = 2.0;\n"
 						"   float fy = 2.0;\n"
-						"   from = (gl_ModelViewMatrix*vec4(coord.x, coord.y, 1.0,1.0)).xyz;\n"
+						"   from = (gl_ModelViewMatrix*vec4(coord.x,coord.y, 1.0,1.0)).xyz;\n"
 						"   to = (gl_ModelViewMatrix*vec4(coord.x*fx, coord.y*fy, -1.0,1.0)).xyz;\n"
 						"   fromDy = (gl_ModelViewMatrix*vec4(coord.x, coord.y+ps.y, 1.0,1.0)).xyz - from;\n"
 						"   toDy = (gl_ModelViewMatrix*vec4(coord.x*fx, (coord.y+ps.y)*fy, -1.0,1.0)).xyz - to;\n"
@@ -142,6 +159,7 @@ namespace Fragmentarium {
 					// 
 				}
 			private:
+				FloatWidget* fw;
 				Vector3f translation ;
 				float scale;
 				int height;
@@ -156,6 +174,10 @@ namespace Fragmentarium {
 			class Camera2D : public CameraControl {
 			public:
 				Camera2D(QStatusBar* statusBar) : statusBar(statusBar) { reset(); };
+
+				virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) {
+					return QVector<VariableWidget*>();
+				}
 
 				virtual QString getID() { return "2D"; };
 
@@ -331,8 +353,12 @@ namespace Fragmentarium {
 			shaderProgram = new QGLShaderProgram(this);
 
 			// Vertex shader
-			bool s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,
-				cameraControl->getVertexShader());
+			bool s = false;
+			if (fragmentSource.vertexSource.count() == 0) {
+				s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,cameraControl->getVertexShader());
+			} else {
+				s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,fragmentSource.vertexSource.join("\n"));
+			}
 			if (!s) WARNING("Could not create vertex shader: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
 			if (!shaderProgram->log().isEmpty()) INFO("Vertex shader compiled with warnings: " + shaderProgram->log());

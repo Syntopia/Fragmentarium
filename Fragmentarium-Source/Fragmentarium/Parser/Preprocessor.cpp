@@ -135,22 +135,24 @@ namespace Fragmentarium {
 			} 
 
 			// Look for 'uniform float varName; slider[0.1;1;2.0]'
-			QRegExp float3Slider("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$"); 
-			QRegExp float2Slider("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
-			QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
-			QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
-			QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
-			QRegExp boolChooser("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
-			QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
-			QRegExp replace("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
-            QRegExp sampler2D("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$"); 
-			
+			static QRegExp float3Slider("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$"); 
+			static QRegExp float2Slider("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
+			static QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+			static QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+			static QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+			static QRegExp boolChooser("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
+			static QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
+			static QRegExp replace("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
+            static QRegExp sampler2D("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$"); 
 			QString lastComment;
 			QString currentGroup;
 			QMap<QString, QString> replaceMap;
+			bool inVertex = false;
 			for (int i = 0; i < fs.source.count(); i++) {
+				if (inVertex && !fs.source[i].contains("#endvertex")) {
+				}
 				QString s = fs.source[i];
-
+				
 				if (!s.contains("#replace")) {
 					for (QMap<QString, QString>::const_iterator it = replaceMap.constBegin(); it != replaceMap.constEnd(); ++it) 
 					{
@@ -161,6 +163,7 @@ namespace Fragmentarium {
 						}
 					}
 				}
+				
 				if (s.trimmed().startsWith("#camera")) {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#camera");
@@ -169,11 +172,17 @@ namespace Fragmentarium {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#group");
 					currentGroup = c.trimmed();
+				} else if (s.trimmed().startsWith("#vertex")) {
+					fs.source[i] = "// " + s;
+					inVertex = true;
+				} else if (s.contains("#endvertex")) {
+					fs.source[i] = "// " + s;
+					inVertex = false;
 				} else if (s.trimmed().startsWith("#info")) {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#info").trimmed();
 					SCRIPTINFO(c);
-				} else if (moveMain && main.indexIn(s) != -1) {
+				} else if (!inVertex && moveMain && main.indexIn(s) != -1) {
 					//INFO("Found main: " + s );
 					fs.source[i] = s.replace(" main", " fragmentariumMain");
 				}  else if (replace.indexIn(s) != -1) {
@@ -287,6 +296,12 @@ namespace Fragmentarium {
 				} else {
 					lastComment = "";
 				}
+
+				if (inVertex && !fs.source[i].contains("#endvertex")) {
+					fs.vertexSource.append(fs.source[i]);
+					fs.source[i] = "//" + fs.source[i];
+				}
+				
 			}
 
 			// To ensure main is called as the last command.

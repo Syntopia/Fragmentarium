@@ -1228,6 +1228,8 @@ namespace Fragmentarium {
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);
 				editorDockWidget->setHidden(!showGUI);
 				engine->setFragmentShader(fs);
+				variableEditor->updateCamera(engine->getCameraControl());
+				
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
 			}	

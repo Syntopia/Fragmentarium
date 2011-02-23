@@ -1,5 +1,13 @@
-
+Todo:
+Automatic should always have time=0
+Animation should be an automatic mode
 Continouos->reset time trigger time measure
+Fix benchmark
+Icons for animation transporter
+Hide keyframes
+
+23-02-10 Major refactoring of widgets in progress.
+[3h]	 Added normalized float3 slider
 
 16-02-10 Animation + export is working now.
 [2h]

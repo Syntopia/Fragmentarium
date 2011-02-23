@@ -1,12 +1,61 @@
 #info Default Raytracer (by Syntopia)
 #camera 3D
+
+#group C
+
+#vertex
+
+mat3  rotationMatrix3(vec3 v, float angle)
+{
+	float c = cos(radians(angle));
+	float s = sin(radians(angle));
+	
+	return mat3(c + (1.0 - c) * v.x * v.x, (1.0 - c) * v.x * v.y - s * v.z, (1.0 - c) * v.x * v.z + s * v.y,
+		(1.0 - c) * v.x * v.y + s * v.z, c + (1.0 - c) * v.y * v.y, (1.0 - c) * v.y * v.z - s * v.x,
+		(1.0 - c) * v.x * v.z - s * v.y, (1.0 - c) * v.y * v.z + s * v.x, c + (1.0 - c) * v.z * v.z
+		);
+}
+
+
+// Use this to adjust clipping planes
+uniform float FOV; slider[0,1,1.2];
+uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)];
+uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)];
+uniform vec3 CameraRot; slider[(-180,-180,-180),(0,0,0),(180,180,180)];
+
+varying vec3 dirDx;
+varying vec3 dirDy;
+varying vec3 from;
+varying vec3 to;
+uniform vec2 pixelSize;
+varying vec2 coord;
+varying float zoom;
+varying vec3 dir;
+void main(void)
+{
+	gl_Position =  gl_Vertex;
+	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
+	vec2 ps = pixelSize*mat2(gl_ProjectionMatrix);
+	zoom = length(ps);
+	from = Eye;
+ 	vec3 Dir = normalize(Target-Eye);
+	vec3 Up =normalize(cross(Dir, vec3(0.0,1.0,0.0)));
+	vec3 Right = normalize( cross(Dir,Up));
+	 mat3 r =rotationMatrix3(Dir, CameraRot.z)* rotationMatrix3(Up, CameraRot.y)* rotationMatrix3(Right, CameraRot.x);
+
+	dir = (coord.x*Right + coord.y*Up )*FOV+Dir;
+dir= dir*r;
+	dirDy = ps.y*Up*FOV;
+	dirDx = ps.x*Right*FOV;
+};
+#endvertex
+
 #group Raytracer
 
 // Camera position and target.
-varying vec3 from,to;
-varying vec3 fromDx,toDx;
-varying vec3 fromDy,toDy;
+varying vec3 from,dir,dirDx,dirDy;
 varying vec2 coord;
+varying float zoom;
 
 // Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
 uniform int AntiAlias;slider[1,1,5];
@@ -23,10 +72,10 @@ uniform float BackStepNormal;slider[0,1,2];
 uniform float ClarityPower;slider[0,1,5];
 
 // The maximum distance rays are traced
-uniform float MaxDist;slider[0,6,20];
+uniform float MaxDist;slider[0,600,2000];
 
 // Use this to adjust clipping planes
-uniform float Clipping;slider[-10,0,10];
+//uniform float Clipping;slider[-50,0,50];
 
 // Lower this if the system is missing details
 uniform float FudgeFactor;slider[0,1,1];
@@ -104,8 +153,8 @@ float DE(vec3 pos) ; // Must be implemented in other file
 
 vec3 lighting(float normalDistance, vec3 color, vec3 pos, vec3 dir, int steps) {
 	vec3 e = vec3(0.0,normalDistance,0.0);
-	vec3 spotDir =-normalize(fromDx)*tan(SpotLightDir.x*0.5*3.14)+
-	normalize(fromDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
+	vec3 spotDir =-normalize(dirDx)*tan(SpotLightDir.x*0.5*3.14)+
+	normalize(dirDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
 	spotDir = normalize(spotDir);
 	
 	vec3 n;
@@ -150,11 +199,11 @@ vec3 getColor(float ao) {
 
 
 
-vec3 trace(vec3 from, vec3 to) {
+vec3 trace(vec3 from, vec3 dir) {
 	
 	orbitTrap = vec4(10000.0);
-	vec3 direction = normalize(to-from);
-	from -= direction*Clipping;
+	vec3 direction = normalize(dir);
+	//from -= direction*Clipping;
 	
 	float dist = 0.0;
 	float totalDist = 0.0;
@@ -163,7 +212,7 @@ vec3 trace(vec3 from, vec3 to) {
 	colorBase = vec3(0.0,0.0,0.0);
 	
 	// We will adjust the minimum distance based on the current zoom
-	float eps = minDist*( length(fromDx+fromDy)/0.01 );
+	float eps = minDist*( length(zoom)/0.01 );
 	float epsModified = 0.0;
 	for (steps=0; steps<MaxRaySteps; steps++) {
 		orbitTrap = vec4(10000.0);
@@ -187,22 +236,22 @@ vec3 trace(vec3 from, vec3 to) {
 		float ao = 1.0- AO*stepFactor ;
 		color = getColor(ao);
 		color = lighting(normalE*epsModified/eps, color,  hit,  direction, steps);
-	}  else if (steps==MaxRaySteps) {
+}  else if (steps==MaxRaySteps) {
 		// Close to something, but too many steps
-	 	color = vec3(0.0,0.0,0.0);
+		color = vec3(0.0,0.0,0.0);
 	} else {
 		color = BackgroundColor;
 		if (GradientBackground>0.0) {
 			//float t = dot(direction, vec3(1.0,0.0,0.0));
 			float t = length(coord);
-           
+			
 			color = mix(color, vec3(0.0,0.0,0.0), t*GradientBackground);
 		}
 		color += Glow*GlowColor*stepFactor;
 	}
 	
 	//color = clamp(color, 0.0, 1.0);
-
+	
 	return color;
 }
 
@@ -216,7 +265,7 @@ void main() {
 		float  dx =  AntiAliasBlur*(float(x)-1.0)/float(AntiAlias);
 		for (int y = 1; y<=AntiAlias; y++) {
 			float dy = AntiAliasBlur*(float(y)-1.0)/float(AntiAlias);
-			color += trace(from+fromDx*dx+fromDy*dy,to+toDx*dx+toDy*dy);
+			color += trace(from,dir+dirDx*dx+dirDy*dy);
 		}
 	}
 	

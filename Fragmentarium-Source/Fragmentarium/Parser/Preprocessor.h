@@ -123,9 +123,11 @@ namespace Fragmentarium {
 
 			QString getText() { return source.join("\n"); }
 			QStringList source;
+			QStringList vertexSource;
 			QList<QString> sourceFileNames;
 			QList<int> lines;
 			QList<int> sourceFile;
+
 
 			bool hasPixelSizeUniform;
 			QString camera;

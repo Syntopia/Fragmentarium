@@ -17,6 +17,7 @@ namespace Fragmentarium {
 
 		using namespace Parser;
 		class MainWindow;
+		class VariableWidget;
 
 		// CameraControl maintains camera position, and respond to user control.
 		class CameraControl {
@@ -31,6 +32,7 @@ namespace Fragmentarium {
 			virtual void printInfo() = 0;
 			virtual QString getVertexShader() =0;
 			virtual QString getID() =0;
+			virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) = 0;
 		};
 
 		/// Widget for the mini OpenGL engine.
@@ -53,7 +55,7 @@ namespace Fragmentarium {
 			void setupFragmentShader();
 			void setContinuous(bool value) { continuous = value; }
 			void setDisableRedraw(bool value) { disableRedraw = value; }
-		
+			CameraControl* getCameraControl() { return cameraControl; }
 			void setupTileRender(int tiles);
 			void resetTime() { time = QTime::currentTime(); }
 			void setViewFactor(float val);
