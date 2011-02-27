@@ -148,6 +148,20 @@ namespace Fragmentarium {
 
 		};
 
+		void Float3Widget::setValue(Vector3f v) { 
+			comboSlider1->blockSignals(true);
+			comboSlider2->blockSignals(true);
+			comboSlider3->blockSignals(true);
+			comboSlider1->setValue(v.x());
+			comboSlider2->setValue(v.y());
+			comboSlider3->setValue(v.z()); 
+			comboSlider1->blockSignals(false);
+			comboSlider2->blockSignals(false);
+			comboSlider3->blockSignals(false);
+			
+		}
+			
+
 		void Float3Widget::n1Changed() {
 			if (normalize) {
 				comboSlider2->blockSignals(true);

@@ -36,22 +36,23 @@ namespace Fragmentarium {
 					setLayout(new QHBoxLayout());
 					layout()->setContentsMargins(0,0,0,0);
 					slider = new QSlider(Qt::Horizontal,this);
-					slider->setRange(0,1000);
+					slider->setRange(0,100000);
 					double val = (defaultValue-minimum)/(maximum-minimum);
-					slider->setValue(val*1000);
+					slider->setValue(val*100000);
 					spinner = new QDoubleSpinBox(this);
 					spinner->setDecimals(5);
 					spinner->setMaximum(maximum);
 					spinner->setMinimum(minimum);
 					spinner->setValue(defaultValue);
+					myValue = defaultValue;
 					layout()->addWidget(slider);
 					layout()->addWidget(spinner);
 					connect(spinner, SIGNAL(valueChanged(double)), this, SLOT(spinnerChanged(double)));
 					connect(slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
 			}
 
-			double getValue() { return spinner->value(); }
-			void setValue(double d) { spinner->setValue(d); }
+			double getValue() { return myValue; }
+			void setValue(double d) { myValue = d; spinner->setValue(d); }
 
 signals:
 			void changed();
@@ -59,18 +60,20 @@ signals:
 			protected slots:
 				void spinnerChanged(double) {
 					double val = (spinner->value()-minimum)/(maximum-minimum);
-					slider->setValue(val*1000);
+					slider->setValue(val*100000);
+					myValue = spinner->value();
 					emit changed();
 				}
 
 				void sliderChanged(int) {
-					double val = (slider->value()/1000.0)*(maximum-minimum)+minimum;
+					double val = (slider->value()/100000.0)*(maximum-minimum)+minimum;
 					spinner->setValue(val);
+					myValue = spinner->value();
 					emit changed();
 				}
 
 		private:
-
+			double myValue;
 			QSlider* slider;
 			QDoubleSpinBox* spinner;
 			double defaultValue;
@@ -202,6 +205,8 @@ signals:
 			virtual QString toString();
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			float getValue() { return comboSlider->getValue(); } 
+			void setValue(float f) { comboSlider->setValue(f); }
 		private:
 			ComboSlider* comboSlider;
 			double min;
@@ -236,6 +241,8 @@ signals:
 			virtual QString getValueAsText() { return ""; };
 			virtual QString toString();
 			virtual void fromString(QString string);
+			Vector3f getValue() { return Vector3f(comboSlider1->getValue(),comboSlider2->getValue(),comboSlider3->getValue()); }
+			void setValue(Vector3f v);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 		public slots:
 			void n1Changed();

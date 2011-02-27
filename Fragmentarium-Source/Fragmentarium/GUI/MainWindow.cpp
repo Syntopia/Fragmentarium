@@ -529,7 +529,7 @@ namespace Fragmentarium {
 			stackedTextEdits = new QStackedWidget(splitter);
 
 			QGLFormat format;
-			//format.setDoubleBuffer(false);
+			format.setDoubleBuffer(false);
 			engine = new DisplayWidget(format, this,splitter);
 			engine->makeCurrent();
 			if (!getGLExtensionFunctions().resolve(engine->context())) {
@@ -897,7 +897,7 @@ namespace Fragmentarium {
 
 			helpMenu = menuBar()->addMenu(tr("&Help"));
 			helpMenu->addAction(aboutAction);
-			helpMenu->addAction("Benchmark", this, SLOT(benchmark()));
+			//helpMenu->addAction("Benchmark", this, SLOT(benchmark()));
 			
 			helpMenu->addSeparator();
 			helpMenu->addAction(sfHomeAction);

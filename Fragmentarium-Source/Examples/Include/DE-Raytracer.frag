@@ -1,32 +1,19 @@
 #info Default Raytracer (by Syntopia)
 #camera 3D
 
-#group C
-
 #vertex
 
-mat3  rotationMatrix3(vec3 v, float angle)
-{
-	float c = cos(radians(angle));
-	float s = sin(radians(angle));
-	
-	return mat3(c + (1.0 - c) * v.x * v.x, (1.0 - c) * v.x * v.y - s * v.z, (1.0 - c) * v.x * v.z + s * v.y,
-		(1.0 - c) * v.x * v.y + s * v.z, c + (1.0 - c) * v.y * v.y, (1.0 - c) * v.y * v.z - s * v.x,
-		(1.0 - c) * v.x * v.z - s * v.y, (1.0 - c) * v.y * v.z + s * v.x, c + (1.0 - c) * v.z * v.z
-		);
-}
-
+#group Camera
 
 // Use this to adjust clipping planes
 uniform float FOV; slider[0,1,1.2];
 uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)];
 uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)];
-uniform vec3 CameraRot; slider[(-180,-180,-180),(0,0,0),(180,180,180)];
+uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)];
 
 varying vec3 dirDx;
 varying vec3 dirDy;
 varying vec3 from;
-varying vec3 to;
 uniform vec2 pixelSize;
 varying vec2 coord;
 varying float zoom;
@@ -38,14 +25,12 @@ void main(void)
 	vec2 ps = pixelSize*mat2(gl_ProjectionMatrix);
 	zoom = length(ps);
 	from = Eye;
- 	vec3 Dir = normalize(Target-Eye);
-	vec3 Up =normalize(cross(Dir, vec3(0.0,1.0,0.0)));
-	vec3 Right = normalize( cross(Dir,Up));
-	 mat3 r =rotationMatrix3(Dir, CameraRot.z)* rotationMatrix3(Up, CameraRot.y)* rotationMatrix3(Right, CameraRot.x);
-
-	dir = (coord.x*Right + coord.y*Up )*FOV+Dir;
-dir= dir*r;
-	dirDy = ps.y*Up*FOV;
+	vec3 Dir = normalize(Target-Eye);
+	vec3 up = Up-dot(Dir,Up)*Dir;
+	up = normalize(up);
+	vec3 Right = normalize( cross(Dir,up));
+	dir = (coord.x*Right + coord.y*up )*FOV+Dir;
+	dirDy = ps.y*up*FOV;
 	dirDx = ps.x*Right*FOV;
 };
 #endvertex
@@ -91,6 +76,8 @@ uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 
 // If your experience AO banding try adjusting this term
 uniform float BandingSmooth;slider[0,0,4];
+
+uniform float BoundingSphere;slider[0,2,10];
 
 #group Light
 
@@ -211,26 +198,59 @@ vec3 trace(vec3 from, vec3 dir) {
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
 	
+	
+	float dotDE = dot(direction,from);
+	float dotFF = dot(from,from);
+	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
+	
+	float d = 0.0;
+	if (sq>0.0) {
+		d = -dotDE - sqrt(sq);
+		if (d<0.0) {
+			// "minimum d" solution wrong direction
+			d = -dotDE + sqrt(sq);
+
+			if (d<0.0) {
+				// both solution wrong direction
+				sq = -1.0;
+			} else {
+				// inside sphere
+				d = 0.0;
+			}
+		}
+		
+	}
+	
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist*( length(zoom)/0.01 );
 	float epsModified = 0.0;
-	for (steps=0; steps<MaxRaySteps; steps++) {
-		orbitTrap = vec4(10000.0);
-		dist = DE(from + totalDist * direction)*FudgeFactor;
-		dist = clamp(dist, 0.0, MaxDist);
-		totalDist += dist;
-		epsModified = pow(totalDist,ClarityPower)*eps;
-		if (dist < epsModified ||  totalDist >MaxDist) break;
+	if (sq<0) {
+		// outside bounding sphere
+		dist = MaxDist;
+		totalDist = MaxDist;
+		steps = 2;
+	}   else {
+		
+		
+		totalDist += d; // advance ray to bounding sphere intersection
+		
+		for (steps=0; steps<MaxRaySteps; steps++) {
+			
+			
+			orbitTrap = vec4(10000.0);
+			dist = DE(from + totalDist * direction)*FudgeFactor;
+			dist = clamp(dist, 0.0, MaxDist);
+			totalDist += dist;
+			epsModified = pow(totalDist,ClarityPower)*eps;
+			if (dist < epsModified ||  totalDist >MaxDist) break;
+		}
 	}
-	
-	// Backtrack to improve the gradient based normal estimatation:
-	// otherwise,
-	//totalDist-=(minDist-dist); // TODO: is this necessary?
 	
 	vec3 color;
 	float smoothenedSteps = float(steps)+BandingSmooth*dist/epsModified;
 	float stepFactor = clamp((MaxRayStepsDiv*smoothenedSteps)/float(MaxRaySteps),0.0,1.0);
 	if ( dist < epsModified) {
+		
 		// We hit something, or reached MaxRaySteps
 		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
 		float ao = 1.0- AO*stepFactor ;
@@ -247,7 +267,7 @@ vec3 trace(vec3 from, vec3 dir) {
 			
 			color = mix(color, vec3(0.0,0.0,0.0), t*GradientBackground);
 		}
-		color += Glow*GlowColor*stepFactor;
+		if (sq>0) color += Glow*GlowColor*pow(stepFactor,4.0);
 	}
 	
 	//color = clamp(color, 0.0, 1.0);

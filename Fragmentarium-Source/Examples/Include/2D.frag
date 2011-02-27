@@ -1,4 +1,15 @@
 #group 2D
+
+#vertex
+varying vec2 coord;
+
+void main(void)
+{
+   gl_Position =  gl_Vertex;
+   coord = (gl_ModelViewProjectionMatrix * gl_Vertex).xy;
+}
+#endvertex
+
 varying vec2 coord;
 uniform vec2 pixelSize;
 

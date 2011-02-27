@@ -40,6 +40,7 @@ namespace Fragmentarium {
 			QString getSettings();
 			void setSettings(QString text);
 			void createGroup(QString g);
+			VariableWidget* getWidgetFromName(QString name);
 
 		signals:
 			void changed();

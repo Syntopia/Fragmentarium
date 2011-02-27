@@ -16,8 +16,6 @@ using namespace SyntopiaCore::Logging;
 namespace Fragmentarium {
 	namespace GUI {
 
-
-
 		namespace {
 			QStringList GetOpenGLFlags() {
 				QGLFormat::OpenGLVersionFlags f = QGLFormat::openGLVersionFlags ();
@@ -38,222 +36,8 @@ namespace Fragmentarium {
 				if (f & QGLFormat::OpenGL_ES_Version_2_0) s.append("OpenGL_ES_2,0");
 				return s;
 			}
-
-			class Camera3D : public CameraControl {
-			public:
-				Camera3D(QStatusBar* statusBar) : statusBar(statusBar) {
-					fw = 0;
-					reset(); 
-				};
-
-				~Camera3D() {
-//					delete(fw);
-				}
-
-				virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) {
-//					delete(fw);
-					fw = new FloatWidget(group, parent, "My test", 0.5,0.0,1.0);
-					fw->setToolTip("");
-					fw->setStatusTip("");
-					fw->setSystemVariable(true);
-					QVector<VariableWidget*> w;
-					w.append(fw);
-					return w;
-				}
-
-				virtual QString getID() { return "3D"; };
-
-				void printInfo() {
-					INFO("Camera: Left mouse button rotates scene, right mouse button translates.");
-					INFO("Camera: (Both mouse buttons + left/right) controls clipping plane");
-					INFO("Camera: Mousewheel or (both mouse buttons + up/down) zooms");
-				}
-
-				virtual void reset() { 
-					rotation = Matrix4f::Identity();
-					scale = 2.0f;
-					translation = Vector3f(0,0,0.8);
-				}
-
-				Vector3f screenTo3D(int sx, int sy, int sz) {
-					GLdouble x, y, z;
-					gluUnProject(sx, height-sy, sz, modelViewCache, projectionCache, viewPortCache, &x, &y ,&z);
-					return Vector3f(x,y,z);
-				}
-
-				virtual void leftMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
-					double rotateSpeed = 5.0;
-					//Vector3f startPoint = screenTo3D(x, y,1);
-					//Vector3f xDir = (screenTo3D(x+10, y,1) - startPoint).normalized() ;
-					//Vector3f yDir = (screenTo3D(x, y+10,1) - startPoint).normalized() ;
-					Matrix4f mx = Matrix4f::Rotation(Vector3f(1.0,0,0), -ry*rotateSpeed);
-					Matrix4f my = Matrix4f::Rotation(Vector3f(0.0,1.0,0), -rx*rotateSpeed);
-					rotation = rotation * my * mx;
-					if (statusBar) statusBar->showMessage(QString("Scale: %0, Translation: %1").arg(scale).arg(translation.toString()),5000);
-				};
-
-				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
-					translation = translation + 5.0*Vector3f(-rx,ry,0);
-					if (statusBar) statusBar->showMessage(QString("Translation: %1").arg(translation.toString()),5000);
-			
-				};
-
-				virtual void bothMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
-					if (ry > 0) {
-						scale/=(1.0+2*ry);
-					} else {
-						scale*=(1.0-2*ry);
-					}
-					translation = translation + 10.0*Vector3f(0,0,rx);
-					if (statusBar) statusBar->showMessage(QString("Scale: %0, Translation: %1").arg(scale).arg(translation.toString()),5000);
-					
-				};
-
-				virtual void wheel(double /*x*/, double /*y*/, double val) {	
-					if ( scale <= val ) return;
-					scale -= val;
-					
-				};
-
-				virtual Vector3f transform(int width, int height) {
-					this->height = height;
-					this->width = width;
-					
-					// -- Modelview
-					glMatrixMode(GL_MODELVIEW);
-					glLoadIdentity();
-					glMultMatrixf(rotation.getArray());
-					glTranslatef( translation.x(), translation.y(), translation.z() );
-					glScalef( scale, scale*(height/(float)width), 1.0 );
-					glGetDoublev(GL_MODELVIEW_MATRIX, modelViewCache );
-					glGetDoublev(GL_PROJECTION_MATRIX, projectionCache );
-					glGetIntegerv(GL_VIEWPORT, viewPortCache);
-			
-					return Vector3f(1.0,1.0,1.0);
-				};
-
-				QString getVertexShader() {
-					return QString(
-						"varying vec3 fromDx;\n"
-						"varying vec3 toDx;\n"
-						"varying vec3 fromDy;\n"
-						"varying vec3 toDy;\n"
-						"varying vec3 from;\n"
-						"varying vec3 to;\n"
-						"uniform vec2 pixelSize;\n"
-						"varying vec2 coord;\n"
-						"void main(void)\n"
-						"{\n"
-						"   gl_Position =  gl_Vertex;\n"
-						"   coord = (gl_ProjectionMatrix*gl_Vertex).xy; "
-						"   vec2 ps = pixelSize*mat2(gl_ProjectionMatrix); " // extract submatrix to scale pixelsize
-						"   float fx = 2.0;\n"
-						"   float fy = 2.0;\n"
-						"   from = (gl_ModelViewMatrix*vec4(coord.x,coord.y, 1.0,1.0)).xyz;\n"
-						"   to = (gl_ModelViewMatrix*vec4(coord.x*fx, coord.y*fy, -1.0,1.0)).xyz;\n"
-						"   fromDy = (gl_ModelViewMatrix*vec4(coord.x, coord.y+ps.y, 1.0,1.0)).xyz - from;\n"
-						"   toDy = (gl_ModelViewMatrix*vec4(coord.x*fx, (coord.y+ps.y)*fy, -1.0,1.0)).xyz - to;\n"
-						"   fromDx = (gl_ModelViewMatrix*vec4(coord.x+ps.x, coord.y, 1.0,1.0)).xyz- from;\n"
-						"   toDx = (gl_ModelViewMatrix*vec4((coord.x+ps.x)*fx, coord.y*fy, -1.0,1.0)).xyz - to;\n"
-						"}");
-					// 
-				}
-			private:
-				FloatWidget* fw;
-				Vector3f translation ;
-				float scale;
-				int height;
-				int width;
-				Matrix4f rotation;
-				QStatusBar* statusBar;
-				GLdouble modelViewCache[16];
-				GLdouble projectionCache[16];
-				GLint viewPortCache[16];
-			};
-
-			class Camera2D : public CameraControl {
-			public:
-				Camera2D(QStatusBar* statusBar) : statusBar(statusBar) { reset(); };
-
-				virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) {
-					return QVector<VariableWidget*>();
-				}
-
-				virtual QString getID() { return "2D"; };
-
-				virtual void reset() { 
-					scale = 1.0; 
-					x = 0;
-					y = 0;
-				}
-
-				void printInfo() {
-					INFO("Camera: Left mouse button translates scene.");
-					INFO("Camera: Mouse wheel or (right mouse button + up/down) zooms");
-				}
-			
-
-				virtual void leftMouseButtonDrag(double /*x*/, double /*y*/, double rx, double ry) {
-					this->x+= -rx*scale*2.0;
-					this->y+= ry*scale*2.0;
-					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-					
-				};
-
-				virtual void rightMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double ry) {
-					if (ry > 0) {
-						scale/=(1.0+2*ry);
-					} else {
-						scale*=(1.0-2*ry);
-					}
-					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-					
-				};
-
-				virtual void bothMouseButtonDrag(double /*x*/, double /*y*/, double /*rx*/, double ry) {
-					if (ry > 0) {
-						scale/=(1.0+2*ry*5);
-					} else {
-						scale*=(1.0-2*ry*5);
-					}
-					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-					
-				};
-
-				virtual void wheel(double /*x*/, double /*y*/, double val) {
-					if (val > 0) {
-						scale/=(1.0+val/10);
-					} else {
-						scale*=(1.0-val/10);
-					}
-					if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-					
-				};
-
-				virtual Vector3f transform(int width, int height) {
-					//gluOrtho2D(-1,-1,1,1); // Keep?
-					glMatrixMode(GL_MODELVIEW);
-					glLoadIdentity();glTranslatef(x,y,0);
-					glScalef(scale,scale*(height/(float)width),scale);
-					return Vector3f(scale,scale*(height/(float)width),scale);
-				};
-
-				QString getVertexShader() {
-					return QString(
-						"varying vec2 coord;\n"
-						"void main(void)\n"
-						"{\n"
-						"   gl_Position =  gl_Vertex;\n"
-						"   coord = (gl_ModelViewProjectionMatrix * gl_Vertex).xy;\n "
-						"}");
-				}
-			private:
-				float scale;
-				float x;
-				float y;
-				QStatusBar* statusBar;
-			};
 		}
+
 
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
@@ -274,12 +58,9 @@ namespace Fragmentarium {
 			pendingRedraws = 0;
 			requiredRedraws = 1; // 2 for double buffering?
 			startTimer( 20 );
-			oldPos = QPoint(0,0);
 			setMouseTracking(true);
 			backgroundColor = QColor(30,30,30);
 			contextMenu = 0;
-			rmbDragging = false;
-			doingRotate = false;
 			setupFragmentShader();
 		}
 
@@ -290,15 +71,6 @@ namespace Fragmentarium {
 
 		DisplayWidget::~DisplayWidget() {
 		}
-
-		void DisplayWidget::mouseReleaseEvent(QMouseEvent* ev)  {
-			doingRotate = false;
-
-			if (ev->button() != Qt::RightButton) return;
-			if (rmbDragging) { return; }
-			if (contextMenu) contextMenu->exec(ev->globalPos());
-		}
-
 
 
 		void DisplayWidget::contextMenuEvent(QContextMenuEvent* /*ev*/ ) {
@@ -354,11 +126,12 @@ namespace Fragmentarium {
 
 			// Vertex shader
 			bool s = false;
+			s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,fragmentSource.vertexSource.join("\n"));
 			if (fragmentSource.vertexSource.count() == 0) {
-				s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,cameraControl->getVertexShader());
-			} else {
-				s = shaderProgram->addShaderFromSourceCode(QGLShader::Vertex,fragmentSource.vertexSource.join("\n"));
+				WARNING("No vertex shader found!");
+				s = false;
 			}
+			
 			if (!s) WARNING("Could not create vertex shader: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
 			if (!shaderProgram->log().isEmpty()) INFO("Vertex shader compiled with warnings: " + shaderProgram->log());
@@ -394,15 +167,15 @@ namespace Fragmentarium {
 
 						shaderProgram->setUniformValue(l, (GLuint)u);
 						INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i));
-						
+
 					} else {
 						WARNING("Could not locate sampler2D uniform: " + it.key());
 					}
 					u++;
 				}
-				
+
 			}
-			
+
 		}
 
 
@@ -411,23 +184,24 @@ namespace Fragmentarium {
 			tilesCount = 0;
 			requireRedraw();
 		}
-		
+
 		void DisplayWidget::tileRender() {
 			glLoadIdentity();
 			if (!tiles && viewFactor<=1.0) return;
-			requireRedraw();
 			if (viewFactor > 1.0) {
 				glScalef(1.0/viewFactor,1.0/viewFactor,1.0);
 				return;	
 			}
+			requireRedraw();
 			
+
 			if (tilesCount==tiles*tiles) {
 				INFO("Tile rendering complete");
 				// Now assemble image
 				int w = cachedTileImages[0].width();
 				int h = cachedTileImages[0].height();
 				QImage im(w*tiles,h*tiles,cachedTileImages[0].format());
-				
+
 				INFO(QString("Created combined image (%1,%2)").arg(im.width()).arg(im.height()));
 				// Isn't there a Qt function to copy entire images?
 				for (int i = 0; i < tiles*tiles; i++) {
@@ -440,49 +214,49 @@ namespace Fragmentarium {
 						}
 					}
 				}
-			
+
 				cachedTileImages.clear();
 				mainWindow->saveImage(im);
 				tiles = 0;
-				
+
 				return;
 			}
 			INFO(QString("Rendering tile: %1 of %2").arg(tilesCount+1).arg(tiles*tiles));
 			float x = (tilesCount / tiles) - (tiles-1)/2.0;
 			float y = (tilesCount % tiles) - (tiles-1)/2.0;
-			
+
 			glTranslatef( x * (2.0/tiles) , y * (2.0/tiles), 1.0);
 			glScalef( 1.0/tiles,1.0/tiles,1.0);	
-			
-			
+
+
 			tilesCount++;
-			
+
 		}
 
 		void DisplayWidget::setViewFactor(float val) {
 			viewFactor = val;
 			requireRedraw();
 		}
-			
+
 
 		void DisplayWidget::paintGL() {
 			// Show info first time we display something...
 
-					
+
 			static bool shownInfo = false;
 			if (!shownInfo) {
 				shownInfo = true;
 				INFO("This video card supports: " + GetOpenGLFlags().join(", "));
 			}
-		
+
 			if (pendingRedraws > 0) pendingRedraws--;
-			
+
 			if (disabled || !shaderProgram) {
 				qglClearColor(backgroundColor);
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 				return;
 			}
-			
+
 			QTime t = QTime::currentTime();
 			if (shaderProgram) {
 				glDisable( GL_CULL_FACE );
@@ -504,8 +278,8 @@ namespace Fragmentarium {
 				// This allows us to perform tile based rendering.
 				glMatrixMode(GL_PROJECTION);
 				tileRender();
-				
-					
+
+
 				Vector3f scale = cameraControl->transform(width(), height())*2;
 				if (fragmentSource.hasPixelSizeUniform || true) {
 					int l = shaderProgram->uniformLocation("pixelSize");
@@ -531,17 +305,21 @@ namespace Fragmentarium {
 				// Setup User Uniforms
 				mainWindow->setUserUniforms(shaderProgram);
 				glColor3d(1.0,1.0,1.0);
-				
+
 				if (disableRedraw) {
 					QTime tx = QTime::currentTime();
 					glRectf(-1,-1,1,1); 
 					glFinish();
-					int msx = tx.msecsTo(QTime::currentTime());
+					//int msx = tx.msecsTo(QTime::currentTime());
 					//INFO(QString("GPU: render took %1 ms.").arg(msx));
 				} else {
 					glRectf(-1,-1,1,1); 
 				}
 
+				glFinish();
+				int msx = t.msecsTo(QTime::currentTime());
+				INFO(QString("GPU: render took %1 ms.").arg(msx));
+				
 				if (animationSettings && animationSettings->isRecording()) {
 					QString filename = animationSettings->getFileName();
 					QImage im = grabFrameBuffer();
@@ -565,7 +343,7 @@ namespace Fragmentarium {
 			QTime cur = QTime::currentTime();
 			long ms = t.msecsTo(cur);
 			fpsCounter++;
-			
+
 			float fps = -1;
 
 			// If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
@@ -582,8 +360,8 @@ namespace Fragmentarium {
 				}
 				//
 			}
-			
-			
+
+
 			mainWindow->setFPS(fps);
 		};
 
@@ -610,8 +388,8 @@ namespace Fragmentarium {
 			// Check if we are displaying a message.
 			/*
 			if (infoText != "" && abs((int)(textTimer.msecsTo(QTime::currentTime()))>1000)) {
-				infoText = "";
-				requireRedraw();
+			infoText = "";
+			requireRedraw();
 			}
 			*/
 
@@ -637,70 +415,30 @@ namespace Fragmentarium {
 		void DisplayWidget::wheelEvent(QWheelEvent* e) {
 			e->accept();
 
-			double interval = (double)e->delta() / 800.0;
-			cameraControl->wheel(e->pos().x(), e->pos().y(), interval);
+			//double interval = (double)e->delta() / 800.0;
+			cameraControl->wheelEvent(e);
 			requireRedraw();
 		}
 
 		void DisplayWidget::mouseMoveEvent( QMouseEvent *e ) {
 			e->accept();
-
-			// store old position
-			if (oldPos.x() == 0 && oldPos.y() == 0) {
-				// first time
-				oldPos = e->pos(); 
-				return;
-			}
-			double dx = e->x() - oldPos.x();
-			double dy = e->y() - oldPos.y();
-
-			// normalize wrt screen size
-			double rx = dx / width();
-			double ry = dy / height();
-
-			oldPos = e->pos();
-
-			if ( (e->buttons() == Qt::LeftButton && e->modifiers() == Qt::ShiftModifier ) 
-				|| e->buttons() == (Qt::LeftButton | Qt::RightButton )) 
-			{
-				doingRotate = true;
-
-				// 1) dragging with left mouse button + shift down, or
-				// 2) dragging with left and right mouse button down
-				//
-				// This results in zooming for vertical movement, and Z axis rotation for horizontal movement.
-
-				cameraControl->bothMouseButtonDrag(e->pos().x(), e->pos().y(),rx,ry);
-				requireRedraw();
-
-				if (e->buttons() == (Qt::LeftButton | Qt::RightButton ))  {
-					rmbDragging = true;
-				}
-			} else if ( ( e->buttons() == Qt::RightButton ) 
-				|| (e->buttons() == Qt::LeftButton && e->modifiers() == Qt::ControlModifier ) 
-				|| (e->buttons() == Qt::LeftButton && e->modifiers() == Qt::MetaModifier ) ) 
-			{ 
-				doingRotate = true;
-				// 1) dragging with right mouse button, 
-				// 2) dragging with left button + control button,
-				// 3) dragging with left button + meta button (Mac)
-				//
-				// results in translation
-				if (rx != 0 || ry != 0) {
-					cameraControl->rightMouseButtonDrag(e->pos().x(), e->pos().y(),rx, ry);
-					requireRedraw();
-					rmbDragging = true;
-				} 
-			} else if ( e->buttons() == Qt::LeftButton ) {
-				doingRotate = true;
-				// Dragging with left mouse button.
-				cameraControl->leftMouseButtonDrag(e->pos().x(), e->pos().y(),rx, ry);
-				requireRedraw();
-				rmbDragging = false;
-			} else {
-				rmbDragging = false;
-			}
+			bool redraw = cameraControl->mouseMoveEvent(e, width(), height());
+			if (redraw) requireRedraw();
 		}
+
+		void DisplayWidget::mouseReleaseEvent(QMouseEvent* ev)  {
+			bool redraw = cameraControl->mouseMoveEvent(ev, width(), height());
+			if (redraw) requireRedraw();
+			//if (contextMenu) contextMenu->exec(ev->globalPos());
+		}
+
+
+		void DisplayWidget::mousePressEvent(QMouseEvent* ev)  {
+			bool redraw = cameraControl->mouseMoveEvent(ev, width(), height());
+			if (redraw) requireRedraw();
+			//if (contextMenu) contextMenu->exec(ev->globalPos());
+		}
+
 
 
 	}

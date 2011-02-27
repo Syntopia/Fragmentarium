@@ -288,6 +288,15 @@ namespace Fragmentarium {
 			}
 		};
 
+		VariableWidget* VariableEditor::getWidgetFromName(QString name) {
+			for (int i = 0; i < variables.count(); i++) {
+				if (variables[i]->getName() == name) {
+					return variables[i];
+				}
+			}
+			return 0;
+		}
+
 		void VariableEditor::updateCamera(CameraControl* c) {
 		
 			QString g = "Camera";
@@ -295,6 +304,7 @@ namespace Fragmentarium {
 					createGroup(g);
 			}
 			
+			c->connectWidgets(this);
 			QVector<VariableWidget*> added= c->addWidgets(tabs[g], this);
 			
 			foreach (VariableWidget* v, added) {

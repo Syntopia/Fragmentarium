@@ -41,6 +41,15 @@ namespace SyntopiaCore {
 				succes2 = true;
 			}
 
+			Matrix4<scalar> transposed() {
+				Matrix4<scalar> m;
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						m(i,j) = at(j,i);
+					}
+				}
+				return m;
+			}
 
 			/// Identity matrix
 			static Matrix4<scalar> Identity() { 

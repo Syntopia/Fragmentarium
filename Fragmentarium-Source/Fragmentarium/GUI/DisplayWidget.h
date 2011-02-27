@@ -11,6 +11,7 @@
 #include "SyntopiaCore/Math/Matrix4.h"
 #include "../Parser/Preprocessor.h"
 #include "AnimationController.h"
+#include "CameraControl.h"
 
 namespace Fragmentarium {
 	namespace GUI {	
@@ -18,23 +19,9 @@ namespace Fragmentarium {
 		using namespace Parser;
 		class MainWindow;
 		class VariableWidget;
+		class CameraControl;
 
-		// CameraControl maintains camera position, and respond to user control.
-		class CameraControl {
-		public:
-			CameraControl() {};
-			virtual void leftMouseButtonDrag(double x, double y, double rx, double ry) = 0;
-			virtual void rightMouseButtonDrag(double x, double y, double rx, double ry) = 0;
-			virtual void bothMouseButtonDrag(double x, double y, double rx, double ry) = 0;
-			virtual void wheel(double x, double y, double val) = 0;
-			virtual SyntopiaCore::Math::Vector3f transform(int width, int height) = 0;
-			virtual void reset() = 0;
-			virtual void printInfo() = 0;
-			virtual QString getVertexShader() =0;
-			virtual QString getID() =0;
-			virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) = 0;
-		};
-
+		
 		/// Widget for the mini OpenGL engine.
 		class DisplayWidget : public QGLWidget {
 		public:
@@ -68,6 +55,7 @@ namespace Fragmentarium {
 			void mouseMoveEvent(QMouseEvent* ev) ; 
 			void contextMenuEvent (QContextMenuEvent* ev);
 			void mouseReleaseEvent ( QMouseEvent * ev);
+			void mousePressEvent ( QMouseEvent * ev);
 			void initializeGL();
 			void timerEvent( QTimerEvent * );
 			void paintEvent(QPaintEvent * ev);  
@@ -89,14 +77,11 @@ namespace Fragmentarium {
 			int pendingRedraws; // the number of times we must redraw 
 			// (when a redraw is requested we must draw two times, when double buffering)
 			int requiredRedraws;
-			QPoint oldPos;
 			QColor backgroundColor;
 
 			QMenu* contextMenu;
-			bool rmbDragging;
-
+		
 			bool disabled;
-			bool doingRotate;
 			
 			MainWindow* mainWindow;
 			CameraControl* cameraControl;

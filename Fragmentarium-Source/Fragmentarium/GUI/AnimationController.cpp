@@ -149,6 +149,8 @@ namespace Fragmentarium {
 			keyFrameList->setMinimumSize(QSize(70, 20));
 			keyFrameList->setMaximumSize(QSize(60, 16777215));
 
+			keyFrameGroup->setHidden(true); // disable for now
+
 			horizontalLayout_3->addWidget(keyFrameList);
 
 			verticalLayout_2 = new QVBoxLayout();
