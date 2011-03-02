@@ -147,6 +147,7 @@ namespace Fragmentarium {
 				
 				QMenu *uniformMenu = new QMenu("Special Uniforms", 0);
 				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform vec2 pixelSize;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform int i; slider[0,1,2]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform float f; slider[0.1,1.1,2.3]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec2 v; slider[(0,0),(1,1),(1,1)]", textEdit , SLOT(insertText()));
@@ -644,7 +645,6 @@ namespace Fragmentarium {
 
 			openGLContextMenu->addAction(fullScreenAction);
 			openGLContextMenu->addAction(screenshotAction);
-			openGLContextMenu->addAction(resetViewAction);
 			engine->setContextMenu(openGLContextMenu);
 		}
 
@@ -746,12 +746,7 @@ namespace Fragmentarium {
 			renderAction->setShortcut(tr("F5"));
 			renderAction->setStatusTip(tr("Render the current ruleset"));
 			connect(renderAction, SIGNAL(triggered()), this, SLOT(render()));
-
-
-			resetViewAction = new QAction("Reset View", this);
-			resetViewAction->setStatusTip(tr("Resets the viewport"));
-			connect(resetViewAction, SIGNAL(triggered()), this, SLOT(resetView()));
-
+			
 			aboutAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Show the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -817,8 +812,7 @@ namespace Fragmentarium {
 			renderMenu->addAction("Output Preprocessed Script (for Debug)", this, SLOT(showDebug()));
 			renderMenu->addSeparator();
 			renderMenu->addAction(fullScreenAction);
-			renderMenu->addAction(resetViewAction);
-		
+			
 
 			// -- Render Menu --
 			QMenu* parametersMenu = menuBar()->addMenu(tr("&Parameters"));
@@ -1009,11 +1003,7 @@ namespace Fragmentarium {
 			renderToolBar = addToolBar(tr("Render Toolbar"));
 			renderToolBar->addAction(renderAction);
 			renderToolBar->addWidget(new QLabel("Build    ", this));
-			QPushButton* pb = new QPushButton(this);
-			pb->setText("Reset View");
-			renderToolBar->addWidget(pb);
-			connect(pb, SIGNAL(clicked()), this, SLOT(resetView()));
-
+			
 			renderModeToolBar = addToolBar(tr("Rendering Mode"));
 			
 			renderModeToolBar->addWidget(new QLabel("Render mode:", this));
@@ -1093,13 +1083,16 @@ namespace Fragmentarium {
 
 		void MainWindow::callRedraw() {
 			int i = renderCombo->currentIndex() ;
+			bool state = engine->isRedrawDisabled();
 			engine->setDisableRedraw(false);
+
 			if (i==2) {
 				engine->resetTime();
 			} else {
 				engine->requireRedraw();
 			}
-			engine->setDisableRedraw(true);
+			engine->setDisableRedraw(state);
+
 		}
 
 		void MainWindow::disableAllExcept(QWidget* w) {
@@ -1267,9 +1260,6 @@ namespace Fragmentarium {
 			return getMiscDir();
 		}
 
-		void MainWindow::resetView() {
-			engine->reset();
-		}
 
 		QTextEdit* MainWindow::getTextEdit() {
 			return (stackedTextEdits->currentWidget() ? (QTextEdit*)stackedTextEdits->currentWidget() : 0);

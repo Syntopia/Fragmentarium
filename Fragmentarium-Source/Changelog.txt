@@ -1,14 +1,21 @@
 Todo:
-Automatic should always have time=0
-Animation should be an automatic mode
 Continouos->reset time trigger time measure
 Icons for animation transporter
-Fix Aspect Ratio
-Fix 2D Camera
+Fix Aspect Ratio for 3D
 Check AA
+Add local group reset
+2D Camera local zoom
+Closing animationController should switch to Automatic
+Closing window should clear system?
+Crashes at startup time, ocasionally.
+
+01-03-10 Automatic should always have time=0
+[2h]	 Animation should be an automatic mode
+		 Remove reset button,
+		 2D Cam control working + Aspect Ratio
 
 27-02-10 3D Camera nearly reimplemented and working
-		 Added bounding sphere check to raytracer
+[3h]	 Added bounding sphere check to raytracer
 		 Sliders/Spinner now use full double resolution if possible
 		 
 23-02-10 Major refactoring of widgets in progress.

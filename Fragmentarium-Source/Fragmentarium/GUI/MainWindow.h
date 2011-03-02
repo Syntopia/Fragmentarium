@@ -133,7 +133,6 @@ namespace Fragmentarium {
 			void about();
 			void documentWasModified();
 			void render();
-			void resetView();
 			void toggleFullScreen();
 			
 
@@ -192,7 +191,6 @@ namespace Fragmentarium {
 			QAction *aboutAction;
 
 			QAction *renderAction;
-			QAction *resetViewAction;
 			DisplayWidget* engine;
 			QTabBar* tabBar;
 

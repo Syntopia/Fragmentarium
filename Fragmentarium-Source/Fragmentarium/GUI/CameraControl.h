@@ -18,6 +18,7 @@ namespace Fragmentarium {
 		class VariableWidget;
 		class VariableEditor;
 		class Float3Widget;
+		class Float2Widget;
 		class FloatWidget;
 			
 		using namespace SyntopiaCore::Math;
@@ -27,7 +28,6 @@ namespace Fragmentarium {
 		public:
 			CameraControl() {};
 			virtual SyntopiaCore::Math::Vector3f transform(int width, int height) = 0;
-			virtual void reset() = 0;
 			virtual void printInfo() = 0;
 			virtual QString getID() =0;
 			virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) = 0;
@@ -43,7 +43,6 @@ namespace Fragmentarium {
 			virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent);
 			virtual QString getID() { return "3D"; };
 			void printInfo();
-			virtual void reset();
 			Vector3f screenTo3D(int sx, int sy, int sz);
 			virtual Vector3f transform(int width, int height);
 			virtual void connectWidgets(VariableEditor* ve);
@@ -68,15 +67,19 @@ namespace Fragmentarium {
 		public:
 			Camera2D(QStatusBar* statusBar);
 			virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent);
+			virtual void connectWidgets(VariableEditor* ve);
 			virtual QString getID() { return "2D"; };
-			virtual void reset();
 			void printInfo();
 			virtual Vector3f transform(int width, int height);
+			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
+			virtual void wheelEvent(QWheelEvent* /*e*/) {};
 		private:
-			float scale;
-			float x;
-			float y;
+			Float2Widget* center;
+			FloatWidget* zoom;	
 			QStatusBar* statusBar;
+			Vector3f mouseDown;
+			float zoomDown;
+			Vector3f centerDown;
 		};
 	}
 

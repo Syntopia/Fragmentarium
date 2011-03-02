@@ -17,7 +17,7 @@ namespace Fragmentarium {
 	namespace GUI {
 
 		Camera3D::Camera3D(QStatusBar* statusBar) : statusBar(statusBar) {
-			reset(); 
+			mouseDown = Vector3f(0,0,-1);
 		};
 
 		Camera3D::~Camera3D() {
@@ -43,10 +43,7 @@ namespace Fragmentarium {
 			INFO("Camera: XXX.");
 		}
 
-		void Camera3D::reset() { 
-			mouseDown = Vector3f(0,0,-1);
-		}
-
+	
 
 		bool Camera3D::mouseMoveEvent(QMouseEvent* e, int w, int h) {
 			if (!up || !target || !eye || !fov) return false;
@@ -67,17 +64,17 @@ namespace Fragmentarium {
 			if (mouseDown.z()!=-1 && e->buttons()!=Qt::NoButton) {
 				Vector3f dp = mouseDown-pos;
 
-				double rotateSpeed = 1.0;
+				double mouseSpeed = 1.0;
 				Vector3f directionDown = targetDown-eyeDown;
 				Vector3f rightDown = Vector3f::cross(directionDown.normalized(), upDown).normalized();
 
 				if (e->buttons() == Qt::RightButton) {
-					Vector3f offset = -upDown*dp.y()*10.0*rotateSpeed + rightDown*dp.x()*10.0*rotateSpeed;
+					Vector3f offset = -upDown*dp.y()*10.0*mouseSpeed + rightDown*dp.x()*10.0*mouseSpeed;
 					eye->setValue(eyeDown+offset);
 					target->setValue(targetDown+offset);
 					return true;
 				} else if (e->buttons() == (Qt::RightButton | Qt::LeftButton)  ) {
-					Vector3f newEye = eyeDown -directionDown*dp.x()*1.0*rotateSpeed;
+					Vector3f newEye = eyeDown -directionDown*dp.x()*1.0*mouseSpeed;
 					fov->setValue(fovDown* (1-0.1*dp.y()));
 					eye->setValue(newEye);
 					target->setValue(directionDown +newEye);
@@ -85,8 +82,8 @@ namespace Fragmentarium {
 				} else {
 					// Left mouse button
 					if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
-						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*rotateSpeed);
-						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*rotateSpeed);
+						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*mouseSpeed);
+						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*mouseSpeed);
 						Vector3f oDir = (my*mx)*(-eyeDown);
 						eye->setValue(-oDir);
 						target->setValue( (my*mx)*directionDown-oDir);
@@ -95,17 +92,17 @@ namespace Fragmentarium {
 								 || (QApplication::keyboardModifiers() == Qt::NoModifier)
 								  || (QApplication::keyboardModifiers() == (Qt::ShiftModifier | Qt::ControlModifier))) {
 						
-						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*rotateSpeed);
-						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*rotateSpeed);
+						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*mouseSpeed);
+						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*mouseSpeed);
 						target->setValue((my*mx)*directionDown+eyeDown);
 						up->setValue((my*mx)*upDown);
 							
 						if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
-							eyeDown=eyeDown+rotateSpeed*(eyeDown.length())*0.1*directionDown.normalized();
+							eyeDown=eyeDown+mouseSpeed*(eyeDown.length())*0.1*directionDown.normalized();
 							eye->setValue(eyeDown);
 						}
 						if (QApplication::keyboardModifiers() == (Qt::ShiftModifier | Qt::ControlModifier)) {
-							eyeDown=eyeDown-rotateSpeed*(eyeDown.length())*0.1*directionDown.normalized();
+							eyeDown=eyeDown-mouseSpeed*(eyeDown.length())*0.1*directionDown.normalized();
 							eye->setValue(eyeDown);
 						}
 					}
@@ -114,65 +111,6 @@ namespace Fragmentarium {
 			}
 			return false;
 		}
-
-		/*
-		void Camera3D::leftMouseButtonDrag(doublouble rx, double ry) {
-		Vector3f direction = (target->getValue()-eye->getValue());
-		Vector3f right = Vector3f::cross(direction.normalized(), up->getValue()).normalized();
-
-		// Lets try rotating the camera dir.
-
-		// QApplication::keyboardModifiers ()  
-		if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
-
-		double rotateSpeed = 3.0;
-		Matrix4f mx = Matrix4f::Rotation(up->getValue(), -rx*rotateSpeed);
-		Matrix4f my = Matrix4f::Rotation(right, -ry*rotateSpeed);
-		direction = (my*mx)*direction;
-		target->setValue(direction+eye->getValue());
-		up->setValue((my*mx)*up->getValue());
-		} else {
-		double rotateSpeed = 3.0;
-		Matrix4f mx = Matrix4f::Rotation(up->getValue(), -rx*rotateSpeed);
-		Matrix4f my = Matrix4f::Rotation(right, -ry*rotateSpeed);
-		direction = (my*mx)*direction;
-		eye->setValue(target->getValue()-direction);
-		up->setValue((my*mx)*up->getValue());
-		}
-		// Orthogonalize up wrt direciton.
-		Vector3f up2 = up->getValue();
-		direction.normalize();
-		float f = Vector3f::dot(direction, up2);
-		if (fabs(f)>0.8) {
-		up2 = (up2 -f  *direction).normalized();
-		up->setValue(up2);
-		}
-
-
-
-		};
-
-		void Camera3D::rightMouseButtonDrag(double , double rx, double ry) {
-		Vector3f direction = (target->getValue()-eye->getValue()).normalized();
-		Vector3f right = Vector3f::cross(direction, up->getValue()).normalized();
-		eye->setValue(eye->getValue() + 5.0*(-rx*right + ry*up->getValue()));
-		target->setValue(target->getValue() + 5.0*(-rx*right + ry*up->getValue()));
-		};
-
-		void Camera3D::bothMouseButtonDrag(double, double rx, double ry) {
-		Vector3f direction = (target->getValue()-eye->getValue()).normalized();
-		eye->setValue(eye->getValue() + 5.0*ry*direction);
-		float f = fov->getValue();
-		if (rx>0.0) {
-		f*= (1.0+rx);
-		} else {
-		f/= fabs((1.0+rx));
-		}
-		fov->setValue(f);
-		};
-		*/
-
-
 
 		Vector3f Camera3D::transform(int width, int height) {
 			this->height = height;
@@ -185,67 +123,76 @@ namespace Fragmentarium {
 		};
 
 
-		Camera2D::Camera2D(QStatusBar* statusBar) : statusBar(statusBar) { reset(); };
+		Camera2D::Camera2D(QStatusBar* statusBar) : statusBar(statusBar) {
+		 center = 0;
+		  zoom = 0;
+		};
 
 		QVector<VariableWidget*> Camera2D::addWidgets(QWidget* /*group*/, QWidget* /*parent*/) {
 			return QVector<VariableWidget*>();
 		}
 
-		void Camera2D::reset() { 
-			scale = 1.0; 
-			x = 0;
-			y = 0;
-		}
+		
 
 		void Camera2D::printInfo() {
 			INFO("Camera: Left mouse button translates scene.");
 			INFO("Camera: Mouse wheel or (right mouse button + up/down) zooms");
 		}
 
-		/*
-		void Camera2D::leftMouseButtonDrag(douuble rx, double ry) {
-		this->x+= -rx*scale*2.0;
-		this->y+= ry*scale*2.0;
-		if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-
-		};
-
-		void Camera2D::rightMouseButtonDrag(dole ry) {
-		if (ry > 0) {
-		scale/=(1.0+2*ry);
-		} else {
-		scale*=(1.0-2*ry);
-		}
-		if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-
-		};
-
-		void Camera2D::bothMouseButtonDrag(dououble ry) {
-		if (ry > 0) {
-		scale/=(1.0+2*ry*5);
-		} else {
-		scale*=(1.0-2*ry*5);
-		}
-		if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-
-		};
-
-		void Camera2D::wheel(double double val) {
-		if (val > 0) {
-		scale/=(1.0+val/10);
-		} else {
-		scale*=(1.0-val/10);
-		}
-		if (statusBar) statusBar->showMessage(QString("Scale: %1").arg(scale),5000);
-
-		};
-		*/
-		Vector3f Camera2D::transform(int width, int height) {
+		Vector3f Camera2D::transform(int /*width*/, int /*height*/) {
 			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();glTranslatef(x,y,0);
-			glScalef(scale,scale*(height/(float)width),scale);
-			return Vector3f(scale,scale*(height/(float)width),scale);
+			glLoadIdentity();
+			return Vector3f(1.0,1.0,1.0);
 		};
+
+		void Camera2D::connectWidgets(VariableEditor* ve) {
+			center = dynamic_cast<Float2Widget*>(ve->getWidgetFromName("Center"));
+			if (!center) WARNING("Could not find Center interface widget");
+			zoom = dynamic_cast<FloatWidget*>(ve->getWidgetFromName("Zoom"));
+			if (!zoom) WARNING("Could not find Zoom interface widget");
+		}
+
+		namespace {
+			Vector3f getModelCoord(Vector3f mouseCoord, Vector3f center, float zoom, int w, int h) {
+				float ar = h/((float)(w));
+				Vector3f coord = (mouseCoord/zoom+center);
+				coord.x() = ar*coord.x();
+				return coord;
+			}
+		}
+
+		bool Camera2D::mouseMoveEvent(QMouseEvent* e, int w, int h) {
+			if (!center || !zoom) return false;
+			Vector3f pos = Vector3f(e->pos().x()/(0.5*float(w))-1.0,1.0-e->pos().y()/(0.5*float(h)),0.0);
+			Vector3f centerValue = center->getValue();
+			float zoomValue = zoom->getValue();
+		
+			if (e->type() ==  QEvent::MouseButtonPress) {
+				mouseDown = pos;
+				zoomDown = zoomValue;
+				centerDown = centerValue;
+			} else if (e->type() ==  QEvent::MouseButtonRelease) {
+				mouseDown = Vector3f(0,0,-1);
+			}
+			
+			float mouseSpeed = 1.0;
+			if (mouseDown.z()!=-1 && e->buttons()!=Qt::NoButton) {
+				Vector3f dp = mouseDown-pos;
+				if (e->buttons() == Qt::LeftButton) {
+					center->setValue(centerDown + dp*mouseSpeed/zoomDown);
+				} else if (e->buttons() == Qt::RightButton) {
+					// Convert mouse down to model coordinates
+					Vector3f md = getModelCoord(mouseDown, centerDown, zoomDown, w,h);
+					float newZoom = zoomDown +dp.y()*(zoomDown)*mouseSpeed;
+					//float z = newZoom/zoomDown;
+					//center->setValue(md-(md-centerDown)/z);
+					zoom->setValue( newZoom);
+				}
+				return true;
+			}
+			return false;
+		}
+
 	}
 }
 

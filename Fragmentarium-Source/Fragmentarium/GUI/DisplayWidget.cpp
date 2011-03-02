@@ -79,7 +79,6 @@ namespace Fragmentarium {
 
 		void DisplayWidget::reset() {
 			updatePerspective();
-			cameraControl->reset();
 			requireRedraw();
 			setupFragmentShader();
 		}
@@ -280,23 +279,25 @@ namespace Fragmentarium {
 				tileRender();
 
 
-				Vector3f scale = cameraControl->transform(width(), height())*2;
-				if (fragmentSource.hasPixelSizeUniform || true) {
+				cameraControl->transform(width(), height())*2;
+				if (true) {
 					int l = shaderProgram->uniformLocation("pixelSize");
-					if (l == -1) {
-						//WARNING("Could not find pixelSize");
-					} else {
-						shaderProgram->setUniformValue(l, (float)(scale.x()/width()),(float)(scale.y()/height()));
+					if (l != -1) {
+						shaderProgram->setUniformValue(l, (float)(1.0/width()),(float)(1.0/height()));
 					}
 				}
+
+			
 
 				int l = shaderProgram->uniformLocation("time");
 				if (l != -1) {
 					float t = 0;
 					if (animationSettings) {
 						t = animationSettings->getTimeFromDisplay();
-					} else {
+					} else if (continuous) {
 						t = (time.msecsTo(QTime::currentTime())/1000.0);
+					} else {
+						t = 0;
 					}
 					shaderProgram->setUniformValue(l, (float)t);
 					//INFO(QString("Time:%1").arg(t));

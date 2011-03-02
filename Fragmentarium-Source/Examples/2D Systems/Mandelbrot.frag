@@ -22,6 +22,7 @@ vec2 complexMul(vec2 a, vec2 b) {
 }
 
 vec3 getColor2D(vec2 c) {
+//return (length(c)<1.0 ? vec3(1,0,0) : vec3(0,1,0));
 	vec2 z = Julia ?  c : vec2(0.0,0.0);
 	
 	int i = 0;

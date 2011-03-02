@@ -223,6 +223,11 @@ signals:
 			virtual QString toString();
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+
+			// Third component unused for these
+			Vector3f getValue() { return Vector3f(comboSlider1->getValue(),comboSlider2->getValue(),0.0); }
+			void setValue(Vector3f v) { comboSlider1->setValue(v.x()); comboSlider2->setValue(v.y()); } 
+			
 		private:
 			ComboSlider* comboSlider1;
 			ComboSlider* comboSlider2;

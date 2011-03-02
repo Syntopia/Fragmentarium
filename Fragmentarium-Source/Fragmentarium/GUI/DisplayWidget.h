@@ -42,6 +42,7 @@ namespace Fragmentarium {
 			void setupFragmentShader();
 			void setContinuous(bool value) { continuous = value; }
 			void setDisableRedraw(bool value) { disableRedraw = value; }
+			bool isRedrawDisabled() { return disableRedraw; }
 			CameraControl* getCameraControl() { return cameraControl; }
 			void setupTileRender(int tiles);
 			void resetTime() { time = QTime::currentTime(); }
