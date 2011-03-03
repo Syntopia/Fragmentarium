@@ -7,7 +7,7 @@ Add local group reset
 2D Camera local zoom
 Closing animationController should switch to Automatic
 Closing window should clear system?
-Crashes at startup time, ocasionally.
+Mouse Wheel support
 
 01-03-10 Automatic should always have time=0
 [2h]	 Animation should be an automatic mode

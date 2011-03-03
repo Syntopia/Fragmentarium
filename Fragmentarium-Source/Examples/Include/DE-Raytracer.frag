@@ -22,6 +22,7 @@ void main(void)
 {
 	gl_Position =  gl_Vertex;
 	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
+	coord.x*= pixelSize.y/pixelSize.x;
 	vec2 ps = pixelSize*mat2(gl_ProjectionMatrix);
 	zoom = length(ps);
 	from = Eye;
@@ -267,7 +268,7 @@ vec3 trace(vec3 from, vec3 dir) {
 			
 			color = mix(color, vec3(0.0,0.0,0.0), t*GradientBackground);
 		}
-		if (sq>0) color += Glow*GlowColor*pow(stepFactor,4.0);
+		if (sq>0.0) color += Glow*GlowColor*pow(stepFactor,4.0);
 	}
 	
 	//color = clamp(color, 0.0, 1.0);
