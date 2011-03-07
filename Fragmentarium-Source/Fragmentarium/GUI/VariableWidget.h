@@ -178,7 +178,9 @@ signals:
 			VariableWidget(QWidget* parent, QString name) : QWidget(parent), name(name), updated(false), systemVariable(false) {};
 			virtual QString getValueAsText() { return ""; };
 			QString getName() const { return name; };
+			virtual void reset() = 0;
 			void setGroup(QString group) { this->group = group; }
+			QString getGroup() { return group; }
 			bool isUpdated() const { return updated; };
 			void setUpdated(bool value) { updated = value; };
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram) = 0;
@@ -207,10 +209,12 @@ signals:
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			float getValue() { return comboSlider->getValue(); } 
 			void setValue(float f) { comboSlider->setValue(f); }
+			void reset() { setValue(defaultValue); }
 		private:
 			ComboSlider* comboSlider;
 			double min;
 			double max;
+			double defaultValue;
 		};
 
 		/// A widget editor for a float variable.
@@ -227,8 +231,11 @@ signals:
 			// Third component unused for these
 			Vector3f getValue() { return Vector3f(comboSlider1->getValue(),comboSlider2->getValue(),0.0); }
 			void setValue(Vector3f v) { comboSlider1->setValue(v.x()); comboSlider2->setValue(v.y()); } 
-			
+			void reset() { setValue(defaultValue); }
+
 		private:
+
+			Vector3f defaultValue;
 			ComboSlider* comboSlider1;
 			ComboSlider* comboSlider2;
 			Vector3f min;
@@ -249,6 +256,8 @@ signals:
 			Vector3f getValue() { return Vector3f(comboSlider1->getValue(),comboSlider2->getValue(),comboSlider3->getValue()); }
 			void setValue(Vector3f v);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			void reset() { setValue(defaultValue); }
+
 		public slots:
 			void n1Changed();
 			void n2Changed();
@@ -256,7 +265,7 @@ signals:
 		signals:
 			void doneChanges();
 		private:
-
+			Vector3f defaultValue;
 			bool normalize;
 			ComboSlider* comboSlider1;
 			ComboSlider* comboSlider2;
@@ -275,8 +284,10 @@ signals:
 			virtual QString toString();
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			void reset() { colorChooser->setColor(defaultValue); }
 		private:
 			ColorChooser* colorChooser;
+			Vector3f defaultValue;
 		};
 
 		class IntWidget : public VariableWidget {
@@ -288,10 +299,12 @@ signals:
 			virtual QString toString();
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			void reset() { comboSlider->setValue(defaultValue); }
 		private:
 			IntComboSlider* comboSlider;
 			int min;
 			int max;
+			int defaultValue;
 		};
 
 		class BoolWidget : public VariableWidget {
@@ -302,7 +315,9 @@ signals:
 			virtual QString toString();
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			void reset() { checkBox->setChecked(defaultValue); }
 		private:
+			bool defaultValue;
 			QCheckBox* checkBox;
 		};
 

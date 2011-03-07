@@ -225,7 +225,7 @@ vec3 trace(vec3 from, vec3 dir) {
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist*( length(zoom)/0.01 );
 	float epsModified = 0.0;
-	if (sq<0) {
+	if (sq<0.0) {
 		// outside bounding sphere
 		dist = MaxDist;
 		totalDist = MaxDist;

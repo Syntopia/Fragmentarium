@@ -150,20 +150,36 @@ Julia = true
 JuliaX = 0.497
 JuliaY = 5.92855
 
-
-Center = 168.711,43.4073
-Zoom = 0.0404007
+#Cell
+Center = -408.698,10
+Zoom = -0.000493858
 AntiAliasScale = 0.9901
-AntiAlias = 3
-Iterations = 180
-PreIterations = 10
-R = 0.975
-G = 0.53125
-B = 0.62112
-C = 1.0125
-v = 0.50318,0
+AntiAlias = 2
+Iterations = 165
+PreIterations = 4
+R = 0.61875
+G = 0.6125
+B = 0.47205
+C = 1
+v = 0.09554,0
 Julia = true
-JuliaX = 0.45882
-JuliaY = 5.85715
+JuliaX = 0.36469
+JuliaY = 5.89285
+
+
+Center = -0.05144,-1.0548
+Zoom = 92.248
+AntiAliasScale = 0.9901
+AntiAlias = 2
+Iterations = 261
+PreIterations = 6
+R = 0.69375
+G = 0.6125
+B = 0.5031
+C = 0.9625
+v = 0.09554,0
+Julia = true
+JuliaX = 0.38824
+JuliaY = 5.89285
 */
 

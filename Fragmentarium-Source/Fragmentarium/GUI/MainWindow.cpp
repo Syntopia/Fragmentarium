@@ -423,16 +423,14 @@ namespace Fragmentarium {
 
 		void MainWindow::about()
 		{
-
 			QFile file(getMiscDir() + QDir::separator() + "about.html");
 			if (!file.open(QFile::ReadOnly | QFile::Text)) {
-				WARNING("Could not open about.html...");
+				WARNING("Could not open 'about.html'.");
 				return;
 			}
 
 			QTextStream in(&file);
 			QString text = in.readAll();
-
 			text.replace("$VERSION$", version.toLongString());
 
 			QMessageBox mb(this);
@@ -441,7 +439,25 @@ namespace Fragmentarium {
 			mb.setIconPixmap(getMiscDir() + QDir::separator() + "icon.jpg");
 			mb.setMinimumWidth(800);
 			mb.exec();
+		}
 
+		void MainWindow::showControlHelp()
+		{
+			QFile file(getMiscDir() + QDir::separator() + "control.html");
+			if (!file.open(QFile::ReadOnly | QFile::Text)) {
+				WARNING("Could not open 'control.html'.");
+				return;
+			}
+
+			QTextStream in(&file);
+			QString text = in.readAll();
+		
+			QMessageBox mb(this);
+			mb.setText(text);
+			mb.setWindowTitle("Mouse and Keyboard Control");
+			mb.setIconPixmap(getMiscDir() + QDir::separator() + "icon.jpg");
+			mb.setMinimumWidth(800);
+			mb.exec();
 		}
 
 		void MainWindow::documentWasModified()
@@ -748,8 +764,12 @@ namespace Fragmentarium {
 			connect(renderAction, SIGNAL(triggered()), this, SLOT(render()));
 			
 			aboutAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&About"), this);
-			aboutAction->setStatusTip(tr("Show the About box"));
+			aboutAction->setStatusTip(tr("Shows the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+
+			controlAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&Mouse and Keyboard Help"), this);
+			controlAction->setStatusTip(tr("Shows information about how to control Fragmentarium"));
+			connect(controlAction, SIGNAL(triggered()), this, SLOT(showControlHelp()));
 
 			sfHomeAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Project Homepage (web link)"), this);
 			sfHomeAction->setStatusTip(tr("Open the project page in a browser."));
@@ -891,6 +911,7 @@ namespace Fragmentarium {
 
 			helpMenu = menuBar()->addMenu(tr("&Help"));
 			helpMenu->addAction(aboutAction);
+			helpMenu->addAction(controlAction);
 			//helpMenu->addAction("Benchmark", this, SLOT(benchmark()));
 			
 			helpMenu->addSeparator();

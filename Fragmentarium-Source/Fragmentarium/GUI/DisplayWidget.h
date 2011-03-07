@@ -49,7 +49,8 @@ namespace Fragmentarium {
 			void setViewFactor(float val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
-		
+			void keyPressEvent(QKeyEvent* ev);
+	
 		protected:
 			void tileRender();
 

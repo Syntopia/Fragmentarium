@@ -29,6 +29,7 @@ namespace Fragmentarium {
 		/// FloatVariable constructor.
 		FloatWidget::FloatWidget(QWidget* parent, QWidget* variableEditor, QString name, double defaultValue, double min, double max) 
 			: VariableWidget(parent, name)  {
+				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(this);
 				l->setSpacing(0);
 				l->setContentsMargins (0,0,0,0);
@@ -74,6 +75,7 @@ namespace Fragmentarium {
 		/// Notice that only x and y components are used here.
 		Float2Widget::Float2Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector3f defaultValue, Vector3f min, Vector3f max) 
 			: VariableWidget(parent, name)  {
+				this->defaultValue = defaultValue;
 				QGridLayout* m = new QGridLayout(this);
 				m->setSpacing(0);
 				m->setContentsMargins (0,0,0,0);
@@ -119,6 +121,8 @@ namespace Fragmentarium {
 		Float3Widget::Float3Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector3f defaultValue, Vector3f min, Vector3f max) 
 			: VariableWidget(parent, name)  {
 				normalize = false;
+				this->defaultValue = defaultValue;
+				
 				if (min==max) {
 					min = Vector3f(-1,-1,-1);
 					max = Vector3f(1,1,1);
@@ -254,6 +258,7 @@ namespace Fragmentarium {
 
 		ColorWidget::ColorWidget(QWidget* parent, QWidget* variableEditor, QString name, SyntopiaCore::Math::Vector3f defaultValue) 
 			: VariableWidget(parent, name)  {
+				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(this);
 				l->setSpacing(2);
 				l->setContentsMargins (0,0,0,0);
@@ -293,6 +298,7 @@ namespace Fragmentarium {
 
 		IntWidget::IntWidget(QWidget* parent, QWidget* variableEditor, QString name, int defaultValue, int min, int max) 
 			: VariableWidget(parent, name)  {
+				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(this);
 				l->setSpacing(2);
 				l->setContentsMargins (0,0,0,0);
@@ -328,6 +334,7 @@ namespace Fragmentarium {
 
 		BoolWidget::BoolWidget(QWidget* parent, QWidget* variableEditor, QString name, bool defaultValue) 
 			: VariableWidget(parent, name)  {
+				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(this);
 				l->setSpacing(2);
 				l->setContentsMargins (0,0,0,0);

@@ -62,6 +62,7 @@ namespace Fragmentarium {
 			backgroundColor = QColor(30,30,30);
 			contextMenu = 0;
 			setupFragmentShader();
+			setFocusPolicy(Qt::WheelFocus);
 		}
 
 
@@ -438,6 +439,12 @@ namespace Fragmentarium {
 			bool redraw = cameraControl->mouseMoveEvent(ev, width(), height());
 			if (redraw) requireRedraw();
 			//if (contextMenu) contextMenu->exec(ev->globalPos());
+		}
+
+		void DisplayWidget::keyPressEvent(QKeyEvent* ev) {
+			ev->accept();
+			bool redraw = cameraControl->keyPressEvent(ev);
+			if (redraw) requireRedraw();
 		}
 
 

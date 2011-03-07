@@ -90,6 +90,25 @@ namespace Fragmentarium {
 			setSettings(text);
 		}
 
+		void VariableEditor::resetGroup() {			
+			QWidget* t = tabWidget->widget(tabWidget->currentIndex());
+			
+			QMap<QString, QWidget*>::const_iterator it;
+			QString g;
+			for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
+				if (it.value() == t) {
+					g = it.key();
+				} 
+			}
+
+			foreach (VariableWidget* variable, variables) {
+				if (variable->getGroup() == g) {
+					variable->reset();
+				}
+			}
+			mainWindow->callRedraw();
+		}
+
 		void VariableEditor::createGroup(QString g) {
 			//INFO("Creating new "+ g);
 			QWidget* w =new QWidget();
@@ -98,9 +117,20 @@ namespace Fragmentarium {
 			w->layout()->setContentsMargins (10,10,10,10);
 			tabWidget->addTab(w, g);
 			tabs[g] = w;
+
+			QWidget* b = new QWidget();
+			b->setLayout(new QVBoxLayout(b));
+			b->layout()->setSpacing(0);
+			b->layout()->setContentsMargins (0,0,0,0);
 			QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Minimum,QSizePolicy::Expanding);
-			w->layout()->addItem(spacer);
-			spacers[w] = spacer;
+			b->layout()->addItem(spacer);
+			QPushButton* pb = new QPushButton(b);
+			pb->setText("Reset group");
+			b->layout()->addWidget(pb);
+			connect(pb, SIGNAL(clicked()), this, SLOT(resetGroup()));
+
+			w->layout()->addWidget(b);
+			spacers[w] = b;
 		}
 
 		void VariableEditor::updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI) {
@@ -211,8 +241,8 @@ namespace Fragmentarium {
 					}
 
 					// We need to move the spacer to bottom. This may be very slow...
-					currentWidget->layout()->removeItem(spacers[currentWidget]);
-					currentWidget->layout()->addItem(spacers[currentWidget]);
+					currentWidget->layout()->removeWidget(spacers[currentWidget]);
+					currentWidget->layout()->addWidget(spacers[currentWidget]);
 
 				}
 			}

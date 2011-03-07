@@ -131,6 +131,7 @@ namespace Fragmentarium {
 			bool save();
 			bool saveAs();
 			void about();
+			void showControlHelp();
 			void documentWasModified();
 			void render();
 			void toggleFullScreen();
@@ -189,6 +190,7 @@ namespace Fragmentarium {
 			QAction *copyAction;
 			QAction *pasteAction;
 			QAction *aboutAction;
+			QAction *controlAction;
 
 			QAction *renderAction;
 			DisplayWidget* engine;

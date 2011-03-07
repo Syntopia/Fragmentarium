@@ -34,6 +34,7 @@ namespace Fragmentarium {
 			virtual void connectWidgets(VariableEditor* /*ve*/) {};
 			virtual bool mouseMoveEvent(QMouseEvent* /*e*/, int /*w*/, int /*h*/) { return false; };
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
+			virtual bool keyPressEvent(QKeyEvent* /*ev*/) { return false; };
 		};
 
 		class Camera3D : public CameraControl {
@@ -48,9 +49,11 @@ namespace Fragmentarium {
 			virtual void connectWidgets(VariableEditor* ve);
 			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
+			virtual bool keyPressEvent(QKeyEvent* ev);
 		private:
 			int height;
 			int width;
+			float stepSize;
 			QStatusBar* statusBar;
 		    Float3Widget* eye ;
 			Float3Widget* target ;
@@ -73,6 +76,7 @@ namespace Fragmentarium {
 			virtual Vector3f transform(int width, int height);
 			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
+			virtual bool keyPressEvent(QKeyEvent* /*ev*/) { return false; };
 		private:
 			Float2Widget* center;
 			FloatWidget* zoom;	

@@ -1,13 +1,14 @@
 Todo:
 Continouos->reset time trigger time measure
 Icons for animation transporter
-Fix Aspect Ratio for 3D
-Check AA
-Add local group reset
 2D Camera local zoom
 Closing animationController should switch to Automatic
-Closing window should clear system?
 Mouse Wheel support
+
+07-03-10 Added local group reset
+[3h]	 Fixed Aspect Ratio for 3D
+		 Added keyboard shortcuts
+		 Updated HTML help
 
 01-03-10 Automatic should always have time=0
 [2h]	 Animation should be an automatic mode

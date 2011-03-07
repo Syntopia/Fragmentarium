@@ -27,41 +27,47 @@ Roadmap.
 + Fix: Splash
 + add three glsl output lines -> Plus make it an Run button thingy
   -> glsl debug doesn't work?
-- Simple website.
++ Simple website.
 
 <-- First Release: Version 0.5 -- 
 
-- Fix: icons
-- Resize trigger many updates (hang)
-- Control FOV for 3D camera
-- Blending to background seems wrong in raytracer
++ Control FOV for 3D camera
++ Blending to background seems wrong in raytracer
++ uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
 
-- uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
-- uniform vec4 a; slider[....]
++ Hires renders.
++ Better cameras (esp. 3D)
+  + Clipping? (What can we do here?)
+  + Sliders for cameras
+  + Save to settings
+  + Rotation in screen space
+  + A 3D camera suitable for deep zooming
+  + Better mouse mapping for cameras
++ Tile based renders.
++ Animation timeline.
 
 - Mouse sensitivity
-- Hires renders.
-- Better cameras (esp. 3D)
-  - Clipping? (What can we do here?)
-  - Sliders for cameras
-  - Save to settings
-  - Rotation in screen space
-  - A 3D camera suitable for deep zooming
-  - Clipping planes
-  - A 2D camera which scales from the current mouse position
-  - Better mouse mapping for cameras
-
-- Check for updates
-- Example Path : examples/
-
 
 <-- Version 0.7 --
- 
-- Multipass / progressive renders.
+
+Some of these:
+- Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
+- Update raytracer: fog, inner glow, hard shadows, new AO?
+- Better support for preview: render-to-texture (using FBO's) and rescale.
+- uniform vec4 a; slider[....]
+- Fix: icons
+- Resize trigger many updates (hang)
+- Example Path : examples/
+- A 2D camera which scales from the current mouse position
+
+<-- Version 0.9 --
+
+Some of these:
+- Clipping planes
+- Update raytracer: environment mapping?
+- Check for updates
+- WebGL export
+- Keyframe Animation.
 
 <-- Version 1.0 --
 
-Later:
-
-- WebGL export
-- Animation timeline.

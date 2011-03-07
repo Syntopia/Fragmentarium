@@ -47,6 +47,7 @@ namespace Fragmentarium {
 
 		public slots:
 			void resetUniforms();
+			void resetGroup();
 			void copy();
 			void paste();
 			void childChanged() { emit changed(); } 
@@ -59,7 +60,7 @@ namespace Fragmentarium {
 			QWidget* currentWidget;
 			
 			QMap<QString, QWidget*> tabs;
-			QMap<QWidget*, QSpacerItem*> spacers;
+			QMap<QWidget*, QWidget*> spacers;
 			QTabWidget* tabWidget ;
 		};
 

@@ -1,4 +1,4 @@
-varying vec2 coord;
+#include "2D.frag"
 
 #info SimpleTexture demo.
 #group Simple Texture demo.
@@ -17,6 +17,7 @@ uniform sampler2D texture; file[texture2.jpg]
 // uniform sampler2D texture2; file[texture.jpg]
 uniform vec2 params; slider[(-1,-1),(-0.5,0.24),(1,1)]
 
+void init() {};
 
 vec3 a(vec2 z, float t) {
 	vec2 m =  params.xy;
@@ -46,9 +47,5 @@ vec3 getColor2D(vec2 z) {
 		acc+= a(z.yx,time+(float(i)*0.02))*w;
 	}
 	return (acc/(wt*2.0));
-}
-
-void main() {
-	gl_FragColor = vec4(getColor2D(coord.xy),1.0);
 }
 
