@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QGLWidget>
 #include <QMainWindow>
+#include <QGLFramebufferObject>
 #include <QPoint>
 #include <QList>
 #include <QGLShaderProgram>
@@ -46,14 +47,16 @@ namespace Fragmentarium {
 			CameraControl* getCameraControl() { return cameraControl; }
 			void setupTileRender(int tiles);
 			void resetTime() { time = QTime::currentTime(); }
-			void setViewFactor(float val);
+			void setViewFactor(int val);
+			void setPreviewFactor(int val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 			void keyPressEvent(QKeyEvent* ev);
 	
 		protected:
 			void tileRender();
-
+			void drawFragmentProgram(int w,int h);
+			void drawToFrameBufferObject();
 			void mouseMoveEvent(QMouseEvent* ev) ; 
 			void contextMenuEvent (QContextMenuEvent* ev);
 			void mouseReleaseEvent ( QMouseEvent * ev);
@@ -70,6 +73,7 @@ namespace Fragmentarium {
 			void wheelEvent(QWheelEvent* e);
 				
 		private:
+			QGLFramebufferObject* previewBuffer;
 			bool continuous;
 			bool disableRedraw;
 			bool fragmentShader;
@@ -77,7 +81,6 @@ namespace Fragmentarium {
 		
 			void updatePerspective();	
 			int pendingRedraws; // the number of times we must redraw 
-			// (when a redraw is requested we must draw two times, when double buffering)
 			int requiredRedraws;
 			QColor backgroundColor;
 
@@ -94,7 +97,8 @@ namespace Fragmentarium {
 			int tiles;
 			int tilesCount;
 			QVector<QImage> cachedTileImages;
-			float viewFactor;
+			int viewFactor;
+			int previewFactor;
 			AnimationSettings* animationSettings;
 		};
 	};

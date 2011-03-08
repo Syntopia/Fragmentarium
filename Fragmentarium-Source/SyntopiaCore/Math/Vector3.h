@@ -86,7 +86,7 @@ namespace SyntopiaCore {
 		template <typename T, typename S>
 		Vector3<S> operator*(T lhs, Vector3<S> rhs) { return Vector3<S>(rhs[0]*lhs, rhs[1]*lhs, rhs[2]*lhs); }
 			
-		typedef Vector3<float> Vector3f ;
+		typedef Vector3<double> Vector3f ;
 		typedef Vector3<double> Vector3d ;
 
 	}

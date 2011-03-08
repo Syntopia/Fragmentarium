@@ -641,9 +641,15 @@ namespace Fragmentarium {
 			addDockWidget(Qt::BottomDockWidgetArea, animationController, Qt::Vertical);
 			animationController->setFloating(true);
 			connect(((AnimationController*)animationController)->getAnimationSettings(), SIGNAL(timeUpdated()), this, SLOT(callRedraw()));
+			connect(animationController, SIGNAL(wasHidden()), this, SLOT(animationControllerHidden()));
 			
 			renderModeChanged(0);
 
+		}
+
+		void MainWindow::animationControllerHidden() {
+			INFO("Animation Controller closed. Switching to automatic render mode.");
+			renderCombo->setCurrentIndex(0);
 		}
 
 		void MainWindow::setUserUniforms(QGLShaderProgram* shaderProgram) {
@@ -1044,11 +1050,11 @@ namespace Fragmentarium {
 			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
 			renderModeToolBar->addWidget(renderButton);
 			
-			viewLabel = new QLabel("Preview (off)", renderModeToolBar);
+			viewLabel = new QLabel("Zoom Preview (off)", renderModeToolBar);
 			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
 			viewSlider->setTickInterval(1);
-			viewSlider->setMinimum(-3);
-			viewSlider->setMaximum(3);
+			viewSlider->setMinimum(0);
+			viewSlider->setMaximum(4);
 			viewSlider->setTickPosition(QSlider::TicksBelow);
 			viewSlider->setMaximumWidth(100);
 			connect(viewSlider, SIGNAL(valueChanged(int)), this, SLOT(viewSliderChanged(int)));
@@ -1056,23 +1062,38 @@ namespace Fragmentarium {
 			renderModeToolBar->addWidget(viewSlider);
 			viewSliderChanged(0);
 
+			previewLabel = new QLabel("Preview (off)", renderModeToolBar);
+			previewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
+			previewSlider->setTickInterval(1);
+			previewSlider->setMinimum(0);
+			previewSlider->setMaximum(4);
+			previewSlider->setTickPosition(QSlider::TicksBelow);
+			previewSlider->setMaximumWidth(100);
+			connect(previewSlider, SIGNAL(valueChanged(int)), this, SLOT(previewSliderChanged(int)));
+			renderModeToolBar->addWidget(previewLabel);
+			renderModeToolBar->addWidget(previewSlider);
+			//previewSliderChanged(0);
+
 		}
 
 		void MainWindow::viewSliderChanged(int) {
 			int v = viewSlider->value();
-			if (v<0) {
-				viewLabel->setText(QString("  Preview (1/%1x)").arg(abs(v)+1));
-			} else if (v>0) {
-				viewLabel->setText(QString("  Preview (%1x)").arg(abs(v+1)));
+			if (v>0) {
+				viewLabel->setText(QString("  Zoom Preview (%1x)").arg(abs(v+1)));
 			} else {
-				viewLabel->setText(QString("  Preview (off)"));
+				viewLabel->setText(QString("  Zoom Preview (off)"));
 			}
-			
-			float val = v;
-			if (val>0) val=val+1.0;
-			if (val<=0) val = 1.0/(1.0+fabs(val));
-			
-			engine->setViewFactor(val);
+			engine->setViewFactor(v);
+		}
+
+		void MainWindow::previewSliderChanged(int) {
+			int v = previewSlider->value();
+			if (v>0) {
+				previewLabel->setText(QString("  Preview (%1x)").arg(abs(v+1)));
+			} else {
+				previewLabel->setText(QString("  Preview (off)"));
+			}
+			engine->setPreviewFactor(v);
 		}
 
 		void MainWindow::renderModeChanged(int) {

@@ -34,7 +34,7 @@ namespace Fragmentarium {
 			QWidget* w = new QWidget(this);
 			new QHBoxLayout(w);
 			w->layout()->setContentsMargins(0,0,0,0);
-			QPushButton* pb= new QPushButton("Reset", this);
+			QPushButton* pb= new QPushButton("Reset All", this);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetUniforms()));
 			w->layout()->addWidget(pb);
 

@@ -137,6 +137,13 @@ namespace Fragmentarium {
 		public:
 			AnimationController(QWidget* parent);
 			AnimationSettings* getAnimationSettings() { return &animationSettings; }
+ 
+			void hideEvent(QHideEvent*) {
+				emit wasHidden();
+			}
+
+		signals:
+			void wasHidden();
 
 		public slots:
 			void timeChanged(double);

@@ -42,9 +42,12 @@ namespace Fragmentarium {
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
+			previewBuffer = 0;
 			animationSettings = 0;
 			shaderProgram = 0;
-			viewFactor = 1.0;
+
+			viewFactor = 0;
+			previewFactor = 0.0;
 			tiles = 0;
 			tilesCount = 0;
 			resetTime();
@@ -187,14 +190,13 @@ namespace Fragmentarium {
 
 		void DisplayWidget::tileRender() {
 			glLoadIdentity();
-			if (!tiles && viewFactor<=1.0) return;
-			if (viewFactor > 1.0) {
-				glScalef(1.0/viewFactor,1.0/viewFactor,1.0);
+			if (!tiles && viewFactor==0) return;
+			if (viewFactor > 0) {
+				glScalef(1.0/(viewFactor+1.0),1.0/(viewFactor+1.0),1.0);
 				return;	
 			}
 			requireRedraw();
 			
-
 			if (tilesCount==tiles*tiles) {
 				INFO("Tile rendering complete");
 				// Now assemble image
@@ -228,21 +230,117 @@ namespace Fragmentarium {
 			glTranslatef( x * (2.0/tiles) , y * (2.0/tiles), 1.0);
 			glScalef( 1.0/tiles,1.0/tiles,1.0);	
 
-
 			tilesCount++;
-
 		}
 
-		void DisplayWidget::setViewFactor(float val) {
+		void DisplayWidget::setViewFactor(int val) {
 			viewFactor = val;
 			requireRedraw();
 		}
 
+		void DisplayWidget::setPreviewFactor(int val) {
+			previewFactor = val;
+			makeCurrent();
+
+			delete(previewBuffer);
+			if (previewFactor == 0) {
+				previewBuffer = 0;
+				return;
+			} else {
+				int w = width()/(previewFactor+1);
+				int h = height()/(previewFactor+1);
+				previewBuffer = new QGLFramebufferObject(w, h);
+				INFO(QString("Setting preview size to: %1x%2").arg(w).arg(h));
+
+			}
+			requireRedraw();
+		}	
+
+		void DisplayWidget::drawFragmentProgram(int w,int h) {
+			glDisable( GL_CULL_FACE );
+			glDisable( GL_LIGHTING );
+			glDisable( GL_DEPTH_TEST );
+
+			// -- Viewport
+			glViewport( 0, 0,w, h);
+			
+			// -- Projection
+			// The projection mode as used here
+			// allow us to render only a region of the viewport.
+			// This allows us to perform tile based rendering.
+			glMatrixMode(GL_PROJECTION);
+			tileRender();
+
+			cameraControl->transform(width(), height());
+			
+			int l = shaderProgram->uniformLocation("pixelSize");
+			if (l != -1) {
+				shaderProgram->setUniformValue(l, (float)(1.0/w),(float)(1.0/h));
+			}
+			
+			l = shaderProgram->uniformLocation("time");
+			if (l != -1) {
+				float t = 0;
+				if (animationSettings) {
+					t = animationSettings->getTimeFromDisplay();
+				} else if (continuous) {
+					t = (time.msecsTo(QTime::currentTime())/1000.0);
+				} else {
+					t = 0;
+				}
+				shaderProgram->setUniformValue(l, (float)t);
+			}
+
+			// Setup User Uniforms
+			mainWindow->setUserUniforms(shaderProgram);
+			glColor3d(1.0,1.0,1.0);
+
+			if (disableRedraw) {
+				QTime tx = QTime::currentTime();
+				glRectf(-1,-1,1,1); 
+				glFinish();
+				//int msx = tx.msecsTo(QTime::currentTime());
+				//INFO(QString("GPU: render took %1 ms.").arg(msx));
+			} else {
+				glRectf(-1,-1,1,1); 
+			}
+
+			glFinish();
+		}
+
+		void DisplayWidget::drawToFrameBufferObject() {
+			if (previewBuffer == 0 || !previewBuffer->isValid()) {
+				WARNING("Non valid FBO");
+				return;
+			}
+			if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; } 
+			shaderProgram->bind();
+			QSize s = previewBuffer->size();
+			drawFragmentProgram(s.width(),s.height());
+			shaderProgram->release();
+			if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; } 
+		
+			// Draw a textured quad using the preview texture.
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glViewport(0, 0, width(),height());
+			glBindTexture(GL_TEXTURE_2D, previewBuffer->texture());
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glEnable(GL_TEXTURE_2D);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  0.0f);	
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  0.0f);	
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  0.0f);	
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  0.0f);	
+			glEnd();
+		}
 
 		void DisplayWidget::paintGL() {
 			// Show info first time we display something...
-
-
 			static bool shownInfo = false;
 			if (!shownInfo) {
 				shownInfo = true;
@@ -257,101 +355,46 @@ namespace Fragmentarium {
 				return;
 			}
 
+		
 			QTime t = QTime::currentTime();
-			if (shaderProgram) {
-				glDisable( GL_CULL_FACE );
-				glDisable( GL_LIGHTING );
-				glDisable( GL_DEPTH_TEST );
 
-				// -- Viewport
-				if (viewFactor >= 1.0) {
-					glViewport( 0, 0, width(), height());
-				} else {
-					qglClearColor(backgroundColor);
-					glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-					glViewport( 0.5*width()*(1.0-viewFactor), 0.5*height()*(1.0-viewFactor), width()*viewFactor, height()*viewFactor);
-				}
-
-				// -- Projection
-				// The projection mode as used here
-				// allow us to render only a region of the viewport.
-				// This allows us to perform tile based rendering.
-				glMatrixMode(GL_PROJECTION);
-				tileRender();
-
-
-				cameraControl->transform(width(), height())*2;
-				if (true) {
-					int l = shaderProgram->uniformLocation("pixelSize");
-					if (l != -1) {
-						shaderProgram->setUniformValue(l, (float)(1.0/width()),(float)(1.0/height()));
-					}
-				}
-
+			if (previewBuffer) {
+				drawToFrameBufferObject();
+			} else {
+				drawFragmentProgram(width(),height());
+			}
 			
+			//int msx = t.msecsTo(QTime::currentTime());
+			//INFO(QString("GPU: render took %1 ms.").arg(msx));
 
-				int l = shaderProgram->uniformLocation("time");
-				if (l != -1) {
-					float t = 0;
-					if (animationSettings) {
-						t = animationSettings->getTimeFromDisplay();
-					} else if (continuous) {
-						t = (time.msecsTo(QTime::currentTime())/1000.0);
-					} else {
-						t = 0;
-					}
-					shaderProgram->setUniformValue(l, (float)t);
-					//INFO(QString("Time:%1").arg(t));
+			// Animation
+			if (animationSettings && animationSettings->isRecording()) {
+				QString filename = animationSettings->getFileName();
+				QImage im = grabFrameBuffer();
+				INFO("Saving frame: " + filename );
+				bool succes = im.save(filename);
+				if (!succes) {
+					WARNING("Save failed! Filename: " + filename);
 				}
-
-				// Setup User Uniforms
-				mainWindow->setUserUniforms(shaderProgram);
-				glColor3d(1.0,1.0,1.0);
-
-				if (disableRedraw) {
-					QTime tx = QTime::currentTime();
-					glRectf(-1,-1,1,1); 
-					glFinish();
-					//int msx = tx.msecsTo(QTime::currentTime());
-					//INFO(QString("GPU: render took %1 ms.").arg(msx));
-				} else {
-					glRectf(-1,-1,1,1); 
-				}
-
-				glFinish();
-				int msx = t.msecsTo(QTime::currentTime());
-				INFO(QString("GPU: render took %1 ms.").arg(msx));
-				
-				if (animationSettings && animationSettings->isRecording()) {
-					QString filename = animationSettings->getFileName();
-					QImage im = grabFrameBuffer();
-					INFO("Saving frame: " + filename );
-					bool succes = im.save(filename);
-					if (succes) {
-						//INFO("Saved screenshot as: " + filename);
-					} else {
-						WARNING("Save failed! Filename: " + filename);
-					}
-				}
-
-				if (tiles) {
-					QImage im = grabFrameBuffer();
-					cachedTileImages.append(im);
-					INFO("Stored image: " + QString::number(cachedTileImages.count()));
-				};
-
 			}
 
+			
+			// Tile based rendering
+			if (tiles) {
+				QImage im = grabFrameBuffer();
+				cachedTileImages.append(im);
+				INFO("Stored image: " + QString::number(cachedTileImages.count()));
+			};
+
+	
 			QTime cur = QTime::currentTime();
 			long ms = t.msecsTo(cur);
 			fpsCounter++;
-
 			float fps = -1;
 
 			// If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
 			if (ms>500) {
 				fps = 1.0/500;
-				//INFO("MS:" + QString::number(ms));
 			} else {
 				// Else measure over two seconds.
 				long ms2 = fpsTimer.msecsTo(cur);
@@ -360,9 +403,7 @@ namespace Fragmentarium {
 					fpsTimer = cur;
 					fpsCounter = 0;
 				}
-				//
 			}
-
 
 			mainWindow->setFPS(fps);
 		};

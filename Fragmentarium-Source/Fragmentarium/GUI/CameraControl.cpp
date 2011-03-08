@@ -69,8 +69,18 @@ namespace Fragmentarium {
 				eye->setValue(eye->getValue()+offset);
 				target->setValue(target->getValue()+offset);	
 			} else if (ev->key() == Qt::Key_W) {
-				Vector3f offset = dir*stepSize;		
-				eye->setValue(eye->getValue()+offset);
+				Vector3f offset = dir*stepSize;	
+				//dVector3f db = eye->getValue();
+				Vector3f db2 = eye->getValue()+offset;
+				eye->setValue(db2);
+				/*
+				INFO(QString("DIR: %0. Before:%1, Offset:%2, After:%3, Delta:%4, AfterExp: %5)")
+					.arg(dir.toString()).arg(db.toString()).arg(offset.toString())
+					.arg(eye->getValue().toString()).arg((eye->getValue()-db).normalized().toString())
+					.arg(db2.toString())
+					);
+
+					*/
 				target->setValue(target->getValue()+offset);	
 			} else if (ev->key() == Qt::Key_S) {
 				Vector3f offset = -dir*stepSize;		
@@ -85,27 +95,27 @@ namespace Fragmentarium {
 				eye->setValue(eye->getValue()+offset);
 				target->setValue(target->getValue()+offset);	
 			} else if (ev->key() == Qt::Key_R) {
-				Matrix4f m = Matrix4f::Rotation(upV, stepSize*factor);
+				Matrix4f m = Matrix4f::Rotation(upV, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 			} else if (ev->key() == Qt::Key_F) {
-				Matrix4f m = Matrix4f::Rotation(upV, -stepSize*factor);
+				Matrix4f m = Matrix4f::Rotation(upV, -factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 			}else if (ev->key() == Qt::Key_T) {
-				Matrix4f m = Matrix4f::Rotation(right, stepSize*factor);
+				Matrix4f m = Matrix4f::Rotation(right, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 			}else if (ev->key() == Qt::Key_G) {
-				Matrix4f m = Matrix4f::Rotation(right, -stepSize*factor);
+				Matrix4f m = Matrix4f::Rotation(right, -factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 			}else if (ev->key() == Qt::Key_Y) {
-				Matrix4f m = Matrix4f::Rotation(dir, stepSize*factor);
+				Matrix4f m = Matrix4f::Rotation(dir, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 			}else if (ev->key() == Qt::Key_H) {
-				Matrix4f m = Matrix4f::Rotation(dir, -stepSize*factor);
+				Matrix4f m = Matrix4f::Rotation(dir, -factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 			}

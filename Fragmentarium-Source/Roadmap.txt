@@ -45,6 +45,7 @@ Roadmap.
   + Better mouse mapping for cameras
 + Tile based renders.
 + Animation timeline.
++ Better support for preview: render-to-texture (using FBO's) and rescale.
 
 - Mouse sensitivity
 
@@ -53,7 +54,6 @@ Roadmap.
 Some of these:
 - Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
 - Update raytracer: fog, inner glow, hard shadows, new AO?
-- Better support for preview: render-to-texture (using FBO's) and rescale.
 - uniform vec4 a; slider[....]
 - Fix: icons
 - Resize trigger many updates (hang)
@@ -64,6 +64,7 @@ Some of these:
 
 Some of these:
 - Clipping planes
+- Startup screen with images?
 - Update raytracer: environment mapping?
 - Check for updates
 - WebGL export

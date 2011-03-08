@@ -96,9 +96,11 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 
 		public slots:
+			void animationControllerHidden();
 			void benchmark();
 			void removeSplash();
 			void viewSliderChanged(int);
+			void previewSliderChanged(int);
 			void tileBasedRender();
 			void makeScreenshot();
 			void callRedraw();
@@ -140,8 +142,10 @@ namespace Fragmentarium {
 		private:
 			QList<QWidget *> disabledWidgets;
 			QSlider* viewSlider;
+			QSlider* previewSlider;
 			
 			QLabel* viewLabel;
+			QLabel* previewLabel;
 			void setRecentFile(const QString &fileName);
 			QTextEdit* insertTabPage(QString filename);
 			QTextEdit* getTextEdit();

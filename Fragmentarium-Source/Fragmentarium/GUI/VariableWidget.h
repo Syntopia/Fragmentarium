@@ -52,9 +52,19 @@ namespace Fragmentarium {
 			}
 
 			double getValue() { return myValue; }
-			void setValue(double d) { myValue = d; spinner->setValue(d); }
+			void setValue(double d) { 
+				myValue = d; 
+				spinner->blockSignals(true);
+				slider->blockSignals(true);
+				spinner->setValue(d);
+				double val = (spinner->value()-minimum)/(maximum-minimum);
+				slider->setValue(val*100000);
+				spinner->blockSignals(false);
+				slider->blockSignals(false);
+				emit changed();
+			}
 
-signals:
+			signals:
 			void changed();
  
 			protected slots:
@@ -207,8 +217,8 @@ signals:
 			virtual QString toString();
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
-			float getValue() { return comboSlider->getValue(); } 
-			void setValue(float f) { comboSlider->setValue(f); }
+			double getValue() { return comboSlider->getValue(); } 
+			void setValue(double f) { comboSlider->setValue(f); }
 			void reset() { setValue(defaultValue); }
 		private:
 			ComboSlider* comboSlider;

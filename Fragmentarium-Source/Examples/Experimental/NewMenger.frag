@@ -96,3 +96,49 @@ Offset = 0.85294,0.66176,0
 Up = -0.96798,-0.21662,0.12866
 */
 
+
+/*
+FOV = 1
+Eye = 0.244,0.18392,-0.744
+Target = 5.972,4.88492,5.872
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.3
+DetailNormal = -2.8
+BackStepNormal = 1
+ClarityPower = 1
+MaxDist = 600
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 1.8
+BandingSmooth = 0
+BoundingSphere = 2
+AO = 0.7
+AOColor = 0,0,0
+SpotLight = 0.4
+Specular = 4
+SpecularExp = 16
+SpotLightColor = 1,1,1
+SpotLightDir = 0.1,0.1
+CamLight = 1
+CamLightColor = 1,1,1
+Glow = 0.2
+GlowColor = 1,1,1
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+XStrength = 0.7
+X = 0.5,0.6,0.6
+YStrength = 0.4
+Y = 1,0.6,0
+ZStrength = 0.5
+Z = 0.8,0.78,1
+RStrength = 0.12
+R = 0.4,0.7,1
+Up = -0.06676,0.85354,-0.51672
+Iterations = 10
+Scale = 3
+Rotation = 0,0,0
+Offset = 0,0,0
+*/
