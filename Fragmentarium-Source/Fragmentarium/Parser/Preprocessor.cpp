@@ -138,6 +138,7 @@ namespace Fragmentarium {
 			static QRegExp float3Slider("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$"); 
 			static QRegExp float2Slider("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
 			static QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+			static QRegExp floatColorChooser("^\\s*uniform\\s+vec4\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+),(\\S+),(\\S+),(\\S+)\\].*$"); 
 			static QRegExp floatSlider("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			static QRegExp intSlider("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 			static QRegExp boolChooser("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
@@ -220,7 +221,30 @@ namespace Fragmentarium {
 
 					FloatParameter* fp= new FloatParameter(currentGroup, name, lastComment, from, to, def);
 					fs.params.append(fp);
-				} else if (float3Slider.indexIn(s) != -1) {
+				}
+				else if (floatColorChooser.indexIn(s) != -1) {
+					QString name = floatColorChooser.cap(1);
+					fs.source[i] = "uniform vec4 " + name + ";";
+					QString fromS = floatColorChooser.cap(2);
+					QString defS = floatColorChooser.cap(3);
+					QString toS = floatColorChooser.cap(4);
+					Vector3f defaults = parseVector3f(floatColorChooser.cap(5), floatColorChooser.cap(6), floatColorChooser.cap(7));
+					
+					bool succes = false;
+					double from = fromS.toDouble(&succes);
+					bool succes2 = false;
+					double def = defS.toDouble(&succes2);
+					bool succes3 = false;
+					double to = toS.toDouble(&succes3);
+					if (!succes || !succes2 || !succes3) {
+						WARNING("Could not parse interval for uniform: " + name);
+						continue;
+					}
+
+					FloatColorParameter* fp= new FloatColorParameter(currentGroup, name, lastComment, def, from, to, defaults);
+					fs.params.append(fp);
+				}
+				else if (float3Slider.indexIn(s) != -1) {
 
 					QString name = float3Slider.cap(1);
 					fs.source[i] = "uniform vec3 " + name + ";";

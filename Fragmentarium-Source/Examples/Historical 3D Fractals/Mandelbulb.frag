@@ -100,3 +100,46 @@ float DE(vec3 pos) {
 		max(0.5*log(r)*r/dr, abs(pos.z)));
 	*/
 }
+
+/*
+FOV = 0.62536
+Eye = -2.14563,-0.0789065,-0.853331
+Target = 6.14389,0.251802,2.26161
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.81064
+DetailNormal = -2.54548
+BackStepNormal = 1.26664
+ClarityPower = 1
+MaxDist = 600
+FudgeFactor = 0.80392
+MaxRaySteps = 164
+MaxRayStepsDiv = 1.8
+BandingSmooth = 0
+BoundingSphere = 2
+AO = 0,0,0,0.7
+Specular = 2.4348
+SpecularExp = 16
+SpotLight = 1,1,1,0.73563
+SpotLightDir = -0.52,0.1
+CamLight = 1,1,1,0.77273
+Glow = 1,1,1,0.73394
+Fog = 0.1
+FogExponent = 1
+BaseColor = 1,1,1
+OrbitStrength = 0.5625
+X = 0.411765,0.6,0.560784,-0.21312
+Y = 0.666667,0.666667,0.498039,0.86886
+Z = 0.666667,0.333333,1,-0.18032
+R = 0.4,0.7,1,0.0909
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+Iterations = 12
+ColorIterations = 2
+Power = 8
+Bailout = 6.279
+AlternateVersion = true
+RotVector = 1,1,1
+RotAngle = 0
+Up = 0.255226,0.302899,0.918211
+*/

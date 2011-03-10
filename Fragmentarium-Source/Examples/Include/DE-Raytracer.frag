@@ -52,16 +52,17 @@ uniform float AntiAliasBlur;slider[0.0,1,5];
 uniform float Detail;slider[-7,-2.3,0];
 
 uniform float DetailNormal;slider[-7,-2.8,0];
-uniform float BackStepNormal;slider[0,1,2];
+
+//uniform float BackStepNormal;slider[0,1,2];
+const float BackStepNormal = 0.0;
 
 // The power of the clarity function
-uniform float ClarityPower;slider[0,1,5];
+// uniform float ClarityPower;slider[0,1,5];
+const float ClarityPower = 0.0;
 
 // The maximum distance rays are traced
-uniform float MaxDist;slider[0,600,2000];
-
-// Use this to adjust clipping planes
-//uniform float Clipping;slider[-50,0,50];
+// uniform float MaxDist;slider[0,600,2000];
+const float MaxDist = 600.0;
 
 // Lower this if the system is missing details
 uniform float FudgeFactor;slider[0,1,1];
@@ -76,40 +77,32 @@ uniform int MaxRaySteps;  slider[0,56,6000]
 uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 
 // If your experience AO banding try adjusting this term
-uniform float BandingSmooth;slider[0,0,4];
+// uniform float BandingSmooth;slider[0,0,4];
+const float BandingSmooth = 0.0;
 
 uniform float BoundingSphere;slider[0,2,10];
 
 #group Light
 
 // AO based on the number of raymarching steps
-uniform float AO; slider[0,0.7,1]
-// Ambient Occlusion color
-uniform vec3 AOColor; color[0.0,0.0,0.0];
+uniform vec4 AO; color[0,0.7,1,0.0,0.0,0.0];
 
-// The intensity of the directional ligt
-uniform float SpotLight; slider[0,0.4,1.0];
 // The specular intensity of the directional light
 uniform float Specular; slider[0,4.0,10.0];
 // The specular exponent
 uniform float SpecularExp; slider[0,16.0,100.0];
-// Color of the directional light
-uniform vec3 SpotLightColor; color[1.0,1.0,1.0];
+// Color and strength of the directional light
+uniform vec4 SpotLight; color[0.0,0.4,1.0,1.0,1.0,1.0];
 // Direction to the spot light (spherical coordinates)
 uniform vec2 SpotLightDir;  slider[(-1,-1),(0.1,0.1),(1,1)]
 // Light coming from the camera position (diffuse lightning)
-uniform float CamLight; slider[0,1,1];
-// Color of the diffuse lightning
-uniform vec3 CamLightColor; color[1.0,1.0,1.0];
+uniform vec4 CamLight; color[0,1,1,1.0,1.0,1.0];
 
 // Glow based on the number of raymarching steps
-uniform float Glow; slider[0,0.2,1]
-// Glow color
-uniform vec3 GlowColor; color[1.0,1.0,1.0];
-// Background color
-uniform vec3 BackgroundColor; color[0.6,0.6,0.45]
-// A 'looney tunes' gradient background
-uniform float GradientBackground; slider[0.0,0.3,5.0]
+uniform vec4 Glow; color[0,0.2,1,1.0,1.0,1.0];
+
+uniform float Fog; slider[0,0.1,1]
+uniform float FogExponent; slider[0,1,4]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -120,22 +113,24 @@ float fractionalCount = 0.0;
 uniform vec3 BaseColor; color[1.0,1.0,1.0];
 // Determines the mix between pure light coloring and pure orbit trap coloring
 uniform float OrbitStrength; slider[0,0.8,1]
+
 // Closest distance to YZ-plane during orbit
-uniform float XStrength; slider[-1,0.7,1]
-// Closest distance to YZ-plane during orbit
-uniform vec3 X; color[0.5,0.6,0.6];
+uniform vec4 X; color[-1,0.7,1,0.5,0.6,0.6];
+
 // Closest distance to XZ-plane during orbit
-uniform float YStrength; slider[-1,0.4,1]
-// Closest distance to XZ-plane during orbit
-uniform vec3 Y; color[1.0,0.6,0.0];
+uniform vec4 Y; color[-1,0.4,1,1.0,0.6,0.0];
+
 // Closest distance to XY-plane during orbit
-uniform float ZStrength; slider[-1,0.5,1]
-// Closest distance to XY-plane during orbit
-uniform vec3 Z; color[0.8,0.78,1.0];
-// Closest distance to origin during orbit
-uniform float RStrength; slider[-1,0.12,1]
+uniform vec4 Z; color[-1,0.5,1,0.8,0.78,1.0];
+
 // Closest distance to  origin during orbit
-uniform vec3 R; color[0.4,0.7,1.0];
+uniform vec4 R; color[-1,0.12,1,0.4,0.7,1.0];
+
+// Background color
+uniform vec3 BackgroundColor; color[0.6,0.6,0.45]
+// Vignette background
+uniform float GradientBackground; slider[0.0,0.3,5.0]
+
 
 float DE(vec3 pos) ; // Must be implemented in other file
 
@@ -161,12 +156,12 @@ vec3 lighting(float normalDistance, vec3 color, vec3 pos, vec3 dir, int steps) {
 	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
 	float s = max(0.0,dot(dir,-r));
 	
-	float diffuse = max(0.0,dot(n,spotDir))*SpotLight;
-	float ambient = max(0.0,dot(n, dir))*CamLight;
+	float diffuse = max(0.0,dot(n,spotDir))*SpotLight.w;
+	float ambient = max(0.0,dot(n, dir))*CamLight.w;
 	float specular = pow(s,SpecularExp)*Specular;
 	
-	return (SpotLightColor*diffuse+CamLightColor*ambient
-		+ specular*SpotLightColor)*color;
+	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient
+		+ specular*SpotLight.xyz)*color;
 	
 }
 
@@ -174,13 +169,13 @@ vec3 colorBase = vec3(0.0,0.0,0.0);
 
 vec3 getColor(float ao) {
 	orbitTrap.w = sqrt(orbitTrap.w);
-	vec3 orbitColor =X*XStrength*orbitTrap.x +
-	Y*YStrength*orbitTrap.y +
-	Z*ZStrength*orbitTrap.z +
-	R*RStrength*orbitTrap.w;
+	vec3 orbitColor =X.xyz*X.w*orbitTrap.x +
+	Y.xyz*Y.w*orbitTrap.y +
+	Z.xyz*Z.w*orbitTrap.z +
+	R.xyz*R.w*orbitTrap.w;
 	//orbitColor /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + orbitTrap.w);
 	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
-	color = mix(AOColor, color,ao);
+	color = mix(AO.xyz, color,ao);
 	return color;
 }
 
@@ -188,10 +183,8 @@ vec3 getColor(float ao) {
 
 
 vec3 trace(vec3 from, vec3 dir) {
-	
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(dir);
-	//from -= direction*Clipping;
 	
 	float dist = 0.0;
 	float totalDist = 0.0;
@@ -199,18 +192,18 @@ vec3 trace(vec3 from, vec3 dir) {
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
 	
+	// Check for bounding sphere
+	float dotFF = dot(from,from);
+	float d = 0.0;
 	
 	float dotDE = dot(direction,from);
-	float dotFF = dot(from,from);
 	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
 	
-	float d = 0.0;
 	if (sq>0.0) {
 		d = -dotDE - sqrt(sq);
 		if (d<0.0) {
 			// "minimum d" solution wrong direction
-			d = -dotDE + sqrt(sq);
-
+			d = -dotDE + sqrt(sq);		
 			if (d<0.0) {
 				// both solution wrong direction
 				sq = -1.0;
@@ -219,27 +212,23 @@ vec3 trace(vec3 from, vec3 dir) {
 				d = 0.0;
 			}
 		}
-		
 	}
 	
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist*( length(zoom)/0.01 );
 	float epsModified = 0.0;
 	if (sq<0.0) {
-		// outside bounding sphere
+		// outside bounding sphere - and will never hit
 		dist = MaxDist;
 		totalDist = MaxDist;
 		steps = 2;
-	}   else {
-		
-		
+	}  else {
 		totalDist += d; // advance ray to bounding sphere intersection
 		
 		for (steps=0; steps<MaxRaySteps; steps++) {
-			
-			
 			orbitTrap = vec4(10000.0);
-			dist = DE(from + totalDist * direction)*FudgeFactor;
+			vec3 p = from + totalDist * direction;
+			dist = DE(p)*FudgeFactor;
 			dist = clamp(dist, 0.0, MaxDist);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
@@ -250,25 +239,29 @@ vec3 trace(vec3 from, vec3 dir) {
 	vec3 color;
 	float smoothenedSteps = float(steps)+BandingSmooth*dist/epsModified;
 	float stepFactor = clamp((MaxRayStepsDiv*smoothenedSteps)/float(MaxRaySteps),0.0,1.0);
+	
+	vec3 backColor = BackgroundColor;
+	if (GradientBackground>0.0) {
+		//float t = dot(direction, vec3(1.0,0.0,0.0));
+		float t = length(coord);
+		backColor = mix(backColor, vec3(0.0,0.0,0.0), t*GradientBackground);
+		if (sq>0.0) backColor += Glow.xyz*Glow.w*pow(stepFactor,4.0);
+	}
+	
 	if ( dist < epsModified) {
-		
 		// We hit something, or reached MaxRaySteps
 		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
-		float ao = 1.0- AO*stepFactor ;
+		float ao = 1.0- AO.w*stepFactor ;
 		color = getColor(ao);
 		color = lighting(normalE*epsModified/eps, color,  hit,  direction, steps);
-}  else if (steps==MaxRaySteps) {
+		float f = stepFactor/FogExponent;
+		color = mix(color, backColor, Fog*exp(-f*f));
+	}
+	else if (steps==MaxRaySteps) {
 		// Close to something, but too many steps
-		color = vec3(0.0,0.0,0.0);
+		color = backColor;
 	} else {
-		color = BackgroundColor;
-		if (GradientBackground>0.0) {
-			//float t = dot(direction, vec3(1.0,0.0,0.0));
-			float t = length(coord);
-			
-			color = mix(color, vec3(0.0,0.0,0.0), t*GradientBackground);
-		}
-		if (sq>0.0) color += Glow*GlowColor*pow(stepFactor,4.0);
+		color = backColor;
 	}
 	
 	//color = clamp(color, 0.0, 1.0);

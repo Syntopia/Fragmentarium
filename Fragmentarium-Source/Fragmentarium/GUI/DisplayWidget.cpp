@@ -238,6 +238,11 @@ namespace Fragmentarium {
 			requireRedraw();
 		}
 
+		void DisplayWidget::resetCamera(bool fullReset) {
+			if (!cameraControl) return;
+			cameraControl->reset(fullReset);
+		}
+
 		void DisplayWidget::setPreviewFactor(int val) {
 			previewFactor = val;
 			makeCurrent();
@@ -245,6 +250,8 @@ namespace Fragmentarium {
 			delete(previewBuffer);
 			if (previewFactor == 0) {
 				previewBuffer = 0;
+				requireRedraw();
+				INFO("Disabling preview");
 				return;
 			} else {
 				int w = width()/(previewFactor+1);
@@ -257,6 +264,8 @@ namespace Fragmentarium {
 		}	
 
 		void DisplayWidget::drawFragmentProgram(int w,int h) {
+			shaderProgram->bind();
+			
 			glDisable( GL_CULL_FACE );
 			glDisable( GL_LIGHTING );
 			glDisable( GL_DEPTH_TEST );
@@ -306,6 +315,8 @@ namespace Fragmentarium {
 			}
 
 			glFinish();
+			shaderProgram->release();
+			
 		}
 
 		void DisplayWidget::drawToFrameBufferObject() {
@@ -314,10 +325,8 @@ namespace Fragmentarium {
 				return;
 			}
 			if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; } 
-			shaderProgram->bind();
 			QSize s = previewBuffer->size();
 			drawFragmentProgram(s.width(),s.height());
-			shaderProgram->release();
 			if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; } 
 		
 			// Draw a textured quad using the preview texture.
@@ -364,6 +373,7 @@ namespace Fragmentarium {
 				drawFragmentProgram(width(),height());
 			}
 			
+			//INFO("Painting");
 			//int msx = t.msecsTo(QTime::currentTime());
 			//INFO(QString("GPU: render took %1 ms.").arg(msx));
 
@@ -428,13 +438,10 @@ namespace Fragmentarium {
 				requireRedraw();
 			}
 
-			// Check if we are displaying a message.
-			/*
-			if (infoText != "" && abs((int)(textTimer.msecsTo(QTime::currentTime()))>1000)) {
-			infoText = "";
-			requireRedraw();
+			if (cameraControl && cameraControl->wantsRedraw()) {
+				requireRedraw(); 
+				cameraControl->updateState();
 			}
-			*/
 
 			if (pendingRedraws || continuous || (animationSettings && animationSettings->isRunning())) updateGL();
 		}
@@ -483,9 +490,20 @@ namespace Fragmentarium {
 		}
 
 		void DisplayWidget::keyPressEvent(QKeyEvent* ev) {
-			ev->accept();
 			bool redraw = cameraControl->keyPressEvent(ev);
-			if (redraw) requireRedraw();
+			if (redraw) {
+				requireRedraw();
+				ev->accept();
+			}
+		}
+
+		
+		void DisplayWidget::keyReleaseEvent(QKeyEvent* ev) {
+			bool redraw = cameraControl->keyPressEvent(ev);
+			if (redraw) {
+				requireRedraw();
+				ev->accept();
+			}
 		}
 
 

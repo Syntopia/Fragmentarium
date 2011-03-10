@@ -26,7 +26,7 @@ namespace Fragmentarium {
 		// CameraControl maintains camera position, and respond to user control.
 		class CameraControl {
 		public:
-			CameraControl() {};
+			CameraControl() : askForRedraw(false) {};
 			virtual SyntopiaCore::Math::Vector3f transform(int width, int height) = 0;
 			virtual void printInfo() = 0;
 			virtual QString getID() =0;
@@ -35,6 +35,11 @@ namespace Fragmentarium {
 			virtual bool mouseMoveEvent(QMouseEvent* /*e*/, int /*w*/, int /*h*/) { return false; };
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
 			virtual bool keyPressEvent(QKeyEvent* /*ev*/) { return false; };
+			virtual bool wantsRedraw() { return askForRedraw; } 
+			virtual void updateState() {};
+			virtual void reset(bool /*fullReset*/) {};
+		protected:
+			bool askForRedraw;
 		};
 
 		class Camera3D : public CameraControl {
@@ -50,7 +55,12 @@ namespace Fragmentarium {
 			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
 			virtual bool keyPressEvent(QKeyEvent* ev);
+			bool keyDown(int key);
+			bool parseKeys();
+			virtual void updateState() { parseKeys(); };
+			virtual void reset(bool fullReset);
 		private:
+			QMap<int, bool> keyStatus;
 			int height;
 			int width;
 			float stepSize;

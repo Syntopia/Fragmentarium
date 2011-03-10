@@ -52,3 +52,50 @@ float DE(vec3 pos) {
 	return ((length(p.xyz) - absScalem1) / p.w - AbsScaleRaisedTo1mIters);
 }
 
+
+/*
+FOV = 1
+Eye = 0.0104856,2.35989e-05,-1.99996
+Target = 3.75959,3.86772,-10.4291
+Up = 0.753402,0.403223,0.51942
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.3
+DetailNormal = -2.8
+BackStepNormal = 1
+ClarityPower = 1
+MaxDist = 600
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 1.8
+BandingSmooth = 0
+BoundingSphere = 2
+AO = 0.7
+AOColor = 0,0,0
+SpotLight = 0.4
+Specular = 4
+SpecularExp = 16
+SpotLightColor = 1,1,1
+SpotLightDir = 0.1,0.1
+CamLight = 1
+CamLightColor = 1,1,1
+Glow = 0.2
+GlowColor = 1,1,1
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+XStrength = 0.7
+X = 0.5,0.6,0.6
+YStrength = 0.4
+Y = 1,0.6,0
+ZStrength = 0.5
+Z = 0.8,0.78,1
+RStrength = 0.12
+R = 0.4,0.7,1
+Iterations = 17
+MinRad2 = 0.25
+Scale = 3
+RotVector = 1,1,1
+RotAngle = 0
+*/

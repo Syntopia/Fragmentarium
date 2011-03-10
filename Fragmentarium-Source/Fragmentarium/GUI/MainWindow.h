@@ -79,7 +79,7 @@ namespace Fragmentarium {
 			static QString getMiscDir();
 			static QString getTemplateDir();
 			void saveImage(QImage im);
-			
+			void resetCamera(bool fullReset);
 			QString getCameraSettings();
 			QString getScriptWithSettings(QString filename);
 			

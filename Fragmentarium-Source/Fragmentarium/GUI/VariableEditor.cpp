@@ -67,6 +67,7 @@ namespace Fragmentarium {
 				delete(variables[i]);
 			}
 			variables.clear();
+			mainWindow->resetCamera(true);
 			mainWindow->render();
 		}
 
@@ -106,6 +107,11 @@ namespace Fragmentarium {
 					variable->reset();
 				}
 			}
+			
+			if (g=="Camera") {
+				mainWindow->resetCamera(true);
+			}
+			
 			mainWindow->callRedraw();
 		}
 
@@ -166,7 +172,7 @@ namespace Fragmentarium {
 				bool found = false;
 				for (int j = 0; j < variables.count(); j++) {
 					QString name = variables[j]->getUniqueName();
-					//INFO("Checking " + name + " -> " +  ps[i]->getUniqueName());
+					// INFO("Checking " + name + " -> " +  ps[i]->getUniqueName());
 					if (name == ps[i]->getUniqueName()) {
 						found = true;
 						variables[j]->setUpdated(true);
@@ -200,6 +206,16 @@ namespace Fragmentarium {
 						Parser::ColorParameter* cp = dynamic_cast<Parser::ColorParameter*>(ps[i]);
 						QString name = cp->getName();
 						ColorWidget* cw = new ColorWidget(currentWidget, this, name, cp->getDefaultValue());
+						cw->setGroup(cp->getGroup());
+						cw->setToolTip(cp->getTooltip());
+						cw->setStatusTip(cp->getTooltip());
+						variables.append(cw);
+						cw->setUpdated(true);
+						currentWidget->layout()->addWidget(cw);
+					} else if (dynamic_cast<Parser::FloatColorParameter*>(ps[i])) {
+						Parser::FloatColorParameter* cp = dynamic_cast<Parser::FloatColorParameter*>(ps[i]);
+						QString name = cp->getName();
+						FloatColorWidget* cw = new FloatColorWidget(currentWidget, this, name,cp->getDefaultValue(), cp->getFrom(), cp->getTo(), cp->getDefaultColorValue());
 						cw->setGroup(cp->getGroup());
 						cw->setToolTip(cp->getTooltip());
 						cw->setStatusTip(cp->getTooltip());

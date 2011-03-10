@@ -89,6 +89,24 @@ namespace Fragmentarium {
 			Vector3f defaultValue;
 		};
 
+		
+		class FloatColorParameter : public GuiParameter {
+		public:
+			FloatColorParameter(QString group, QString name,QString tooltip, float defaultValue, float from, float to, Vector3f defaultColorValue) :
+					GuiParameter(group,name, tooltip), defaultValue(defaultValue), from(from), to(to), defaultColorValue(defaultColorValue) {};
+			
+			virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(from).arg(to); }
+			Vector3f getDefaultColorValue() { return defaultColorValue; }
+			double getFrom() { return from; }
+			double getTo() { return to; }
+			double getDefaultValue() { return defaultValue; }
+		private:
+			Vector3f defaultColorValue;
+			double defaultValue;
+			double from;
+			double to;
+		};
+
 		class BoolParameter : public GuiParameter {
 		public:
 			BoolParameter(QString group, QString name, QString tooltip,bool defaultValue) :

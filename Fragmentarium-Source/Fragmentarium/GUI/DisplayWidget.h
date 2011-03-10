@@ -38,6 +38,7 @@ namespace Fragmentarium {
 			void clearWorld();
 			void reset();
 			void setContextMenu(QMenu* contextMenu) { this->contextMenu = contextMenu; }
+			void resetCamera(bool fullReset);
 			void setDisabled(bool disabled) { this->disabled = disabled; }
 			void setFragmentShader(FragmentSource fs);
 			void setupFragmentShader();
@@ -51,9 +52,10 @@ namespace Fragmentarium {
 			void setPreviewFactor(int val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
-			void keyPressEvent(QKeyEvent* ev);
-	
+			
 		protected:
+			void keyReleaseEvent(QKeyEvent* ev);
+			void keyPressEvent(QKeyEvent* ev);
 			void tileRender();
 			void drawFragmentProgram(int w,int h);
 			void drawToFrameBufferObject();

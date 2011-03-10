@@ -64,7 +64,11 @@ namespace SyntopiaCore {
 			if ( priority == InfoLevel ) {
 				i->setBackgroundColor(QColor(255,255,255));
 			} else if ( priority == ScriptInfoLevel ) {
-				i->setBackgroundColor(QColor(155,123,253));
+				i->setBackgroundColor(QColor(50,50,50));
+				i->setForeground(QBrush(QColor(255,255,255)));
+				QFont f = i->font();
+				f.setBold(true);
+				i->setFont(f);
 			} else if ( priority == WarningLevel ) {
 				parent->show();
 				i->setBackgroundColor(QColor(255,243,73));

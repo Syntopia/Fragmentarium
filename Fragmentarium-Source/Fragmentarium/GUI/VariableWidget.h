@@ -107,6 +107,7 @@ namespace Fragmentarium {
 				p.setColor(backgroundRole(), QColor(v[0]*255.0,v[1]*255.0,v[2]*255.0));
 				setAutoFillBackground( true );
 				setPalette(p);
+				value = v;
 			}
 
 			Vector3f getValue() { return value; }
@@ -259,7 +260,7 @@ signals:
 		public:
 			/// FloatVariable constructor.
 			Float3Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector3f defaultValue, Vector3f min, Vector3f max);
-			virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(min.toString()).arg(max.toString()); }
+			virtual QString getUniqueName();
 			virtual QString getValueAsText() { return ""; };
 			virtual QString toString();
 			virtual void fromString(QString string);
@@ -298,6 +299,25 @@ signals:
 		private:
 			ColorChooser* colorChooser;
 			Vector3f defaultValue;
+		};
+
+		class FloatColorWidget : public VariableWidget {
+		public:
+			/// FloatVariable constructor.
+			FloatColorWidget(QWidget* parent, QWidget* variableEditor, QString name, double defaultValue, double min, double max, Vector3f defaultColorValue);
+			virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(min).arg(max); }
+			virtual QString getValueAsText() { return ""; };
+			virtual QString toString();
+			virtual void fromString(QString string);
+			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			void reset() { comboSlider->setValue(defaultValue); colorChooser->setColor(defaultColorValue); }
+		private:
+			ComboSlider* comboSlider;
+			double min;
+			double max;
+			double defaultValue;
+			ColorChooser* colorChooser;
+			Vector3f defaultColorValue;
 		};
 
 		class IntWidget : public VariableWidget {

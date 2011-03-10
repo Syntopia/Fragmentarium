@@ -208,6 +208,8 @@ namespace Fragmentarium {
 				
 				float2Slider = QRegExp("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
 				colorChooser = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
+				floatColorChooser = QRegExp("^\\s*uniform\\s+vec4\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+),(\\S+),(\\S+),(\\S+)\\].*$"); 
+			
 				floatSlider = QRegExp("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 				intSlider = QRegExp("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 				boolChooser = QRegExp("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
@@ -250,7 +252,7 @@ namespace Fragmentarium {
 				
 				if (float2Slider.exactMatch(text) || float3Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
 				intSlider.exactMatch(text) || boolChooser.exactMatch(text) || replace.exactMatch(text) ||
-				sampler2D.exactMatch(text)) {
+				sampler2D.exactMatch(text) || floatColorChooser.exactMatch(text)) {
 					setFormat(0, text.length()-1, preprocessor2Format);
 				}
 
@@ -318,6 +320,7 @@ namespace Fragmentarium {
 			QRegExp boolChooser;
 			QRegExp replace;
 			QRegExp sampler2D;
+			QRegExp floatColorChooser;
 
 			QRegExp expression;
 			QRegExp primitives;
@@ -1399,6 +1402,10 @@ namespace Fragmentarium {
 			return textEdit;
 		}
 
+		void MainWindow::resetCamera(bool fullReset) {
+			engine->resetCamera(fullReset);
+		}
+			
 		void MainWindow::tabChanged(int index) {
 			if (index > tabInfo.size()) return;
 			if (index < 0) return;

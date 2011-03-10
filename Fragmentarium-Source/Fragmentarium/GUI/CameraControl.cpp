@@ -18,7 +18,7 @@ namespace Fragmentarium {
 
 		Camera3D::Camera3D(QStatusBar* statusBar) : statusBar(statusBar) {
 			mouseDown = Vector3f(0,0,-1);
-			stepSize = 1.0;
+			reset(true);
 		};
 
 		Camera3D::~Camera3D() {
@@ -41,87 +41,160 @@ namespace Fragmentarium {
 		}
 
 		void Camera3D::printInfo() {
-			//INFO("Camera: XXX.");
+			INFO("Camera: Use W/S to fly. 1/3 adjusts speed. Q/E rolls. Click on 3D window for key focus. See Help Menu for more.");
 		}
 
 	
 		bool Camera3D::keyPressEvent(QKeyEvent* ev) {
 			if (!up || !target || !eye || !fov) return false;
+			if (ev->isAutoRepeat()) {
+				ev->accept();
+				return false;
+			}
+			int key = ev->key();
+			keyStatus[key] = (ev->type() == QEvent::KeyPress);
+			//INFO(QString("%1 %2").arg(key).arg(ev->type() == QEvent::KeyPress ? "Down" : "Up"));
+			return parseKeys();
+		}
+
+		bool Camera3D::keyDown(int key) {
+			if (!keyStatus.contains(key)) keyStatus[key] = false;
+			return keyStatus[key];
+		}
+
+		void Camera3D::reset(bool fullReset) {
+			keyStatus.clear();
+			if (fullReset) stepSize = 0.1;
+		}
+
+		bool Camera3D::parseKeys() {
+			//INFO("Parse keys...");
 			Vector3f direction = (target->getValue()-eye->getValue());
 			Vector3f dir = direction.normalized();
 			Vector3f right = Vector3f::cross(direction.normalized(), up->getValue()).normalized();
 			Vector3f upV = up->getValue();
 
 			float factor = 0.05;
-			
-			if (ev->key() == Qt::Key_Z) {
-				stepSize = stepSize*2.0;
-				INFO(QString("Step size: %1").arg(stepSize));
-			} else if (ev->key() == Qt::Key_X) {
+
+			bool keysDown = false;
+			if (keyDown(Qt::Key_1)) {
 				stepSize = stepSize/2.0;
 				INFO(QString("Step size: %1").arg(stepSize));
-			} else if (ev->key() == Qt::Key_A) {
+				keyStatus[Qt::Key_1] = false; // only apply once
+			} 
+
+			if (keyDown(Qt::Key_3)) {
+				stepSize = stepSize*2.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keyStatus[Qt::Key_3] = false; // only apply once
+			}
+
+			if (keyDown(Qt::Key_2)) {
+				stepSize = stepSize*10.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keyStatus[Qt::Key_2] = false; // only apply once
+			} 
+			
+			if (keyDown(Qt::Key_X)) {
+				stepSize = stepSize/10.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keysDown = true;
+				keyStatus[Qt::Key_X] = false; // only apply once
+			}
+			
+			if (keyDown(Qt::Key_A)) {
 				Vector3f offset = -right*stepSize;		
 				eye->setValue(eye->getValue()+offset);
 				target->setValue(target->getValue()+offset);	
-			} else if (ev->key() == Qt::Key_D) {
+				keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_D)) {
 				Vector3f offset = right*stepSize;		
 				eye->setValue(eye->getValue()+offset);
 				target->setValue(target->getValue()+offset);	
-			} else if (ev->key() == Qt::Key_W) {
+				keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_W)) {
 				Vector3f offset = dir*stepSize;	
-				//dVector3f db = eye->getValue();
 				Vector3f db2 = eye->getValue()+offset;
 				eye->setValue(db2);
-				/*
-				INFO(QString("DIR: %0. Before:%1, Offset:%2, After:%3, Delta:%4, AfterExp: %5)")
-					.arg(dir.toString()).arg(db.toString()).arg(offset.toString())
-					.arg(eye->getValue().toString()).arg((eye->getValue()-db).normalized().toString())
-					.arg(db2.toString())
-					);
-
-					*/
 				target->setValue(target->getValue()+offset);	
-			} else if (ev->key() == Qt::Key_S) {
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_S)) {
 				Vector3f offset = -dir*stepSize;		
 				eye->setValue(eye->getValue()+offset);
-				target->setValue(target->getValue()+offset);	
-			} else if (ev->key() == Qt::Key_Q) {
+				target->setValue(target->getValue()+offset);
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_R)) {
 				Vector3f offset = -upV*stepSize;		
 				eye->setValue(eye->getValue()+offset);
-				target->setValue(target->getValue()+offset);	
-			} else if (ev->key() == Qt::Key_E) {
+				target->setValue(target->getValue()+offset);
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_F)) {
 				Vector3f offset = upV*stepSize;		
 				eye->setValue(eye->getValue()+offset);
-				target->setValue(target->getValue()+offset);	
-			} else if (ev->key() == Qt::Key_R) {
+				target->setValue(target->getValue()+offset);
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_Y)) {
 				Matrix4f m = Matrix4f::Rotation(upV, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
-			} else if (ev->key() == Qt::Key_F) {
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_H)) {
 				Matrix4f m = Matrix4f::Rotation(upV, -factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
-			}else if (ev->key() == Qt::Key_T) {
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_T)) {
 				Matrix4f m = Matrix4f::Rotation(right, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
-			}else if (ev->key() == Qt::Key_G) {
+				keysDown = true;
+			}
+			
+			if (keyDown(Qt::Key_G)) {
 				Matrix4f m = Matrix4f::Rotation(right, -factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
-			}else if (ev->key() == Qt::Key_Y) {
+				keysDown = true;
+			}
+			
+			if (keyDown(Qt::Key_Q)) {
 				Matrix4f m = Matrix4f::Rotation(dir, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
-			}else if (ev->key() == Qt::Key_H) {
+				keysDown = true;
+			}
+			
+			if (keyDown(Qt::Key_E)) {
 				Matrix4f m = Matrix4f::Rotation(dir, -factor);
 				target->setValue(m*direction+eye->getValue());
-				up->setValue(m*up->getValue());			
-			}
-	
+				up->setValue(m*up->getValue());	
+				keysDown = true;
+			} 
 
-			return true;
+			askForRedraw = false;
+			if (keysDown) {
+				// Orthogonalize up vector
+				Vector3f fixedUp = up->getValue()-Vector3f::dot(up->getValue(), dir)*dir;
+				up->setValue(fixedUp);
+				askForRedraw = true;
+			}
+			return keysDown;
 		};
 
 		bool Camera3D::mouseMoveEvent(QMouseEvent* e, int w, int h) {
@@ -163,7 +236,7 @@ namespace Fragmentarium {
 					return true;
 				} else {
 					// Left mouse button
-					if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
+					if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
 						// Rotate about origo
 						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*mouseSpeed);
 						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*mouseSpeed);
@@ -171,25 +244,12 @@ namespace Fragmentarium {
 						eye->setValue(-oDir);
 						target->setValue( (my*mx)*directionDown-oDir);
 						up->setValue((my*mx)*upDown);
-					} else if ((QApplication::keyboardModifiers() == Qt::ShiftModifier )
-								 || (QApplication::keyboardModifiers() == Qt::NoModifier)
-								  || (QApplication::keyboardModifiers() == (Qt::ShiftModifier | Qt::ControlModifier))) {
+					} else if (QApplication::keyboardModifiers() == Qt::NoModifier) {
 						// orient camera
 						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*mouseSpeed);
 						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*mouseSpeed);
 						target->setValue((my*mx)*directionDown+eyeDown);
 						up->setValue((my*mx)*upDown);
-							
-						if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
-							// Fly forward
-							eyeDown=eyeDown+mouseSpeed*(eyeDown.length())*0.1*directionDown.normalized();
-							eye->setValue(eyeDown);
-						}
-						if (QApplication::keyboardModifiers() == (Qt::ShiftModifier | Qt::ControlModifier)) {
-							// Fly backward	
-							eyeDown=eyeDown-mouseSpeed*(eyeDown.length())*0.1*directionDown.normalized();
-							eye->setValue(eyeDown);
-						}
 					}
 					return true;
 				}

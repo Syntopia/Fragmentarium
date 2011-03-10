@@ -20,12 +20,6 @@ namespace Fragmentarium {
 
 		using namespace SyntopiaCore::Misc;
 
-		namespace {
-		}
-
-
-
-
 		/// FloatVariable constructor.
 		FloatWidget::FloatWidget(QWidget* parent, QWidget* variableEditor, QString name, double defaultValue, double min, double max) 
 			: VariableWidget(parent, name)  {
@@ -232,6 +226,14 @@ namespace Fragmentarium {
 		     emit(doneChanges());	
 		}
 
+		QString Float3Widget::getUniqueName() { 
+			if (normalize) {
+				return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg("[0 0 0]").arg("[0 0 0]");
+			} else {
+				return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(min.toString()).arg(max.toString());
+			}
+		}
+
 		QString Float3Widget::toString() {
 			return QString("%1,%2,%3").arg(comboSlider1->getValue()).arg(comboSlider2->getValue()).arg(comboSlider3->getValue());
 		};
@@ -292,6 +294,65 @@ namespace Fragmentarium {
 					,(float)(colorChooser->getValue()[1]),(float)(colorChooser->getValue()[2]));
 			}
 		};
+
+
+		/// FloatColorWidget constructor.
+		FloatColorWidget::FloatColorWidget(QWidget* parent, QWidget* variableEditor, QString name, double defaultValue, double min, double max, Vector3f defaultColorValue) 
+			: VariableWidget(parent, name)  {
+				this->defaultValue = defaultValue;
+				this->defaultColorValue = defaultColorValue;
+				QHBoxLayout* l = new QHBoxLayout(this);
+				l->setSpacing(0);
+				l->setContentsMargins (0,0,0,0);
+				QLabel* label = new QLabel(this);
+				label->setText(name);
+				l->addWidget(label);
+				comboSlider = new ComboSlider(parent, defaultValue, min, max);
+				l->addWidget(comboSlider);
+				connect(comboSlider, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+				this->min = min;
+				this->max = max;
+
+				colorChooser = new ColorChooser(parent, defaultColorValue);
+				colorChooser->setMinimumHeight(5);
+				colorChooser->setMinimumWidth(30);
+				l->addWidget(colorChooser);
+				connect(colorChooser, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+
+		};
+
+
+		QString FloatColorWidget::toString() {
+			return QString("%1,%2,%3,%4").arg(colorChooser->getValue()[0])
+				.arg(colorChooser->getValue()[1]).arg(colorChooser->getValue()[2])
+				.arg(comboSlider->getValue());
+	
+		};
+
+		void FloatColorWidget::fromString(QString string) {
+			float f,f1,f2,f3; 
+			MiniParser(string).getFloat(f1).getFloat(f2).getFloat(f3).getFloat(f);
+			Vector3f c(f1,f2,f3);
+			colorChooser->setColor(c);
+			comboSlider->setValue(f);
+			
+		};
+
+		void FloatColorWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
+			int l = shaderProgram->uniformLocation(name);
+			if (l == -1) {
+				WARNING("Could not find :" + name);
+			} else {
+				shaderProgram->setUniformValue(l, (float)(colorChooser->getValue()[0]),
+					(float)(colorChooser->getValue()[1]),(float)(colorChooser->getValue()[2]),
+					(float)(comboSlider->getValue())
+				);
+			}
+		};
+
+
+
+
 
 
 		/// ------------ IntWidget ---------------------

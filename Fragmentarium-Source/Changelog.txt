@@ -1,10 +1,17 @@
 Todo:
 Continouos->reset time trigger time measure
-Icons for animation transporter
 Mouse Wheel support
-Change purple info text to white on black
-Bug: preview off requires rebuild
 
+10-03-10 [2h]
+Added new eventloop supporting multiple simultaneous keys
+BugFix: up is reset on build
+BugFix: preview off requires rebuild
+BugFix: 'Reset' should reset camera
+
+09-03-10 Added new ColorFloat widget
+[2h]	 Now orthogonalizes Camera Up vector
+		 Added 'fog' to raytracer
+		 
 08-03-10 Added support for lower resolution preview rendering (using two stage Render-to-FrameBufferObject / Texture rendering)
 [2h]	 Fixed rounding error with 3D fly camera.
 		 Closing animationController should switch to Automatic
