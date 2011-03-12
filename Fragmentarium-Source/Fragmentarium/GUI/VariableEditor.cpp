@@ -26,10 +26,25 @@ namespace Fragmentarium {
 			layout = new QVBoxLayout(this);
 			layout->setSpacing(0);
 			layout->setContentsMargins (0,0,0,0);
+			
+			QWidget* tw = new QWidget(this);
+			QHBoxLayout* topLayout = new QHBoxLayout(tw);
+			
+			QLabel* l = new QLabel("Preset:", tw);
+			topLayout->addWidget(l);
+			presetComboBox = new QComboBox(tw);
+			presetComboBox->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+			topLayout->addWidget(presetComboBox);
+			QPushButton* pb2 = new QPushButton("Apply", tw);
+			connect(pb2, SIGNAL(clicked()), this, SLOT(applyPreset()));
+			topLayout->addWidget(pb2);
+			tw->layout()->setContentsMargins(0,0,0,0);
+		
+			layout->addWidget(tw);
+			
 
 			tabWidget = new QTabWidget(this);
 			layout->addWidget(tabWidget);
-
 
 			QWidget* w = new QWidget(this);
 			new QHBoxLayout(w);
@@ -60,7 +75,19 @@ namespace Fragmentarium {
 
 		};	
 
-
+		void VariableEditor::setPresets(QMap<QString, QString> presets) {
+			presetComboBox->clear();
+			foreach (QString preset, presets.keys()) {
+				presetComboBox->addItem(preset);
+			}
+			this->presets = presets;
+		}
+		
+		void VariableEditor::applyPreset() {
+			QString presetName = presetComboBox->currentText();
+			QString preset = presets[presetName];
+			setSettings(preset);
+		}
 
 		void VariableEditor::resetUniforms() {
 			for (int i = 0; i < variables.count(); i++ ) {
@@ -293,6 +320,7 @@ namespace Fragmentarium {
 			if (showGUI) (*showGUI) = (variables.count() != 0);
 
 
+			if (fs) setPresets(fs->presets);
 		}
 
 		QString VariableEditor::getSettings() {
@@ -310,6 +338,7 @@ namespace Fragmentarium {
 			QMap<QString, QString> maps;
 			foreach (QString s, l) {
 				if (s.trimmed().startsWith("#")) continue;
+				if (s.trimmed().isEmpty()) continue;
 
 				QStringList l2 = s.split("=");
 				if (l2.count()!=2) {

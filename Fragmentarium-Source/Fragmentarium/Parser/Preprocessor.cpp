@@ -150,9 +150,31 @@ namespace Fragmentarium {
 			QMap<QString, QString> replaceMap;
 			bool inVertex = false;
 			for (int i = 0; i < fs.source.count(); i++) {
-				if (inVertex && !fs.source[i].contains("#endvertex")) {
-				}
 				QString s = fs.source[i];
+				if (s.trimmed().startsWith("#preset")) {
+					s = s.remove("#preset").trimmed();
+					QString name = s;
+					QStringList preset;
+					fs.source.removeAt(i);
+					fs.lines.removeAt(i);
+					int j = i;
+					bool foundEnd = false;
+					while (j< fs.source.count()) {
+						if (fs.source[j].trimmed().startsWith("#endpreset")) {
+							fs.source.removeAt(j);
+							fs.lines.removeAt(j);
+							foundEnd = true;
+							break;
+						} else {
+							preset.append(fs.source[j]);
+							fs.source.removeAt(j);
+							fs.lines.removeAt(j);
+						}
+					}
+					if (!foundEnd) WARNING("Did not find #endpreset");
+					fs.presets[name] = preset.join("\n");
+					continue;
+				}
 				
 				if (!s.contains("#replace")) {
 					for (QMap<QString, QString>::const_iterator it = replaceMap.constBegin(); it != replaceMap.constEnd(); ++it) 

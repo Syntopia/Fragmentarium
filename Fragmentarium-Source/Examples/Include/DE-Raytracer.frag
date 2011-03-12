@@ -23,7 +23,8 @@ void main(void)
 	gl_Position =  gl_Vertex;
 	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
 	coord.x*= pixelSize.y/pixelSize.x;
-	vec2 ps = pixelSize*mat2(gl_ProjectionMatrix);
+      // we will only use projectionmatrix to scale and translate, so the following should be OK.
+	vec2 ps =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
 	zoom = length(ps);
 	from = Eye;
 	vec3 Dir = normalize(Target-Eye);
@@ -81,6 +82,7 @@ uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 const float BandingSmooth = 0.0;
 
 uniform float BoundingSphere;slider[0,2,10];
+uniform float Dither;slider[0,0.5,1];
 
 #group Light
 
@@ -102,7 +104,6 @@ uniform vec4 CamLight; color[0,1,1,1.0,1.0,1.0];
 uniform vec4 Glow; color[0,0.2,1,1.0,1.0,1.0];
 
 uniform float Fog; slider[0,0.1,1]
-uniform float FogExponent; slider[0,1,4]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -167,6 +168,11 @@ vec3 lighting(float normalDistance, vec3 color, vec3 pos, vec3 dir, int steps) {
 
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
+// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 vec3 getColor(float ao) {
 	orbitTrap.w = sqrt(orbitTrap.w);
 	vec3 orbitColor =X.xyz*X.w*orbitTrap.x +
@@ -229,6 +235,7 @@ vec3 trace(vec3 from, vec3 dir) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
 			dist = DE(p)*FudgeFactor;
+                    if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 			dist = clamp(dist, 0.0, MaxDist);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
@@ -248,14 +255,15 @@ vec3 trace(vec3 from, vec3 dir) {
 		if (sq>0.0) backColor += Glow.xyz*Glow.w*pow(stepFactor,4.0);
 	}
 	
-	if ( dist < epsModified) {
+	if ( dist < epsModified ||  steps==MaxRaySteps) {
 		// We hit something, or reached MaxRaySteps
 		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
 		float ao = 1.0- AO.w*stepFactor ;
 		color = getColor(ao);
 		color = lighting(normalE*epsModified/eps, color,  hit,  direction, steps);
-		float f = stepFactor/FogExponent;
-		color = mix(color, backColor, Fog*exp(-f*f));
+		// OpenGL  GL_EXP2 like fog
+		float f = totalDist;
+		color = mix(color, backColor, 1.0-exp(-Fog*f*f));
 	}
 	else if (steps==MaxRaySteps) {
 		// Close to something, but too many steps
@@ -271,6 +279,7 @@ vec3 trace(vec3 from, vec3 dir) {
 
 void init(); // forward declare
 
+
 void main() {
 	init();
 	
@@ -279,7 +288,12 @@ void main() {
 		float  dx =  AntiAliasBlur*(float(x)-1.0)/float(AntiAlias);
 		for (int y = 1; y<=AntiAlias; y++) {
 			float dy = AntiAliasBlur*(float(y)-1.0)/float(AntiAlias);
-			color += trace(from,dir+dirDx*dx+dirDy*dy);
+			vec3 nDir = dir+dirDx*dx+dirDy*dy;
+			vec3 c = trace(from,nDir);
+			//float f = (1.0-length(c))*rand(c.xy);
+			//f = clamp(1.0-f,0.0,1.0);			
+			//color += c*f;
+			color +=c;
 		}
 	}
 	

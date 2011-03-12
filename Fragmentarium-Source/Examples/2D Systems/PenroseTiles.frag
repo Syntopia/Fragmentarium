@@ -55,3 +55,11 @@ vec3 getColor2D(vec2 z) {
 	return (triangleType == 0) ? vec3(1,0.8,0.4) :  vec3(0,0,0)  ;
 }
 
+#preset Default
+Center = 1.09069,-10.4092
+Zoom = 0.905839
+AntiAliasScale = 1
+AntiAlias = 3
+Iterations = 12
+v2 = 0,1
+#endpreset

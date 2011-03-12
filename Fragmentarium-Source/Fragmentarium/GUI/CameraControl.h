@@ -26,7 +26,8 @@ namespace Fragmentarium {
 		// CameraControl maintains camera position, and respond to user control.
 		class CameraControl {
 		public:
-			CameraControl() : askForRedraw(false) {};
+			CameraControl();
+			virtual ~CameraControl() {};
 			virtual SyntopiaCore::Math::Vector3f transform(int width, int height) = 0;
 			virtual void printInfo() = 0;
 			virtual QString getID() =0;
@@ -34,11 +35,15 @@ namespace Fragmentarium {
 			virtual void connectWidgets(VariableEditor* /*ve*/) {};
 			virtual bool mouseMoveEvent(QMouseEvent* /*e*/, int /*w*/, int /*h*/) { return false; };
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
-			virtual bool keyPressEvent(QKeyEvent* /*ev*/) { return false; };
+			virtual bool keyPressEvent(QKeyEvent* /*ev*/);
 			virtual bool wantsRedraw() { return askForRedraw; } 
-			virtual void updateState() {};
-			virtual void reset(bool /*fullReset*/) {};
+			virtual void updateState() { parseKeys(); };
+			virtual void reset(bool /*fullReset*/){};
+			virtual bool parseKeys() = 0;
+			
 		protected:
+			bool keyDown(int key);
+			QMap<int, bool> keyStatus;
 			bool askForRedraw;
 		};
 
@@ -54,13 +59,9 @@ namespace Fragmentarium {
 			virtual void connectWidgets(VariableEditor* ve);
 			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
-			virtual bool keyPressEvent(QKeyEvent* ev);
-			bool keyDown(int key);
 			bool parseKeys();
-			virtual void updateState() { parseKeys(); };
 			virtual void reset(bool fullReset);
 		private:
-			QMap<int, bool> keyStatus;
 			int height;
 			int width;
 			float stepSize;
@@ -86,8 +87,10 @@ namespace Fragmentarium {
 			virtual Vector3f transform(int width, int height);
 			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
-			virtual bool keyPressEvent(QKeyEvent* /*ev*/) { return false; };
+			bool parseKeys();
+			virtual void reset(bool fullReset);
 		private:
+			float stepSize;
 			Float2Widget* center;
 			FloatWidget* zoom;	
 			QStatusBar* statusBar;

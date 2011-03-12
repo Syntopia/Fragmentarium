@@ -44,3 +44,45 @@ vec3 getColor2D(vec2 c) {
 	}
 }
 
+#preset Mandel1
+Center = -0.285288,-0.0120426
+Zoom = 0.854514
+AntiAliasScale = 1
+AntiAlias = 3
+Iterations = 328
+R = 0
+G = 0.4
+B = 0.7
+Julia = false
+JuliaX = -0.6
+JuliaY = 1.3
+#endpreset
+
+#preset Mandel2
+Center = -0.335155,0.124422
+Zoom = 630.163
+AntiAliasScale = 1
+AntiAlias = 3
+Iterations = 623
+R = 0.25624
+G = 0.66875
+B = 1
+Julia = false
+JuliaX = -0.6
+JuliaY = 1.3
+#endpreset
+
+#preset Julia1
+Center = -0.00932198,0
+Zoom = 1.26502
+AntiAliasScale = 1
+AntiAlias = 2
+Iterations = 69
+R = 0.76875
+G = 0.4
+B = 0.7
+Julia = true
+JuliaX = -1.26472
+JuliaY = -0.05884
+#endpreset
+

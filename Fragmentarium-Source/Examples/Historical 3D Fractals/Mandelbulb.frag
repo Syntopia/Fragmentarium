@@ -101,21 +101,18 @@ float DE(vec3 pos) {
 	*/
 }
 
-/*
+#preset Green bulb
 FOV = 0.62536
 Eye = -2.14563,-0.0789065,-0.853331
 Target = 6.14389,0.251802,2.26161
+Up = 0.255226,0.302899,0.918211
 AntiAlias = 1
 AntiAliasBlur = 1
 Detail = -2.81064
 DetailNormal = -2.54548
-BackStepNormal = 1.26664
-ClarityPower = 1
-MaxDist = 600
 FudgeFactor = 0.80392
 MaxRaySteps = 164
 MaxRayStepsDiv = 1.8
-BandingSmooth = 0
 BoundingSphere = 2
 AO = 0,0,0,0.7
 Specular = 2.4348
@@ -141,5 +138,4 @@ Bailout = 6.279
 AlternateVersion = true
 RotVector = 1,1,1
 RotAngle = 0
-Up = 0.255226,0.302899,0.918211
-*/
+#endpreset

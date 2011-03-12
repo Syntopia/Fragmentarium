@@ -16,9 +16,30 @@ using namespace SyntopiaCore::Logging;
 namespace Fragmentarium {
 	namespace GUI {
 
+		CameraControl::CameraControl() : askForRedraw(false) { 
+			reset(true); 
+		};
+			
+		bool CameraControl::keyPressEvent(QKeyEvent* ev) {
+			if (ev->isAutoRepeat()) {
+				ev->accept();
+				return false;
+			}
+			int key = ev->key();
+			keyStatus[key] = (ev->type() == QEvent::KeyPress);
+			return parseKeys();
+		}
+
+		bool CameraControl::keyDown(int key) {
+			if (!keyStatus.contains(key)) keyStatus[key] = false;
+			return keyStatus[key];
+		}
+
+
 		Camera3D::Camera3D(QStatusBar* statusBar) : statusBar(statusBar) {
 			mouseDown = Vector3f(0,0,-1);
-			reset(true);
+		 reset(true);
+		
 		};
 
 		Camera3D::~Camera3D() {
@@ -44,30 +65,14 @@ namespace Fragmentarium {
 			INFO("Camera: Use W/S to fly. 1/3 adjusts speed. Q/E rolls. Click on 3D window for key focus. See Help Menu for more.");
 		}
 
-	
-		bool Camera3D::keyPressEvent(QKeyEvent* ev) {
-			if (!up || !target || !eye || !fov) return false;
-			if (ev->isAutoRepeat()) {
-				ev->accept();
-				return false;
-			}
-			int key = ev->key();
-			keyStatus[key] = (ev->type() == QEvent::KeyPress);
-			//INFO(QString("%1 %2").arg(key).arg(ev->type() == QEvent::KeyPress ? "Down" : "Up"));
-			return parseKeys();
-		}
-
-		bool Camera3D::keyDown(int key) {
-			if (!keyStatus.contains(key)) keyStatus[key] = false;
-			return keyStatus[key];
-		}
-
 		void Camera3D::reset(bool fullReset) {
 			keyStatus.clear();
 			if (fullReset) stepSize = 0.1;
 		}
 
 		bool Camera3D::parseKeys() {
+			if (!up || !target || !eye || !fov) return false;
+	
 			//INFO("Parse keys...");
 			Vector3f direction = (target->getValue()-eye->getValue());
 			Vector3f dir = direction.normalized();
@@ -173,14 +178,14 @@ namespace Fragmentarium {
 				keysDown = true;
 			}
 			
-			if (keyDown(Qt::Key_Q)) {
+			if (keyDown(Qt::Key_E)) {
 				Matrix4f m = Matrix4f::Rotation(dir, factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());			
 				keysDown = true;
 			}
 			
-			if (keyDown(Qt::Key_E)) {
+			if (keyDown(Qt::Key_Q)) {
 				Matrix4f m = Matrix4f::Rotation(dir, -factor);
 				target->setValue(m*direction+eye->getValue());
 				up->setValue(m*up->getValue());	
@@ -271,6 +276,8 @@ namespace Fragmentarium {
 		Camera2D::Camera2D(QStatusBar* statusBar) : statusBar(statusBar) {
 		 center = 0;
 		  zoom = 0;
+		  reset(true);
+			
 		};
 
 		QVector<VariableWidget*> Camera2D::addWidgets(QWidget* /*group*/, QWidget* /*parent*/) {
@@ -304,6 +311,73 @@ namespace Fragmentarium {
 			}
 		}
 
+
+		
+		bool Camera2D::parseKeys() {
+			//INFO("Parse keys...");
+			if (!center || !zoom) return false;
+			Vector3f centerValue = center->getValue();
+			float zoomValue = zoom->getValue();
+		
+			float factor =  stepSize*0.05;
+			float zFactor =factor/zoomValue;
+
+			bool keysDown = false;
+
+			// --------- step sizes ----------------------------
+
+			if (keyDown(Qt::Key_1)) {
+				stepSize = stepSize/2.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keyStatus[Qt::Key_1] = false; // only apply once
+			} 
+
+			if (keyDown(Qt::Key_3)) {
+				stepSize = stepSize*2.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keyStatus[Qt::Key_3] = false; // only apply once
+			}
+
+			if (keyDown(Qt::Key_2)) {
+				stepSize = stepSize*10.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keyStatus[Qt::Key_2] = false; // only apply once
+			} 
+			
+			if (keyDown(Qt::Key_X)) {
+				stepSize = stepSize/10.0;
+				INFO(QString("Step size: %1").arg(stepSize));
+				keysDown = true;
+				keyStatus[Qt::Key_X] = false; // only apply once
+			}
+			
+			// ---------- Movement -----------------------------
+
+			if (keyDown(Qt::Key_A)) {
+				center->setValue(centerValue+Vector3f(-zFactor,0.0,0.0));	
+				keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_D)) {
+				center->setValue(centerValue+Vector3f(zFactor,0.0,0.0));	
+				keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_W)) {
+				zoom->setValue(zoomValue*1.05);
+				keysDown = true;
+			}
+
+			if (keyDown(Qt::Key_S)) {
+				zoom->setValue(zoomValue/1.05);
+				keysDown = true;
+			}
+
+			
+			askForRedraw = keysDown;
+			return keysDown;
+		};
+
 		bool Camera2D::mouseMoveEvent(QMouseEvent* e, int w, int h) {
 			if (!center || !zoom) return false;
 			Vector3f pos = Vector3f(e->pos().x()/(0.5*float(w))-1.0,1.0-e->pos().y()/(0.5*float(h)),0.0);
@@ -334,6 +408,11 @@ namespace Fragmentarium {
 				return true;
 			}
 			return false;
+		}
+
+		void Camera2D::reset(bool fullReset) {
+			keyStatus.clear();
+			if (fullReset) stepSize = 0.1;
 		}
 
 	}

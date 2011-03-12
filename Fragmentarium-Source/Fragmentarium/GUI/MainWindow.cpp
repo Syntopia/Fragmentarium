@@ -140,10 +140,11 @@ namespace Fragmentarium {
 				QMenu *preprocessorMenu = new QMenu("Special Includes", 0);
 				preprocessorMenu->addAction("#include \"some.frag\"", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#camera 3D", textEdit , SLOT(insertText()));
-				preprocessorMenu->addAction("#includeonly \"some.frag\"", textEdit , SLOT(insertText()));
-				preprocessorMenu->addAction("#replace \"before\" \"after\"", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#camera 2D", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#info sometext", textEdit , SLOT(insertText()));
-				preprocessorMenu->addAction("#group parameter group name", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#group parameter_group_name", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#preset preset_name", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#endpreset", textEdit , SLOT(insertText()));
 				
 				QMenu *uniformMenu = new QMenu("Special Uniforms", 0);
 				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
@@ -155,6 +156,7 @@ namespace Fragmentarium {
 				uniformMenu->addAction("uniform bool b; checkbox[true]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform sampler2D tex; file[tex.jpg]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec3 color; color[0.0,0.0,0.0]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform vec4 color; color[0.0,1.0,0.0,0.0,0.0,0.0]", textEdit , SLOT(insertText()));
 				
 
 				QAction* before = 0;

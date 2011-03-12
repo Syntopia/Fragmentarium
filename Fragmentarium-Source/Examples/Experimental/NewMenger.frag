@@ -1,7 +1,7 @@
 #info SphereSponge Distance Estimator.
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
-#group Sphere sponge
+#group New Menger
 
 // Based on a fractal proposed by Buddhi, with a DE outlined by Knighty:
 // http://www.fractalforums.com/3d-fractal-generation/revenge-of-the-half-eaten-menger-sponge/
@@ -50,95 +50,74 @@ float DE(vec3 p)
 	return d;
 }
 
-/*
-FOV = 0.38807
-Eye = 0.265626,-2.99798,1.0768
-Target = -0.589,5.939,-3.304
-AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -2.45252
-DetailNormal = -2.8
-BackStepNormal = 1
-ClarityPower = 1
-MaxDist = 600
-FudgeFactor = 1
-MaxRaySteps = 157
-MaxRayStepsDiv = 1.8
-BandingSmooth = 0
-BoundingSphere = 2
-AO = 0.7
-AOColor = 0,0,0
-SpotLight = 0.4
-Specular = 1.4167
-SpecularExp = 10.417
-SpotLightColor = 1,1,1
-SpotLightDir = 0.1,0.1
-CamLight = 1
-CamLightColor = 1,1,1
-Glow = 0.2
-GlowColor = 1,1,1
-BackgroundColor = 0.6,0.6,0.45
-GradientBackground = 0.3
-BaseColor = 1,1,1
-OrbitStrength = 0.77228
-XStrength = -0.16522
-X = 0.5,0.6,0.6
-YStrength = 1
-Y = 0.666667,0.666667,0.498039
-ZStrength = 0.04348
-Z = 0.8,0.78,1
-RStrength = 0.07016
-R = 0.4,0.7,1
-Iterations = 10
-Scale = 3
-Rotation = -39.2724,-6.5448,88.362
-Offset = 0.85294,0.66176,0
-Up = -0.96798,-0.21662,0.12866
-*/
-
-
-/*
-FOV = 1
-Eye = 0.244,0.18392,-0.744
-Target = 5.972,4.88492,5.872
+#preset NM1
+FOV = 0.69449
+Eye = -0.773149,-1.68286,0.623944
+Target = 2.68378,3.05437,-0.790643
+Up = 0.25548,0.100005,0.959235
 AntiAlias = 1
 AntiAliasBlur = 1
 Detail = -2.3
 DetailNormal = -2.8
-BackStepNormal = 1
-ClarityPower = 1
-MaxDist = 600
 FudgeFactor = 1
 MaxRaySteps = 56
 MaxRayStepsDiv = 1.8
-BandingSmooth = 0
 BoundingSphere = 2
-AO = 0.7
-AOColor = 0,0,0
-SpotLight = 0.4
+AO = 0,0,0,0.7
 Specular = 4
 SpecularExp = 16
-SpotLightColor = 1,1,1
+SpotLight = 1,1,1,0.4
 SpotLightDir = 0.1,0.1
-CamLight = 1
-CamLightColor = 1,1,1
-Glow = 0.2
-GlowColor = 1,1,1
-BackgroundColor = 0.6,0.6,0.45
-GradientBackground = 0.3
+CamLight = 1,1,1,1
+Glow = 1,1,1,0
+Fog = 0.21484
 BaseColor = 1,1,1
 OrbitStrength = 0.8
-XStrength = 0.7
-X = 0.5,0.6,0.6
-YStrength = 0.4
-Y = 1,0.6,0
-ZStrength = 0.5
-Z = 0.8,0.78,1
-RStrength = 0.12
-R = 0.4,0.7,1
-Up = -0.06676,0.85354,-0.51672
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.12
+BackgroundColor = 0.6,0.121569,0.231373
+GradientBackground = 0.3
 Iterations = 10
 Scale = 3
-Rotation = 0,0,0
-Offset = 0,0,0
-*/
+Rotation = -151.798,-22.3956,-9.1332
+Offset = 0,0.60494,0
+Dither = 0.62449
+#endpreset
+
+#preset NM2
+FOV = 0.69449
+Eye = -0.184105,-0.317218,1.08875
+Target = -1.69035,2.49456,-3.58683
+Up = 0.767584,0.624303,0.128162
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -3.5574
+DetailNormal = -3.31751
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 1.8
+BoundingSphere = 2
+AO = 0,0,0,0.7
+Specular = 4
+SpecularExp = 16
+SpotLight = 1,1,1,0.4
+SpotLightDir = 0.1,0.1
+CamLight = 1,1,1,1
+Glow = 1,1,1,0
+Fog = 0.21484
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.12
+BackgroundColor = 0.129412,0.6,0.145098
+GradientBackground = 0.452
+Iterations = 12
+Scale = 1.83132
+Rotation = -92.0736,-9.1332,60.552
+Offset = 0.06995,0.60494,0.50205
+Dither = 0.62449
+#endpreset

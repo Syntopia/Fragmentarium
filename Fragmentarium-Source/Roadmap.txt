@@ -46,7 +46,7 @@ Roadmap.
 + Tile based renders.
 + Animation timeline.
 + Better support for preview: render-to-texture (using FBO's) and rescale.
-
++ Preset support
 - Mouse sensitivity
 
 <-- Version 0.7 --

@@ -14,7 +14,10 @@ uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
 uniform float C; slider[0,1,2]
-uniform vec2 v; slider[(-1,-1),(0,0),(1,1)]
+uniform bool Julia; checkbox[false]
+uniform float JuliaX; slider[-0.4,0,1.2]
+uniform float JuliaY; slider[3.0,5.0,8.0]
+
 void init() {}
 
 vec2 zlog(vec2 a) {
@@ -23,15 +26,10 @@ vec2 zlog(vec2 a) {
 	return vec2(log(length(a)),b);
 }
 
-
-uniform bool Julia; checkbox[false]
-uniform float JuliaX; slider[-0.4,0,1.2]
-uniform float JuliaY; slider[3.0,5.0,8.0]
-
 vec2 c2 = vec2(JuliaX,JuliaY);
 
 vec3 getColor2D(vec2 c) {
-	vec2 z = Julia ?  c : v;
+	vec2 z = Julia ?  c : vec2(1.0,0.0);
 	
 	float mean = 0.0;
 	
@@ -48,60 +46,39 @@ vec3 getColor2D(vec2 c) {
 	
 }
 
-/*
-Center = -0.0976,5.4036
-Zoom = 1.095
-AntiAlias = 1
+#preset Principal Ducks Structure
+Center = -0.103356,4.76826
+Zoom = 0.502601
 AntiAliasScale = 1
-Iterations = 40
-R = 0.3375
-G = 0.4
-B = 0.35404
-C = 0
-v = 0.94904,0
+AntiAlias = 3
+Iterations = 69
+PreIterations = 0
+R = 0.50625
+G = 0.3375
+B = 0.32919
+C = 0.2
+Julia = false
+JuliaX = 0
+JuliaY = 5
+#endpreset
 
-
-
+#preset Bone Structure
 Center = 0.0108,5.099
 Zoom = 27.643
+AntiAliasScale = 1
 AntiAlias = 3
-AntiAliasScale =1
 Iterations = 54
+PreIterations = 1
 R = 0.54374
 G = 0.4125
 B = 0.37267
-v = 0.94904,0
 C = 0.7875
+Julia = false
+JuliaX = 0
+JuliaY = 5
+#endpreset
 
-
-Center = -0.0124,5.0958
-Zoom = 43.4729
-AntiAlias = 3
-AntiAliasScale = 1
-Iterations = 54
-R = 0.6625
-G = 0.4125
-B = 0.37267
-v = 0.19746,0
-C = 0.7875
-PreIterations = 12
-
-Center = -1.5922,0.0692
-Zoom = 0.095
-AntiAliasScale = 1
-AntiAlias = 3
-Iterations = 76
-PreIterations = 12
-R = 0.6625
-G = 0.4125
-B = 0.37267
-C = 0.7875
-v = 0.19746,0
-Julia = true
-JuliaX = 0.32348
-JuliaY = 4.3
-
-
+#preset Pattern 1
 Center = -1.5922,0.0692
 Zoom = 0.166
 AntiAliasScale = 1
@@ -112,13 +89,12 @@ R = 0.6625
 G = 0.4125
 B = 0.52174
 C = 0.7875
-v = 0.19746,0
 Julia = true
 JuliaX = 0.23528
 JuliaY = 5.5384
+#endpreset
 
-
-#preset duck1
+#preset Bifurations
 Center = -1.075,-0.0833163
 Zoom = 0.454
 AntiAliasScale = 0.9901
@@ -129,28 +105,13 @@ R = 0.44375
 G = 0.55
 B = 0.62112
 C = 0.775
-v = 0.19746,0
 Julia = true
 JuliaY = 5.05716
 JuliaX = -0.11766
+#endpreset
 
 
-Center = 0.974,4.4458
-Zoom = 0.263
-AntiAliasScale = 0.9901
-AntiAlias = 1
-Iterations = 113
-PreIterations = 7
-R = 0.44375
-G = 0.55
-B = 0.62112
-C = 1.075
-v = -0.03184,0
-Julia = true
-JuliaX = 0.497
-JuliaY = 5.92855
-
-#Cell
+#preset Cell
 Center = -408.698,10
 Zoom = -0.000493858
 AntiAliasScale = 0.9901
@@ -161,12 +122,12 @@ R = 0.61875
 G = 0.6125
 B = 0.47205
 C = 1
-v = 0.09554,0
 Julia = true
 JuliaX = 0.36469
 JuliaY = 5.89285
+#endpreset
 
-
+#preset Spooky
 Center = -0.05144,-1.0548
 Zoom = 92.248
 AntiAliasScale = 0.9901
@@ -177,9 +138,7 @@ R = 0.69375
 G = 0.6125
 B = 0.5031
 C = 0.9625
-v = 0.09554,0
 Julia = true
 JuliaX = 0.38824
 JuliaY = 5.89285
-*/
-
+#endpreset

@@ -146,11 +146,11 @@ namespace Fragmentarium {
 			QList<int> lines;
 			QList<int> sourceFile;
 
-
 			bool hasPixelSizeUniform;
 			QString camera;
 			QVector<GuiParameter*> params;
 			QMap<QString, QString> textures; // "Uniform name" -> "File"
+			QMap<QString, QString> presets;
 		};
 
 		/// The preprocessor is responsible for expanding '#define'

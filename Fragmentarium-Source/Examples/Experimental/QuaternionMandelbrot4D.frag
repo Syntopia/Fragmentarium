@@ -15,7 +15,7 @@ uniform int Iterations;  slider[0,16,100]
 // Breakout distance
 uniform float Threshold; slider[0,10,100]
 
-void init() {};
+void init() {}
 
 float DE(vec3 pos) {
 	vec4 p = vec4(pos, 0.0);

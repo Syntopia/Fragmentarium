@@ -41,11 +41,12 @@ namespace Fragmentarium {
 			void setSettings(QString text);
 			void createGroup(QString g);
 			VariableWidget* getWidgetFromName(QString name);
-
+			void setPresets(QMap<QString, QString> presets);
 		signals:
 			void changed();
 
 		public slots:
+			void applyPreset();
 			void resetUniforms();
 			void resetGroup();
 			void copy();
@@ -53,10 +54,12 @@ namespace Fragmentarium {
 			void childChanged() { emit changed(); } 
 
 		private:
+			QMap<QString, QString> presets;
 			MainWindow* mainWindow;
 			QSpacerItem* spacer;
 			QVector<VariableWidget*> variables;
 			QVBoxLayout* layout;
+			QComboBox* presetComboBox;
 			QWidget* currentWidget;
 			
 			QMap<QString, QWidget*> tabs;

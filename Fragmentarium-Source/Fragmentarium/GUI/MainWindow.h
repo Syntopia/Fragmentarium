@@ -20,6 +20,7 @@ class QMenu;
 namespace Fragmentarium {
 	namespace GUI {
  
+		// Information about the current tab
 		struct TabInfo {
 			TabInfo() {}; 
 			TabInfo(QString filename, QTextEdit* textEdit) : filename(filename), unsaved(false), textEdit(textEdit), hasBeenSavedOnce(false) {};
@@ -30,14 +31,12 @@ namespace Fragmentarium {
 			bool hasBeenSavedOnce;			
         };
 
-		
 		// A modified QTextEdit with an extended context menu
 		class TextEdit : public QTextEdit {
 			Q_OBJECT
 			public:
 				TextEdit() : QTextEdit() {};
 				TextEdit(QWidget* parent) : QTextEdit(parent) {};
-
 				void contextMenuEvent(QContextMenuEvent *event);
 			public slots:
 				void insertText();
@@ -58,8 +57,6 @@ namespace Fragmentarium {
 			int h;
 		};
 		
-
-
 		/// The main window of the application.
 		class MainWindow : public QMainWindow
 		{
@@ -70,9 +67,7 @@ namespace Fragmentarium {
 			MainWindow(const QString &fileName);
 			void setSeed(int randomSeed);
 			int getSeed();
-		
 			void setUserUniforms(QGLShaderProgram* shaderProgram);
-
 			DisplayWidget* getEngine() { return engine; };
 			static QString getExamplesDir();
 			void setFPS(float fps);
@@ -82,8 +77,6 @@ namespace Fragmentarium {
 			void resetCamera(bool fullReset);
 			QString getCameraSettings();
 			QString getScriptWithSettings(QString filename);
-			
-
 			void disableAllExcept(QWidget* w);
 			void enableAll();
 			void loadParameters(QString fileName);
@@ -94,7 +87,7 @@ namespace Fragmentarium {
 			void dropEvent(QDropEvent *ev);
 			void closeEvent(QCloseEvent* ev);
 			void keyReleaseEvent(QKeyEvent* ev);
-
+		
 		public slots:
 			void animationControllerHidden();
 			void benchmark();
@@ -105,7 +98,6 @@ namespace Fragmentarium {
 			void makeScreenshot();
 			void callRedraw();
 			void showDebug();
-			
 			void pasteSelected();
 			void renderModeChanged(int);
 			void saveParameters();
@@ -114,7 +106,6 @@ namespace Fragmentarium {
 			void preferences();
 			void insertText();
 			void variablesChanged();
-			
 			void closeTab(int id);
 			void cut();
 			void copy();
@@ -126,7 +117,6 @@ namespace Fragmentarium {
 			void launchGallery();
 			void launchGLSLSpecs();
 			void launchReferenceHome();
-			
 			void openFile();
 			void newFile();
 			void open();
@@ -137,13 +127,11 @@ namespace Fragmentarium {
 			void documentWasModified();
 			void render();
 			void toggleFullScreen();
-			
-
+		
 		private:
 			QList<QWidget *> disabledWidgets;
 			QSlider* viewSlider;
 			QSlider* previewSlider;
-			
 			QLabel* viewLabel;
 			QLabel* previewLabel;
 			void setRecentFile(const QString &fileName);
@@ -161,10 +149,8 @@ namespace Fragmentarium {
 			bool saveFile(const QString &fileName);
 			QString strippedName(const QString &fullFileName);
 			void createOpenGLContextMenu();
-
 			bool hasBeenResized;
 			QSpinBox* seedSpinBox;
-		
 			ListWidgetLogger* logger;
 			QDockWidget* dockLog;
 			QAction* fullScreenAction;
@@ -182,7 +168,6 @@ namespace Fragmentarium {
 			QToolBar *renderModeToolBar;
 			QComboBox* renderCombo;
 			QPushButton* renderButton;
-
 			QToolBar *editToolBar;
 			QAction *newAction;
 			QAction *openAction;
@@ -195,33 +180,24 @@ namespace Fragmentarium {
 			QAction *pasteAction;
 			QAction *aboutAction;
 			QAction *controlAction;
-
 			QAction *renderAction;
 			DisplayWidget* engine;
 			QTabBar* tabBar;
-
 			SyntopiaCore::Misc::Version version;
-
 			QMenu* openGLContextMenu;
 			bool fullScreenEnabled;
 			QStackedWidget *stackedTextEdits;
-
 			QVector<TabInfo> tabInfo;
-
 			int oldDirtyPosition;
-
 			QVBoxLayout* frameMainWindow;
 			VariableEditor* variableEditor;
 			QDockWidget* editorDockWidget;
-
 			QVector<QAction*> recentFileActions;
 			QAction* recentFileSeparator;
 			QLabel* fpsLabel;
 			QWidget* splashWidget;
 			QDockWidget* animationController;
 		};
-
-	
 	}
 }
 

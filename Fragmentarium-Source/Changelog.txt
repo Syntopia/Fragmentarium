@@ -1,6 +1,15 @@
 Todo:
 Continouos->reset time trigger time measure
 Mouse Wheel support
+AA in 3D working properly?
+Serialization to strings round errors?
+Slider keyboard shortcuts
+2D Keyboard shortcuts
+
+
+11-03-10 
+Added support for presets
+Fixed Fog
 
 10-03-10 [2h]
 Added new eventloop supporting multiple simultaneous keys
