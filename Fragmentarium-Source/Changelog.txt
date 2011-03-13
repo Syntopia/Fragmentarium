@@ -1,13 +1,17 @@
 Todo:
-Continouos->reset time trigger time measure
-Mouse Wheel support
+Slider keyboard shortcuts
+Bug, if missing newline on last pos: Could not create fragment shader: 0(341) : error C0104: Unknown pre-processor directive #group
+
+Check:
 AA in 3D working properly?
 Serialization to strings round errors?
-Slider keyboard shortcuts
+
+13-03-10
+Mouse Wheel support
 2D Keyboard shortcuts
 
-
 11-03-10 
+Added Dither
 Added support for presets
 Fixed Fog
 

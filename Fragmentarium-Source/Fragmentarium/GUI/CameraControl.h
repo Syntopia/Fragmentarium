@@ -33,7 +33,7 @@ namespace Fragmentarium {
 			virtual QString getID() =0;
 			virtual QVector<VariableWidget*> addWidgets(QWidget* group, QWidget* parent) = 0;
 			virtual void connectWidgets(VariableEditor* /*ve*/) {};
-			virtual bool mouseMoveEvent(QMouseEvent* /*e*/, int /*w*/, int /*h*/) { return false; };
+			virtual bool mouseEvent(QMouseEvent* /*e*/, int /*w*/, int /*h*/) { return false; };
 			virtual void wheelEvent(QWheelEvent* /*e*/) {};
 			virtual bool keyPressEvent(QKeyEvent* /*ev*/);
 			virtual bool wantsRedraw() { return askForRedraw; } 
@@ -57,8 +57,8 @@ namespace Fragmentarium {
 			Vector3f screenTo3D(int sx, int sy, int sz);
 			virtual Vector3f transform(int width, int height);
 			virtual void connectWidgets(VariableEditor* ve);
-			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
-			virtual void wheelEvent(QWheelEvent* /*e*/) {};
+			virtual bool mouseEvent(QMouseEvent* e, int w, int h);
+			virtual void wheelEvent(QWheelEvent* /*e*/);
 			bool parseKeys();
 			virtual void reset(bool fullReset);
 		private:
@@ -85,8 +85,8 @@ namespace Fragmentarium {
 			virtual QString getID() { return "2D"; };
 			void printInfo();
 			virtual Vector3f transform(int width, int height);
-			virtual bool mouseMoveEvent(QMouseEvent* e, int w, int h);
-			virtual void wheelEvent(QWheelEvent* /*e*/) {};
+			virtual bool mouseEvent(QMouseEvent* e, int w, int h);
+			virtual void wheelEvent(QWheelEvent* /*e*/);
 			bool parseKeys();
 			virtual void reset(bool fullReset);
 		private:

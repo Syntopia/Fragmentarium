@@ -95,6 +95,9 @@ namespace Fragmentarium {
 			sizePolicy1.setHeightForWidth(playButton->sizePolicy().hasHeightForWidth());
 			playButton->setSizePolicy(sizePolicy1);
 			playButton->setMaximumSize(QSize(50, 50));
+			playButton->setToolTip("Play / Stop");
+			playButton->setStatusTip("Play / Stop");
+						
 
 			horizontalLayout->addWidget(playButton);
 
@@ -106,6 +109,9 @@ namespace Fragmentarium {
 			sizePolicy2.setHeightForWidth(rewindButton->sizePolicy().hasHeightForWidth());
 			rewindButton->setSizePolicy(sizePolicy2);
 			rewindButton->setMaximumSize(QSize(50, 50));
+			rewindButton->setToolTip("Rewind");
+			rewindButton->setStatusTip("Rewind");
+			
 
 			horizontalLayout->addWidget(rewindButton);
 
@@ -115,6 +121,9 @@ namespace Fragmentarium {
 			recButton->setSizePolicy(sizePolicy2);
 			recButton->setMaximumSize(QSize(50, 50));
 
+			recButton->setToolTip("Export");
+			recButton->setStatusTip("Export");
+			
 			horizontalLayout->addWidget(recButton);
 
 			horizontalSpacer = new QSpacerItem(13, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -319,8 +328,10 @@ namespace Fragmentarium {
 		void AnimationController::play() {
 			if (animationSettings.isRunning()) {
 				INFO("Stopped animation");
+				playButton->setText(">");
 				animationSettings.setRunning(false);
 			} else {
+				playButton->setText("[]");
 				INFO("Started animation");
 				animationSettings.setStartTime();
 				animationSettings.setStartAnimTime();

@@ -6,7 +6,7 @@
 #group Camera
 
 // Use this to adjust clipping planes
-uniform float FOV; slider[0,1,1.2];
+uniform float FOV; slider[0,0.4,2.0];
 uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)];
 uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)];
 uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)];
@@ -103,7 +103,7 @@ uniform vec4 CamLight; color[0,1,1,1.0,1.0,1.0];
 // Glow based on the number of raymarching steps
 uniform vec4 Glow; color[0,0.2,1,1.0,1.0,1.0];
 
-uniform float Fog; slider[0,0.1,1]
+uniform float Fog; slider[0,0.1,2]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -264,7 +264,9 @@ vec3 trace(vec3 from, vec3 dir) {
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
 		color = mix(color, backColor, 1.0-exp(-Fog*f*f));
-	}
+	  if (  steps!=MaxRaySteps)  color += Glow.xyz*Glow.w*pow(stepFactor,4.0);
+		
+}
 	else if (steps==MaxRaySteps) {
 		// Close to something, but too many steps
 		color = backColor;

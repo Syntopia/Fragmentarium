@@ -465,27 +465,28 @@ namespace Fragmentarium {
 		void DisplayWidget::wheelEvent(QWheelEvent* e) {
 			e->accept();
 
-			//double interval = (double)e->delta() / 800.0;
 			cameraControl->wheelEvent(e);
 			requireRedraw();
 		}
 
 		void DisplayWidget::mouseMoveEvent( QMouseEvent *e ) {
 			e->accept();
-			bool redraw = cameraControl->mouseMoveEvent(e, width(), height());
+			bool redraw = cameraControl->mouseEvent(e, width(), height());
 			if (redraw) requireRedraw();
 		}
 
 		void DisplayWidget::mouseReleaseEvent(QMouseEvent* ev)  {
-			bool redraw = cameraControl->mouseMoveEvent(ev, width(), height());
+			bool redraw = cameraControl->mouseEvent(ev, width(), height());
 			if (redraw) requireRedraw();
 			//if (contextMenu) contextMenu->exec(ev->globalPos());
 		}
 
 
 		void DisplayWidget::mousePressEvent(QMouseEvent* ev)  {
-			bool redraw = cameraControl->mouseMoveEvent(ev, width(), height());
-			if (redraw) requireRedraw();
+			bool redraw = cameraControl->mouseEvent(ev, width(), height());
+			if (redraw) { 
+				requireRedraw(); 
+			}
 			//if (contextMenu) contextMenu->exec(ev->globalPos());
 		}
 
@@ -494,6 +495,8 @@ namespace Fragmentarium {
 			if (redraw) {
 				requireRedraw();
 				ev->accept();
+			} else {
+				QGLWidget::keyPressEvent(ev);
 			}
 		}
 
@@ -503,6 +506,8 @@ namespace Fragmentarium {
 			if (redraw) {
 				requireRedraw();
 				ev->accept();
+			} else {
+				QGLWidget::keyReleaseEvent(ev);
 			}
 		}
 

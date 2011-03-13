@@ -72,8 +72,26 @@ namespace Fragmentarium {
 
 			tabWidget->setTabPosition(QTabWidget::East);
 
-
+			connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(focusChanged(QWidget*,QWidget*)));
 		};	
+
+		void VariableEditor::focusChanged(QWidget* oldWidget,QWidget* newWidget) {
+			ComboSlider* oldFloat = 0;
+			if (oldWidget && oldWidget->parent()) oldFloat = qobject_cast<ComboSlider*>(oldWidget->parent());
+			ComboSlider* newFloat = 0;
+			if (newWidget && newWidget->parent()) newFloat = qobject_cast<ComboSlider*>(newWidget->parent());
+			if (newFloat) {
+				QPalette pal = newFloat->palette();
+				pal.setColor(newFloat->backgroundRole(), Qt::gray);
+				
+				newFloat->setPalette(pal);
+				newFloat->setAutoFillBackground(true);
+			}
+			if (oldFloat) {
+				oldFloat->setPalette(QApplication::palette(oldFloat));
+				oldFloat->setAutoFillBackground(false);
+			}
+		}
 
 		void VariableEditor::setPresets(QMap<QString, QString> presets) {
 			presetComboBox->clear();

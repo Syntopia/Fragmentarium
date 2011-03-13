@@ -46,6 +46,7 @@ namespace Fragmentarium {
 			void changed();
 
 		public slots:
+			void focusChanged(QWidget* oldWidget,QWidget* newWidget);
 			void applyPreset();
 			void resetUniforms();
 			void resetGroup();

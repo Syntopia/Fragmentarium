@@ -202,7 +202,7 @@ namespace Fragmentarium {
 			return keysDown;
 		};
 
-		bool Camera3D::mouseMoveEvent(QMouseEvent* e, int w, int h) {
+		bool Camera3D::mouseEvent(QMouseEvent* e, int w, int h) {
 			if (!up || !target || !eye || !fov) return false;
 			Vector3f pos = Vector3f(e->pos().x()/(float(w)),e->pos().y()/(float(h)),0.0);
 			Vector3f direction = (target->getValue()-eye->getValue());
@@ -272,6 +272,20 @@ namespace Fragmentarium {
 			return Vector3f(1.0,1.0,1.0);
 		};
 
+		void Camera3D::wheelEvent(QWheelEvent* e) {
+			float steps = e->delta()/120.0;
+			float factor = 1.05;
+			if (!up || !target || !eye || !fov) return;
+			if (steps>0.0) {
+				fov->setValue(fov->getValue()*factor);
+			} else {
+				fov->setValue(fov->getValue()/factor);
+			}
+		}
+			
+
+		/// ----------------- Camera2D ---------------------
+
 
 		Camera2D::Camera2D(QStatusBar* statusBar) : statusBar(statusBar) {
 		 center = 0;
@@ -319,8 +333,8 @@ namespace Fragmentarium {
 			Vector3f centerValue = center->getValue();
 			float zoomValue = zoom->getValue();
 		
-			float factor =  stepSize*0.05;
-			float zFactor =factor/zoomValue;
+			float factor =	 pow(1.05f,(float)stepSize);
+			float zFactor =0.1/zoomValue;
 
 			bool keysDown = false;
 
@@ -362,14 +376,25 @@ namespace Fragmentarium {
 				center->setValue(centerValue+Vector3f(zFactor,0.0,0.0));	
 				keysDown = true;
 			} 
+
 			
 			if (keyDown(Qt::Key_W)) {
-				zoom->setValue(zoomValue*1.05);
+				center->setValue(centerValue+Vector3f(0.0,-zFactor,0.0));	
+				keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_S)) {
+				center->setValue(centerValue+Vector3f(0.0,zFactor,0.0));	
+				keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_Q)) {
+				zoom->setValue(zoomValue*factor);
 				keysDown = true;
 			}
 
-			if (keyDown(Qt::Key_S)) {
-				zoom->setValue(zoomValue/1.05);
+			if (keyDown(Qt::Key_E)) {
+				zoom->setValue(zoomValue/factor);
 				keysDown = true;
 			}
 
@@ -378,7 +403,7 @@ namespace Fragmentarium {
 			return keysDown;
 		};
 
-		bool Camera2D::mouseMoveEvent(QMouseEvent* e, int w, int h) {
+		bool Camera2D::mouseEvent(QMouseEvent* e, int w, int h) {
 			if (!center || !zoom) return false;
 			Vector3f pos = Vector3f(e->pos().x()/(0.5*float(w))-1.0,1.0-e->pos().y()/(0.5*float(h)),0.0);
 			Vector3f centerValue = center->getValue();
@@ -412,8 +437,21 @@ namespace Fragmentarium {
 
 		void Camera2D::reset(bool fullReset) {
 			keyStatus.clear();
-			if (fullReset) stepSize = 0.1;
+			if (fullReset) stepSize = 1.0;
 		}
+
+		void Camera2D::wheelEvent(QWheelEvent* e) {
+			float steps = e->delta()/120.0;
+			float factor = 1.15;
+			if (!zoom) return;
+			if (steps>0.0) {
+				zoom->setValue(zoom->getValue()*factor);
+			} else {
+				zoom->setValue(zoom->getValue()/factor);
+			}
+		}
+			
+
 
 	}
 }

@@ -53,7 +53,7 @@ Roadmap.
 
 Some of these:
 - Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
-- Update raytracer: fog, inner glow, hard shadows, new AO?
+- Update raytracer: inner glow, hard shadows, new AO?
 - uniform vec4 a; slider[....]
 - Fix: icons
 - Resize trigger many updates (hang)

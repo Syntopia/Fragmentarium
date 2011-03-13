@@ -49,8 +49,6 @@ vec3 getColor2D(vec2 c) {
 #preset Principal Ducks Structure
 Center = -0.103356,4.76826
 Zoom = 0.502601
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 69
 PreIterations = 0
 R = 0.50625
@@ -65,8 +63,6 @@ JuliaY = 5
 #preset Bone Structure
 Center = 0.0108,5.099
 Zoom = 27.643
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 54
 PreIterations = 1
 R = 0.54374
@@ -81,8 +77,6 @@ JuliaY = 5
 #preset Pattern 1
 Center = -1.5922,0.0692
 Zoom = 0.166
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 91
 PreIterations = 12
 R = 0.6625
@@ -97,8 +91,6 @@ JuliaY = 5.5384
 #preset Bifurations
 Center = -1.075,-0.0833163
 Zoom = 0.454
-AntiAliasScale = 0.9901
-AntiAlias = 4
 Iterations = 54
 PreIterations = 9
 R = 0.44375
@@ -114,8 +106,6 @@ JuliaX = -0.11766
 #preset Cell
 Center = -408.698,10
 Zoom = -0.000493858
-AntiAliasScale = 0.9901
-AntiAlias = 2
 Iterations = 165
 PreIterations = 4
 R = 0.61875
@@ -130,8 +120,6 @@ JuliaY = 5.89285
 #preset Spooky
 Center = -0.05144,-1.0548
 Zoom = 92.248
-AntiAliasScale = 0.9901
-AntiAlias = 2
 Iterations = 261
 PreIterations = 6
 R = 0.69375
