@@ -1,21 +1,27 @@
 Todo:
 Slider keyboard shortcuts
 Bug, if missing newline on last pos: Could not create fragment shader: 0(341) : error C0104: Unknown pre-processor directive #group
+-> "Tile Preview"?
 
 Check:
 AA in 3D working properly?
 Serialization to strings round errors?
 
-13-03-10
+15-03-10 [MHC]
+Linux compile bug fix
+ATI Shader fix
+'Ducks' fractal HUD display
+
+13-03-10 [2h, MHC]
 Mouse Wheel support
 2D Keyboard shortcuts
 
-11-03-10 
+11-03-10 [2h, MHC]
 Added Dither
 Added support for presets
 Fixed Fog
 
-10-03-10 [2h]
+10-03-10 [2h, MHC]
 Added new eventloop supporting multiple simultaneous keys
 BugFix: up is reset on build
 BugFix: preview off requires rebuild

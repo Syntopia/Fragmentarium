@@ -101,10 +101,10 @@ namespace Fragmentarium {
 			double getTo() { return to; }
 			double getDefaultValue() { return defaultValue; }
 		private:
-			Vector3f defaultColorValue;
 			double defaultValue;
 			double from;
 			double to;
+			Vector3f defaultColorValue;
 		};
 
 		class BoolParameter : public GuiParameter {

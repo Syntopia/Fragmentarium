@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QSlider>
 #include <QDoubleSpinBox>
+#include <QComboBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QApplication>

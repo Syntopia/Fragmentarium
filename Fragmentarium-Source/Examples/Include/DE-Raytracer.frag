@@ -34,7 +34,7 @@ void main(void)
 	dir = (coord.x*Right + coord.y*up )*FOV+Dir;
 	dirDy = ps.y*up*FOV;
 	dirDx = ps.x*Right*FOV;
-};
+}
 #endvertex
 
 #group Raytracer

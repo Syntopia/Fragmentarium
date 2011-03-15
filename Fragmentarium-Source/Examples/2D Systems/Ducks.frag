@@ -14,9 +14,9 @@ uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
 uniform float C; slider[0,1,2]
-uniform bool Julia; checkbox[false]
-uniform float JuliaX; slider[-0.4,0,1.2]
-uniform float JuliaY; slider[3.0,5.0,8.0]
+uniform bool Julia; checkbox[true]
+uniform float JuliaX; slider[-1.4,0.23528,1.2]
+uniform float JuliaY; slider[2.9,5.53840,6.7]
 
 void init() {}
 
@@ -28,9 +28,42 @@ vec2 zlog(vec2 a) {
 
 vec2 c2 = vec2(JuliaX,JuliaY);
 
-vec3 getColor2D(vec2 c) {
-	vec2 z = Julia ?  c : vec2(1.0,0.0);
+vec2 mapFrom = vec2(0.3,-0.3);
+vec2 mapTo = vec2(0.9,0.9);
+uniform bool ShowMap; checkbox[true]
+uniform float MapZoom; slider[0.01,2.1,6]
+
+vec3 getMapColor2D(vec2 c) {
+      vec2 p =  (aaCoord-mapFrom)/(mapTo-mapFrom);
+	p -=vec2(0.5);
+	float ar = pixelSize.y/pixelSize.x;
+        p*=MapZoom; p.x*=ar;
+	if (abs(p.x)<2.0*pixelSize.y*MapZoom) return vec3(0.00,0.0,0.0);
+	if (abs(p.y)<2.0*pixelSize.x*MapZoom) return vec3(0.0,0,0.0);
+	p +=vec2(JuliaX, JuliaY) ;
+       float mean = 0.0;
 	
+	vec2 z =  vec2(1.0,0.0);
+	int Iter = 200; // 'const int' crashes on my ATI card?
+	for (int i = 0; i < Iter; i++) {
+		z = zlog(vec2(z.x,abs(z.y)))+  p;
+   	      mean+=length(z);
+	}
+	mean/=float(Iter);
+	float co =   1.0 - log2(.5*log2(mean/0.5));
+	return vec3( .5+.5*cos(6.2831*co+0.5),.5+.5*cos(6.2831*co + 0.5),.5+.5*cos(6.2831*co +0.5) );
+	
+}
+
+vec3 getColor2D(vec2 c) {
+
+	if (ShowMap && Julia) { 
+           vec2 w = (aaCoord-(mapTo+mapFrom)/2.0)/pixelSize;
+           if (length(w)<230) return getMapColor2D(c);
+           if (length(w)<235) return vec3(0.0,0.0,0.0);
+	 }
+
+	vec2 z = Julia ?  c : vec2(1.0,0.0);
 	float mean = 0.0;
 	
 	for (int i = 0; i < Iterations; i++) {
@@ -129,4 +162,21 @@ C = 0.9625
 Julia = true
 JuliaX = 0.38824
 JuliaY = 5.89285
+#endpreset
+
+
+#preset todo
+Center = 0.0983951,0.314843
+Zoom = 0.198006
+AntiAliasScale = 1
+AntiAlias = 2
+Iterations = 54
+PreIterations = 9
+R = 0.44375
+G = 0.55
+B = 0.62112
+C = 0.775
+Julia = true
+JuliaX = -0.48238
+JuliaY = 5
 #endpreset

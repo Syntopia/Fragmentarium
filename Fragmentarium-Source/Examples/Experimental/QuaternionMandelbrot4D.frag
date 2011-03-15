@@ -12,6 +12,7 @@
 
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,16,100]
+uniform int ColorIterations;  slider[0,16,100]
 // Breakout distance
 uniform float Threshold; slider[0,10,100]
 
@@ -25,7 +26,7 @@ float DE(vec3 pos) {
 		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) +  vec4(pos, 0.0);
 		p.yz = -p.zy;
 		float p2 = dot(p,p);
-		if (i<3) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,p2)));
+		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,p2)));
 		if (p2 > Threshold) break;
 	}
 	float r = length(p);
@@ -33,37 +34,38 @@ float DE(vec3 pos) {
 }
 
 #preset Profile
-FOV = 0.4
-Eye = -2.21876,-0.018033,0.60607
-Target = 6.55502,0.382615,-4.17518
-Up = 0.133972,0.936415,0.324312
+FOV = 0.395066
+Eye = -1.75198,-0.142854,-2.12447
+Target = 2.4962,-0.000206015,6.9272
+Up = 0.319966,-0.936004,-0.135418
 AntiAlias = 1
 AntiAliasBlur = 1
-Detail = -3.27005
-DetailNormal = -3.83656
+Detail = -3.11682
+DetailNormal = -1.95195
 FudgeFactor = 0.80374
 MaxRaySteps = 104
 MaxRayStepsDiv = 2.25
 BoundingSphere = 2
-Dither = 0.5
+Dither = 0.5797
 AO = 0,0,0,0.7
-Specular = 4
-SpecularExp = 21.875
-SpotLight = 1,1,1,0.65217
-SpotLightDir = -0.44762,0.1
-CamLight = 1,1,1,1
-Glow = 1,1,1,0.2
-Fog = 0.1
+Specular = 5.4167
+SpecularExp = 18.75
+SpotLight = 1,1,1,0.90217
+SpotLightDir = 0.29524,0.1
+CamLight = 1,1,1,0.66667
+Glow = 1,1,1,0
+Fog = 0.0537
 BaseColor = 1,1,1
-OrbitStrength = 0.88119
-X = 0.5,0.6,0.6,0.6378
-Y = 1,0.6,0,0.77952
-Z = 0.8,0.78,1,0.73228
-R = 0.4,0.7,1,0.12
+OrbitStrength = 1
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.22222
 BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
 Iterations = 17
 Threshold = 10
+ColorIterations = 1
 #endpreset
 
 #preset Head
