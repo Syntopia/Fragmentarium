@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QSlider>
 #include <QTabWidget>
+#include <QComboBox>
 #include <QFrame>
 #include <QColorDialog>
 #include <QDoubleSpinBox>
