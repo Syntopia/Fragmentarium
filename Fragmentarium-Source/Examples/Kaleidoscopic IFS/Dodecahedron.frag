@@ -65,3 +65,43 @@ float DE(vec3 z)
 	// Works better when subtracting -1
 	return (length(z) ) * pow(Scale,  float(-n-1));
 }
+
+#preset Default
+FOV = 0.360217
+Eye = 1.81932,-3.83045,-3.01399
+Target = 0.435564,-0.91705,-0.721581
+Up = 0.00636468,0.620226,-0.784397
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.09489
+DetailNormal = -1.81734
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 2.125
+BoundingSphere = 2
+Dither = 0.56521
+AO = 0,0,0,0.77869
+Specular = 0.8333
+SpecularExp = 16
+SpotLight = 1,1,1,0.32609
+SpotLightDir = -0.39048,0.1
+Glow = 1,1,1,0.06947
+Fog = 0.08054
+BaseColor = 1,1,1
+OrbitStrength = 0.49505
+X = 0.5,0.6,0.6,-0.9843
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.79528
+R = 0.4,0.7,1,0.14286
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+Scale = 2.61792
+Phi = 1.618
+Bailout = 9
+Angle1 = 0
+Rot1 = 1,1,1
+Angle2 = 0
+Rot2 = 1,1,1
+Iterations = 13
+CamLight = 1,1,1,1.26882
+#endpreset

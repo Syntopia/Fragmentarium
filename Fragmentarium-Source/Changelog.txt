@@ -1,13 +1,19 @@
 Todo:
+Load Default on play
+White halo around some structure (see standard mandelbox)
+Clean up examples (partially OK - create defaults for all)
+Check Help (add slider bindings)
+vec4 support?
+Glow?
+
+Sourceforge page.
+
+17-03-10 [MHC, 2h]
+Fix: Bug, if missing newline on last pos: Could not create fragment shader: 0(341) : error C0104: Unknown pre-processor directive #group
+WinBuild: added imageplugins
 Slider keyboard shortcuts
-Bug, if missing newline on last pos: Could not create fragment shader: 0(341) : error C0104: Unknown pre-processor directive #group
--> "Tile Preview"?
 
-Check:
-AA in 3D working properly?
-Serialization to strings round errors?
-
-15-03-10 [MHC]
+15-03-10 [MHC, 1h]
 Linux compile bug fix
 ATI Shader fix
 'Ducks' fractal HUD display

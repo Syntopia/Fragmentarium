@@ -173,7 +173,8 @@ namespace Fragmentarium {
 					}
 					if (!foundEnd) WARNING("Did not find #endpreset");
 					fs.presets[name] = preset.join("\n");
-					continue;
+					if (i==fs.source.count()) break;
+					s = fs.source[i];
 				}
 				
 				if (!s.contains("#replace")) {

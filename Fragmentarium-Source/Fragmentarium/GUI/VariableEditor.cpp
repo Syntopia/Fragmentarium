@@ -21,8 +21,9 @@ namespace Fragmentarium {
 	namespace GUI {
 
 		using namespace SyntopiaCore::Misc;
-
+		
 		VariableEditor::VariableEditor(QWidget* parent, MainWindow* mainWindow) : QWidget(parent) {
+			currentComboSlider = 0;
 			this->mainWindow = mainWindow;
 			layout = new QVBoxLayout(this);
 			layout->setSpacing(0);
@@ -76,22 +77,47 @@ namespace Fragmentarium {
 			connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(focusChanged(QWidget*,QWidget*)));
 		};	
 
+		void VariableEditor::sliderDestroyed(QObject* obj) {
+			if (obj==currentComboSlider) {
+				INFO("Destroying focus");
+				currentComboSlider = 0;
+				mainWindow->getEngine()->getCameraControl()->setComboSlider(currentComboSlider);
+			}
+		}
+
 		void VariableEditor::focusChanged(QWidget* oldWidget,QWidget* newWidget) {
+			// Detect if a ComboSlider gets or looses focus
 			ComboSlider* oldFloat = 0;
 			if (oldWidget && oldWidget->parent()) oldFloat = qobject_cast<ComboSlider*>(oldWidget->parent());
 			ComboSlider* newFloat = 0;
 			if (newWidget && newWidget->parent()) newFloat = qobject_cast<ComboSlider*>(newWidget->parent());
-			if (newFloat) {
-				QPalette pal = newFloat->palette();
-				pal.setColor(newFloat->backgroundRole(), Qt::gray);
-				
-				newFloat->setPalette(pal);
-				newFloat->setAutoFillBackground(true);
-			}
+			/*
 			if (oldFloat) {
 				oldFloat->setPalette(QApplication::palette(oldFloat));
 				oldFloat->setAutoFillBackground(false);
+				if (oldFloat == currentComboSlider) {
+					currentComboSlider = 0;
+					INFO("Loosing focus");
+				}
+				mainWindow->getEngine()->getCameraControl()->setComboSlider(currentComboSlider);
 			}
+			*/
+			if (newFloat) {
+
+				if (currentComboSlider) {
+					currentComboSlider->setPalette(QApplication::palette(oldFloat));
+					currentComboSlider->setAutoFillBackground(false);
+				}
+
+				QPalette pal = newFloat->palette();
+				pal.setColor(newFloat->backgroundRole(), Qt::gray);
+				newFloat->setPalette(pal);
+				newFloat->setAutoFillBackground(true);
+				currentComboSlider = newFloat;
+				mainWindow->getEngine()->getCameraControl()->setComboSlider(currentComboSlider);
+				connect(currentComboSlider, SIGNAL(destroyed(QObject *)), this, SLOT(sliderDestroyed(QObject *)));
+			}
+			
 		}
 
 		void VariableEditor::setPresets(QMap<QString, QString> presets) {

@@ -20,6 +20,7 @@ namespace Fragmentarium {
 		class Float3Widget;
 		class Float2Widget;
 		class FloatWidget;
+		class ComboSlider;
 			
 		using namespace SyntopiaCore::Math;
 
@@ -40,8 +41,12 @@ namespace Fragmentarium {
 			virtual void updateState() { parseKeys(); };
 			virtual void reset(bool /*fullReset*/){};
 			virtual bool parseKeys() = 0;
+			virtual void checkSliderKeys(bool* keysDown);
+			void setComboSlider(ComboSlider* comboSlider);
 			
 		protected:
+			ComboSlider* comboSlider;
+			double sliderStepSize;
 			bool keyDown(int key);
 			QMap<int, bool> keyStatus;
 			bool askForRedraw;

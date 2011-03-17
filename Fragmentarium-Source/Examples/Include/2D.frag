@@ -18,12 +18,13 @@ void main(void)
 {
 	float ar = pixelSize.y/pixelSize.x;
 	gl_Position =  gl_Vertex;
-	viewCoord = gl_Position.xy;
+	viewCoord = (gl_ProjectionMatrix*gl_Vertex).xy;
 	coord = ((gl_ProjectionMatrix*gl_Vertex).xy/Zoom+  Center);
 	coord.x*= ar;
      
-	aaScale = mat2(gl_ProjectionMatrix)*pixelSize*AntiAliasScale/Zoom;
+	aaScale = vec2(gl_ProjectionMatrix[0][0],gl_ProjectionMatrix[1][1])*pixelSize*AntiAliasScale/Zoom;
 }
+
 #endvertex
 
 
@@ -41,14 +42,15 @@ vec3 getColor2D(vec2 z) ;
 vec3 getColor2Daa(vec2 z) {
 	vec3 v = vec3(0.0,0.0,0.0);
 	float d = 1.0/float(AntiAlias);
-	for (int x=1; x <=AntiAlias;x++) {
-		for (int y=1; y <=AntiAlias;y++) {
-		       aaCoord = viewCoord + vec2(x,y)*d*pixelSize;
+	vec2 ard = vec2(pixelSize.x,pixelSize.y)*d;
+	for (int x=0; x <AntiAlias;x++) {
+		for (int y=0; y <AntiAlias;y++) {
+		       aaCoord = (viewCoord + vec2(x,y)*ard);
 			v +=  getColor2D(z+vec2(x,y)*d*aaScale);
              }
 	}
 	
-	return v/(float(AntiAlias)*float(AntiAlias));
+	return v/(float(AntiAlias*AntiAlias));
 }
 
 void init(); // forward declare

@@ -23,7 +23,44 @@ vec2 complexMul(vec2 a, vec2 b) {
 	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
 }
 
+vec2 mapCenter = vec2(0.5,0.5);
+float mapRadius =0.3;
+uniform bool ShowMap; checkbox[true]
+uniform float MapZoom; slider[0.01,2.1,6]
+
+vec3 getMapColor2D(vec2 c) {	
+	vec2 p =  (aaCoord-mapCenter)/(mapRadius);
+	p*=MapZoom; p.x/=pixelSize.x/pixelSize.y;
+	if (abs(p.x)<3.0*pixelSize.y*MapZoom) return vec3(0.0,0.0,0.0);
+	if (abs(p.y)<3.0*pixelSize.x*MapZoom) return vec3(0.0,0.0,0.0);
+	p +=vec2(JuliaX, JuliaY) ;
+
+	
+	vec2 z =  vec2(0.0,0.0);
+	
+	int i = 0;
+	for (i = 0; i < Iterations; i++) {
+		z = complexMul(z,z) +p;
+		if (dot(z,z)> 200.0) break;
+	}
+	if (i < Iterations) {
+		float co =  float( i) + 1.0 - log2(.5*log2(dot(z,z)));
+		co = sqrt(co/256.0);
+		return vec3( .5+.5*cos(6.2831*co),.5+.5*cos(6.2831*co),.5+.5*cos(6.2831*co) );
+	}  else {
+		return vec3(0.0);
+	}
+	
+}
+
 vec3 getColor2D(vec2 c) {
+	if (ShowMap && Julia) {
+		vec2 w = (aaCoord-mapCenter);
+		w.y/=(pixelSize.y/pixelSize.x);
+		if (length(w)<mapRadius) return getMapColor2D(c);
+		if (length(w)<mapRadius+0.01) return vec3(0.0,0.0,0.0);
+	}
+	
 	vec2 z = Julia ?  c : vec2(0.0,0.0);
 	int i = 0;
 	float dist = 10000.0;
@@ -110,3 +147,21 @@ Julia = false
 JuliaX = -0.6
 JuliaY = 1.3
 #endpreset
+
+#preset Nice Julia 2
+Center = 0.44266,-0.521707
+Zoom = 1.70484
+AntiAliasScale = 1
+AntiAlias = 3
+Iterations = 675
+R = 0.0125
+G = 0.13125
+B = 0.32919
+Julia = true
+JuliaX = -0.20668
+JuliaY = 0.79332
+Divider = 35
+Power = 0.70074
+Radius = 0.7037
+#endpreset
+

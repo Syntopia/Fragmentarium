@@ -1055,7 +1055,7 @@ namespace Fragmentarium {
 			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
 			renderModeToolBar->addWidget(renderButton);
 			
-			viewLabel = new QLabel("Zoom Preview (off)", renderModeToolBar);
+			viewLabel = new QLabel("Tile Preview (off)", renderModeToolBar);
 			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
 			viewSlider->setTickInterval(1);
 			viewSlider->setMinimum(0);

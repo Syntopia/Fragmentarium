@@ -18,7 +18,17 @@ namespace Fragmentarium {
 
 		CameraControl::CameraControl() : askForRedraw(false) { 
 			reset(true); 
+			sliderStepSize = 0.0;
+			comboSlider = 0;
 		};
+
+		void CameraControl::setComboSlider(ComboSlider* comboSlider) {
+			this->comboSlider = comboSlider;
+			INFO("Settings comboslider to: + " + QString::number((int)comboSlider));
+			if (!comboSlider) return;
+			sliderStepSize = comboSlider->getSpan()/100.0;
+		}
+			
 			
 		bool CameraControl::keyPressEvent(QKeyEvent* ev) {
 			if (ev->isAutoRepeat()) {
@@ -35,6 +45,35 @@ namespace Fragmentarium {
 			return keyStatus[key];
 		}
 
+
+		void CameraControl::checkSliderKeys(bool* keysDown) {
+			if (!comboSlider) return;
+
+			if (keyDown(Qt::Key_Up)) {
+				sliderStepSize = sliderStepSize*10.0;
+				INFO(QString("Slider step size: %1").arg(sliderStepSize));
+				*keysDown = true;
+				keyStatus[Qt::Key_Up] = false; // only apply once
+			} 
+			
+			if (keyDown(Qt::Key_Down)) {
+				sliderStepSize = sliderStepSize/10.0;
+				INFO(QString("Slider step size: %1").arg(sliderStepSize));
+				*keysDown = true;
+				keyStatus[Qt::Key_Down] = false; // only apply once
+			}
+			
+			if (keyDown(Qt::Key_Left)) {
+				comboSlider->setValue(comboSlider->getValue()-sliderStepSize);
+				*keysDown = true;
+			} 
+			
+			if (keyDown(Qt::Key_Right)) {
+				comboSlider->setValue(comboSlider->getValue()+sliderStepSize);
+				*keysDown = true;
+			} 
+			
+		}
 
 		Camera3D::Camera3D(QStatusBar* statusBar) : statusBar(statusBar) {
 			mouseDown = Vector3f(0,0,-1);
@@ -191,6 +230,8 @@ namespace Fragmentarium {
 				up->setValue(m*up->getValue());	
 				keysDown = true;
 			} 
+
+			checkSliderKeys(&keysDown);
 
 			askForRedraw = false;
 			if (keysDown) {
@@ -397,6 +438,8 @@ namespace Fragmentarium {
 				zoom->setValue(zoomValue/factor);
 				keysDown = true;
 			}
+
+			checkSliderKeys(&keysDown);
 
 			
 			askForRedraw = keysDown;

@@ -28,19 +28,19 @@ vec2 zlog(vec2 a) {
 
 vec2 c2 = vec2(JuliaX,JuliaY);
 
-vec2 mapFrom = vec2(0.3,-0.3);
-vec2 mapTo = vec2(0.9,0.9);
+vec2 mapCenter = vec2(0.5,0.5);
+float mapRadius =0.4;
 uniform bool ShowMap; checkbox[true]
 uniform float MapZoom; slider[0.01,2.1,6]
 
 vec3 getMapColor2D(vec2 c) {
-      vec2 p =  (aaCoord-mapFrom)/(mapTo-mapFrom);
-	p -=vec2(0.5);
-	float ar = pixelSize.y/pixelSize.x;
-        p*=MapZoom; p.x*=ar;
-	if (abs(p.x)<2.0*pixelSize.y*MapZoom) return vec3(0.00,0.0,0.0);
-	if (abs(p.y)<2.0*pixelSize.x*MapZoom) return vec3(0.0,0,0.0);
+	vec2 p =  (aaCoord-mapCenter)/(mapRadius);
+	p*=MapZoom; p.x/=pixelSize.x/pixelSize.y;
+	if (abs(p.x)<4.0*pixelSize.y*MapZoom) return vec3(0.0,0.0,0.0);
+	if (abs(p.y)<4.0*pixelSize.x*MapZoom) return vec3(0.0,0.0,0.0);
 	p +=vec2(JuliaX, JuliaY) ;
+
+
        float mean = 0.0;
 	
 	vec2 z =  vec2(1.0,0.0);
@@ -57,11 +57,12 @@ vec3 getMapColor2D(vec2 c) {
 
 vec3 getColor2D(vec2 c) {
 
-	if (ShowMap && Julia) { 
-           vec2 w = (aaCoord-(mapTo+mapFrom)/2.0)/pixelSize;
-           if (length(w)<230) return getMapColor2D(c);
-           if (length(w)<235) return vec3(0.0,0.0,0.0);
-	 }
+	if (ShowMap && Julia) {
+		vec2 w = (aaCoord-mapCenter);
+		w.y/=(pixelSize.y/pixelSize.x);
+		if (length(w)<mapRadius) return getMapColor2D(c);
+		if (length(w)<mapRadius+0.01) return vec3(0.0,0.0,0.0);
+	}
 
 	vec2 z = Julia ?  c : vec2(1.0,0.0);
 	float mean = 0.0;

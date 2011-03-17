@@ -98,12 +98,12 @@ uniform vec4 SpotLight; color[0.0,0.4,1.0,1.0,1.0,1.0];
 // Direction to the spot light (spherical coordinates)
 uniform vec2 SpotLightDir;  slider[(-1,-1),(0.1,0.1),(1,1)]
 // Light coming from the camera position (diffuse lightning)
-uniform vec4 CamLight; color[0,1,1,1.0,1.0,1.0];
+uniform vec4 CamLight; color[0,1,2,1.0,1.0,1.0];
 
 // Glow based on the number of raymarching steps
-uniform vec4 Glow; color[0,0.2,1,1.0,1.0,1.0];
+uniform vec4 Glow; color[0,0.0,1,1.0,1.0,1.0];
 
-uniform float Fog; slider[0,0.1,2]
+uniform float Fog; slider[0,0.0,2]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -263,7 +263,7 @@ vec3 trace(vec3 from, vec3 dir) {
 		color = lighting(normalE*epsModified/eps, color,  hit,  direction, steps);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
-		color = mix(color, backColor, 1.0-exp(-Fog*f*f));
+		color = mix(color, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
 	  if (  steps!=MaxRaySteps)  color += Glow.xyz*Glow.w*pow(stepFactor,4.0);
 		
 }

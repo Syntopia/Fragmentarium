@@ -51,7 +51,10 @@ namespace Fragmentarium {
 					connect(slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
 			}
 
+			double getSpan() { return maximum-minimum; }
+
 			double getValue() { return myValue; }
+
 			void setValue(double d) { 
 				myValue = d; 
 				spinner->blockSignals(true);

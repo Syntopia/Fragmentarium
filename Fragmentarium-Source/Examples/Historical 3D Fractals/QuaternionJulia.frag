@@ -36,3 +36,75 @@ float DE(vec3 pos) {
 	return  0.5 * r * log(r) / length(dp);
 }
 
+#preset Default
+FOV = 0.4
+Eye = -0.821733,-1.82625,2.23376
+Target = 2.11612,4.20274,-5.18381
+Up = -0.89963,-0.087855,-0.427722
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.45252
+DetailNormal = -2.8
+FudgeFactor = 1
+MaxRaySteps = 104
+MaxRayStepsDiv = 1.8
+BoundingSphere = 2
+Dither = 0.5
+AO = 0,0,0,0.7
+Specular = 1.5
+SpecularExp = 16
+SpotLight = 1,1,1,0.38043
+SpotLightDir = 0.1,0.1
+CamLight = 1,1,1,1
+Glow = 1,1,1,0.16667
+Fog = 0
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.12
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+Iterations = 16
+Threshold = 10
+C123 = 0.18,0.88,0.24
+C4 = 0.16
+#endpreset
+
+#preset Round
+FOV = 0.4
+Eye = -2.41154,0.515282,1.70343
+Target = 5.67754,-1.39664,-3.85636
+Up = -0.372534,0.56491,-0.736271
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.45252
+DetailNormal = -2.8
+FudgeFactor = 1
+MaxRaySteps = 104
+MaxRayStepsDiv = 1.8
+BoundingSphere = 2
+Dither = 0.5
+AO = 0,0,0,0.7
+Specular = 1.5
+SpecularExp = 16
+SpotLight = 1,1,1,0.38043
+SpotLightDir = 0.1,0.1
+CamLight = 1,1,1,1
+Glow = 1,1,1,0.16667
+Fog = 0
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.12
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+Iterations = 15
+Threshold = 12.963
+C123 = 0.07246,0.0145,0.0145
+C4 = 0.52
+#endpreset
+

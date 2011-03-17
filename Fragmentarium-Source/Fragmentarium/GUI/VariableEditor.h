@@ -13,21 +13,19 @@
 #include <QHBoxLayout>
 #include <QGLShaderProgram>
 #include "SyntopiaCore/Math/Vector3.h"
-
 #include "../Parser/Preprocessor.h"
 #include "SyntopiaCore/Logging/Logging.h"
 #include "DisplayWidget.h"
 
-/// Classes for the GUI Editor for the preprocessor constant variables.
-/// E.g. the line: #define angle 45 (float:0.0-360.0)
-///	will make a simple editor widget appear.
+/// The editor window for GUI variables (uniforms)
 namespace Fragmentarium {
 	namespace GUI {
 	
 		using namespace SyntopiaCore::Logging;
 		using namespace SyntopiaCore::Math;
 
-		class MainWindow;
+		class MainWindow;  // forward
+		class ComboSlider; // forward
 
 		/// The Variable Editor window.
 		class VariableEditor : public QWidget {
@@ -43,10 +41,12 @@ namespace Fragmentarium {
 			void createGroup(QString g);
 			VariableWidget* getWidgetFromName(QString name);
 			void setPresets(QMap<QString, QString> presets);
+			ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
 		signals:
 			void changed();
 
 		public slots:
+			void sliderDestroyed(QObject* o);
 			void focusChanged(QWidget* oldWidget,QWidget* newWidget);
 			void applyPreset();
 			void resetUniforms();
@@ -66,7 +66,8 @@ namespace Fragmentarium {
 			
 			QMap<QString, QWidget*> tabs;
 			QMap<QWidget*, QWidget*> spacers;
-			QTabWidget* tabWidget ;
+			QTabWidget* tabWidget;
+			ComboSlider* currentComboSlider;
 		};
 
 	

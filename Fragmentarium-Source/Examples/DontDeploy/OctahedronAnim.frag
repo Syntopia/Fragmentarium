@@ -8,7 +8,7 @@
 uniform float Scale; slider[0.00,2,4.00]
 
 uniform vec3 Offset; slider[(0,0,0),(1,0,0),(1,1,1)]
-
+uniform float time;
 uniform float Angle1; slider[-180,0,180]
 uniform vec3 Rot1; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
 uniform float Angle2; slider[-180,0,180]
@@ -19,7 +19,7 @@ mat3 fracRotation2;
 mat3 fracRotation1;
 
 void init() {
-	fracRotation2 = rotationMatrix3(normalize(Rot2), Angle2);
+	fracRotation2 = rotationMatrix3(normalize(Rot2), Angle2+time*36.0);
 	fracRotation1 = rotationMatrix3(normalize(Rot1), Angle1);
 }
 
@@ -53,42 +53,48 @@ float DE(vec3 z)
 	return (length(z) ) * pow(Scale, -float(n));
 }
 
-#preset Default
-FOV = 0.4
-Eye = -0.91199,-2.42234,0.247336
-Target = 2.35017,6.98029,-0.726773
-Up = -0.909443,0.284621,-0.298287
-AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -1.68616
-DetailNormal = -2.55773
-FudgeFactor = 0.916
-MaxRaySteps = 112
-MaxRayStepsDiv = 2.88
-BoundingSphere = 2
-Dither = 0.5
-AO = 0,0,0,0.96721
-Specular = 1.4167
-SpecularExp = 18.8
-SpotLight = 1,1,1,0.17391
-SpotLightDir = 0.31428,0.1
-CamLight = 1,1,1,1.41936
-Glow = 0.835294,0.0784314,0.0784314,0
-Fog = 0
-BaseColor = 1,1,1
-OrbitStrength = 0.515
-X = 0.6,0.0117647,0.0117647,0.59056
-Y = 1,0.6,0,0.44882
-Z = 1,1,1,0.49606
-R = 0.666667,0.666667,0.498039,0.07936
-BackgroundColor = 0.666667,0.666667,0.498039
-GradientBackground = 0.3
-Scale = 2
-Offset = 1,0,0
-Angle1 = 0
-Rot1 = 1,1,1
-Angle2 = 0
-Rot2 = 1,1,1
-Iterations = 13
-#endpreset
 
+/*
+AntiAlias = 3
+AntiAliasBlur = 1
+Detail = -2.709
+DetailNormal = -2.555
+BackStepNormal = 0
+ClarityPower = 1
+MaxDist = 6
+Clipping = 0
+FudgeFactor = 0.981
+MaxRaySteps = 154
+MaxRayStepsDiv = 1.8
+BandingSmooth = 0
+AO = 0.796
+AOColor = 0,0,0
+SpotLight = 0.41
+Specular = 0.67
+SpecularExp = 16
+SpotLightColor = 1,1,1
+SpotLightDir = -0.486,0.1
+CamLight = 0.772
+CamLightColor = 1,1,1
+Glow = 0.2
+GlowColor = 1,1,1
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+BaseColor = 1,1,1
+OrbitStrength = 1
+XStrength = 1
+X = 0.498039,0.6,0.6
+YStrength = 1
+Y = 1,0.6,0
+ZStrength = 1
+Z = 0.8,0.776471,1
+RStrength = 0.1
+R = 0.992157,1,0.843137
+Scale = 1.72
+Offset = 0.676,0.257,0.029
+Angle1 = -119.16
+Rot1 = 0.4,0.186,0.258
+Angle2 = -180
+Rot2 = -0.472,1,-0.628
+Iterations = 16
+*/

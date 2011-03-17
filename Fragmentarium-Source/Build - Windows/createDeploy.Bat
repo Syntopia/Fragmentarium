@@ -1,7 +1,10 @@
-rmdir /S "Fragmentarium"
+rmdir /S /Q "Fragmentarium"
 mkdir "Fragmentarium"
+cd Fragmentarium
+mkdir imageformats
+cd ..
 xcopy ..\Examples\*.* "Fragmentarium"\Examples\  /E
-rmdir /S "Fragmentarium"\Examples\DontDeploy
+rmdir /S /Q "Fragmentarium"\Examples\DontDeploy
 xcopy ..\Misc\*.* "Fragmentarium"\Misc\  /E
 xcopy Microsoft.VC90.CRT\*.* "Fragmentarium"\Microsoft.VC90.CRT\  /E
 copy Release\Fragmentarium.exe "Fragmentarium"\  
@@ -10,6 +13,9 @@ copy %QT4DIR%\bin\QtGUI4.dll "Fragmentarium"\
 copy %QT4DIR%\bin\QtCore4.dll "Fragmentarium"\  
 copy %QT4DIR%\bin\QtXml4.dll "Fragmentarium"\  
 copy %QT4DIR%\bin\QtScript4.dll "Fragmentarium"\  
+copy %QT4DIR%\plugins\imageformats\qjpeg4.dll "Fragmentarium\imageformats"  
+copy %QT4DIR%\plugins\imageformats\qtiff4.dll "Fragmentarium\imageformats"  
+
 rem copy *.manifest "Fragmentarium"\ 
 copy EULA.txt "Fragmentarium"\  
 copy License.txt "Fragmentarium"\  

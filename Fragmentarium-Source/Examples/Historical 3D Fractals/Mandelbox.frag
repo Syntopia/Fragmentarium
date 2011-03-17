@@ -209,3 +209,40 @@ Scale = 2.04344
 RotVector = 1,1,1
 RotAngle = 0
 #endpreset
+
+#preset M1
+FOV = 0.4
+Eye = 3.4315,-5.57625,-2.47321
+Target = -1.74219,2.244,1.00192
+Up = -0.853973,-0.498049,-0.15059
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.29929
+DetailNormal = -2.55773
+FudgeFactor = 0.916
+MaxRaySteps = 112
+MaxRayStepsDiv = 2.88
+BoundingSphere = 7.1083
+Dither = 0.5
+AO = 0,0,0,0.96721
+Specular = 1.4167
+SpecularExp = 18.8
+SpotLight = 1,1,1,0.17391
+SpotLightDir = 0.31428,0.1
+CamLight = 1,1,1,1.41936
+Glow = 0.835294,0.0784314,0.0784314,0
+Fog = 0.45638
+BaseColor = 1,1,1
+OrbitStrength = 0.515
+X = 0.6,0.0117647,0.0117647,0.59056
+Y = 1,0.6,0,0.44882
+Z = 1,1,1,0.49606
+R = 0.666667,0.666667,0.498039,0.07936
+BackgroundColor = 0.666667,0.666667,0.498039
+GradientBackground = 0.3
+Iterations = 17
+MinRad2 = 0.25
+Scale = 3
+RotVector = 1,1,1
+RotAngle = 0
+#endpreset
