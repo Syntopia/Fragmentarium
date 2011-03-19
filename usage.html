@@ -74,12 +74,17 @@
 					<p>Fragmentarium adds a few additional preprocessor commands.</p>
 					
 					<dt>#include "some.frag"</dt><dd>Simply includes the references file. If the filename is a relative filename, Fragmentarium first searches for the file relative to the location of the current executing file (if it is saved), otherwise the paths specified in the 'include path' preference are searched.</dd>
-					<dt>#camera 3D</dt><dd>Tells Fragmentarium to setup a 3D camera model, making it possible to adjust the camera using the mouse on the canvas. The following variables will be available in the shader: vec3 from, to, fromDx, toDx, fromDy, toDy. 'from' and 'to' are the start and endpoint for the camera ray for the current pixel. The '*dx' and '*dy' variables are the offset for neighboring pixels (used for anti-aliasing - normally no need to use manually).</dd>
-					<dt>#camera 2D</dt><dd>Tells Fragmentarium to setup a 2D camera model. A variable, vec2 coord, will contain the model coordinates for the current pixel. The extent of a pixel, can be obtained from the global 'pixelSize' variable.</dd>
+					<dt>#camera 3D</dt><dd>Tells Fragmentarium to setup a 3D camera model, making it possible to adjust the camera using the mouse on the canvas.</dd>
+					<dt>#camera 2D</dt><dd>Tells Fragmentarium to setup a 2D camera model. </dd>
 					<dt>#group parameter group name</dt><dd>Makes it possible to order GUI elements in groups.</dd>
 					<dt>#info "hello there"</dt><dd>Outputs info when compiling the fragment. Useful for attributions.</dd>
 					<dt>#includeonly "some.frag"</dt><dd>Experimental. Includes 'some.frag', but will ignore any 'include' commands in that file.</dd>
 					<dt>#replace "before" "after"</dt><dd>Experimental. Replaces the given patterns in all subsequent read lines (not in previously parsed lines).</dd>
+					
+					<dt>#donotrun</dt><dd>Tells Fragmentarium that it should not attempt to run this file - it is meant be included from another file.</dd>
+					<dt>#preset name</dt><dd>Marks the beginning of a section with parameter settings. These will appear in a drop-down combobox in the parameter editor window.</dd>
+
+<dt>#endpreset</dt><dd>Marks the end of a section with parameter settings.</dd>					
 					
 					</div>
 					<div class="header">
@@ -104,8 +109,10 @@
 					<dt>uniform bool b; checkbox[true]</dt><dd>Maps a checkbox in the GUI to the boolean variable 'b' in the shader code. The default value is specified in the bracket.<dd>
 					<dt>uniform int i; slider[0,1,2]</dt><dd>Creates a slider for an integer named 'i'. The values in the brackets are minimum, default, and maximum values.</dd>
 					<dt>uniform float f; slider[0.1,1.1,2.3]</dt><dd>Creates a slider for an single precision floating-point number named 'f'. The values in the brackets are minimum, default, and maximum values.</dd>
-					<dt>uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]]</dt><dd>Creates three slider for the 3D vector named 'v'. The values in the brackets are minimum, default, and maximum vector values.</dd>
+					<dt>uniform vec2 v; slider[(0,0),(1,1),(1,1)]]</dt><dd>Creates two sliders for the 3D vector named 'v'. The values in the brackets are minimum, default, and maximum vector values.</dd>
+					<dt>uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]]</dt><dd>Creates three sliders for the 3D vector named 'v'. The values in the brackets are minimum, default, and maximum vector values.</dd>
 					<dt>uniform vec3 color; color[0.0,0.0,0.0]</dt><dd>Creates a color-chooser for the 3D vector named 'color'. The values in the brackets are R,G, and B values (in the interval [0;1]).</dd>
+					<dt>uniform vec4 color; color[0.1,0.4,0.8,1.0,1.0,1.0]</dt><dd>Special hybrid that creates a color-chooser for the x,y,z components of the vector named 'color', and a float slider for the fourth, w, component. The first three values in the bracket are min,default,max for the 'w' component, and the last three values in the brackets are R,G, and B defulat values (in the interval [0;1]) for the color chooser.</dd>
 					<dt>uniform sampler2D tex; file[tex.jpg]</dt><dd>Loads a texture into the sampler named 'text'. Filenames are resolved the same way as for the '#include' command (using the 'include' paths). </dd>
 					<br /><br />
 					
@@ -162,11 +169,23 @@ void init() {}
 float DE(vec3 pos) {
 	return abs(length(abs(pos)+vec3(-1.0))-1.2);
 }
+
+#preset default
+FudgeFactor = 0.9
+BoundingSphere = 5
+Detail = -0.8
+Specular = 2.25
+SpecularExp = 33.332
+SpotLight = 1,1,1,0.02174
+SpotLightDir = -0.5619,0.06666
+Glow = 1,1,1,0.21053
+OrbitStrength = 0
+#endpreset
 					</pre>
 					<img src="images/balls.png" /><br/>
 					<br/>
 					The first line includes the "DE-Raytracer.frag". In contrast to the 2D example, "DE-Raytracer.frag" takes care of a lot of stuff, including lighting and anti-aliasing. It is, however, very simple to use: simply provide a distance estimator in the function 'DE' which takes a point in space as input and returns the distance (or an upper bound of it) to the closest point on the object.<br/><br/>
-					
+					The values in the 'preset' section are necessary to tune the raytracer settings. Just build the system, and apply the 'default' preset.
 					</p>
 					</div>
 
