@@ -33,7 +33,8 @@ float DE(vec3 pos) {
 	return  0.5 * r * log(r) / length(dp);
 }
 
-#preset Profile
+#preset Default
+CycleColors = false
 FOV = 0.395066
 Eye = -1.75198,-0.142854,-2.12447
 Target = 2.4962,-0.000206015,6.9272
@@ -133,5 +134,42 @@ R = 0.4,0.7,1,0.12
 BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
 Iterations = 17
+Threshold = 10
+#endpreset
+
+#preset Zoom
+FOV = 0.395066
+Eye = 0.126192,0.974287,-0.361537
+Target = -1.41868,-7.78243,-4.07394
+Up = -0.756363,-0.135487,0.634334
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.70802
+DetailNormal = -2.08656
+FudgeFactor = 0.75701
+MaxRaySteps = 104
+MaxRayStepsDiv = 2.8748
+BoundingSphere = 2
+Dither = 0.5797
+AO = 0,0,0,0.7
+Specular = 5.4167
+SpecularExp = 18.75
+SpotLight = 1,1,1,0.90217
+SpotLightDir = 0.29524,0.1
+CamLight = 1,1,1,0.66667
+Glow = 1,1,1,0
+Fog = 0.0537
+BaseColor = 1,1,1
+OrbitStrength = 1
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.22222
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+CycleColors = false
+Cycles = 18.1816
+Iterations = 20
+ColorIterations = 1
 Threshold = 10
 #endpreset

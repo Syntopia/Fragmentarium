@@ -192,6 +192,8 @@ namespace Fragmentarium {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#camera");
 					fs.camera = c.trimmed();
+				} else if (s.trimmed().startsWith("#donotrun")) {
+					fs.source[i] = "// " + s;
 				} else if (s.trimmed().startsWith("#group")) {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#group");

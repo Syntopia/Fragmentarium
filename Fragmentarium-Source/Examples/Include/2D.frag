@@ -1,3 +1,8 @@
+#donotrun
+
+// This is a utlity program for setting
+// up anti-aliased 2D rendering.
+
 #vertex
 
 #group Camera

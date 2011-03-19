@@ -191,7 +191,7 @@ namespace Fragmentarium {
 		void DisplayWidget::tileRender() {
 			glLoadIdentity();
 			if (!tiles && viewFactor==0) return;
-			if (viewFactor > 0) {
+			if (!tiles && viewFactor > 0) {
 				glScalef(1.0/(viewFactor+1.0),1.0/(viewFactor+1.0),1.0);
 				return;	
 			}

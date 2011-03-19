@@ -1,12 +1,14 @@
 Todo:
-Load Default on play
-White halo around some structure (see standard mandelbox)
-Clean up examples (partially OK - create defaults for all)
-Check Help (add slider bindings)
-vec4 support?
-Glow?
-
 Sourceforge page.
+
+
+-- v0.8 release --
+
+19-03-10 [MHC,2h]
+Execute 'Default' preset on load
+Fixed: White halo around some structure (see standard mandelbox)
+Fixed: Clean up examples (partially OK - create defaults for all)
+Updated help.
 
 17-03-10 [MHC, 2h]
 Fix: Bug, if missing newline on last pos: Could not create fragment shader: 0(341) : error C0104: Unknown pre-processor directive #group

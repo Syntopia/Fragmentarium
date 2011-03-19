@@ -1,3 +1,5 @@
+#donotrun
+
 #info Default Raytracer (by Syntopia)
 #camera 3D
 
@@ -5,7 +7,7 @@
 
 #group Camera
 
-// Use this to adjust clipping planes
+// Field-of-view
 uniform float FOV; slider[0,0.4,2.0];
 uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)];
 uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)];
@@ -23,7 +25,7 @@ void main(void)
 	gl_Position =  gl_Vertex;
 	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
 	coord.x*= pixelSize.y/pixelSize.x;
-      // we will only use projectionmatrix to scale and translate, so the following should be OK.
+	// we will only use gl_ProjectionMatrix to scale and translate, so the following should be OK.
 	vec2 ps =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
 	zoom = length(ps);
 	from = Eye;
@@ -47,7 +49,7 @@ varying float zoom;
 // Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
 uniform int AntiAlias;slider[1,1,5];
 // Smoothens the image (when AA is enabled)
-uniform float AntiAliasBlur;slider[0.0,1,5];
+uniform float AntiAliasBlur;slider[0.0,1,2];
 
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
@@ -132,8 +134,10 @@ uniform vec3 BackgroundColor; color[0.6,0.6,0.45]
 // Vignette background
 uniform float GradientBackground; slider[0.0,0.3,5.0]
 
-
 float DE(vec3 pos) ; // Must be implemented in other file
+
+uniform bool CycleColors; checkbox[false]
+uniform float Cycles; slider[0.1,1.1,32.3]
 
 vec3 lighting(float normalDistance, vec3 color, vec3 pos, vec3 dir, int steps) {
 	vec3 e = vec3(0.0,normalDistance,0.0);
@@ -168,18 +172,31 @@ vec3 lighting(float normalDistance, vec3 color, vec3 pos, vec3 dir, int steps) {
 
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
-// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
 float rand(vec2 co){
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec3 cycle(vec3 c, float s) {
+	return vec3(0.5)+0.5*vec3(cos(s*Cycles+c.x),cos(s*Cycles+c.y),cos(s*Cycles+c.z));
 }
 
 vec3 getColor(float ao) {
 	orbitTrap.w = sqrt(orbitTrap.w);
-	vec3 orbitColor =X.xyz*X.w*orbitTrap.x +
-	Y.xyz*Y.w*orbitTrap.y +
-	Z.xyz*Z.w*orbitTrap.z +
-	R.xyz*R.w*orbitTrap.w;
-	//orbitColor /= (orbitTrap.x + orbitTrap.y + orbitTrap.z + orbitTrap.w);
+	
+	vec3 orbitColor;
+	if (CycleColors) {
+		orbitColor = cycle(X.xyz,orbitTrap.x)*X.w*orbitTrap.x +
+		cycle(Y.xyz,orbitTrap.y)*Y.w*orbitTrap.y +
+		cycle(Z.xyz,orbitTrap.z)*Z.w*orbitTrap.z +
+		cycle(R.xyz,orbitTrap.w)*R.w*orbitTrap.w;	
+	} else {
+		orbitColor = X.xyz*X.w*orbitTrap.x +
+		Y.xyz*Y.w*orbitTrap.y +
+		Z.xyz*Z.w*orbitTrap.z +
+		R.xyz*R.w*orbitTrap.w;
+	}
+	
 	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
 	color = mix(AO.xyz, color,ao);
 	return color;
@@ -209,7 +226,7 @@ vec3 trace(vec3 from, vec3 dir) {
 		d = -dotDE - sqrt(sq);
 		if (d<0.0) {
 			// "minimum d" solution wrong direction
-			d = -dotDE + sqrt(sq);		
+			d = -dotDE + sqrt(sq);
 			if (d<0.0) {
 				// both solution wrong direction
 				sq = -1.0;
@@ -235,7 +252,7 @@ vec3 trace(vec3 from, vec3 dir) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
 			dist = DE(p)*FudgeFactor;
-                    if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
+			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 			dist = clamp(dist, 0.0, MaxDist);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
@@ -254,7 +271,9 @@ vec3 trace(vec3 from, vec3 dir) {
 		backColor = mix(backColor, vec3(0.0,0.0,0.0), t*GradientBackground);
 		if (sq>0.0) backColor += Glow.xyz*Glow.w*pow(stepFactor,4.0);
 	}
-	
+
+	if (  steps==MaxRaySteps) orbitTrap = vec4(0.0);
+
 	if ( dist < epsModified ||  steps==MaxRaySteps) {
 		// We hit something, or reached MaxRaySteps
 		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
@@ -264,9 +283,8 @@ vec3 trace(vec3 from, vec3 dir) {
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
 		color = mix(color, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
-	  if (  steps!=MaxRaySteps)  color += Glow.xyz*Glow.w*pow(stepFactor,4.0);
-		
-}
+		color += Glow.xyz*Glow.w*pow(stepFactor,4.0);
+	}
 	else if (steps==MaxRaySteps) {
 		// Close to something, but too many steps
 		color = backColor;
@@ -285,17 +303,13 @@ void init(); // forward declare
 void main() {
 	init();
 	
-	vec3 color = vec3(0,0,0);
-	for (int x = 1; x<=AntiAlias; x++) {
-		float  dx =  AntiAliasBlur*(float(x)-1.0)/float(AntiAlias);
-		for (int y = 1; y<=AntiAlias; y++) {
-			float dy = AntiAliasBlur*(float(y)-1.0)/float(AntiAlias);
+	vec3 color = vec3(0.0,0.0,0.0);
+	for (int x = 0; x<AntiAlias; x++) {
+		float  dx =  AntiAliasBlur*float(x)/float(AntiAlias);
+		for (int y = 0; y<AntiAlias; y++) {
+			float dy = AntiAliasBlur*float(y)/float(AntiAlias);
 			vec3 nDir = dir+dirDx*dx+dirDy*dy;
-			vec3 c = trace(from,nDir);
-			//float f = (1.0-length(c))*rand(c.xy);
-			//f = clamp(1.0-f,0.0,1.0);			
-			//color += c*f;
-			color +=c;
+			color += trace(from,nDir);
 		}
 	}
 	

@@ -104,4 +104,5 @@ Angle2 = 0
 Rot2 = 1,1,1
 Iterations = 13
 CamLight = 1,1,1,1.26882
+CycleColors = false
 #endpreset

@@ -101,11 +101,11 @@ float DE(vec3 pos) {
 	*/
 }
 
-#preset Green bulb
+#preset Default
 FOV = 0.62536
-Eye = -2.14563,-0.0789065,-0.853331
-Target = 6.14389,0.251802,2.26161
-Up = 0.255226,0.302899,0.918211
+Eye = -2.02889,-0.0740503,-0.808901
+Target = 6.2469,0.270218,2.34088
+Up = -0.283489,0.278232,0.714435
 AntiAlias = 1
 AntiAliasBlur = 1
 Detail = -2.81064
@@ -114,14 +114,15 @@ FudgeFactor = 0.80392
 MaxRaySteps = 164
 MaxRayStepsDiv = 1.8
 BoundingSphere = 2
+Dither = 0.5
 AO = 0,0,0,0.7
 Specular = 2.4348
 SpecularExp = 16
 SpotLight = 1,1,1,0.73563
 SpotLightDir = -0.52,0.1
 CamLight = 1,1,1,0.77273
-Glow = 1,1,1,0.73394
-Fog = 0.1
+Glow = 1,1,1,0
+Fog = 0.10738
 BaseColor = 1,1,1
 OrbitStrength = 0.5625
 X = 0.411765,0.6,0.560784,-0.21312
@@ -130,6 +131,8 @@ Z = 0.666667,0.333333,1,-0.18032
 R = 0.4,0.7,1,0.0909
 BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
+CycleColors = true
+Cycles = 18.1816
 Iterations = 12
 ColorIterations = 2
 Power = 8

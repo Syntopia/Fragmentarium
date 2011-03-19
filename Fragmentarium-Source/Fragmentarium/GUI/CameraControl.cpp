@@ -24,7 +24,6 @@ namespace Fragmentarium {
 
 		void CameraControl::setComboSlider(ComboSlider* comboSlider) {
 			this->comboSlider = comboSlider;
-			INFO("Settings comboslider to: + " + QString::number((int)comboSlider));
 			if (!comboSlider) return;
 			sliderStepSize = comboSlider->getSpan()/100.0;
 		}

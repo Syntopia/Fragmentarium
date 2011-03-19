@@ -122,7 +122,7 @@ JuliaX = 0.23528
 JuliaY = 5.5384
 #endpreset
 
-#preset Bifurations
+#preset Default
 Center = -1.075,-0.0833163
 Zoom = 0.454
 Iterations = 54

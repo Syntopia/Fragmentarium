@@ -125,7 +125,7 @@ namespace Fragmentarium {
 			void about();
 			void showControlHelp();
 			void documentWasModified();
-			void render();
+			bool render();
 			void toggleFullScreen();
 		
 		private:

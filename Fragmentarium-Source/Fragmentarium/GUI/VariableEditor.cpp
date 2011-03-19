@@ -79,7 +79,6 @@ namespace Fragmentarium {
 
 		void VariableEditor::sliderDestroyed(QObject* obj) {
 			if (obj==currentComboSlider) {
-				INFO("Destroying focus");
 				currentComboSlider = 0;
 				mainWindow->getEngine()->getCameraControl()->setComboSlider(currentComboSlider);
 			}
@@ -91,17 +90,7 @@ namespace Fragmentarium {
 			if (oldWidget && oldWidget->parent()) oldFloat = qobject_cast<ComboSlider*>(oldWidget->parent());
 			ComboSlider* newFloat = 0;
 			if (newWidget && newWidget->parent()) newFloat = qobject_cast<ComboSlider*>(newWidget->parent());
-			/*
-			if (oldFloat) {
-				oldFloat->setPalette(QApplication::palette(oldFloat));
-				oldFloat->setAutoFillBackground(false);
-				if (oldFloat == currentComboSlider) {
-					currentComboSlider = 0;
-					INFO("Loosing focus");
-				}
-				mainWindow->getEngine()->getCameraControl()->setComboSlider(currentComboSlider);
-			}
-			*/
+			
 			if (newFloat) {
 
 				if (currentComboSlider) {
@@ -128,11 +117,30 @@ namespace Fragmentarium {
 			this->presets = presets;
 		}
 		
+		void VariableEditor::setDefault() {
+			int i = presetComboBox->findText("Default", Qt::MatchStartsWith);
+			if (i>=0) {
+				presetComboBox->setCurrentIndex(i);
+				INFO("Found 'default' index. Executing...");
+				applyPreset();
+			}
+		}
+
 		void VariableEditor::applyPreset() {
 			QString presetName = presetComboBox->currentText();
 			QString preset = presets[presetName];
 			setSettings(preset);
 		}
+
+		/*
+		void VariableEditor::keyReleaseEvent(QKeyEvent* ev) {
+			mainWindow->getEngine()->keyReleaseEvent(ev);
+		}
+
+		void VariableEditor::keyPressEvent(QKeyEvent* ev) {
+			mainWindow->getEngine()->keyPressEvent(ev);
+		}
+		*/
 
 		void VariableEditor::resetUniforms() {
 			for (int i = 0; i < variables.count(); i++ ) {

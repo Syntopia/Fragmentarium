@@ -541,7 +541,7 @@ namespace Fragmentarium {
 			oldDirtyPosition = -1;
 			setFocusPolicy(Qt::StrongFocus);
 
-			version = SyntopiaCore::Misc::Version(0, 5, 6, -1, " (\"Orbis Tertius\")");
+			version = SyntopiaCore::Misc::Version(0, 8, 0, -1, " (\"Springtime\")");
 			setAttribute(Qt::WA_DeleteOnClose);
 
 			QSplitter*	splitter = new QSplitter(this);
@@ -1084,9 +1084,9 @@ namespace Fragmentarium {
 		void MainWindow::viewSliderChanged(int) {
 			int v = viewSlider->value();
 			if (v>0) {
-				viewLabel->setText(QString("  Zoom Preview (%1x)").arg(abs(v+1)));
+				viewLabel->setText(QString("  Tile Preview (%1x)").arg(abs(v+1)));
 			} else {
-				viewLabel->setText(QString("  Zoom Preview (off)"));
+				viewLabel->setText(QString("  Tile Preview (off)"));
 			}
 			engine->setViewFactor(v);
 		}
@@ -1190,6 +1190,7 @@ namespace Fragmentarium {
 		void MainWindow::loadFile(const QString &fileName)
 		{
 			insertTabPage(fileName);
+			if (render()) variableEditor->setDefault();
 		}
 
 		bool MainWindow::saveFile(const QString &fileName)
@@ -1251,11 +1252,12 @@ namespace Fragmentarium {
 			}
 		}
 		
-		void MainWindow::render() {
+		bool MainWindow::render() {
 			logger->getListWidget()->clear();
 
-			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
+			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return false; } 
 			QString inputText = getTextEdit()->toPlainText();
+			if (inputText.startsWith("#donotrun")) { INFO("Not a runnable fragment."); return false; }
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
 			QSettings settings;
 			bool moveMain = settings.value("moveMain", true).toBool();
@@ -1273,6 +1275,7 @@ namespace Fragmentarium {
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
 			}	
+			return true;
 		}
 
 		namespace {

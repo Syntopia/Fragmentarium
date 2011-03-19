@@ -42,6 +42,9 @@ namespace Fragmentarium {
 			VariableWidget* getWidgetFromName(QString name);
 			void setPresets(QMap<QString, QString> presets);
 			ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
+			void setDefault();
+			//void keyReleaseEvent(QKeyEvent* ev);
+			//void keyPressEvent(QKeyEvent* ev);
 		signals:
 			void changed();
 

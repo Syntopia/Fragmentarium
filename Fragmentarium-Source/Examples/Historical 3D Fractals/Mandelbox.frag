@@ -12,6 +12,7 @@ See this thread for more info: http://www.fractalforums.com/3d-fractal-generatio
 
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,17,300]
+uniform int ColorIterations;  slider[0,3,300]
 
 uniform float MinRad2;  slider[0,0.25,2.0]
 
@@ -44,7 +45,7 @@ float DE(vec3 pos) {
 		p.xyz*=rot;
 		p.xyz = clamp(p.xyz, -1.0, 1.0) * 2.0 - p.xyz;  // min;max;mad
 		float r2 = dot(p.xyz, p.xyz);
-		orbitTrap = min(orbitTrap, abs(vec4(p.xyz,r2)));
+		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,r2)));
 		p *= clamp(max(MinRad2/r2, MinRad2), 0.0, 1.0);  // dp3,div,max.sat,mul
 		p = p*scale + p0;
 		
@@ -89,7 +90,7 @@ RotVector = 1,1,1
 RotAngle = 0
 #endpreset
 
-#preset Descent
+#preset Default
 FOV = 0.4
 Eye = 0.136312,-0.357184,2.20031
 Target = -2.1701,4.89792,-1.82586
@@ -124,6 +125,7 @@ MinRad2 = 0.0172
 Scale = -1.49272
 RotVector = 1,1,1
 RotAngle = 0
+CycleColors = false
 #endpreset
 
 /*

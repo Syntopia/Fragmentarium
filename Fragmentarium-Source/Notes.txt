@@ -1,11 +1,22 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
-Relevant?:
-0(14) : warning C7564: assignment to attribute gl_Vertex
-0(14) : warning C7504: OpenGL does not allow writing to input variable 'gl_Vertex'
+I've released a new build of Fragmentarium, version 0.8, with some useful updates, including better camera control, high resolution render and animation.
 
-- Timeline for $time animations.
-- Colors should be lightened...
+New features:
+- The 3D camera has been rewritten: it is now a "first-person", pinhole camera (like Boxplorer and Fractal Lab), and is controllable using mouse and keyboard. Camera view can now be saved together with other setings.
+- Arbitrary resolution renderings (using tile based rendering - the GPU won't time out).
+- Preview modes (renders to FBO with lower resolution and rescales). 
+- 'Tile preview' for previewing part of high-resolution renders.
+- Animation controller (experimental: no keyframes yet, you must animate using the system supplied 'time' variable. Animation is output as a sequence of still images).
+- Presets (group parameters settings and load them into a dropbox)
+- New fractals: QuaternionMandelbrot4D, Ducks, NewMenger.
+- Improved raytracer: dithering, fog, new coloring schemes.
+
+[Anim]
+
+[Ducks w. sniper map]
+
+[QM4D with interface]
 
 Update web:
 Install Qt 4.7.1.

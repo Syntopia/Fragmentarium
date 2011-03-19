@@ -52,10 +52,9 @@ namespace Fragmentarium {
 			void setPreviewFactor(int val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
-			
-		protected:
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
+		protected:
 			void tileRender();
 			void drawFragmentProgram(int w,int h);
 			void drawToFrameBufferObject();

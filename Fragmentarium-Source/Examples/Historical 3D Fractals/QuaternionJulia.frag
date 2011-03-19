@@ -70,6 +70,7 @@ Iterations = 16
 Threshold = 10
 C123 = 0.18,0.88,0.24
 C4 = 0.16
+CycleColors = false
 #endpreset
 
 #preset Round

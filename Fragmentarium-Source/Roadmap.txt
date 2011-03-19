@@ -47,11 +47,11 @@ Roadmap.
 + Animation timeline.
 + Better support for preview: render-to-texture (using FBO's) and rescale.
 + Preset support
-- Mouse sensitivity
 
-<-- Version 0.7 --
+<-- Version 0.8 --
 
 Some of these:
+- Mouse sensitivity
 - Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
 - Update raytracer: inner glow, hard shadows, new AO?
 - uniform vec4 a; slider[....]
@@ -69,6 +69,6 @@ Some of these:
 - Check for updates
 - WebGL export
 - Keyframe Animation.
-
+- Post processing (add another render step to FBO): HDR, Blur, ...
 <-- Version 1.0 --
 

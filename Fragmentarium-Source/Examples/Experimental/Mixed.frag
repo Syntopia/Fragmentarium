@@ -20,7 +20,8 @@ vec3 offset = vec3(0.850650808,0.525731112,0.0);
 mat4   M ;
 
 // Number of fractal iterations.
-uniform int iters;  slider[0,13,100]
+uniform int Iterations;  slider[0,13,100]
+uniform int ColorIterations;  slider[0,3,100]
 
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
@@ -33,7 +34,7 @@ void init() {
 float DE2(vec3 z)
 {
 	int n = 0;
-	while (n < iters) {
+	while (n < Iterations) {
 		// Fold
 		z = abs(z);
 		if (z.x<z.y){ z.xy = z.yx;}
@@ -45,7 +46,7 @@ float DE2(vec3 z)
 		if( z.z>0.5*Offset.z*(Scale))  z.z-=Offset.z*(Scale);
 		
 		
-		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
+		if (n<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
 		n++;
 	}
 	
@@ -65,7 +66,7 @@ float DE3(vec3 z)
 	// Iterate to compute the distance estimator.
 	int n = 0;
 	vec4 p4;
-	while (n < iters) {
+	while (n < Iterations) {
 		// Fold
 		z = abs(z);
 		t =dot(z,n1); if (t>0.0) { z-=2.0*t*n1; }
@@ -75,7 +76,7 @@ float DE3(vec3 z)
 		p4.xyz = z; p4.w = 1.0;
 		z = (M*p4).xyz;
 		// Record minimum orbit for colouring
-		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
+		if (n<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
 		
 		n++;
 	}
@@ -86,3 +87,81 @@ float DE3(vec3 z)
 float DE(vec3 z) {
 	return max(DE2(z),DE3(z));
 }
+
+#preset Default
+FOV = 0.4
+Eye = 1.02321,-0.584837,-1.40005
+Target = -4.4815,2.75913,5.99199
+Up = -0.156478,0.850911,-0.501456
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -1.99269
+DetailNormal = -2.8
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 1.8
+BoundingSphere = 2
+Dither = 0.5
+AO = 0,0,0,0.7
+Specular = 3.4167
+SpecularExp = 16
+SpotLight = 1,1,1,0.46739
+SpotLightDir = 0.1,0.1
+CamLight = 1,1,1,1
+Glow = 1,1,1,0.08772
+Fog = 0.4698
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+X = 0.5,0.6,0.6,0.7
+Y = 1,0.6,0,0.4
+Z = 0.8,0.78,1,0.5
+R = 1,0.321569,0.113725,0.63492
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+CycleColors = true
+Cycles = 4.80603
+Scale = 1.7
+Phi = 1.618
+Offset = 1,1,1
+Iterations = 13
+ColorIterations = 6
+#endpreset
+
+#preset Alt
+FOV = 0.4
+Eye = -0.91199,-2.42234,0.247336
+Target = 2.77599,6.8355,-0.584033
+Up = -0.901122,0.310278,-0.302831
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -1.68616
+DetailNormal = -2.55773
+FudgeFactor = 0.916
+MaxRaySteps = 112
+MaxRayStepsDiv = 2.88
+BoundingSphere = 2
+Dither = 0.5
+AO = 0,0,0,0.96721
+Specular = 1.4167
+SpecularExp = 18.8
+SpotLight = 1,1,1,0.17391
+SpotLightDir = 0.31428,0.1
+CamLight = 1,1,1,1.41936
+Glow = 0.835294,0.0784314,0.0784314,0
+Fog = 0
+BaseColor = 1,1,1
+OrbitStrength = 0.515
+X = 0.6,0.0117647,0.0117647,0.59056
+Y = 1,0.6,0,0.44882
+Z = 1,1,1,0.49606
+R = 0.666667,0.666667,0.498039,0.07936
+BackgroundColor = 0.666667,0.666667,0.498039
+GradientBackground = 0.3
+CycleColors = false
+Cycles = 1.1
+Scale = 1.7
+Phi = 1.618
+Iterations = 13
+ColorIterations = 3
+Offset = 1,1,1
+#endpreset

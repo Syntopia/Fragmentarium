@@ -80,7 +80,7 @@ vec3 getColor2D(vec2 c) {
 	}
 }
 
-#preset Mandel1
+#preset Default
 Center = -0.285288,-0.0120426
 Zoom = 0.854514
 AntiAliasScale = 1
