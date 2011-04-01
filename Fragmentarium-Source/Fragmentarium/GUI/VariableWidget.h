@@ -203,7 +203,7 @@ signals:
 			virtual QString getUniqueName() = 0;
 			void setSystemVariable(bool v) { systemVariable = v; }
 			bool isSystemVariable() { return systemVariable; } 
-
+			int uniformLocation(QGLShaderProgram* shaderProgram);
 		protected:
 			QString name;
 			QString group;

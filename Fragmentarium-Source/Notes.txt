@@ -12,6 +12,7 @@ New features:
 - New fractals: QuaternionMandelbrot4D, Ducks, NewMenger.
 - Improved raytracer: dithering, fog, new coloring schemes.
 
+<iframe src="http://player.vimeo.com/video/19996015" width="400" height="300" frameborder="0"></iframe><p><a href="http://vimeo.com/19996015">Fragmentarium Test Animation</a> from <a href="http://vimeo.com/syntopia">Syntopia (Mikael H. Christensen)</a> on <a href="http://vimeo.com">Vimeo</a>.</p>
 [Anim]
 
 [Ducks w. sniper map]

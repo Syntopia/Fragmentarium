@@ -50,11 +50,24 @@ namespace Fragmentarium {
 			comboSlider->setValue(f);
 		};
 
-		void FloatWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
+		int VariableWidget::uniformLocation(QGLShaderProgram* shaderProgram) {
+			int i = shaderProgram->uniformLocation(name);
+			if (i == -1) {
+				if (isEnabled()) {
+					setEnabled(false);
+					INFO("Unable to find '" + name + "' in shader program. Disabling widget.");
+				}
 			} else {
+				if (!isEnabled()) {
+					setEnabled(true);
+				}
+			}
+			return i;
+		}
+
+		void FloatWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (float)(comboSlider->getValue()));
 			}
 		};
@@ -102,10 +115,8 @@ namespace Fragmentarium {
 		};
 
 		void Float2Widget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
-			} else {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (float)(comboSlider1->getValue()),(float)(comboSlider2->getValue()));
 			}
 		}
@@ -247,10 +258,8 @@ namespace Fragmentarium {
 		};
 
 		void Float3Widget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
-			} else {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (float)(comboSlider1->getValue()),(float)(comboSlider2->getValue()),(float)(comboSlider3->getValue()));
 			}
 		}
@@ -286,10 +295,8 @@ namespace Fragmentarium {
 		};
 
 		void ColorWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
-			} else {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (float)(colorChooser->getValue()[0])
 					,(float)(colorChooser->getValue()[1]),(float)(colorChooser->getValue()[2]));
 			}
@@ -339,10 +346,8 @@ namespace Fragmentarium {
 		};
 
 		void FloatColorWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
-			} else {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (float)(colorChooser->getValue()[0]),
 					(float)(colorChooser->getValue()[1]),(float)(colorChooser->getValue()[2]),
 					(float)(comboSlider->getValue())
@@ -385,10 +390,8 @@ namespace Fragmentarium {
 		};
 
 		void IntWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
-			} else {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (int)(comboSlider->getValue()));
 			}
 		}
@@ -417,10 +420,8 @@ namespace Fragmentarium {
 		};
 
 		void BoolWidget::setUserUniform(QGLShaderProgram* shaderProgram) {
-			int l = shaderProgram->uniformLocation(name);
-			if (l == -1) {
-				WARNING("Could not find :" + name);
-			} else {
+			int l = uniformLocation(shaderProgram);
+			if (l != -1) {
 				shaderProgram->setUniformValue(l, (bool)(checkBox->isChecked()));
 			}
 		}

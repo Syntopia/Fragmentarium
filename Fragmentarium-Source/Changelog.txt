@@ -1,6 +1,17 @@
 Todo:
 Sourceforge page.
+Resize of windows when in zoom-mode fails.
+Menger has fixed iterations.
+Occasional crash when saving hires image.
+FPS counter not working 
+Disable keymatrix when loosing grab.
+Make it easier to shift from continuous to manual.
 
+01-04-10 [MHC]
+Shadows (can be improved)
+New AO method (similar to Rrola/Subblue - sample 5 positions along normal for proximity).
+Now disables uniformes which are not used in shader.
+Added dithering (for banding removal) and very simple RNG functionality.
 
 -- v0.8 release --
 
