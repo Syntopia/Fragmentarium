@@ -188,8 +188,10 @@ signals:
 
 		/// Widget editor base class.
 		class VariableWidget : public QWidget {
+
+			Q_OBJECT
 		public:
-			VariableWidget(QWidget* parent, QString name) : QWidget(parent), name(name), updated(false), systemVariable(false) {};
+			VariableWidget(QWidget* parent, QString name);
 			virtual QString getValueAsText() { return ""; };
 			QString getName() const { return name; };
 			virtual void reset() = 0;
@@ -204,11 +206,17 @@ signals:
 			void setSystemVariable(bool v) { systemVariable = v; }
 			bool isSystemVariable() { return systemVariable; } 
 			int uniformLocation(QGLShaderProgram* shaderProgram);
+			bool isLocked();
+
+		public slots:
+				void locked(bool l);
 		protected:
+			QPushButton* lockButton;
 			QString name;
 			QString group;
 			bool updated;
 			bool systemVariable;
+			QWidget* widget;
 		};
 
 

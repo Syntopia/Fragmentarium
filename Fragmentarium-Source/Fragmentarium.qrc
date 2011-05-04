@@ -2,7 +2,9 @@
 <qresource>
     <file>Icons/copy.png</file>
     <file>Icons/cut.png</file>
-    <file>Icons/new.png</file>
+  <file>Icons/padlocka.png</file>
+  <file>Icons/padlockb.png</file>
+  <file>Icons/new.png</file>
     <file>Icons/open.png</file>
     <file>Icons/paste.png</file>
     <file>Icons/save.png</file>

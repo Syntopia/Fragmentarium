@@ -48,6 +48,7 @@ float DE(vec3 pos) {
 		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,r2)));
 		p *= clamp(max(MinRad2/r2, MinRad2), 0.0, 1.0);  // dp3,div,max.sat,mul
 		p = p*scale + p0;
+             if ( r2>1000.0) break;
 		
 	}
 	return ((length(p.xyz) - absScalem1) / p.w - AbsScaleRaisedTo1mIters);

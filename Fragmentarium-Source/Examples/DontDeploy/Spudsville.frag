@@ -128,7 +128,7 @@ float DE(vec3 z, inout float dz, inout int iter)
 if (n<MN) {
 		boxFold(z,dz);
 		sphereFold(z,dz);
-		z = Scale*z+c;//+c*Offset;
+		z = Scale*z; //+c;//+c*Offset;
 		dz*=abs(Scale);
 		} else {
 		boxFold3(z,dz);
@@ -136,7 +136,7 @@ if (n<MN) {
 		
 powN2(z,r,dz);
 
-z = z + c;
+//z = z + c;
 	
 }
 //		boxFold(z,dz);
@@ -431,9 +431,9 @@ DetailGrad = -2.8
 
 #preset
 FOV = 0.62536
-Eye = -3.75956,-0.309736,3.79961
-Target = -0.307236,-5.94006,2.41378
-Up = 0.0493046,-0.207322,0.96513
+Eye = -3.96357,2.54298,3.35567
+Target = 2.65061,1.73656,2.28704
+Up = 0.153672,-0.0460469,0.985891
 AntiAlias = 1
 AntiAliasBlur = 1
 Detail = -5.05918
@@ -467,15 +467,15 @@ Cycles = 7.45609
 Scale = -2.00012
 Offset = 1.25,0.8456,0.9191
 fixedRadius2 = 1.02191
-minRadius2 = 0.02031
+minRadius2 = 0.06631
 foldingValue = 2
-foldingLimit = 1.9298
+foldingLimit = 1
+foldingLimit2 = 2
 Scale2 = 2
 Offset2 = 1,0,0
 Power = 2.05493
+ZMUL = -26
+MN = 6
 Analytic = true
 DetailGrad = -5.40316
-foldingLimit2 = 4.39815
-ZMUL = -140
-MN = 6
 #endpreset

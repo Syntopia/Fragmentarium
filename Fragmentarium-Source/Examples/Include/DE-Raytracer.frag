@@ -75,7 +75,7 @@ float normalE = pow(10.0,DetailNormal);
 float aoEps = pow(10.0,DetailAO);
 
 // Maximum number of  raymarching steps.
-uniform int MaxRaySteps;  slider[0,56,1000]
+uniform int MaxRaySteps;  slider[0,56,13000]
 
 // Use this to boost Ambient Occlusion and Glow
 uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
@@ -288,7 +288,7 @@ vec3 trace(vec3 from, vec3 dir) {
 	}
 	
 	// We will adjust the minimum distance based on the current zoom
-	float eps = minDist*( length(zoom)/0.01 );
+	float eps = minDist;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
@@ -329,7 +329,7 @@ vec3 trace(vec3 from, vec3 dir) {
 		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
 		float ao = AO.w*stepFactor ;
 		vec3 n = normal(hit, normalE*epsModified/eps, steps);
-		if (DetailAO<0) ao = ambientOcclusion(hit, n);
+		if (DetailAO<0.0) ao = ambientOcclusion(hit, n);
 		color = getColor(ao);
 		color = lighting(n, color,  hit,  direction,eps);
 		// OpenGL  GL_EXP2 like fog
