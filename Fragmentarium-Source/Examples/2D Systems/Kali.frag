@@ -9,7 +9,7 @@
 uniform float MinRadius; slider[0,0,10]
 uniform float Scaling; slider[-5,0,5]
 
-vec2 formula(vec2 z) {
+vec2 formula(vec2 z,vec2 c) {
 
 	float m =dot(z,z);
 
@@ -18,7 +18,7 @@ vec2 formula(vec2 z) {
 	}else {
 		z = abs(z)/m*Scaling;
 	}
-	return z;
+	return z+c;
 }
 
 #preset Default

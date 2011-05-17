@@ -404,7 +404,7 @@ namespace Fragmentarium {
 
 			// If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
 			if (ms>500) {
-				fps = 1.0/500;
+                                fps = 1.0f/500.0f;
 			} else {
 				// Else measure over two seconds.
 				long ms2 = fpsTimer.msecsTo(cur);

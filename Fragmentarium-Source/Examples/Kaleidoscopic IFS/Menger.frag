@@ -21,10 +21,13 @@ void init() {
 	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
 }
 
+// Number of fractal iterations.
+uniform int Iterations;  slider[0,8,100]
+
 float DE(vec3 z)
 {
 	int n = 0;
-	while (n < 8) {
+	while (n < Iterations) {
 		z = abs(z);
 		if (z.x<z.y){ z.xy = z.yx;}
 		if (z.x< z.z){ z.xz = z.zx;}
@@ -36,7 +39,7 @@ float DE(vec3 z)
 		n++;
 	}
 	
-	return (length(z) ) * pow(Scale, float(-n));
+	return abs(length(z)-RotVector.x*100000.0 ) * pow(Scale, float(-n));
 }
 
 #preset Default

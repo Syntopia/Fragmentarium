@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
 	// We will fetch the unicode strings...
 	QStringList args;
 
-#ifdef Q_WS_WIN
+        // QtCreator on Windows fails to link with CommandLineToArgvW, so unicode is disabled for now...
+#ifdef Q_WS_WIN_DISABLED
 	// On Windows we call this Win32 call...   
 	int nArgs = 0;
 	LPWSTR* wargv = CommandLineToArgvW(GetCommandLineW(), &nArgs);

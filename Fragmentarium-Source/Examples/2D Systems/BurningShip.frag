@@ -8,11 +8,11 @@
 uniform float MinRadius; slider[0,0,10]
 uniform float Scaling; slider[-5,0,5]
 
-vec2 formula(vec2 z) {
-	  z = abs(z);
-   	z = cMul(z,z);
-
- z.y = -z.y;
+vec2 formula(vec2 z, vec2 c) {
+	z = abs(z);
+	z = cMul(z,z);
+	z.y = -z.y;
+	z += c;
 	return z;
 }
 

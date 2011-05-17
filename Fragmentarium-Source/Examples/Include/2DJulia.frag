@@ -17,7 +17,7 @@ uniform float JuliaY; slider[-15,5.53840,8]
 
 void init() {}
 
-vec2 formula(vec2 a);
+vec2 formula(vec2 p, vec2 c);
 
 vec2 c2 = vec2(JuliaX,JuliaY);
 
@@ -38,7 +38,7 @@ vec3 getMapColor2D(vec2 c) {
 	int Iter = 200; // 'const int' crashes on my ATI card?
 	int i = 0;
 	for (i = 0; i < Iter; i++) {
-		z = formula(z)+  p;
+		z = formula(z, p);
 		mean+=length(z);
 		if (dot(z,z)> escape) break;
 	}
@@ -62,7 +62,7 @@ vec3 getColor2D(vec2 c) {
 	float mean = 0.0;
 	int i = 0;
 	for (i = 0; i < Iterations; i++) {
-		z = formula(z)+ (Julia ? c2 : c);
+		z = formula(z,(Julia ? c2 : c));
 		if (i>PreIterations) mean+=length(z);
 		if (dot(z,z)> escape) break;
 		

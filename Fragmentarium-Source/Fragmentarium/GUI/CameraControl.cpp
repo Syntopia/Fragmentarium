@@ -105,7 +105,7 @@ namespace Fragmentarium {
 
 		void Camera3D::reset(bool fullReset) {
 			keyStatus.clear();
-			if (fullReset) stepSize = 0.1;
+                        if (fullReset) stepSize = 0.1f;
 		}
 
 		bool Camera3D::parseKeys() {
@@ -117,11 +117,11 @@ namespace Fragmentarium {
 			Vector3f right = Vector3f::cross(direction.normalized(), up->getValue()).normalized();
 			Vector3f upV = up->getValue();
 
-			float factor = 0.05;
+                        float factor = 0.05f;
 
 			bool keysDown = false;
 			if (keyDown(Qt::Key_1)) {
-				stepSize = stepSize/2.0;
+                                stepSize = stepSize/2.0f;
 				INFO(QString("Step size: %1").arg(stepSize));
 				keyStatus[Qt::Key_1] = false; // only apply once
 			} 
@@ -314,7 +314,7 @@ namespace Fragmentarium {
 
 		void Camera3D::wheelEvent(QWheelEvent* e) {
 			float steps = e->delta()/120.0;
-			float factor = 1.05;
+                        float factor = 1.05f;
 			if (!up || !target || !eye || !fov) return;
 			if (steps>0.0) {
 				fov->setValue(fov->getValue()*factor);
@@ -484,7 +484,7 @@ namespace Fragmentarium {
 
 		void Camera2D::wheelEvent(QWheelEvent* e) {
 			float steps = e->delta()/120.0;
-			float factor = 1.15;
+                        float factor = 1.15f;
 			if (!zoom) return;
 			if (steps>0.0) {
 				zoom->setValue(zoom->getValue()*factor);

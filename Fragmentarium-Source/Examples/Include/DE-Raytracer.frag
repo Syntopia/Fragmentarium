@@ -53,6 +53,8 @@ uniform float AntiAliasBlur;slider[0.0,1,2];
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
 // The resolution for normals (used for lighting)
+uniform float MaxStep;slider[-7,-0.3,2];
+// The resolution for normals (used for lighting)
 uniform float DetailNormal;slider[-7,-2.8,0];
 // The step size when sampling AO (set to 0 for old AO)
 uniform float DetailAO;slider[-7,-0.5,0];
@@ -63,14 +65,12 @@ const float BackStepNormal = 0.0;
 // uniform float ClarityPower;slider[0,1,5];
 const float ClarityPower = 0.0;
 
-// The maximum distance rays are traced
-// uniform float MaxDist;slider[0,600,2000];
-const float MaxDist = 600.0;
 
 // Lower this if the system is missing details
 uniform float FudgeFactor;slider[0,1,1];
 
 float minDist = pow(10.0,Detail);
+float MaxDist = pow(10.0,MaxStep);
 float normalE = pow(10.0,DetailNormal);
 float aoEps = pow(10.0,DetailAO);
 
@@ -85,7 +85,7 @@ uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 const float BandingSmooth = 0.0;
 
 // Used to speed up and improve calculation
-uniform float BoundingSphere;slider[0,2,10];
+uniform float BoundingSphere;slider[0,2,100];
 
 // Can be used to remove banding
 uniform float Dither;slider[0,0.5,1];
@@ -301,12 +301,11 @@ vec3 trace(vec3 from, vec3 dir) {
 		for (steps=0; steps<MaxRaySteps; steps++) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
-			dist = DE(p)*FudgeFactor;
+			dist = clamp( DE(p), 0.0, MaxDist)*FudgeFactor;
 			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
-			dist = clamp(dist, 0.0, MaxDist);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
-			if (dist < epsModified ||  totalDist >MaxDist) break;
+			if (dist < epsModified) break;
 		}
 	}
 	
