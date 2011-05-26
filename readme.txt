@@ -1,4 +1,4 @@
-terrafirma1.0 by nodethirtythree design
+terrafirma1.0 by nodethirtythree design 
 http://www.nodethirtythree.com
 
 This template is released under the Creative Commons Attributions 2.5 license, which
