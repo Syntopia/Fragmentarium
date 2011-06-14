@@ -188,7 +188,7 @@ namespace Fragmentarium {
 			requireRedraw();
 		}
 
-		void DisplayWidget::tileRender() {
+      void DisplayWidget::tileRender() {
 			glLoadIdentity();
 			if (!tiles && viewFactor==0) return;
 			if (!tiles && viewFactor > 0) {
@@ -218,8 +218,8 @@ namespace Fragmentarium {
 				}
 
 				cachedTileImages.clear();
-				mainWindow->saveImage(im);
-				tiles = 0;
+            tiles = 0;
+            mainWindow->saveImage(im);
 
 				return;
 			}
@@ -438,6 +438,7 @@ namespace Fragmentarium {
 				requireRedraw();
 			}
 
+         if (this != QApplication::focusWidget () && cameraControl) cameraControl->releaseControl();
 			if (cameraControl && cameraControl->wantsRedraw()) {
 				requireRedraw(); 
 				cameraControl->updateState();

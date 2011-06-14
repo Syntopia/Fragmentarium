@@ -16,8 +16,6 @@ uniform int ColorIterations;  slider[0,16,100]
 // Breakout distance
 uniform float Threshold; slider[0,10,100]
 
-void init() {}
-
 float DE(vec3 pos) {
 	vec4 p = vec4(pos, 0.0);
 	vec4 dp = vec4(1.0, 0.0,0.0,0.0);

@@ -6,8 +6,8 @@
 // 'Ducks' fractal by Samuel Monnier
 // (Implementation by Syntopia)
 // See http://www.algorithmic-worlds.net/blog/blog.php?Post=20110227
-vec2 formula(vec2 z) {
-    return cLog(vec2(z.x,abs(z.y)));
+vec2 formula(vec2 z, vec2 c) {
+    return cLog(vec2(z.x,abs(z.y)))+c;
 }
 
 #preset Principal Ducks Structure

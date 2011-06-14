@@ -1,4 +1,5 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Icosahedron
@@ -99,3 +100,48 @@ Rot2 = 1,1,1
 Iterations = 13
 #endpreset
 
+#preset
+FOV = 0.360217
+Eye = 0.93574,-1.73464,1.15432
+Target = -1.19656,1.79679,-1.78149
+Up = -0.715769,-0.589278,-0.188964
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.43488
+MaxStep = -1.42
+DetailNormal = -2.39022
+DetailAO = -1.4
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 2.125
+BoundingSphere = 2
+Dither = 0.56521
+AO = 0,0,0,0.91
+Specular = 0
+SpecularExp = 16
+SpotLight = 0.862745,1,0.870588,0.91429
+SpotLightDir = -0.52,0.1
+CamLight = 1,1,1,1.12676
+CamLightMin = 0.29412
+Glow = 1,1,1,0.09783
+Fog = 0.10738
+HardShadow = 0
+BaseColor = 1,1,1
+OrbitStrength = 0.5443
+X = 0.411765,0.6,0.556863,1
+Y = 0.592157,0.666667,0.592157,1
+Z = 0.937255,0.905882,1,1
+R = 0.666667,0.666667,0.498039,1
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+CycleColors = true
+Cycles = 6.95699
+Scale = 1.93332
+Phi = 2.1654
+Offset = 0.850651,0.525731,0.62281
+Angle1 = -15.0048
+Rot1 = -0.18644,1,1
+Angle2 = 37.5012
+Rot2 = 0.18644,1,1
+Iterations = 13
+#endpreset

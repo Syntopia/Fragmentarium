@@ -14,8 +14,6 @@ uniform vec3 Offset; slider[(0,0,0),(1,1,1),(5,5,5)]
 
 mat3 rot;
 
-void init() { 
-}
 
 uniform float fixedRadius2; slider[0.1,1.0,2.3]
 uniform float minRadius2; slider[0.0,0.25,2.3]

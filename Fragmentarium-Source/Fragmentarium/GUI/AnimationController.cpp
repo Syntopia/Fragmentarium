@@ -7,7 +7,7 @@ namespace Fragmentarium {
 	namespace GUI {
 		AnimationController::AnimationController(QWidget* parent) : QDockWidget(parent)
 		{
-			if (objectName().isEmpty())
+                        if (objectName().isEmpty())
 				setObjectName(QString::fromUtf8("Animation Controller"));
 			//resize(627, 144);
 			/*

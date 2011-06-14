@@ -1,4 +1,5 @@
 #info Menger Distance Estimator.
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group The Baird Delta
@@ -26,6 +27,8 @@ void init() {
 	rot = rotationMatrix3(normalize(RotVector), RotAngle);
 }
 
+uniform float DEO; slider[0.1,1.1,2.3]
+
 float DE(vec3 z)
 {
 	float r;
@@ -40,13 +43,14 @@ float DE(vec3 z)
 		//z = rot *z;
 		z=Scale* (z-Offset)+Offset;
 		z = rot *z;
+z = abs(z);
 		
 		r = dot(z, z);
 		orbitTrap = min(orbitTrap, abs(vec4(z,r)));
 		
 		n++;
 	}
-	return abs(length(z)-length(Offset)) * pow(Scale, float(-n));
+	return abs(length(z)-length(Offset)) * pow(Scale, float(-n)-DEO);
 	//return abs(z.x-Offset.x) * pow(Scale, float(-n));
 }
 

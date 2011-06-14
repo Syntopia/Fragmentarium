@@ -1,16 +1,24 @@
 Todo:
-Sourceforge page.
+Added keyboard remapping
 Resize of windows when in zoom-mode fails.
-Menger has fixed iterations.
-Occasional crash when saving hires image.
 FPS counter not working 
-Disable keymatrix when loosing grab.
 Make it easier to shift from continuous to manual.
+Bug: specular exponent = 0
+Commandline support
+Sourceforge page.
+
+13-06-11 [MHC]
+[5h]
+Added sliders to user parameter groups.
+Fixed sticky keys
+Added '#define providesInit', '#define providesColor'
+Fixed TileRender bug on Mac (Thanks to David Burnett) - probably also fixes occasional crash on Win.
+Raytracer updates (reflections, hard shadows)
 
 04-05-11 [MHC]
 [3h] 
-Added KaliSet and BurningShip. 
-Added 2DJulia.frag to make 2D fractals easier.
+Added KaliSet, BurningShip, Spudsville
+Added 2DJulia.frag and Complex.frag to make 2D fractals easier.
 Added padlock icon (in progress)
 
 01-04-11 [MHC]

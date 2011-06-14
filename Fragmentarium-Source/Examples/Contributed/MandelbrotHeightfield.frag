@@ -1,4 +1,5 @@
 #info Mandelbrot set 2.5D
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Mandelbrot

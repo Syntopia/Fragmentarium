@@ -15,7 +15,6 @@ uniform float Scale; slider[0.00,3.0,4.00]
 // Size of bubbles
 uniform float BubbleSize; slider[1,2.07,3];
 
-void init() {}
 
 float DE(vec3 z)
 {

@@ -65,7 +65,6 @@ const float BackStepNormal = 0.0;
 // uniform float ClarityPower;slider[0,1,5];
 const float ClarityPower = 0.0;
 
-
 // Lower this if the system is missing details
 uniform float FudgeFactor;slider[0,1,1];
 
@@ -75,14 +74,10 @@ float normalE = pow(10.0,DetailNormal);
 float aoEps = pow(10.0,DetailAO);
 
 // Maximum number of  raymarching steps.
-uniform int MaxRaySteps;  slider[0,56,13000]
+uniform int MaxRaySteps;  slider[0,56,2000]
 
 // Use this to boost Ambient Occlusion and Glow
 uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
-
-// If your experience AO banding try adjusting this term
-// uniform float BandingSmooth;slider[0,0,4];
-const float BandingSmooth = 0.0;
 
 // Used to speed up and improve calculation
 uniform float BoundingSphere;slider[0,2,100];
@@ -162,9 +157,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 	normalize(dirDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
 	spotDir = normalize(spotDir);
 	
-	
-	// Calculate perfectly reflected light:
-	// NB: there is a reflect command in GLSL
+	// Calculate perfectly reflected light
 	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
 	float s = max(0.0,dot(dir,-r));
 	
@@ -189,13 +182,12 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 		if (steps==maxSteps) totalDist = MaxDist;
 		if (totalDist>MaxDist) totalDist = MaxDist;
 		float f = 1.0-(totalDist/MaxDist);
-		//ambient = mix(ambient,0.0,HardShadow*f);
+		ambient = mix(ambient,0.0,HardShadow*f);
 		specular = mix(specular,0.0,HardShadow*f);
 		diffuse = mix(diffuse,0.0,HardShadow*f);
 	}
-	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient
-		+ specular*SpotLight.xyz)*color;
-	
+
+	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }
 
 vec3 colorBase = vec3(0.0,0.0,0.0);
@@ -216,12 +208,13 @@ float ambientOcclusion(vec3 p, vec3 n) {
 	float de = DE(p);
 	float wSum = 0.0;
 	float w = 1.0;
+    float d = 1.0-(Dither*rand(p.xy));
 	for (float i =1.0; i <6.0; i++) {
 		// D is the distance estimate difference.
 		// If we move 'n' units in the normal direction,
 		// we would expect the DE difference to be 'n' larger -
 		// unless there is some obstructing geometry in place
-		float D = (DE(p- n*i*i*aoEps) -de)/(i*i*aoEps);
+		float D = (DE(p- d*n*i*i*aoEps) -de)/(d*i*i*aoEps);
 		w *= 0.6;
 		ao += w*clamp(1.0-D,0.0,1.0);
 		wSum += w;
@@ -229,9 +222,7 @@ float ambientOcclusion(vec3 p, vec3 n) {
 	return clamp(AO.w*ao/wSum, 0.0, 1.0);
 }
 
-
-
-vec3 getColor(float ao) {
+vec3 getColor() {
 	orbitTrap.w = sqrt(orbitTrap.w);
 	
 	vec3 orbitColor;
@@ -248,14 +239,15 @@ vec3 getColor(float ao) {
 	}
 	
 	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
-	color = mix(color, AO.xyz ,ao);
 	return color;
 }
 
+#ifdef  providesColor
+	vec3 color(vec3 point);
+#endif
 
-
-
-vec3 trace(vec3 from, vec3 dir) {
+vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
+	hit = vec3(0.0);
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(dir);
 	
@@ -306,50 +298,56 @@ vec3 trace(vec3 from, vec3 dir) {
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
 			if (dist < epsModified) break;
+                    if (totalDist > 12.0) break;
 		}
 	}
 	
-	vec3 color;
-	float smoothenedSteps = float(steps)+BandingSmooth*dist/epsModified;
-	float stepFactor = clamp((MaxRayStepsDiv*smoothenedSteps)/float(MaxRaySteps),0.0,1.0);
-	
+	vec3 hitColor;
+	float stepFactor = clamp((MaxRayStepsDiv* float(steps))/float(MaxRaySteps),0.0,1.0);
 	vec3 backColor = BackgroundColor;
 	if (GradientBackground>0.0) {
-		//float t = dot(direction, vec3(1.0,0.0,0.0));
 		float t = length(coord);
 		backColor = mix(backColor, vec3(0.0,0.0,0.0), t*GradientBackground);
-		if (sq>0.0) backColor += Glow.xyz*Glow.w*pow(stepFactor,4.0);
 	}
+	if (sq>0.0) backColor +=Glow.xyz*pow(stepFactor,1.0)* Glow.w;
 	
 	if (  steps==MaxRaySteps) orbitTrap = vec4(0.0);
 	
-	if ( dist < epsModified ||  steps==MaxRaySteps) {
+	if ( dist < epsModified) {
 		// We hit something, or reached MaxRaySteps
-		vec3 hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
+		hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
 		float ao = AO.w*stepFactor ;
-		vec3 n = normal(hit, normalE*epsModified/eps, steps);
-		if (DetailAO<0.0) ao = ambientOcclusion(hit, n);
-		color = getColor(ao);
-		color = lighting(n, color,  hit,  direction,eps);
+		hitNormal= normal(hit, normalE*epsModified/eps, steps);
+		if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
+#ifdef  providesColor
+		hitColor = mix(BaseColor,  color(hit),  OrbitStrength);
+#else
+		hitColor = getColor();
+#endif
+		hitColor = mix(hitColor, AO.xyz ,ao);
+	
+		hitColor = lighting(hitNormal, hitColor,  hit,  direction,eps);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
-		color = mix(color, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
-		color += Glow.xyz*Glow.w*pow(stepFactor,4.0);
+		hitColor = mix(hitColor, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
 	}
 	else if (steps==MaxRaySteps) {
 		// Close to something, but too many steps
-		color = backColor;
+		hitColor = backColor;
 	} else {
-		color = backColor;
+		hitColor = backColor;
 	}
 	
-	//color = clamp(color, 0.0, 1.0);
-	
-	return color;
+	return hitColor;
 }
 
-void init(); // forward declare
+#ifdef providesInit
+	void init(); // forward declare
+#else
+	void init() {};
+#endif 
 
+uniform float Reflection; slider[0,0,1]
 
 void main() {
 	init();
@@ -360,7 +358,20 @@ void main() {
 		for (int y = 0; y<AntiAlias; y++) {
 			float dy = AntiAliasBlur*float(y)/float(AntiAlias);
 			vec3 nDir = dir+dirDx*dx+dirDy*dy;
-			color += trace(from,nDir);
+			vec3 hitNormal;
+			vec3 hit;
+			vec3 c = trace(from,nDir,hit,hitNormal);
+			if (Reflection>0.0 && (hit != vec3(.0))) {
+				vec3 d; vec3 d2;
+				// todo: minDist = modifiedEps?
+				vec3 r = normalize(nDir - 2.0 * dot(hitNormal, nDir) * hitNormal);
+	
+				vec3 c2 = trace(hit+4.0*r*minDist,r,d,d2);
+				color += c+c2*Reflection;
+			} else {
+				color += c;
+			} 			
+
 		}
 	}
 	

@@ -626,7 +626,7 @@ namespace Fragmentarium {
 
 			INFO(QString("Welcome to Fragmentarium version %1. A Syntopia Project.").arg(version.toLongString()));
 			INFO("");
-			//WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
+         WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
 
 			fullScreenEnabled = false;
 			createOpenGLContextMenu();

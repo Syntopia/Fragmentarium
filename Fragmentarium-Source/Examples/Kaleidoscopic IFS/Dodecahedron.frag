@@ -1,4 +1,5 @@
 #info Icosahedron Distance Estimator (Syntopia 2010)
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Dodecahedron

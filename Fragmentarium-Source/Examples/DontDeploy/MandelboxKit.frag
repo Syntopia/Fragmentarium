@@ -1,4 +1,5 @@
 #info Menger Distance Estimator.
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Menger

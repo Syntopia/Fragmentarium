@@ -36,9 +36,6 @@ uniform float MnScale; slider[0.00,3.0,4.00]
 // Menger Scaling center
 uniform vec3 MnOffset; slider[(0,0,0),(1,1,1),(2,2,2)]
 
-void init() {
-}
-
 float Menger(vec3 z)
 {
 	float r;
@@ -341,4 +338,51 @@ Offset = 0.01836,-0.12844,0.75228
 MnIterations = 3
 MnScale = 3.08572
 MnOffset = 1.73738,2,1.45454
+#endpreset
+
+#preset
+FOV = 0.4
+Eye = -0.948684,-1.74806,-1.49775
+Target = -0.958776,-1.74092,-1.39897
+Up = -0.488718,0.859967,-0.112142
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -3.22609
+MaxStep = -1.24
+DetailNormal = -3.67073
+DetailAO = -1.68
+FudgeFactor = 0.70588
+MaxRaySteps = 149
+MaxRayStepsDiv = 1.8
+BoundingSphere = 621
+Dither = 0.51724
+AO = 0,0,0,1
+Specular = 0
+SpecularExp = 16
+SpotLight = 1,1,1,0.5
+SpotLightDir = -0.15662,0.1
+CamLight = 1,1,1,0.92958
+CamLightMin = 0.21176
+Glow = 0.905882,1,0.823529,0.20652
+Fog = 0.56692
+HardShadow = 0
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+X = 0.411765,0.6,0.556863,-0.21312
+Y = 0.592157,0.666667,0.592157,1
+Z = 0.937255,0.905882,1,0.46666
+R = 0.666667,0.666667,0.498039,0.67308
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+CycleColors = false
+Cycles = 12.0253
+MI = 11
+Size = 1.06348
+CSize = 1.0084,1,1.0084
+C = 1.97016,-0.02984,-0.1194
+DEoffset = 0.00262
+Offset = 0.36364,0.2182,-2
+MnIterations = 5
+MnScale = 3
+MnOffset = 1.15998,1.22,1.12
 #endpreset

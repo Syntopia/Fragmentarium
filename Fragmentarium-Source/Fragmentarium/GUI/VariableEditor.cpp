@@ -67,11 +67,6 @@ namespace Fragmentarium {
 			spacer=0;
 			currentWidget=0;
 
-			/*
-			QScrollArea* sa = new QScrollArea(this);
-			sa->setWidget(w);
-			*/
-
 			tabWidget->setTabPosition(QTabWidget::East);
 
 			connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(focusChanged(QWidget*,QWidget*)));
@@ -132,16 +127,6 @@ namespace Fragmentarium {
 			setSettings(preset);
 		}
 
-		/*
-		void VariableEditor::keyReleaseEvent(QKeyEvent* ev) {
-			mainWindow->getEngine()->keyReleaseEvent(ev);
-		}
-
-		void VariableEditor::keyPressEvent(QKeyEvent* ev) {
-			mainWindow->getEngine()->keyPressEvent(ev);
-		}
-		*/
-
 		void VariableEditor::resetUniforms() {
 			for (int i = 0; i < variables.count(); i++ ) {
 				delete(variables[i]);
@@ -155,7 +140,6 @@ namespace Fragmentarium {
 			for (int i = 0; i < variables.count(); i++) {
 				if (!variables[i]->isSystemVariable()) variables[i]->setUserUniform(shaderProgram);
 			}
-
 		}
 
 		void VariableEditor::copy() {
@@ -177,7 +161,7 @@ namespace Fragmentarium {
 			QMap<QString, QWidget*>::const_iterator it;
 			QString g;
 			for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
-				if (it.value() == t) {
+            if (it.value()->parent() == t) {
 					g = it.key();
 				} 
 			}
@@ -186,7 +170,7 @@ namespace Fragmentarium {
 				if (variable->getGroup() == g) {
 					variable->reset();
 				}
-			}
+         }
 			
 			if (g=="Camera") {
 				mainWindow->resetCamera(true);
@@ -195,21 +179,49 @@ namespace Fragmentarium {
 			mainWindow->callRedraw();
 		}
 
+      namespace {
+        class ScrollArea : public QScrollArea {
+       public:
+           ScrollArea(QWidget* child): child(child) {};
+
+           virtual void resizeEvent(QResizeEvent*) {
+              child->setMinimumSize( viewport()->size().width(),child->size().height());
+              child->setMaximumSize( viewport()->size().width(),child->size().height());
+              // Seems we have to do this manually...
+              QApplication::postEvent(this, new QEvent(QEvent::LayoutRequest));
+           }
+           QWidget* child;
+        };
+      }
+
 		void VariableEditor::createGroup(QString g) {
 			//INFO("Creating new "+ g);
-			QWidget* w =new QWidget();
+
+         QWidget* w =new QWidget();
+
 			w->setLayout(new QVBoxLayout(w));
-			w->layout()->setSpacing(10);
-			w->layout()->setContentsMargins (10,10,10,10);
-			tabWidget->addTab(w, g);
-			tabs[g] = w;
+            w->layout()->setSpacing(10);
+         w->layout()->setContentsMargins (10,10,10,10);
+
+         w->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
+
+         w->setMinimumSize(200,10);
+
+         ScrollArea* sa = new ScrollArea(w);
+         sa->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+         w->setMinimumSize(10,100);
+         sa->setWidget(w);
+         w->setParent(sa);
+
+         tabWidget->addTab(sa, g);
+         tabs[g] = w;
 
 			QWidget* b = new QWidget();
 			b->setLayout(new QVBoxLayout(b));
 			b->layout()->setSpacing(0);
 			b->layout()->setContentsMargins (0,0,0,0);
-			QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Minimum,QSizePolicy::Expanding);
-			b->layout()->addItem(spacer);
+      //	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Minimum,QSizePolicy::Expanding);
+      //	b->layout()->addItem(spacer);
 			QPushButton* pb = new QPushButton(b);
 			pb->setText("Reset group");
 			b->layout()->addWidget(pb);
@@ -218,6 +230,8 @@ namespace Fragmentarium {
 			w->layout()->addWidget(b);
 			spacers[w] = b;
 		}
+
+
 
 		void VariableEditor::updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI) {
 			QVector<Parser::GuiParameter*> ps = fs->params;
@@ -247,9 +261,11 @@ namespace Fragmentarium {
 					createGroup(g);
 				} else {
 					if (tabStillPresent.contains(g)) tabStillPresent[g] = true;
-				}
+
+            }
 				currentWidget = tabs[g];
-				bool found = false;
+
+            bool found = false;
 				for (int j = 0; j < variables.count(); j++) {
 					QString name = variables[j]->getUniqueName();
 					// INFO("Checking " + name + " -> " +  ps[i]->getUniqueName());
@@ -361,10 +377,10 @@ namespace Fragmentarium {
 			while (it.hasNext()) {
 				it.next();
 				if (it.value() == false) {
-					//INFO("Deleting "+ it.key());
+               INFO("Deleting "+ it.key());
 					spacers.remove(tabs[it.key()]);
-					delete(tabs[it.key()]);
-					tabs.remove(it.key());
+               delete((tabs[it.key()]->parent()));
+               tabs.remove(it.key());
 				}
 			}
 

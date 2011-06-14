@@ -43,6 +43,7 @@ namespace Fragmentarium {
 			virtual bool parseKeys() = 0;
 			virtual void checkSliderKeys(bool* keysDown);
 			void setComboSlider(ComboSlider* comboSlider);
+         virtual void releaseControl();
 			
 		protected:
 			ComboSlider* comboSlider;

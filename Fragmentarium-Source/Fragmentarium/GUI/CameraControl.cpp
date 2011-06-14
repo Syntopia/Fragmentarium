@@ -28,7 +28,10 @@ namespace Fragmentarium {
 			sliderStepSize = comboSlider->getSpan()/100.0;
 		}
 			
-			
+      void CameraControl::releaseControl() {
+         keyStatus.clear();
+      }
+
 		bool CameraControl::keyPressEvent(QKeyEvent* ev) {
 			if (ev->isAutoRepeat()) {
 				ev->accept();

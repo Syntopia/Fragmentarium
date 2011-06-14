@@ -32,12 +32,6 @@ uniform float DEoffset; slider[0,0,0.01]
 // Thingy Translation
 uniform vec3 Offset; slider[(-1,-1,-1),(0,0,0),(1,1,1)]
 
-/*
-
-*/
-void init() {
-}
-
 float RoundBox(vec3 p, vec3 csize, float offset)
 {
 	vec3 di = abs(p) - csize;

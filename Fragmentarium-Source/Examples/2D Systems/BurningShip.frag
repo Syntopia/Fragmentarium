@@ -17,7 +17,7 @@ vec2 formula(vec2 z, vec2 c) {
 }
 
 #preset Default
-Center = -1.20902,0.0353328
+Center = -1.16566,0.0381056
 Zoom = 21.6234
 AntiAliasScale = 1
 AntiAlias = 2
