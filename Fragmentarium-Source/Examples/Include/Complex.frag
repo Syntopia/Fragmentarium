@@ -1,5 +1,28 @@
 #donotrun
 
+#if __VERSION__ < 130 #then
+float cosh(float val)
+{
+    float tmp = exp(val);
+    float cosH = (tmp + 1.0 / tmp) / 2.0;
+    return cosH;
+}
+
+float tanh(float val)
+{
+    float tmp = exp(val);
+    float tanH = (tmp - 1.0 / tmp) / (tmp + 1.0 / tmp);
+    return tanH;
+}
+
+float sinh(float val)
+{
+    float tmp = exp(val);
+    float sinH = (tmp - 1.0 / tmp) / 2.0;
+   return sinH;
+}
+#endif
+
 vec2 cMul(vec2 a, vec2 b) {
 	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
 }
