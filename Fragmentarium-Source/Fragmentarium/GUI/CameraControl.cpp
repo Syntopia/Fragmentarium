@@ -30,6 +30,7 @@ namespace Fragmentarium {
 			
       void CameraControl::releaseControl() {
          keyStatus.clear();
+         askForRedraw = false;
       }
 
 		bool CameraControl::keyPressEvent(QKeyEvent* ev) {
