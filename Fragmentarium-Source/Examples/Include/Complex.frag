@@ -1,6 +1,6 @@
 #donotrun
 
-#if __VERSION__ < 130 #then
+#if __VERSION__ < 130 
 float cosh(float val)
 {
     float tmp = exp(val);

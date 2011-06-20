@@ -11,6 +11,7 @@ Sourceforge page.
 New OutputDialog (in progress)
 Corrected some bugs in the raytracer.
 Added reflections (does not work well with fog)
+Merged with David Burnetts Mac fixes
 
 13-06-11 [MHC]
 [5h]
