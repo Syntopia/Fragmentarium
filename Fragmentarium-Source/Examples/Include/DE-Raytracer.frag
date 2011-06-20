@@ -52,8 +52,8 @@ uniform int AntiAlias;slider[1,1,5];
 uniform float AntiAliasBlur;slider[0.0,1,2];
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
-// The resolution for normals (used for lighting)
-uniform float MaxStep;slider[-7,-0.3,2];
+// The maximum length we will follow a ray
+uniform float MaxDist;slider[-2,2,3];
 // The resolution for normals (used for lighting)
 uniform float DetailNormal;slider[-7,-2.8,0];
 // The step size when sampling AO (set to 0 for old AO)
@@ -63,13 +63,13 @@ const float BackStepNormal = 0.0;
 
 // The power of the clarity function
 // uniform float ClarityPower;slider[0,1,5];
-const float ClarityPower = 0.0;
+const float ClarityPower = 1.0;
 
 // Lower this if the system is missing details
 uniform float FudgeFactor;slider[0,1,1];
 
 float minDist = pow(10.0,Detail);
-float MaxDist = pow(10.0,MaxStep);
+float MaxDistance = pow(10.0,MaxDist);
 float normalE = pow(10.0,DetailNormal);
 float aoEps = pow(10.0,DetailAO);
 
@@ -108,6 +108,8 @@ uniform vec4 Glow; color[0,0.0,1,1.0,1.0,1.0];
 uniform float Fog; slider[0,0.0,2]
 // Hard shadows shape is controlled by SpotLightDir
 uniform float HardShadow; slider[0,0.0,1]
+
+uniform float Reflection; slider[0,0,1]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -169,7 +171,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 		// check path from pos to spotDir
 		vec3 sdir = -spotDir;
 		float totalDist = 2.0*eps;
-		int maxSteps = 20;
+		int maxSteps = MaxRaySteps;
 		int steps;
 		for (steps=0; steps<maxSteps; steps++) {
 			vec3 p = pos + totalDist * sdir;
@@ -177,14 +179,15 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 			//dist = clamp(dist, 0.0, MaxDist);
 			if (dist<eps && steps==0) eps = dist;
 			totalDist += dist;
-			if (dist < eps ||  totalDist >MaxDist) break;
+			if (dist < eps ||  totalDist >MaxDistance) break;
 		}
-		if (steps==maxSteps) totalDist = MaxDist;
-		if (totalDist>MaxDist) totalDist = MaxDist;
-		float f = 1.0-(totalDist/MaxDist);
+		if (steps==maxSteps) totalDist =MaxDistance;
+		if (totalDist>MaxDistance) totalDist = MaxDistance;
+		float f = 1.0-(totalDist/MaxDistance);
 		ambient = mix(ambient,0.0,HardShadow*f);
-		specular = mix(specular,0.0,HardShadow*f);
+		// specular = mix(specular,0.0,HardShadow*f); 
 		diffuse = mix(diffuse,0.0,HardShadow*f);
+		if (f>0) specular = 0.0; // always turn off specular, if blocked
 	}
 
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
@@ -284,8 +287,8 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	float epsModified = 0.0;
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
-		dist = MaxDist;
-		totalDist = MaxDist;
+		dist = MaxDistance;
+		totalDist = MaxDistance;
 		steps = 2;
 	}  else {
 		totalDist += d; // advance ray to bounding sphere intersection
@@ -293,12 +296,12 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		for (steps=0; steps<MaxRaySteps; steps++) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
-			dist = clamp( DE(p), 0.0, MaxDist)*FudgeFactor;
+			dist = clamp( DE(p), 0.0, MaxDistance)*FudgeFactor;
 			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
 			if (dist < epsModified) break;
-                    if (totalDist > 12.0) break;
+                    if (totalDist > MaxDistance) break;
 		}
 	}
 	
@@ -346,8 +349,6 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 #else
 	void init() {};
 #endif 
-
-uniform float Reflection; slider[0,0,1]
 
 void main() {
 	init();

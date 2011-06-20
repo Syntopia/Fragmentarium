@@ -172,3 +172,47 @@ RotAngle = 2.1366
 Offset = 1,0.95614,1
 #endpreset
 
+#preset Silver
+FOV = 0.4
+Eye = -0.16015,1.81406,0.598377
+Target = 1.0002,-6.2196,-5.24233
+Up = 0.647027,0.507293,-0.569218
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -3.64581
+MaxStep = 2
+DetailNormal = -2.42305
+DetailAO = -0.5
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 1.8
+BoundingSphere = 2
+Dither = 0.5
+AO = 0,0,0,0.45679
+Specular = 2.5316
+SpecularExp = 16
+SpotLight = 1,1,1,0.03261
+SpotLightDir = 0.65626,-0.3125
+CamLight = 1,1,1,1.13978
+CamLightMin = 0
+Glow = 1,1,1,0.07895
+Fog = 0.4161
+HardShadow = 0.4
+BaseColor = 1,1,1
+OrbitStrength = 0
+X = 0.5,0.6,0.6,0.2126
+Y = 1,0.6,0,0.30708
+Z = 0.8,0.78,1,0.35434
+R = 0.666667,0.666667,0.498039,0.03174
+BackgroundColor = 0.219608,0.219608,0.160784
+GradientBackground = 0.3
+CycleColors = true
+Cycles = 18.1816
+Reflection = 0.57692
+Scale = 3
+RotVector = 1,1,1
+RotAngle = 0
+Offset = 1,1,1
+Iterations = 8
+ColorIterations = 8
+#endpreset

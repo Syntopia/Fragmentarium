@@ -7,6 +7,11 @@ Bug: specular exponent = 0
 Commandline support
 Sourceforge page.
 
+20-06-11 [MHC]
+New OutputDialog (in progress)
+Corrected some bugs in the raytracer.
+Added reflections (does not work well with fog)
+
 13-06-11 [MHC]
 [5h]
 Added sliders to user parameter groups.

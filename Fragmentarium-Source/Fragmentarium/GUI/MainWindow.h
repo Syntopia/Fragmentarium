@@ -42,7 +42,7 @@ namespace Fragmentarium {
 				void insertText();
 		};
 
-		// An input dialog for the tile based render thingy
+      // An input dialog for the tile based render thingy
 		class TileRenderDialog: public QDialog {
 			Q_OBJECT
 		public:

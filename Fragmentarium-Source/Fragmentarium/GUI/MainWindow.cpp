@@ -24,6 +24,7 @@
 
 
 #include "MainWindow.h"
+#include "OutputDialog.h"
 #include "VariableEditor.h"
 #include "AnimationController.h"
 #include "../../SyntopiaCore/Logging/ListWidgetLogger.h"
@@ -116,7 +117,7 @@ namespace Fragmentarium {
 				void saveSettings() {
 					QSettings settings;
 					settings.setValue("moveMain", checkBox->isChecked());
-					settings.setValue("includePaths", lineEdit->text());
+               settings.setValue("includePaths", lineEdit->text());
 				}
 
 				QVBoxLayout *verticalLayout_2;
@@ -924,7 +925,7 @@ namespace Fragmentarium {
 			helpMenu->addAction(aboutAction);
 			helpMenu->addAction(controlAction);
 			//helpMenu->addAction("Benchmark", this, SLOT(benchmark()));
-			
+
 			helpMenu->addSeparator();
 			helpMenu->addAction(sfHomeAction);
 			//helpMenu->addAction(referenceAction);
@@ -933,10 +934,16 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::tileBasedRender() {
+         OutputDialog od(this, engine->width(), engine->height());
+         if (od.exec() == QDialog::Accepted) {
+            engine->setupTileRender(od.getTiles(),od.getFileName());
+         };
+         /*
 			TileRenderDialog td(this, engine->width(), engine->height());
 			if (td.exec() == QDialog::Accepted) {
 				engine->setupTileRender(td.getTiles());
 			};
+         */
 			
 		}
 
@@ -1059,7 +1066,7 @@ namespace Fragmentarium {
 			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
 			viewSlider->setTickInterval(1);
 			viewSlider->setMinimum(0);
-			viewSlider->setMaximum(4);
+         viewSlider->setMaximum(12);
 			viewSlider->setTickPosition(QSlider::TicksBelow);
 			viewSlider->setMaximumWidth(100);
 			connect(viewSlider, SIGNAL(valueChanged(int)), this, SLOT(viewSliderChanged(int)));

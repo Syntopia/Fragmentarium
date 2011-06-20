@@ -46,7 +46,7 @@ namespace Fragmentarium {
 			void setDisableRedraw(bool value) { disableRedraw = value; }
 			bool isRedrawDisabled() { return disableRedraw; }
 			CameraControl* getCameraControl() { return cameraControl; }
-			void setupTileRender(int tiles);
+         void setupTileRender(int tiles, QString outputFile);
 			void resetTime() { time = QTime::currentTime(); }
 			void setViewFactor(int val);
 			void setPreviewFactor(int val);
@@ -101,6 +101,7 @@ namespace Fragmentarium {
 			int viewFactor;
 			int previewFactor;
 			AnimationSettings* animationSettings;
+         QString outputFile;
 		};
 	};
 

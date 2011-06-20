@@ -182,7 +182,8 @@ namespace Fragmentarium {
 		}
 
 
-		void DisplayWidget::setupTileRender(int tiles) {
+      void DisplayWidget::setupTileRender(int tiles, QString fileName) {
+         outputFile = fileName;
 			this->tiles = tiles;
 			tilesCount = 0;
 			requireRedraw();
@@ -219,7 +220,13 @@ namespace Fragmentarium {
 
 				cachedTileImages.clear();
             tiles = 0;
-            mainWindow->saveImage(im);
+
+            bool succes = im.save(outputFile);
+            if (succes) {
+                 INFO("Saved image as: " + outputFile);
+            } else {
+                  WARNING("Save failed! Filename: " + outputFile);
+            }
 
 				return;
 			}
