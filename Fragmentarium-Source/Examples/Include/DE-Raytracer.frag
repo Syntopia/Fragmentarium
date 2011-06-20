@@ -347,7 +347,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 #ifdef providesInit
 	void init(); // forward declare
 #else
-	void init() {};
+	void init() {}
 #endif 
 
 void main() {

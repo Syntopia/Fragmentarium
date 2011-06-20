@@ -66,7 +66,7 @@ while (n < MnIterations && dot(z,z)<100.0) {
 	}
 	
 	//return (length(z)-sqrt(3.) ) * pow(Scale, float(-n));
-	return (z.x-MnOffset) * pow(MnScale, float(-n));
+	return float(z.x-MnOffset) * pow(MnScale, float(-n));
 }
 
 float Thing2(vec3 p){

@@ -26,9 +26,9 @@ float DE(vec3 pos) {
 	do{
 		vec2 az=z;
 		float ir2=1./r2;
-		vec2 tmp=vec2(1.,0.)+vec2(-z.x*(z.x*z.x-3.*z.y*z.y),z.y*(z.y*z.y-3*z.x*z.x))*ir2*ir2*ir2;
+		vec2 tmp=vec2(1.,0.)+vec2(-z.x*(z.x*z.x-3.*z.y*z.y),z.y*(z.y*z.y-3.0*z.x*z.x))*ir2*ir2*ir2;
 		dz=2./3.*vec2(dz.x*tmp.x-dz.y*tmp.y,dz.x*tmp.y+dz.y*tmp.x);
-		z=1./3*vec2(2.*z.x+(z.x*z.x-z.y*z.y)*ir2*ir2,2.*z.y*(1.-z.x*ir2*ir2));
+		z=1./3.0*vec2(2.*z.x+(z.x*z.x-z.y*z.y)*ir2*ir2,2.*z.y*(1.-z.x*ir2*ir2));
 		r2=dot(z,z);
 		orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,0.,r2)));
 		delta2=dot(z-az,z-az);

@@ -17,7 +17,7 @@ uniform sampler2D texture; file[texture2.jpg]
 // uniform sampler2D texture2; file[texture.jpg]
 uniform vec2 params; slider[(-1,-1),(-0.5,0.24),(1,1)]
 
-void init() {};
+void init() {}
 
 vec3 a(vec2 z, float t) {
 	vec2 m =  params.xy;
