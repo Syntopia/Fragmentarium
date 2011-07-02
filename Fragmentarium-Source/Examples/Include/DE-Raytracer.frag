@@ -62,7 +62,7 @@ uniform float DetailAO;slider[-7,-0.5,0];
 const float BackStepNormal = 0.0;
 
 // The power of the clarity function
-// uniform float ClarityPower;slider[0,1,5];
+ //uniform float ClarityPower;slider[0,1,5];
 const float ClarityPower = 1.0;
 
 // Lower this if the system is missing details
@@ -143,13 +143,12 @@ float DE(vec3 pos) ; // Must be implemented in other file
 uniform bool CycleColors; checkbox[false]
 uniform float Cycles; slider[0.1,1.1,32.3]
 
-vec3 normal(vec3 pos, float normalDistance, int steps) {
+vec3 normal(vec3 pos, float normalDistance) {
+       normalDistance = max(normalDistance*0.5, 1.0e-7);
 	vec3 e = vec3(0.0,normalDistance,0.0);
-	vec3 n;
-	n = vec3(DE(pos-e.yxx)-DE(pos+e.yxx),
-		DE(pos-e.xyx)-DE(pos+e.xyx),
-		DE(pos-e.xxy)-DE(pos+e.xxy));
-	//    if (dot(n, dir)<0)return vec3(1.0,0.0,0.0);
+	vec3 n = vec3(DE(pos+e.yxx)-DE(pos-e.yxx),
+		DE(pos+e.xyx)-DE(pos-e.xyx),
+		DE(pos+e.xxy)-DE(pos-e.xxy));
 	n =  normalize(n);
 	return n;
 }
@@ -163,9 +162,9 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
 	float s = max(0.0,dot(dir,-r));
 	
-	float diffuse = max(0.0,dot(n,spotDir))*SpotLight.w;
-	float ambient = max(CamLightMin,dot(n, dir))*CamLight.w;
-	float specular = pow(s,SpecularExp)*Specular;
+	float diffuse = max(0.0,dot(-n,spotDir))*SpotLight.w;
+	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
+	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
 	
 	if (HardShadow>0.0) {
 		// check path from pos to spotDir
@@ -217,7 +216,7 @@ float ambientOcclusion(vec3 p, vec3 n) {
 		// If we move 'n' units in the normal direction,
 		// we would expect the DE difference to be 'n' larger -
 		// unless there is some obstructing geometry in place
-		float D = (DE(p- d*n*i*i*aoEps) -de)/(d*i*i*aoEps);
+		float D = (DE(p+ d*n*i*i*aoEps) -de)/(d*i*i*aoEps);
 		w *= 0.6;
 		ao += w*clamp(1.0-D,0.0,1.0);
 		wSum += w;
@@ -283,7 +282,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	}
 	
 	// We will adjust the minimum distance based on the current zoom
-	float eps = minDist;//*( length(zoom)/0.01 );
+	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
@@ -320,7 +319,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		// We hit something, or reached MaxRaySteps
 		hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
 		float ao = AO.w*stepFactor ;
-		hitNormal= normal(hit, normalE*epsModified/eps, steps);
+		hitNormal= normal(hit, epsModified); // /*normalE*epsModified/eps*/
 		if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
 #ifdef  providesColor
 		hitColor = mix(BaseColor,  color(hit),  OrbitStrength);

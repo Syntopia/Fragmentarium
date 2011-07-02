@@ -121,11 +121,11 @@ namespace Fragmentarium {
 			Vector3f right = Vector3f::cross(direction.normalized(), up->getValue()).normalized();
 			Vector3f upV = up->getValue();
 
-                        float factor = 0.05f;
+         float factor = 0.05f;
 
 			bool keysDown = false;
 			if (keyDown(Qt::Key_1)) {
-                                stepSize = stepSize/2.0f;
+             stepSize = stepSize/2.0f;
 				INFO(QString("Step size: %1").arg(stepSize));
 				keyStatus[Qt::Key_1] = false; // only apply once
 			} 
@@ -317,14 +317,27 @@ namespace Fragmentarium {
 		};
 
 		void Camera3D::wheelEvent(QWheelEvent* e) {
-			float steps = e->delta()/120.0;
-                        float factor = 1.05f;
+         float steps = e->delta()/120.0;
 			if (!up || !target || !eye || !fov) return;
-			if (steps>0.0) {
-				fov->setValue(fov->getValue()*factor);
-			} else {
-				fov->setValue(fov->getValue()/factor);
-			}
+         if (QApplication::keyboardModifiers() == Qt::ShiftModifier) {
+            if (steps>0.0) {
+               stepSize = stepSize*2.0f;
+              INFO(QString("Step size: %1").arg(stepSize));
+
+            } else {
+               stepSize = stepSize/2.0f;
+              INFO(QString("Step size: %1").arg(stepSize));
+
+            }
+         } else {
+               Vector3f direction = (target->getValue()-eye->getValue());
+               Vector3f dir = direction.normalized();
+             Vector3f offset = dir*stepSize*(steps);
+             Vector3f db2 = eye->getValue()+offset;
+             eye->setValue(db2);
+             target->setValue(target->getValue()+offset);
+         }
+
 		}
 			
 

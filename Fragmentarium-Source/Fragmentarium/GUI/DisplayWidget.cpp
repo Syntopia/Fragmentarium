@@ -427,8 +427,9 @@ namespace Fragmentarium {
 
 		void DisplayWidget::resizeGL( int /* width */, int /* height */) {
 			// When resizing the perspective must be recalculated
-			requireRedraw();
-			updatePerspective();
+         updatePerspective();
+         QTimer::singleShot(500, this, SLOT(clearPreviewBuffer()));
+
 		};
 
 		void DisplayWidget::updatePerspective() {
@@ -507,6 +508,16 @@ namespace Fragmentarium {
 				QGLWidget::keyPressEvent(ev);
 			}
 		}
+
+      void DisplayWidget::clearPreviewBuffer() {
+         if (previewFactor != 0) {
+            INFO("Re-allocating preview buffer.");
+            setPreviewFactor(previewFactor);
+         }
+         requireRedraw();
+
+      }
+
 
 		
 		void DisplayWidget::keyReleaseEvent(QKeyEvent* ev) {

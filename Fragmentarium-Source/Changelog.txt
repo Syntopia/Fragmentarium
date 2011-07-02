@@ -1,11 +1,11 @@
-Todo:
-Added keyboard remapping
-Resize of windows when in zoom-mode fails.
-FPS counter not working 
-Make it easier to shift from continuous to manual.
-Bug: specular exponent = 0
-Commandline support
-Sourceforge page.
+
+02-07-11 [MHC]
+BugFix: Resize of windows in preview mode should update aspect ratio.
+BugFix: specular exponent = 0
+Changed MouseWheel controls
+Cleaned up raytracer (no more normalDetail settings)
+Added a port of Fractal Labs (Subblues) raytracer. Just include "Subblue-Raytracer.frag" instead of "DE-Raytracer.frag"
+Added GraphPlotter.frag example
 
 20-06-11 [MHC]
 New OutputDialog (in progress)

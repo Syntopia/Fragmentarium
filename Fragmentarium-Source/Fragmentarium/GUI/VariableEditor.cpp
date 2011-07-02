@@ -200,16 +200,17 @@ namespace Fragmentarium {
          QWidget* w =new QWidget();
 
 			w->setLayout(new QVBoxLayout(w));
-            w->layout()->setSpacing(10);
+
+         w->layout()->setSpacing(10);
          w->layout()->setContentsMargins (10,10,10,10);
 
          w->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
-         w->setMinimumSize(200,10);
+         w->setMinimumSize(10,10);
 
          ScrollArea* sa = new ScrollArea(w);
          sa->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-         w->setMinimumSize(10,100);
+         w->setMinimumSize(10,10);
          sa->setWidget(w);
          w->setParent(sa);
 
@@ -220,9 +221,7 @@ namespace Fragmentarium {
 			b->setLayout(new QVBoxLayout(b));
 			b->layout()->setSpacing(0);
 			b->layout()->setContentsMargins (0,0,0,0);
-      //	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Minimum,QSizePolicy::Expanding);
-      //	b->layout()->addItem(spacer);
-			QPushButton* pb = new QPushButton(b);
+         QPushButton* pb = new QPushButton(b);
 			pb->setText("Reset group");
 			b->layout()->addWidget(pb);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetGroup()));

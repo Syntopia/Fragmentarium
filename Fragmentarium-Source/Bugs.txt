@@ -2,6 +2,19 @@ Bug List:
 ---------
 Priority 0-5, 5 is worst:
 
+[4] Mac only: Every keypress, click and change of focus re-calculates the render, even with Manual Update switched on
+[3] Tile Render: only works in automatic mode.
+[3] Bug: sometimes F enter infinite redraw loop and becomes unresponsive. [not reproducable - but still happens]
+[2] FPS counter not working
+[1] Bug: padlock icon vsize grows!
+
 Other TO-DO's:
+
+* Make it easier to shift from continuous to manual.
+
+[3] Restore Visual Studio makefiles (make sure they work in Debug mode)
+[2] Sourceforge page. -> Add latest version as downloadable files. Add GitHub link.
+[2] Add keyboard remapping
+[1] Commandline support
 
 

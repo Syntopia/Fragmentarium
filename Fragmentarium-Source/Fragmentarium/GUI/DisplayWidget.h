@@ -25,6 +25,7 @@ namespace Fragmentarium {
 		
 		/// Widget for the mini OpenGL engine.
 		class DisplayWidget : public QGLWidget {
+         Q_OBJECT
 		public:
 			/// Constructor
 			DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent);
@@ -49,11 +50,13 @@ namespace Fragmentarium {
          void setupTileRender(int tiles, QString outputFile);
 			void resetTime() { time = QTime::currentTime(); }
 			void setViewFactor(int val);
-			void setPreviewFactor(int val);
+         void setPreviewFactor(int val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
+      public slots:
+            void clearPreviewBuffer();
 		protected:
 			void tileRender();
 			void drawFragmentProgram(int w,int h);
