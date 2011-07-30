@@ -51,8 +51,8 @@ vec3 getColor2D(vec2 c) {
 	vec2 z = Julia ?  c : vec2(0.0,0.0);
 	
 	int i = 0;
-	vec3 sum = 0.0;
-	vec3 last = 0.0;
+	vec3 sum = vec3(0.0);
+	vec3 last = vec3(0.0);
 	for (i = 0; i < Iterations; i++) {
 		z = complexMul(z,z) + (Julia ? c2 : c);
 		if (dot(z,z)> breakout) break;

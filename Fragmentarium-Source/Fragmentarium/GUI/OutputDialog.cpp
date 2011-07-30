@@ -17,6 +17,7 @@ namespace Fragmentarium {
          if (objectName().isEmpty())
              setObjectName(QString::fromUtf8("OutputDialog"));
          resize(353,237);
+         setWindowTitle("High Resolution Render");
          verticalLayout = new QVBoxLayout(this);
          verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
          label = new QLabel(this);
@@ -97,7 +98,6 @@ namespace Fragmentarium {
 
          horizontalLayout->addWidget(fileButton);
 
-
          verticalLayout->addLayout(horizontalLayout);
 
          horizontalLayout_2 = new QHBoxLayout();
@@ -145,7 +145,6 @@ namespace Fragmentarium {
 
          QMetaObject::connectSlotsByName(this);
 
-         setWindowTitle(QApplication::translate("OutputDialog", "Dialog", 0, QApplication::UnicodeUTF8));
          label->setText(QApplication::translate("OutputDialog", "Render quality: (2x2 tiles - 1630x1920 pixels - 3.1 MPixel):", 0, QApplication::UnicodeUTF8));
          label_2->setText(QApplication::translate("OutputDialog", "Output image: ( xXx pixels - x MPixel)", 0, QApplication::UnicodeUTF8));
          label_4->setText(QApplication::translate("OutputDialog", "Downsampling filter size (Lanczos):", 0, QApplication::UnicodeUTF8));
@@ -182,7 +181,7 @@ namespace Fragmentarium {
          label_2->setHidden(true);
          label_4->setHidden(true);
          displayCheckBox->setHidden(true);
-         autoSaveCheckBox->setHidden(true);
+         //autoSaveCheckBox->setHidden(true);
          downsamplingSlider->setHidden(true);
          filterSizeSpinBox->setHidden(true);
 
@@ -211,6 +210,10 @@ namespace Fragmentarium {
          return filenameEdit->text();
       }
 
+      QString OutputDialog::getFragmentFileName() {
+         return fragmentFileName;
+      }
+
       void OutputDialog::updateFileName(const QString &) {
             uniqueFileName = "";
             QString uname = "";
@@ -223,7 +226,6 @@ namespace Fragmentarium {
             };
 
             QString extension = filenameEdit->text().section(".",-1,-1);
-
 
             if (!extensions.contains(extension, Qt::CaseInsensitive)) {
                uname = "not a valid image extension";
@@ -265,14 +267,13 @@ namespace Fragmentarium {
                }
 
                uniqueCheckBox->setText(QString("Add unique ID to filename (%1)").arg(uname));
-               if (autoSaveCheckBox) autoSaveCheckBox->setText(QString("Autosave fragment (as %1)").arg(uname.section(".",0,-2)+".frag"));
+               fragmentFileName = uname.section(".",0,-2)+".frag";
             } else {
-
                uniqueCheckBox->setText("Add unique ID to filename");
-               if (autoSaveCheckBox) autoSaveCheckBox->setText(QString("Autosave fragment (as %1)").arg(
-                   filenameEdit->text().section(".",0,-2)+".frag"
-                  ));
+               fragmentFileName =  filenameEdit->text().section(".",0,-2)+".frag";
+
             }
+            if (autoSaveCheckBox) autoSaveCheckBox->setText(QString("Autosave fragment and settings (as %1)").arg(fragmentFileName));
 
       }
 

@@ -38,22 +38,18 @@ float DE(vec3 pos) {
 	return (pos.z-Slope*dr)*k;
 }
 
-#preset default
+#preset Default
 FOV = 0.4
-Eye = -0.787305,0.11544,2.49081
-Target = -0.0626793,0.151149,-7.63958
-Up = -0.534903,-0.838818,-0.0412184
+Eye = -0.927743,0.809242,1.89287
+Target = 0.208408,-2.00856,-6.97158
+Up = -0.287658,-0.922742,0.256449
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -5.05218
-MaxStep = 2
-DetailNormal = -2.64635
-DetailAO = -0.5
-FudgeFactor = 1
-MaxRaySteps = 56
-MaxRayStepsDiv = 1.8
+Detail = -2.53981
+DetailAO = -0.64288
+FudgeFactor = 0.92771
+MaxRaySteps = 154
 BoundingSphere = 10
-Dither = 0.5
+Dither = 0
 AO = 0,0,0,0.7
 Specular = 3.9796
 SpecularExp = 16
@@ -63,17 +59,21 @@ CamLight = 1,1,1,1.12676
 CamLightMin = 0
 Glow = 1,1,1,0
 Fog = 0.3937
-HardShadow = 1
+HardShadow = 0
+Reflection = 0
 BaseColor = 1,1,1
-OrbitStrength = 0.67089
+OrbitStrength = 0.55
 X = 0.5,0.6,0.6,1
 Y = 1,0.6,0,-0.33334
 Z = 0.8,0.78,1,0.5
-R = 0.4,0.7,1,0.3077
+R = 0.666667,0.666667,0.498039,0.67058
 BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 1.35415
 CycleColors = true
 Cycles = 1.29269
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Iterations = 21
 Bailout = 1024
 Slope = -1.0092

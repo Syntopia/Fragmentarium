@@ -43,20 +43,23 @@ namespace Fragmentarium {
 			void setPresets(QMap<QString, QString> presets);
 			ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
 			void setDefault();
+         void substituteLockedVariables(Parser::FragmentSource* fs);
 			//void keyReleaseEvent(QKeyEvent* ev);
 			//void keyPressEvent(QKeyEvent* ev);
 		signals:
-			void changed();
+         void changed(bool lockedChanged);
 
 		public slots:
 			void sliderDestroyed(QObject* o);
 			void focusChanged(QWidget* oldWidget,QWidget* newWidget);
 			void applyPreset();
 			void resetUniforms();
-			void resetGroup();
+         void resetGroup();
+         void lockGroup();
+         void unlockGroup();
 			void copy();
 			void paste();
-			void childChanged() { emit changed(); } 
+         void childChanged(bool lockedChanged);
 
 		private:
 			QMap<QString, QString> presets;

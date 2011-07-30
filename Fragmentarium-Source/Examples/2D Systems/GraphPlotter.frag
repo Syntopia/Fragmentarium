@@ -13,7 +13,7 @@ float rand(vec2 co){
 
 // Put your user defined function here...
 float function(float x) {
-	x= 1.0*sin(1/tan(x)); return x;
+	x= 1.0*sin(1.0/tan(x)); return x;
 }
 
 uniform float Jitter; slider[0,0.5,2]
@@ -21,7 +21,7 @@ uniform float Detail; slider[0,5,20]
 uniform int Samples; slider[0,3,100]
 uniform float AxisDetail; slider[1,1,10]
 vec3 getColor2D(vec2 pos) {
-	vec2 step = Detail*vec2(aaScale.x,aaScale.y)/Samples;
+	vec2 step = Detail*vec2(aaScale.x,aaScale.y)/float(Samples);
 	float samples = float(Samples);
 	
 	int count = 0;
@@ -38,9 +38,10 @@ vec3 getColor2D(vec2 pos) {
 		}
 	}
 	vec3 color = vec3(1.0);
-	if (abs(count)!=mySamples) color =  vec3(abs(float(count))/float(mySamples));
-	float axisDetail = AxisDetail*aaScale;
-	if (abs(pos.x)<axisDetail*1.0 || abs(pos.y)<axisDetail*1.0) color-= 1.0-vec3(0.2,0.2,1.0);
-	if (abs(mod(pos.x,1.0))<axisDetail || abs(mod(pos.y,1.0))<axisDetail) color-= 1.0-vec3(0.8,0.8,1.0);
+	float ss= abs(float(count))/float(mySamples);
+	if (abs(count)!=mySamples) color =  vec3(ss);
+	vec2 axisDetail = AxisDetail*aaScale;
+	if (abs(pos.x)<axisDetail.x*1.0 || abs(pos.y)<axisDetail.y*1.0) color-= 1.0-vec3(0.2,0.2,1.0);
+	if (abs(mod(pos.x,1.0))<axisDetail.x || abs(mod(pos.y,1.0))<axisDetail.y) color-= 1.0-vec3(0.8,0.8,1.0);
 	return color;
 }

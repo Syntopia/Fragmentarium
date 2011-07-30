@@ -297,7 +297,7 @@ namespace Fragmentarium {
 						// orient camera
 						Matrix4f mx = Matrix4f::Rotation(upDown, -dp.x()*mouseSpeed);
 						Matrix4f my = Matrix4f::Rotation(rightDown, -dp.y()*mouseSpeed);
-						target->setValue((my*mx)*directionDown+eyeDown);
+                  target->setValue((my*mx)*directionDown+eye->getValue()); // before: eyeDown
 						up->setValue((my*mx)*upDown);
 					}
 					return true;

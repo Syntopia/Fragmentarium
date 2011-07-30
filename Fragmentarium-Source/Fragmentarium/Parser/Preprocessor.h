@@ -17,17 +17,60 @@ namespace Fragmentarium {
 		using namespace SyntopiaCore::Math;
 		using namespace SyntopiaCore::Logging;
 
+      enum LockTypeInner { Locked, NotLocked, NotLockable, Unknown } ;
+
+      class LockType {
+      public:
+           LockType() {};
+           LockType(QString s) { fromString(s); };
+           LockType(LockTypeInner l) : inner(l) {};
+           bool operator ==(const LockTypeInner lty) { return inner==lty; }
+           bool operator !=(const LockTypeInner lty) { return inner!=lty; }
+           bool operator ==(const LockType lty) { return inner==lty.inner; }
+           bool operator !=(const LockType lty) { return inner!=lty.inner; }
+           QString toString() {
+              if (inner == Locked) {
+                 return "Locked";
+              } else if (inner == NotLocked) {
+                 return "NotLocked";
+              } else if (inner == NotLockable) {
+                 return "NotLockable";
+              } else {
+                 return "???";
+              }
+           }
+
+           void fromString(QString s) {
+              s = s.toLower();
+              if (s == "locked") {
+                 inner = Locked;
+              } else if (s == "notlocked") {
+                 inner = NotLocked;
+              } else if (s == "notlockable") {
+                 inner = NotLockable;
+              } else {
+                 inner = Unknown;
+              }
+           }
+
+      private:
+           LockTypeInner inner;
+      };
+
+
 		class GuiParameter {
 		public:
-			GuiParameter(QString group, QString name, QString tooltip) : group(group), name(name), tooltip(tooltip) {
+         GuiParameter(QString group, QString name, QString tooltip) : group(group), name(name), tooltip(tooltip) {
 			};
 
 			virtual QString getName() { return name; }
 			virtual QString getGroup() { return group; }
 			virtual QString getUniqueName() = 0;
 			QString getTooltip() { return tooltip; } 
+         LockType getLockType() { return lockType; }
+         void setLockType(LockType l) { lockType = l; }
 		protected:
-
+         LockType lockType;
 			QString group;
 			QString name;
 			QString tooltip; 
@@ -153,14 +196,15 @@ namespace Fragmentarium {
 			QMap<QString, QString> presets;
 		};
 
-		/// The preprocessor is responsible for expanding '#define'
-		///
+      /// The preprocessor is responsible for
+      /// including files and resolve user uniform variables
 		class Preprocessor {
 
 		public:
 			Preprocessor(QStringList includePaths) : includePaths(includePaths) {};
 			
 			FragmentSource parse(QString input, QString fileName, bool moveMain);
+         FragmentSource createAutosaveFragment(QString input, QString fileName);
 			void parseSource(FragmentSource* fs,QString input, QString fileName, bool includeOnly);
 			QString resolveName(QString fileName, QString originalFileName) ;
 		

@@ -21,8 +21,8 @@ namespace Fragmentarium {
 
 		using namespace SyntopiaCore::Misc;
 
-		VariableWidget::VariableWidget(QWidget* parent, QString name) : QWidget(parent), name(name), updated(false), systemVariable(false) {
-			
+   VariableWidget::VariableWidget(QWidget* parent, QWidget* variableEditor, QString name) : QWidget(parent), variableEditor(variableEditor), name(name), updated(false), systemVariable(false) {
+      connect(this, SIGNAL(changed(bool)), variableEditor, SLOT(childChanged(bool)));
 				QHBoxLayout* vl = new QHBoxLayout(this);
 				vl->setSpacing(0);
 				vl->setContentsMargins (0,0,0,0);
@@ -44,21 +44,74 @@ namespace Fragmentarium {
 			return lockButton->isChecked();
 		}
 
+      void VariableWidget::valueChanged() {
+         if (lockType == Locked) {
+            QPalette pal = palette();
+            pal.setColor(backgroundRole(), Qt::yellow);
+            setPalette(pal);
+            setAutoFillBackground(true);
+            emit(changed(true));
+         } else {
+            emit(changed(false));
+         }
+      }
+
+
 		void VariableWidget::locked(bool l) {
+         if (defaultLockType == NotLockable) {
+            lockButton->setIcon(QIcon());
+            lockType = NotLockable;
+            return;
+         }
+
 			if (l) {
 				lockButton->setIcon(QIcon(":/Icons/padlocka.png"));
-				
+            lockType = Locked;
 			} else {
 				lockButton->setIcon(QIcon(":/Icons/padlockb.png"));
-				
+            lockType =  NotLocked;
 			}
 		}
+
+      void VariableWidget::setDefaultLockType(LockType lt) {
+         defaultLockType = lt;
+         setLockType(lt);
+      }
+
+      void VariableWidget::setLockType(LockType lt) {
+         lockType = lt;
+         if (lt == Locked) {
+            locked(true);
+         } else {
+            locked(false);
+         }
+      }
+
+      QString VariableWidget::toSettingsString() {
+         QString l;
+         if (lockType != defaultLockType) {
+            l = " " + lockType.toString();
+         }
+         return toString() + l;
+      };
+
+      void VariableWidget::fromSettingsString(QString string) {
+
+         const QRegExp lockTypeString("(Locked|NotLocked|NotLockable)\\s*.?$");
+         if (lockTypeString.indexIn(string)!=-1) {
+            QString s = lockTypeString.cap(1);
+            string.remove(s);
+            lockType.fromString(s);
+         }
+
+         fromString(string);
+      };
+
+
 		
 		/// FloatVariable constructor.
 		FloatWidget::FloatWidget(QWidget* parent, QWidget* variableEditor, QString name, double defaultValue, double min, double max) 
-			: VariableWidget(parent, name)  {
-
-				
+         : VariableWidget(parent, variableEditor, name)  {
 				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(widget);
 				l->setSpacing(0);
@@ -68,10 +121,9 @@ namespace Fragmentarium {
 				l->addWidget(label);
 				comboSlider = new ComboSlider(parent, defaultValue, min, max);
 				l->addWidget(comboSlider);
-				connect(comboSlider, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(comboSlider, SIGNAL(changed()), this, SLOT(valueChanged()));
 				this->min = min;
 				this->max = max;
-
 		};
 
 
@@ -87,7 +139,8 @@ namespace Fragmentarium {
 		};
 
 		int VariableWidget::uniformLocation(QGLShaderProgram* shaderProgram) {
-			int i = shaderProgram->uniformLocation(name);
+         if (lockType == Locked) return -1;
+         int i = shaderProgram->uniformLocation(name);
 			if (i == -1) {
 				if (isEnabled()) {
 					setEnabled(false);
@@ -117,7 +170,7 @@ namespace Fragmentarium {
 
 		/// Notice that only x and y components are used here.
 		Float2Widget::Float2Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector3f defaultValue, Vector3f min, Vector3f max) 
-			: VariableWidget(parent, name)  {
+         : VariableWidget(parent, variableEditor, name)  {
 				this->defaultValue = defaultValue;
 				QGridLayout* m = new QGridLayout(widget);
 				m->setSpacing(0);
@@ -128,11 +181,11 @@ namespace Fragmentarium {
 				m->addWidget(label,0,0);
 				comboSlider1 = new ComboSlider(parent, defaultValue[0], min[0], max[0]);
 				m->addWidget(comboSlider1,0,1);
-				connect(comboSlider1, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(comboSlider1, SIGNAL(changed()), this, SLOT(valueChanged()));
 
 				comboSlider2 = new ComboSlider(parent, defaultValue[1], min[1], max[1]);
 				m->addWidget(comboSlider2,1,1);
-				connect(comboSlider2, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(comboSlider2, SIGNAL(changed()), this, SLOT(valueChanged()));
 
 				this->min = min;
 				this->max = max;
@@ -160,7 +213,7 @@ namespace Fragmentarium {
 		//// ----- Float3Widget -----------------------------------------------
 
 		Float3Widget::Float3Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector3f defaultValue, Vector3f min, Vector3f max) 
-			: VariableWidget(parent, name)  {
+         : VariableWidget(parent, variableEditor, name)  {
 				normalize = false;
 				this->defaultValue = defaultValue;
 				
@@ -187,7 +240,7 @@ namespace Fragmentarium {
 				comboSlider3 = new ComboSlider(parent, defaultValue[2], min[2], max[2]);
 				m->addWidget(comboSlider3,2,1);
 				connect(comboSlider3, SIGNAL(changed()), this, SLOT(n3Changed()));
-				connect(this, SIGNAL(doneChanges()), variableEditor, SLOT(childChanged()));
+            connect(this, SIGNAL(doneChanges()), this, SLOT(valueChanged()));
 				this->min = min;
 				this->max = max;
 
@@ -304,7 +357,7 @@ namespace Fragmentarium {
 		/// ------------ ColorWidget ---------------------------------------
 
 		ColorWidget::ColorWidget(QWidget* parent, QWidget* variableEditor, QString name, SyntopiaCore::Math::Vector3f defaultValue) 
-			: VariableWidget(parent, name)  {
+         : VariableWidget(parent, variableEditor, name)  {
 				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(widget);
 				l->setSpacing(2);
@@ -314,7 +367,7 @@ namespace Fragmentarium {
 				l->addWidget(label);
 				colorChooser = new ColorChooser(parent, defaultValue);
 				l->addWidget(colorChooser);
-				connect(colorChooser, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(colorChooser, SIGNAL(changed()),  this, SLOT(valueChanged()));
 
 		};
 
@@ -341,7 +394,7 @@ namespace Fragmentarium {
 
 		/// FloatColorWidget constructor.
 		FloatColorWidget::FloatColorWidget(QWidget* parent, QWidget* variableEditor, QString name, double defaultValue, double min, double max, Vector3f defaultColorValue) 
-			: VariableWidget(parent, name)  {
+         : VariableWidget(parent, variableEditor, name)  {
 				this->defaultValue = defaultValue;
 				this->defaultColorValue = defaultColorValue;
 				QHBoxLayout* l = new QHBoxLayout(widget);
@@ -352,7 +405,7 @@ namespace Fragmentarium {
 				l->addWidget(label);
 				comboSlider = new ComboSlider(parent, defaultValue, min, max);
 				l->addWidget(comboSlider);
-				connect(comboSlider, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(comboSlider, SIGNAL(changed()), this, SLOT(valueChanged()));
 				this->min = min;
 				this->max = max;
 
@@ -360,7 +413,7 @@ namespace Fragmentarium {
 				colorChooser->setMinimumHeight(5);
 				colorChooser->setMinimumWidth(30);
 				l->addWidget(colorChooser);
-				connect(colorChooser, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(colorChooser, SIGNAL(changed()),  this, SLOT(valueChanged()));
 
 		};
 
@@ -399,7 +452,7 @@ namespace Fragmentarium {
 		/// ------------ IntWidget ---------------------
 
 		IntWidget::IntWidget(QWidget* parent, QWidget* variableEditor, QString name, int defaultValue, int min, int max) 
-			: VariableWidget(parent, name)  {
+         : VariableWidget(parent, variableEditor, name)  {
 				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(widget);
 				l->setSpacing(2);
@@ -409,7 +462,7 @@ namespace Fragmentarium {
 				l->addWidget(label);
 				comboSlider = new IntComboSlider(parent, defaultValue, min, max);
 				l->addWidget(comboSlider);
-				connect(comboSlider, SIGNAL(changed()), variableEditor, SLOT(childChanged()));
+            connect(comboSlider, SIGNAL(changed()),  this, SLOT(valueChanged()));
 
 				this->min = min;
 				this->max = max;
@@ -433,7 +486,7 @@ namespace Fragmentarium {
 		}
 
 		BoolWidget::BoolWidget(QWidget* parent, QWidget* variableEditor, QString name, bool defaultValue) 
-			: VariableWidget(parent, name)  {
+         : VariableWidget(parent, variableEditor, name)  {
 				this->defaultValue = defaultValue;
 				QHBoxLayout* l = new QHBoxLayout(widget);
 				l->setSpacing(2);
@@ -441,7 +494,7 @@ namespace Fragmentarium {
 				checkBox = new QCheckBox(widget);
 				checkBox->setText(name);
 				checkBox->setChecked(defaultValue);
-				connect(checkBox, SIGNAL(clicked()), variableEditor, SLOT(childChanged()));
+            connect(checkBox, SIGNAL(clicked()),  this, SLOT(valueChanged()));
 				l->addWidget(checkBox);
 		};
 

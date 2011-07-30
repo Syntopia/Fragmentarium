@@ -1,6 +1,6 @@
 #donotrun
 
-#info Fractal Lab Raytracer  (Copyright Subblue / Tom Beddard - GPL V3)
+#info Fractal Lab Raytracer  (Copyright Subblue / Tom Beddard - GPL V3) - [links: fractal.io and subblue.com]
 #camera 3D
 
 /*
@@ -35,10 +35,10 @@
 #group Camera
 
 // Field-of-view
-uniform float FOV; slider[0,0.4,2.0];
-uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)];
-uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)];
-uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)];
+uniform float FOV; slider[0,0.4,2.0] NotLockable
+uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
+uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
+uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
 
 varying vec3 dirDx;
 varying vec3 dirDy;
@@ -68,18 +68,10 @@ void main(void)
 
 #group Raytracer
 
-
 #define HALFPI 1.570796
 #define MIN_EPSILON 6e-7
 #define MIN_NORM 1.5e-7
-
-#define maxIterations 8             // {"label":"Iterations", "min":1, "max":30, "step":1, "group_label":"Fractal parameters"}
-#define stepLimit 60                // {"label":"Max steps", "min":10, "max":300, "step":1}
-#define aoIterations 4              // {"label":"AO iterations", "min":0, "max":10, "step":1}
 #define minRange 6e-5
-#define bailout 4.0
-
-
 
 // Camera position and target.
 varying vec3 from,dir,dirDx,dirDy;
@@ -87,45 +79,44 @@ varying vec2 coord;
 varying float zoom;
 
 // HINT: for better results use Tile Renders and resize the image yourself
-uniform int AntiAlias;slider[1,1,5];
+uniform int AntiAlias;slider[1,1,5] Locked
 // Smoothens the image (when AA is enabled)
-uniform float AntiAliasBlur;slider[0.0,1,2];
-uniform float surfaceDetail;  slider[0.1,0.6,2]         // {"label":"Detail",   "min":0.1,  "max":2,    "step":0.01,    "default":0.6,  "group":"Fractal"}
-uniform float surfaceSmoothness;slider[0.01,0.8,1.0]    // {"label":"Smoothness",   "min":0.01,  "max":1,    "step":0.01,    "default":0.8,  "group":"Fractal"}
-uniform float boundingRadius; slider[0.1,5,150]        // {"label":"Bounding radius", "min":0.1, "max":150, "step":0.01, "default":5, "group":"Fractal"}
+uniform float AntiAliasBlur;slider[0.0,1,2] Locked
+uniform int stepLimit; slider[10,60,300] Locked
+uniform int aoIterations; slider[0,4,10] Locked
+uniform float surfaceDetail;  slider[0.1,0.6,2]       
+uniform float surfaceSmoothness;slider[0.01,0.8,1.0] 
+uniform float boundingRadius; slider[0.1,5,150]  
 
 #group Colour
-uniform int   colorIterations; slider[0,4,30]     // {"label":"Colour iterations", "default": 4, "min":0, "max": 30, "step":1, "group":"Colour", "group_label":"Base colour"}
-uniform vec3  color1;   color[1.0,1.0,1.0]             // {"label":"Colour 1",  "default":[1.0, 1.0, 1.0], "group":"Colour", "control":"color"}
-uniform float color1Intensity;  slider[0,0.45,3]      // {"label":"Colour 1 intensity", "default":0.45, "min":0, "max":3, "step":0.01, "group":"Colour"}
-uniform vec3  color2;   color[0.0,0.53,0.8]                        // {"label":"Colour 2",  "default":[0, 0.53, 0.8], "group":"Colour", "control":"color"}
-uniform float color2Intensity;   slider[0,0.3,3]    // {"label":"Colour 2 intensity", "default":0.3, "min":0, "max":3, "step":0.01, "group":"Colour"}
-uniform vec3  color3;   color[1.0,0.53,0.0]                 // {"label":"Colour 3",  "default":[1.0, 0.53, 0.0], "group":"Colour", "control":"color"}
-uniform float color3Intensity;  slider[0,0,3]      // {"label":"Colour 3 intensity", "default":0, "min":0, "max":3, "step":0.01, "group":"Colour"}
-uniform bool  transparent; checkbox[false]        // {"label":"Transparent background", "default":false, "group":"Colour"}
-uniform float gamma;  slider[0.1,1,2]                  // {"label":"Gamma correction", "default":1, "min":0.1, "max":2, "step":0.01, "group":"Colour"}
-uniform vec2  ambientColor; slider[(0,0),(0.5,0.3),(1,1)]         // {"label":["Ambient intensity", "Ambient colour"],  "default":[0.5, 0.3], "group":"Colour", "group_label":"Ambient light & background"}
-uniform vec3  background1Color; color[0.0,0.46,0.8]    // {"label":"Background top",   "default":[0.0, 0.46, 0.8], "group":"Colour", "control":"color"}
-uniform vec3  background2Color; color[0,0,0]    // {"label":"Background bottom", "default":[0, 0, 0], "group":"Colour", "control":"color"}
+uniform vec3  color1;   color[1.0,1.0,1.0]        
+uniform float color1Intensity;  slider[0,0.45,3]   
+uniform vec3  color2;   color[0.0,0.53,0.8]                    
+uniform float color2Intensity;   slider[0,0.3,3]   
+uniform vec3  color3;   color[1.0,0.53,0.0]       
+uniform float color3Intensity;  slider[0,0,3]    
+uniform bool  transparent; checkbox[false]  
+uniform vec2  ambientColor; slider[(0,0),(0.5,0.3),(1,1)]   
+uniform vec3  background1Color; color[0.0,0.46,0.8]   
+uniform vec3  background2Color; color[0,0,0]  
 
 #group Shading
-uniform vec3  light; slider[(-300,-300,-300),(-16.0,100.0,-60.0),(300,300,300)]               // {"label":["Light x", "Light y", "Light z"], "default":[-16.0, 100.0, -60.0], "min":-300, "max":300,  "step":1,   "group":"Shading", "group_label":"Light position"}
-uniform vec3  innerGlowColor; color[0,0,.6,0.8]      // {"label":"Inner glow", "default":[0.0, 0.6, 0.8], "group":"Shading", "control":"color", "group_label":"Glows"}
-uniform float innerGlowIntensity; slider[0,0.1,1]  // {"label":"Inner glow intensity", "default":0.1, "min":0, "max":1, "step":0.01, "group":"Shading"}
-uniform vec3  outerGlowColor; color[1,1,1]      // {"label":"Outer glow", "default":[1.0, 1.0, 1.0], "group":"Shading", "control":"color"}
-uniform float outerGlowIntensity; slider[0,0,1]  // {"label":"Outer glow intensity", "default":0.0, "min":0, "max":1, "step":0.01, "group":"Shading"}
-uniform float fog;  slider[0,0,1]                // {"label":"Fog intensity",          "min":0,    "max":1,    "step":0.01,    "default":0,    "group":"Shading", "group_label":"Fog"}
-uniform float fogFalloff;  slider[0,0,10]         // {"label":"Fog falloff",  "min":0,    "max":10,   "step":0.01,    "default":0,    "group":"Shading"}
-uniform float specularity;  slider[0,0.8,3]        // {"label":"Specularity",  "min":0,    "max":3,    "step":0.01,    "default":0.8,  "group":"Shading", "group_label":"Shininess"}
-uniform float specularExponent; slider[0,4,50]     // {"label":"Specular exponent", "min":0, "max":50, "step":0.1,     "default":4,    "group":"Shading"}
-uniform float aoIntensity;  slider[0,0.15,1]        // {"label":"AO intensity",     "min":0, "max":1, "step":0.01, "default":0.15,  "group":"Shading", "group_label":"Ambient occlusion"}
-uniform float aoSpread;  slider[0,9,20]           // {"label":"AO spread",    "min":0, "max":20, "step":0.01, "default":9,  "group":"Shading"}
+uniform vec3  light; slider[(-300,-300,-300),(-16.0,100.0,-60.0),(300,300,300)]       
+uniform vec3  innerGlowColor; color[0,0,.6,0.8]  
+uniform float innerGlowIntensity; slider[0,0.1,1]  
+uniform vec3  outerGlowColor; color[1,1,1]  
+uniform float outerGlowIntensity; slider[0,0,1] 
+uniform float fog;  slider[0,0,1]             
+uniform float fogFalloff;  slider[0,0,10]       
+uniform float specularity;  slider[0,0.8,3]      
+uniform float specularExponent; slider[0,4,50]  
+uniform float aoIntensity;  slider[0,0.15,1]   
+uniform float aoSpread;  slider[0,9,20]          
 bool  depthMap = false;
 
 //float aspectRatio = size.x / size.y;
 float pixelScale = zoom;
-uniform float XFACTOR; slider[0,1,1]
-float epsfactor = 2.0  * pixelScale* pow(XFACTOR,10.0)* surfaceDetail;
+float epsfactor = 2.0  * pixelScale*  surfaceDetail;
 
 
 
@@ -269,7 +260,6 @@ vec3 trace( vec3 cameraPosition, vec3  ray_direction)
     // Found intersection?
     float glowAmount = float(steps)/float(stepLimit);
     float glow;
-    
     if (hit) {
         float aof = 1.0, shadows = 1.0;
         glow = clamp(glowAmount * innerGlowIntensity * 3.0, 0.0, 1.0);

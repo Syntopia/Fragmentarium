@@ -32,6 +32,7 @@ void init() {
 
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,13,100]
+uniform int ColorIterations;  slider[0,3,100]
 
 float DE(vec3 z)
 {
@@ -54,7 +55,7 @@ float DE(vec3 z)
 		// Rotate, scale, rotate (we need to cast to a 4-component vector).
 		z = (M*vec4(z,1.0)).xyz;
 		n++;
-		orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
+		if (n < ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(z,dot(z,z))));
 	}
 	
 	return (length(z) ) * pow(Scale,  float(-n));
@@ -62,34 +63,40 @@ float DE(vec3 z)
 
 #preset Default
 FOV = 0.360217
-Eye = 1.09202,-2.63786,-1.21447
-Target = -0.300748,0.726483,0.334473
-Up = -0.234934,0.324571,-0.916221
+Eye = 1.24677,-0.453256,2.80462
+Target = -0.2796,0.0838392,-0.806416
+Up = 0.799555,-0.503967,-0.326694
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -3.32115
-DetailNormal = -2.01922
-FudgeFactor = 1
+Detail = -2.66371
+DetailAO = -1.00002
+FudgeFactor = 0.54217
 MaxRaySteps = 56
-MaxRayStepsDiv = 2.125
 BoundingSphere = 2
-Dither = 0.56521
+Dither = 0.58772
 AO = 0,0,0,0.77869
-Specular = 0.8333
+Specular = 1.1392
 SpecularExp = 16
-SpotLight = 1,1,1,0.32609
+SpotLight = 1,1,1,0.2745
 SpotLightDir = -0.39048,0.1
-Glow = 1,1,1,0.06947
-Fog = 0.33558
+CamLight = 1,1,1,0.88462
+CamLightMin = 0.29412
+Glow = 1,1,1,0.27397
+Fog = 0
+HardShadow = 0.33846
+Reflection = 0
 BaseColor = 1,1,1
-OrbitStrength = 0.66337
-X = 0.5,0.6,0.6,0.9685
-Y = 1,0.6,0,0.4
+OrbitStrength = 0.83117
+X = 0.5,0.6,0.6,0.02912
+Y = 1,0.6,0,0.32038
 Z = 0.8,0.78,1,0.79528
-R = 0.4,0.7,1,0.14286
+R = 0,0.333333,0.498039,0.39216
 BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
-CamLight = 1,1,1,1.26882
+CycleColors = false
+Cycles = 6.95699
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Scale = 2
 Phi = 1.618
 Offset = 0.850651,0.525731,0
@@ -98,44 +105,45 @@ Rot1 = 1,1,1
 Angle2 = 0
 Rot2 = 1,1,1
 Iterations = 13
+ColorIterations = 4
 #endpreset
 
-#preset
+#preset Variation 1
 FOV = 0.360217
-Eye = 0.93574,-1.73464,1.15432
-Target = -1.19656,1.79679,-1.78149
-Up = -0.715769,-0.589278,-0.188964
+Eye = 1.24677,-0.453256,2.80462
+Target = -0.2796,0.0838392,-0.806416
+Up = 0.799555,-0.503967,-0.326694
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -2.43488
-MaxStep = -1.42
-DetailNormal = -2.39022
-DetailAO = -1.4
-FudgeFactor = 1
+Detail = -2.66371
+DetailAO = -1.00002
+FudgeFactor = 0.54217
 MaxRaySteps = 56
-MaxRayStepsDiv = 2.125
 BoundingSphere = 2
-Dither = 0.56521
-AO = 0,0,0,0.91
-Specular = 0
+Dither = 0.58772
+AO = 0,0,0,0.77869
+Specular = 1.1392
 SpecularExp = 16
-SpotLight = 0.862745,1,0.870588,0.91429
-SpotLightDir = -0.52,0.1
-CamLight = 1,1,1,1.12676
+SpotLight = 1,1,1,0.2745
+SpotLightDir = -0.39048,0.1
+CamLight = 1,1,1,0.88462
 CamLightMin = 0.29412
-Glow = 1,1,1,0.09783
-Fog = 0.10738
-HardShadow = 0
+Glow = 1,1,1,0.27397
+Fog = 0
+HardShadow = 0.33846
+Reflection = 0
 BaseColor = 1,1,1
-OrbitStrength = 0.5443
-X = 0.411765,0.6,0.556863,1
-Y = 0.592157,0.666667,0.592157,1
-Z = 0.937255,0.905882,1,1
-R = 0.666667,0.666667,0.498039,1
+OrbitStrength = 0.83117
+X = 0.5,0.6,0.6,0.02912
+Y = 1,0.6,0,0.32038
+Z = 0.8,0.78,1,0.79528
+R = 0,0.333333,0.498039,0.39216
 BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
 CycleColors = true
 Cycles = 6.95699
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Scale = 1.93332
 Phi = 2.1654
 Offset = 0.850651,0.525731,0.62281
@@ -144,4 +152,5 @@ Rot1 = -0.18644,1,1
 Angle2 = 37.5012
 Rot2 = 0.18644,1,1
 Iterations = 13
+ColorIterations = 4
 #endpreset

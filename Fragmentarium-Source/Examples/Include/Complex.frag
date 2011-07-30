@@ -36,6 +36,10 @@ vec2 cInverse(vec2 a) {
        return	vec2(a.x,-a.y)/dot(a,a);
 }
 
+vec2 cExp(vec3 z) {
+	return vec2(exp(z.x) * cos(z.y), exp(z.x) * sin(z.y));
+}
+
 vec2 cLog(vec2 a) {
 	float b =  atan(a.y,a.x);
 	if (b>0.0) b-=2.0*3.1415;

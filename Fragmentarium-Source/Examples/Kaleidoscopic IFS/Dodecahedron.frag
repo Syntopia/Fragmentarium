@@ -1,4 +1,4 @@
-#info Icosahedron Distance Estimator (Syntopia 2010)
+#info Dodecahedron Distance Estimator (Syntopia 2010)
 #define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
@@ -71,31 +71,38 @@ float DE(vec3 z)
 FOV = 0.360217
 Eye = 1.81932,-3.83045,-3.01399
 Target = 0.435564,-0.91705,-0.721581
-Up = 0.00636468,0.620226,-0.784397
+Up = 0.0282583,0.619615,-0.784397
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -2.09489
-DetailNormal = -1.81734
+Detail = -2.53981
+DetailAO = -1.33
 FudgeFactor = 1
 MaxRaySteps = 56
-MaxRayStepsDiv = 2.125
-BoundingSphere = 2
+BoundingSphere = 5.66
 Dither = 0.56521
 AO = 0,0,0,0.77869
 Specular = 0.8333
 SpecularExp = 16
 SpotLight = 1,1,1,0.32609
 SpotLightDir = -0.39048,0.1
+CamLight = 1,1,1,1.26882
+CamLightMin = 0.15151
 Glow = 1,1,1,0.06947
 Fog = 0.08054
+HardShadow = 0
+Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 0.49505
 X = 0.5,0.6,0.6,-0.9843
 Y = 1,0.6,0,0.4
 Z = 0.8,0.78,1,0.79528
 R = 0.4,0.7,1,0.14286
-BackgroundColor = 0.6,0.6,0.45
+BackgroundColor = 0.666667,0.333333,0
 GradientBackground = 0.3
+CycleColors = false
+Cycles = 1.1
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Scale = 2.61792
 Phi = 1.618
 Bailout = 9
@@ -104,6 +111,4 @@ Rot1 = 1,1,1
 Angle2 = 0
 Rot2 = 1,1,1
 Iterations = 13
-CamLight = 1,1,1,1.26882
-CycleColors = false
 #endpreset

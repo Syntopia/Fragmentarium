@@ -94,8 +94,7 @@ namespace Fragmentarium {
 				fragmentSource.camera = "2D";
 			}
 			if (cameraControl->getID() != fragmentSource.camera) {
-				INFO("Changing camera control to: "+fragmentSource.camera);
-				if (fragmentSource.camera == "2D") {
+            if (fragmentSource.camera == "2D") {
 					delete(cameraControl);
 					cameraControl = new Camera2D(mainWindow->statusBar());
 				} else if (fragmentSource.camera == "3D") {
@@ -114,7 +113,7 @@ namespace Fragmentarium {
 
 
 		void DisplayWidget::requireRedraw() {
-			if (disableRedraw) return;
+         if (disableRedraw && tiles==0) return;
 			pendingRedraws = requiredRedraws;
 		}
 
@@ -147,8 +146,9 @@ namespace Fragmentarium {
 			if (!shaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + shaderProgram->log());
 
 			s = shaderProgram->link();
-			if (!s) WARNING("Could not link shaders: " + shaderProgram->log());
+         if (!s) WARNING("Could not link shaders: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
+         if (!shaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + shaderProgram->log());
 
 			s = shaderProgram->bind();
 			if (!s) WARNING("Could not bind shaders: " + shaderProgram->log());
@@ -186,7 +186,7 @@ namespace Fragmentarium {
          outputFile = fileName;
 			this->tiles = tiles;
 			tilesCount = 0;
-			requireRedraw();
+         requireRedraw();
 		}
 
       void DisplayWidget::tileRender() {
@@ -411,7 +411,7 @@ namespace Fragmentarium {
 
 			// If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
 			if (ms>500) {
-                                fps = 1.0f/500.0f;
+            fps = 1000.0f/((float)ms);
 			} else {
 				// Else measure over two seconds.
 				long ms2 = fpsTimer.msecsTo(cur);

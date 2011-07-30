@@ -1,39 +1,30 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
-I've released a new build of Fragmentarium, version 0.8, with some useful updates, including better camera control, high resolution render and animation.
+I've released a new build of Fragmentarium, version 0.9 ("Sun Ra").
 
-New features:
-- The 3D camera has been rewritten: it is now a "first-person", pinhole camera (like Boxplorer and Fractal Lab), and is controllable using mouse and keyboard. Camera view can now be saved together with other setings.
-- Arbitrary resolution renderings (using tile based rendering - the GPU won't time out).
-- Preview modes (renders to FBO with lower resolution and rescales). 
-- 'Tile preview' for previewing part of high-resolution renders.
-- Animation controller (experimental: no keyframes yet, you must animate using the system supplied 'time' variable. Animation is output as a sequence of still images).
-- Presets (group parameters settings and load them into a dropbox)
-- New fractals: QuaternionMandelbrot4D, Ducks, NewMenger.
-- Improved raytracer: dithering, fog, new coloring schemes.
+New major features:
 
-<iframe src="http://player.vimeo.com/video/19996015" width="400" height="300" frameborder="0"></iframe><p><a href="http://vimeo.com/19996015">Fragmentarium Test Animation</a> from <a href="http://vimeo.com/syntopia">Syntopia (Mikael H. Christensen)</a> on <a href="http://vimeo.com">Vimeo</a>.</p>
-[Anim]
+- New high resolution output dialog (with auto-naming and auto-backup of scripts and parameters)
+- Locking of parameters (makes rendering up to 4x faster)
 
-[Ducks w. sniper map]
+Minor improvements:
 
-[QM4D with interface]
+- Mousewheel now changes camera position, not FOV
+- Raytracer improvement:
+  - Removed 'AntiAliasBlur','MaxRayStepDiv', and 'NormalDetail' setting
+  - Added reflection, hardShadows
+  - Added dithering (for banding removal) and very simple RNG functionality.
+  - Added new ambient occlusion method (similar to Rrola/Subblue - sample along normal for proximity).
+- Added a port of Subblues Fractal Labs (fractal.io) raytracer. Just include "Subblue-Raytracer.frag" instead of "DE-Raytracer.frag"
+- Added vertical scroll to user parameter groups.
+- Added '#define providesInit', '#define providesColor'
+- Now disables uniformes which are not used in shader.
+- Bugfix: resize of window now updates aspect ratio.
+- Bugfix: handling of specular exponent = 0
+- BugFix: fixed fps timer for >500ms renders
 
-Update web:
-Install Qt 4.7.1.
-Set the QT4DIR environment variable to the Qt installation directory (Typically: C:\Qt\4.7.1)
-Open the Fragmentarium.sln Visual Studio 2008 solution file (located in the 'Build - Windows' dir).
+New fragments:
 
-Now you should be able to compile Fragmentarium.
-
-To run it you must copy the following Qt DLL's from the Qt 'bin' folder (e.g. C:\Qt\4.7.1\bin) to the VS build folder (e.g. 'release'):
-QtCore4.dll, QtOpenGL4.dll, QtGui4.dll
-Notice, that debug DLLs contain a 'd'-suffix (e.g. QtCore4d.dll).
-
-Now Fragmentarium should run from inside Visual Studio, but it will not find its examples unless the working directory is set: Under Project properties, set the "Configuration Properties | Debugging | Working Directory" to ".."
-
-It is possible to create a deployable by running the 'Build - Windows/createDeploy.bat' script.
-------------
-
-Tips & Tricks:
-GPU Timeout
+- Added GraphPlotter.frag, KaliSet.frag, BurningShip.frag, Spudsville.frag,
+- Added Knighty's:
+- Added 2DJulia.frag and Complex.frag to make 2D fractals easier.

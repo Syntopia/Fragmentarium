@@ -5,9 +5,6 @@
 //  Burning Ship Fractal
 // (Implementation by Syntopia)
 
-uniform float MinRadius; slider[0,0,10]
-uniform float Scaling; slider[-5,0,5]
-
 vec2 formula(vec2 z, vec2 c) {
 	z = abs(z);
 	z = cMul(z,z);
@@ -17,22 +14,20 @@ vec2 formula(vec2 z, vec2 c) {
 }
 
 #preset Default
-Center = -1.16566,0.0381056
-Zoom = 21.6234
+Center = -0.847692,0.0356639
+Zoom = 22.7046
 AntiAliasScale = 1
-AntiAlias = 2
-Iterations = 108
-PreIterations = 20
-R = 0
-G = 0.73188
-B = 0.07194
-C = 0.27142
+AntiAlias = 3
+Iterations = 33
+PreIterations = 15
+R = 1
+G = 0.4
+B = 0.725
+C = 1.64706
 Julia = false
-JuliaX = -1.2
-JuliaY = 1.63084
+JuliaX = 0.23528
+JuliaY = 5.5384
 ShowMap = true
 MapZoom = 2.1
-EscapeSize = 4.22081
-MinRadius = 0
-Scaling = -1.9231
+EscapeSize = 6.07453
 #endpreset

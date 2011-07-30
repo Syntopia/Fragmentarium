@@ -42,18 +42,14 @@ float DE(vec3 pos) {
 
 #preset Default
 FOV = 0.4
-Eye = 0.0511043,1.078,1.04822
-Target = 0.469086,-4.38068,-7.40283
-Up = -0.0793242,-0.826634,0.557121
+Eye = 0.37003,1.05946,1.00204
+Target = -1.59756,-5.14322,-6.68219
+Up = -0.161329,-0.725462,0.669087
 AntiAlias = 1
-AntiAliasBlur = 1
 Detail = -2.37391
-MaxStep = -0.3
-DetailNormal = -2.8
 DetailAO = -0.7
 FudgeFactor = 1
 MaxRaySteps = 56
-MaxRayStepsDiv = 1.8
 BoundingSphere = 7.8769
 Dither = 0.51724
 AO = 0,0,0,0.7
@@ -65,7 +61,8 @@ CamLight = 1,1,1,1
 CamLightMin = 0.76471
 Glow = 1,1,1,0
 Fog = 0.4567
-HardShadow = 1
+HardShadow = 0
+Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 1
 X = 0.5,0.6,0.6,0.25712
@@ -76,6 +73,9 @@ BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
 CycleColors = true
 Cycles = 1.88871
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Iterations = 22
 Slope = 1.7432
 #endpreset

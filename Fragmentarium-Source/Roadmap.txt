@@ -1,74 +1,25 @@
 Roadmap.
 --------
-+ #Include "x.frag"
-+ #info "..."
-+ #replace "x.frag" "t.frag"
-+ ShaderSource class
-+ 2D CameraControl
-  + Antialias
-+ 3D CameraControl
-  + Antialias
-+ Magic Uniforms
-  + vec2 pixelsize (in model-coordinates)
-  + float time (seconds)
-+ GUI Uniforms
-  + uniform float a; slider[-2,3,3]
-  + uniform int a; slider[-2,3,3]
-  + Comments before GUI uniforms should become tooltips
-  + uniform vec3 a; colorchooser[1,0.9,0.8]
-  + uniform vec3 a; slider[(0,0,0),(0.5,0.5,0.5),(1,1,1)]
-  + Groups
-+ Textures.
-  
-+ Better Syntax Highligtning.
-+ Control of line numbers 
-  (+GLSL debug working)
-+ Write out Camera hints after rendering
-+ Fix: Splash
-+ add three glsl output lines -> Plus make it an Run button thingy
-  -> glsl debug doesn't work?
-+ Simple website.
-
-<-- First Release: Version 0.5 -- 
-
-+ Control FOV for 3D camera
-+ Blending to background seems wrong in raytracer
-+ uniform vec2 a; slider[(0,0),(0.5,0.5),(1,1)]
-
-+ Hires renders.
-+ Better cameras (esp. 3D)
-  + Clipping? (What can we do here?)
-  + Sliders for cameras
-  + Save to settings
-  + Rotation in screen space
-  + A 3D camera suitable for deep zooming
-  + Better mouse mapping for cameras
-+ Tile based renders.
-+ Animation timeline.
-+ Better support for preview: render-to-texture (using FBO's) and rescale.
-+ Preset support
-
-<-- Version 0.8 --
-
-Some of these:
-- Mouse sensitivity
+V0.9
+* New High Resolution Output Dialog
+* Many minor UI and raytracer fixes
 - Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
-- Update raytracer: inner glow, hard shadows, new AO?
+  - Locked, NotLocked, NotLockable
+- Add keyboard remapping (through filter function)
+
+Prioritized ideas:
+
+- Make it easier to shift from continuous to manual.
+- Mouse sensitivity
 - uniform vec4 a; slider[....]
 - Fix: icons
-- Resize trigger many updates (hang)
-- Example Path : examples/
+- Keyframe Animation.
 - A 2D camera which scales from the current mouse position
-
-<-- Version 0.9 --
-
-Some of these:
-- Clipping planes
-- Startup screen with images?
 - Update raytracer: environment mapping?
+- Commandline support
 - Check for updates
 - WebGL export
-- Keyframe Animation.
 - Post processing (add another render step to FBO): HDR, Blur, ...
-<-- Version 1.0 --
-
+- Restore Visual Studio makefiles (make sure they work in Debug mode)
+- Sourceforge page. -> Add latest version as downloadable files. Add GitHub link.
+- Clipping planes

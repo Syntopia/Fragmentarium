@@ -1,3 +1,24 @@
+TODO:
+Unlocking should not gray out vars in cont. mode
+Reset should work with unlock
+
+Fragments:
+Clean up:
+- Experimental
+Add examples with Spudsville, 4-point, ...
+
+28-07-11 [MHC]
+BugFix: [3] Tile Render: only works in automatic mode.
+BugFix: Using mouse and key movement at the same time, would result in distance between eye and target getting smaller and smaller.
+Compiler warnings are now shown in output, also if there is no errors.
+
+27-07-11 [MHC]
+Added implementation of locking (changing uniforms to 'const' variables)
+Fixed FPS for >500 ms renders
+Updated indentation
+
+19-07-11 [MHC]
+Added autosave option to High Resolution Render Dialog
 
 02-07-11 [MHC]
 BugFix: Resize of windows in preview mode should update aspect ratio.

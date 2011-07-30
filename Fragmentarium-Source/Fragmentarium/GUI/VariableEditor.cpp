@@ -155,6 +155,43 @@ namespace Fragmentarium {
 			setSettings(text);
 		}
 
+      void VariableEditor::lockGroup() {
+         QWidget* t = tabWidget->widget(tabWidget->currentIndex());
+
+         QMap<QString, QWidget*>::const_iterator it;
+         QString g;
+         for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
+            if (it.value()->parent() == t) {
+               g = it.key();
+            }
+         }
+
+         foreach (VariableWidget* variable, variables) {
+            if (variable->getGroup() == g) {
+               variable->locked(true);
+            }
+         }
+      }
+
+      void VariableEditor::unlockGroup() {
+         QWidget* t = tabWidget->widget(tabWidget->currentIndex());
+
+         QMap<QString, QWidget*>::const_iterator it;
+         QString g;
+         for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
+            if (it.value()->parent() == t) {
+               g = it.key();
+            }
+         }
+
+         foreach (VariableWidget* variable, variables) {
+            if (variable->getGroup() == g) {
+               variable->locked(false);
+            }
+         }
+      }
+
+
 		void VariableEditor::resetGroup() {			
 			QWidget* t = tabWidget->widget(tabWidget->currentIndex());
 			
@@ -194,6 +231,11 @@ namespace Fragmentarium {
         };
       }
 
+      void VariableEditor::childChanged(bool lockedChanged) {
+         emit changed(lockedChanged);
+      }
+
+
 		void VariableEditor::createGroup(QString g) {
 			//INFO("Creating new "+ g);
 
@@ -218,18 +260,50 @@ namespace Fragmentarium {
          tabs[g] = w;
 
 			QWidget* b = new QWidget();
-			b->setLayout(new QVBoxLayout(b));
+         b->setLayout(new QHBoxLayout(b));
 			b->layout()->setSpacing(0);
 			b->layout()->setContentsMargins (0,0,0,0);
+
          QPushButton* pb = new QPushButton(b);
 			pb->setText("Reset group");
 			b->layout()->addWidget(pb);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetGroup()));
+         pb = new QPushButton(b);
+         pb->setText("Lock group");
+         b->layout()->addWidget(pb);
+         connect(pb, SIGNAL(clicked()), this, SLOT(lockGroup()));
+         pb = new QPushButton(b);
+         pb->setText("Unlock group");
+         b->layout()->addWidget(pb);
+         connect(pb, SIGNAL(clicked()), this, SLOT(unlockGroup()));
 
 			w->layout()->addWidget(b);
 			spacers[w] = b;
 		}
 
+
+      void VariableEditor::substituteLockedVariables(Parser::FragmentSource* fs) {
+         static QRegExp exp("^\\s*uniform\\s+(\\S+)\\s+(\\S+)\\s*;\\s*$");
+
+         QMap<QString, VariableWidget*> map;
+         for (int i = 0; i < variables.count(); i++) {
+            if (variables[i]->getLockType() == Locked) {
+               map[variables[i]->getName()] = variables[i];
+            }
+         }
+         INFO(QString("Locked variables: %1").arg(map.count()));
+
+
+         for (int i = 0; i < fs->source.count(); i++) {
+            QString s = fs->source[i];
+            if (exp.indexIn(s)!=-1) {
+               if (map.contains(exp.cap(2))) {
+                  fs->source[i] = map[exp.cap(2)]->getLockedSubstitution();
+                  //INFO("Substituted: " + s + " -> " + fs->source[i]);
+               }
+            }
+         }
+      }
 
 
 		void VariableEditor::updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI) {
@@ -271,6 +345,11 @@ namespace Fragmentarium {
 					if (name == ps[i]->getUniqueName()) {
 						found = true;
 						variables[j]->setUpdated(true);
+
+
+                  variables[j]->setPalette(QApplication::palette(variables[j]));
+                  variables[j]->setAutoFillBackground(false);
+
 						//INFO("Found existing: " + variables[j]->getName() + QString(" value: %1").arg(variables[j]->getValueAsText()));
 					}
 				}
@@ -284,7 +363,8 @@ namespace Fragmentarium {
 						fw->setToolTip(fp->getTooltip());
 						fw->setStatusTip(fp->getTooltip());
 						fw->setGroup(fp->getGroup());
-						variables.append(fw);
+                  fw->setDefaultLockType(fp->getLockType());
+                  variables.append(fw);
 						fw->setUpdated(true);
 						currentWidget->layout()->addWidget(fw);
 					} else if (dynamic_cast<Parser::IntParameter*>(ps[i])) {
@@ -294,7 +374,8 @@ namespace Fragmentarium {
 						iw->setGroup(ip->getGroup());
 						iw->setToolTip(ip->getTooltip());
 						iw->setStatusTip(ip->getTooltip());
-						variables.append(iw);
+                  iw->setDefaultLockType(ip->getLockType());
+                  variables.append(iw);
 						iw->setUpdated(true);
 						currentWidget->layout()->addWidget(iw);
 					} else if (dynamic_cast<Parser::ColorParameter*>(ps[i])) {
@@ -304,7 +385,8 @@ namespace Fragmentarium {
 						cw->setGroup(cp->getGroup());
 						cw->setToolTip(cp->getTooltip());
 						cw->setStatusTip(cp->getTooltip());
-						variables.append(cw);
+                  cw->setDefaultLockType(cp->getLockType());
+                  variables.append(cw);
 						cw->setUpdated(true);
 						currentWidget->layout()->addWidget(cw);
 					} else if (dynamic_cast<Parser::FloatColorParameter*>(ps[i])) {
@@ -314,7 +396,8 @@ namespace Fragmentarium {
 						cw->setGroup(cp->getGroup());
 						cw->setToolTip(cp->getTooltip());
 						cw->setStatusTip(cp->getTooltip());
-						variables.append(cw);
+                  cw->setDefaultLockType(cp->getLockType());
+                  variables.append(cw);
 						cw->setUpdated(true);
 						currentWidget->layout()->addWidget(cw);
 					} else if (dynamic_cast<Parser::Float3Parameter*>(ps[i])) {
@@ -324,7 +407,8 @@ namespace Fragmentarium {
 						f3w->setToolTip(f3p->getTooltip());
 						f3w->setStatusTip(f3p->getTooltip());
 						f3w->setGroup(f3p->getGroup());
-						variables.append(f3w);
+                  f3w->setDefaultLockType(f3p->getLockType());
+                  variables.append(f3w);
 						f3w->setUpdated(true);
 						currentWidget->layout()->addWidget(f3w);
 					} else if (dynamic_cast<Parser::Float2Parameter*>(ps[i])) {
@@ -334,7 +418,8 @@ namespace Fragmentarium {
 						f2w->setToolTip(f2p->getTooltip());
 						f2w->setStatusTip(f2p->getTooltip());
 						f2w->setGroup(f2p->getGroup());
-						variables.append(f2w);
+                  f2w->setDefaultLockType(f2p->getLockType());
+                  variables.append(f2w);
 						f2w->setUpdated(true);
 						currentWidget->layout()->addWidget(f2w);
 					} else if (dynamic_cast<Parser::BoolParameter*>(ps[i])) {
@@ -344,14 +429,15 @@ namespace Fragmentarium {
 						bw->setToolTip(bp->getTooltip());
 						bw->setStatusTip(bp->getTooltip());
 						bw->setGroup(bp->getGroup());
-						variables.append(bw);
+                  bw->setDefaultLockType(bp->getLockType());
+                  variables.append(bw);
 						bw->setUpdated(true);
 						currentWidget->layout()->addWidget(bw);
 					} else {
 						WARNING("Unsupported parameter");
 					}
 
-					// We need to move the spacer to bottom. This may be very slow...
+               // We need to move the spacer to bottom.
 					currentWidget->layout()->removeWidget(spacers[currentWidget]);
 					currentWidget->layout()->addWidget(spacers[currentWidget]);
 
@@ -363,8 +449,7 @@ namespace Fragmentarium {
 					variables.remove(i);
 					i = 0;
 				} else if (!variables[i]->isUpdated()) {
-					//INFO("Deleting : " + variables[i]->getName());
-					delete(variables[i]);
+               delete(variables[i]);
 					variables.remove(i);
 					i = 0;
 				} else {
@@ -376,8 +461,7 @@ namespace Fragmentarium {
 			while (it.hasNext()) {
 				it.next();
 				if (it.value() == false) {
-               INFO("Deleting "+ it.key());
-					spacers.remove(tabs[it.key()]);
+               spacers.remove(tabs[it.key()]);
                delete((tabs[it.key()]->parent()));
                tabs.remove(it.key());
 				}
@@ -395,7 +479,7 @@ namespace Fragmentarium {
 			QStringList l;
 			for (int i = 0; i < variables.count(); i++) {
 				QString name = variables[i]->getName();
-				QString val = variables[i]->toString();
+            QString val = variables[i]->toSettingsString();
 				l.append(name + " = " + val);
 			}
 			return l.join("\n");
@@ -420,7 +504,7 @@ namespace Fragmentarium {
 
 			for (int i = 0; i < variables.count(); i++) {
 				if (maps.contains(variables[i]->getName())) {
-					variables[i]->fromString(maps[variables[i]->getName()]);
+               variables[i]->fromSettingsString(maps[variables[i]->getName()]);
 					//INFO("Found: "+variables[i]->getName());
 					maps.remove(variables[i]->getName());
 				}

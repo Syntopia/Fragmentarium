@@ -81,6 +81,7 @@ namespace Fragmentarium {
 			void enableAll();
 			void loadParameters(QString fileName);
 			void setSplashWidget(QWidget* w);
+         void highlightBuildButton(bool value);
 		
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);
@@ -90,8 +91,7 @@ namespace Fragmentarium {
 		
 		public slots:
 			void animationControllerHidden();
-			void benchmark();
-			void removeSplash();
+         void removeSplash();
 			void viewSliderChanged(int);
 			void previewSliderChanged(int);
 			void tileBasedRender();
@@ -99,13 +99,13 @@ namespace Fragmentarium {
 			void callRedraw();
 			void showDebug();
 			void pasteSelected();
-			void renderModeChanged(int);
+         void renderModeChanged(int);
 			void saveParameters();
 			void loadParameters();
 			void indent();
 			void preferences();
 			void insertText();
-			void variablesChanged();
+         void variablesChanged(bool lockedChanged);
 			void closeTab(int id);
 			void cut();
 			void copy();
@@ -130,6 +130,7 @@ namespace Fragmentarium {
 		
 		private:
 			QList<QWidget *> disabledWidgets;
+         QLabel* buildLabel;
 			QSlider* viewSlider;
 			QSlider* previewSlider;
 			QLabel* viewLabel;

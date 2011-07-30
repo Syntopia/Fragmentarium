@@ -48,7 +48,8 @@ vec3 getMapColor2D(vec2 c) {
 	
 }
 
-
+uniform int ColoringType; slider[0,0,2]
+uniform float ColorFactor; slider[0,0.5,1]
 
 vec3 getColor2D(vec2 c) {
 	if (ShowMap && Julia) {
@@ -59,19 +60,31 @@ vec3 getColor2D(vec2 c) {
 	}
 	
 	vec2 z = c;
-	float mean = 0.0;
 	int i = 0;
-	for (i = 0; i < Iterations; i++) {
-		z = formula(z,(Julia ? c2 : c));
-		if (i>PreIterations) mean+=length(z);
-		if (dot(z,z)> escape) break;
-		
+	float ci = 0.0;
+	if (ColoringType == 0) {
+		float mean = 0.0;
+		for (i = 0; i < Iterations; i++) {
+			z = formula(z,(Julia ? c2 : c));
+			if (i>PreIterations) mean+=length(z);
+			if (dot(z,z)> escape) break;
+		}
+		mean/=float(i-PreIterations);
+		ci =  1.0 - log2(.5*log2(mean/C));
+	} else if (ColoringType == 1) {
+		float m = 0.0;
+		for (i = 0; i < Iterations; i++) {
+			z = formula(z,(Julia ? c2 : c));
+			if (i>PreIterations) m = mix(m,length(z),ColorFactor);
+			if (dot(z,z)> escape) break;
+		}
+		ci =  1.0 - log2(.5*log2(m/C));
+	} else if (ColoringType == 2) {
+		for (i = 0; i < Iterations; i++) {
+			z = formula(z,(Julia ? c2 : c));
+			if (dot(z,z)> escape) break;
+		}
+		ci =  float( i) + 1.0 - log2(.5*log2(dot(z,z)));	
 	}
-	mean/=float(i-PreIterations);
-	//mean = length(z);
-	
-	// The color scheme here is based on one
-	// from Inigo Quilez's Shader Toy:
-	float co =   1.0 - log2(.5*log2(mean/C));
-	return vec3( .5+.5*cos(6.2831*co+R),.5+.5*cos(6.2831*co + G),.5+.5*cos(6.2831*co +B) );
+	return vec3( .5+.5*cos(6.*ci+R),.5+.5*cos(6.*ci + G),.5+.5*cos(6.*ci +B) );
 }

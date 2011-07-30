@@ -34,6 +34,8 @@ namespace Fragmentarium {
          void updateFileName(const QString &);
          void updateFileName();
          QString getFileName();
+         QString getFragmentFileName();
+         bool doSaveFragment() { return autoSaveCheckBox; }
 
       private:
          QString uniqueFileName;
@@ -66,6 +68,7 @@ namespace Fragmentarium {
          QDialogButtonBox *buttonBox;
 
          QStringList extensions;
+         QString fragmentFileName;
       };
    }
 }

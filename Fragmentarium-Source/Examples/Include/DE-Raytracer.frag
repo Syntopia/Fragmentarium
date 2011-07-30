@@ -8,10 +8,10 @@
 #group Camera
 
 // Field-of-view
-uniform float FOV; slider[0,0.4,2.0];
-uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)];
-uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)];
-uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)];
+uniform float FOV; slider[0,0.4,2.0] NotLockable
+uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
+uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
+uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
 
 varying vec3 dirDx;
 varying vec3 dirDy;
@@ -47,37 +47,26 @@ varying vec2 coord;
 varying float zoom;
 
 // HINT: for better results use Tile Renders and resize the image yourself
-uniform int AntiAlias;slider[1,1,5];
-// Smoothens the image (when AA is enabled)
-uniform float AntiAliasBlur;slider[0.0,1,2];
+uniform int AntiAlias;slider[1,1,5] Locked
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
-// The maximum length we will follow a ray
-uniform float MaxDist;slider[-2,2,3];
-// The resolution for normals (used for lighting)
-uniform float DetailNormal;slider[-7,-2.8,0];
 // The step size when sampling AO (set to 0 for old AO)
 uniform float DetailAO;slider[-7,-0.5,0];
-//uniform float BackStepNormal;slider[0,1,2];
-const float BackStepNormal = 0.0;
 
-// The power of the clarity function
- //uniform float ClarityPower;slider[0,1,5];
 const float ClarityPower = 1.0;
 
 // Lower this if the system is missing details
 uniform float FudgeFactor;slider[0,1,1];
 
 float minDist = pow(10.0,Detail);
-float MaxDistance = pow(10.0,MaxDist);
-float normalE = pow(10.0,DetailNormal);
 float aoEps = pow(10.0,DetailAO);
+float MaxDistance = 100.0;
 
 // Maximum number of  raymarching steps.
 uniform int MaxRaySteps;  slider[0,56,2000]
 
 // Use this to boost Ambient Occlusion and Glow
-uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
+//uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 
 // Used to speed up and improve calculation
 uniform float BoundingSphere;slider[0,2,100];
@@ -107,9 +96,9 @@ uniform vec4 Glow; color[0,0.0,1,1.0,1.0,1.0];
 // Adds fog based on distance
 uniform float Fog; slider[0,0.0,2]
 // Hard shadows shape is controlled by SpotLightDir
-uniform float HardShadow; slider[0,0.0,1]
+uniform float HardShadow; slider[0,0,1] Locked
 
-uniform float Reflection; slider[0,0,1]
+uniform float Reflection; slider[0,0,1] Locked
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -153,6 +142,24 @@ vec3 normal(vec3 pos, float normalDistance) {
 	return n;
 }
 
+#group Floor
+uniform bool EnableFloor; checkbox[false] Locked
+uniform vec3 FloorNormal; slider[(-1,-1,-1),(0,0,0),(1,1,1)]
+uniform float FloorHeight; slider[-5,0,5]
+uniform vec3 FloorColor; color[1,1,1]
+bool floorHit = false;
+float floorDist = 0.0;
+vec3 floorNormal = normalize(FloorNormal);
+
+float DEF(vec3 p) {
+	if (EnableFloor) {
+		floorDist = abs(dot(floorNormal,p)-FloorHeight);
+		return min(floorDist,DE(p));
+ 	} else {
+		return DE(p);
+	}
+}
+
 vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 	vec3 spotDir =-normalize(dirDx)*tan(SpotLightDir.x*0.5*3.14)+
 	normalize(dirDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
@@ -174,8 +181,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 		int steps;
 		for (steps=0; steps<maxSteps; steps++) {
 			vec3 p = pos + totalDist * sdir;
-			float dist = DE(p);
-			//dist = clamp(dist, 0.0, MaxDist);
+			float dist = DEF(p);
 			if (dist<eps && steps==0) eps = dist;
 			totalDist += dist;
 			if (dist < eps ||  totalDist >MaxDistance) break;
@@ -186,7 +192,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 		ambient = mix(ambient,0.0,HardShadow*f);
 		// specular = mix(specular,0.0,HardShadow*f); 
 		diffuse = mix(diffuse,0.0,HardShadow*f);
-		if (f>0) specular = 0.0; // always turn off specular, if blocked
+		if (f>0.0) specular = 0.0; // always turn off specular, if blocked
 	}
 
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
@@ -207,16 +213,16 @@ vec3 cycle(vec3 c, float s) {
 // Sample proximity at a few points in the direction of the normal.
 float ambientOcclusion(vec3 p, vec3 n) {
 	float ao = 0.0;
-	float de = DE(p);
+	float de = DEF(p);
 	float wSum = 0.0;
 	float w = 1.0;
-    float d = 1.0-(Dither*rand(p.xy));
+       float d = 1.0-(Dither*rand(p.xy));
 	for (float i =1.0; i <6.0; i++) {
 		// D is the distance estimate difference.
 		// If we move 'n' units in the normal direction,
 		// we would expect the DE difference to be 'n' larger -
 		// unless there is some obstructing geometry in place
-		float D = (DE(p+ d*n*i*i*aoEps) -de)/(d*i*i*aoEps);
+		float D = (DEF(p+ d*n*i*i*aoEps) -de)/(d*i*i*aoEps);
 		w *= 0.6;
 		ao += w*clamp(1.0-D,0.0,1.0);
 		wSum += w;
@@ -252,6 +258,8 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(dir);
+      floorHit = false;
+	floorDist = 0.0;
 	
 	float dist = 0.0;
 	float totalDist = 0.0;
@@ -284,6 +292,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
+		
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
 		dist = MaxDistance;
@@ -291,11 +300,13 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		steps = 2;
 	}  else {
 		totalDist += d; // advance ray to bounding sphere intersection
-		
 		for (steps=0; steps<MaxRaySteps; steps++) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
-			dist = clamp( DE(p), 0.0, MaxDistance)*FudgeFactor;
+			dist = DEF(p);
+			//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
+			dist *= FudgeFactor;
+
 			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
@@ -303,9 +314,10 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
                     if (totalDist > MaxDistance) break;
 		}
 	}
-	
+	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
+ 	
 	vec3 hitColor;
-	float stepFactor = clamp((MaxRayStepsDiv* float(steps))/float(MaxRaySteps),0.0,1.0);
+	float stepFactor = clamp((float(steps))/float(MaxRaySteps),0.0,1.0);
 	vec3 backColor = BackgroundColor;
 	if (GradientBackground>0.0) {
 		float t = length(coord);
@@ -317,17 +329,26 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	
 	if ( dist < epsModified) {
 		// We hit something, or reached MaxRaySteps
-		hit = from + (totalDist-BackStepNormal*epsModified*0.5) * direction;
+		hit = from + totalDist * direction;
 		float ao = AO.w*stepFactor ;
-		hitNormal= normal(hit, epsModified); // /*normalE*epsModified/eps*/
+
+		if (floorHit) {
+			hitNormal = floorNormal;	
+			if (dot(hitNormal,direction)>0.0) hitNormal *=-1.0;	
+		} else {
+			hitNormal= normal(hit, epsModified); // /*normalE*epsModified/eps*/
+		}
+
 		if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
 #ifdef  providesColor
 		hitColor = mix(BaseColor,  color(hit),  OrbitStrength);
 #else
 		hitColor = getColor();
+//hitColor =vec3(1.0);
 #endif
-		hitColor = mix(hitColor, AO.xyz ,ao);
-	
+
+		if (floorHit) hitColor = FloorColor;
+		hitColor = mix(hitColor, AO.xyz ,ao);	
 		hitColor = lighting(hitNormal, hitColor,  hit,  direction,eps);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
@@ -354,15 +375,15 @@ void main() {
 	
 	vec3 color = vec3(0.0,0.0,0.0);
 	for (int x = 0; x<AntiAlias; x++) {
-		float  dx =  AntiAliasBlur*float(x)/float(AntiAlias);
+		float  dx = float(x)/float(AntiAlias);
 		for (int y = 0; y<AntiAlias; y++) {
-			float dy = AntiAliasBlur*float(y)/float(AntiAlias);
+			float dy = float(y)/float(AntiAlias);
 			vec3 nDir = dir+dirDx*dx+dirDy*dy;
-			vec3 hitNormal;
+			vec3 hitNormal = vec3(0.0);
 			vec3 hit;
 			vec3 c = trace(from,nDir,hit,hitNormal);
 			if (Reflection>0.0 && (hit != vec3(.0))) {
-				vec3 d; vec3 d2;
+				vec3 d; vec3 d2 = vec3(0.0);
 				// todo: minDist = modifiedEps?
 				vec3 r = normalize(nDir - 2.0 * dot(hitNormal, nDir) * hitNormal);
 	

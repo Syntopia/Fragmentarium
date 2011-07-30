@@ -16,7 +16,7 @@ uniform vec3 C123; slider[(-1,-1,-1),(0.18,0.88,0.24),(1,1,1)]
 // Quaterion Constant (last component)
 uniform float C4; slider[-1,0.16,1]
 
-vec4 c = vec4(C123,C4); // We don't support 4-component sliders yet...
+vec4 c = vec4(C123,C4); // no support for 4-component sliders yet
 
 
 // The inline expanded quaterion multiplications make this DE
@@ -39,69 +39,81 @@ float DE(vec3 pos) {
 FOV = 0.4
 Eye = -0.821733,-1.82625,2.23376
 Target = 2.11612,4.20274,-5.18381
-Up = -0.89963,-0.087855,-0.427722
+Up = -0.901843,-0.0823425,-0.424118
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -2.45252
-DetailNormal = -2.8
+Detail = -3.01273
+DetailAO = -0.5
 FudgeFactor = 1
 MaxRaySteps = 104
-MaxRayStepsDiv = 1.8
 BoundingSphere = 2
 Dither = 0.5
-AO = 0,0,0,0.7
+AO = 0.529412,0.352941,0,0.7
 Specular = 1.5
 SpecularExp = 16
 SpotLight = 1,1,1,0.38043
 SpotLightDir = 0.1,0.1
 CamLight = 1,1,1,1
+CamLightMin = 0
 Glow = 1,1,1,0.16667
 Fog = 0
+HardShadow = 0
+Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 0.8
 X = 0.5,0.6,0.6,0.7
 Y = 1,0.6,0,0.4
 Z = 0.8,0.78,1,0.5
 R = 0.4,0.7,1,0.12
-BackgroundColor = 0.6,0.6,0.45
+BackgroundColor = 1,0.666667,0
 GradientBackground = 0.3
+CycleColors = false
+Cycles = 1.1
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Iterations = 16
 Threshold = 10
 C123 = 0.18,0.88,0.24
 C4 = 0.16
-CycleColors = false
 #endpreset
 
 #preset Round
 FOV = 0.4
 Eye = -2.41154,0.515282,1.70343
 Target = 5.67754,-1.39664,-3.85636
-Up = -0.372534,0.56491,-0.736271
+Up = -0.352715,0.598185,-0.71888
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -2.45252
-DetailNormal = -2.8
+Detail = -2.52252
+DetailAO = -0.5
 FudgeFactor = 1
 MaxRaySteps = 104
-MaxRayStepsDiv = 1.8
 BoundingSphere = 2
 Dither = 0.5
 AO = 0,0,0,0.7
 Specular = 1.5
 SpecularExp = 16
 SpotLight = 1,1,1,0.38043
+
 SpotLightDir = 0.1,0.1
 CamLight = 1,1,1,1
+CamLightMin = 0
 Glow = 1,1,1,0.16667
 Fog = 0
+HardShadow = 0
+Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 0.8
 X = 0.5,0.6,0.6,0.7
 Y = 1,0.6,0,0.4
 Z = 0.8,0.78,1,0.5
 R = 0.4,0.7,1,0.12
-BackgroundColor = 0.6,0.6,0.45
+BackgroundColor = 0.666667,0,0.498039
 GradientBackground = 0.3
+CycleColors = false
+Cycles = 1.1
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Iterations = 15
 Threshold = 12.963
 C123 = 0.07246,0.0145,0.0145

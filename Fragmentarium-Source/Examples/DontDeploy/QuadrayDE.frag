@@ -2,9 +2,6 @@
 #include "MathUtils.frag"
 #group QuadrayDE
 
-void init() {
-}
-
 
 uniform int Iterations; slider[0,5,122]
 uniform float Scale; slider[0,2,21.3]

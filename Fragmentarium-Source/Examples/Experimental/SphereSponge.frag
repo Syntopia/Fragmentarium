@@ -40,15 +40,13 @@ float DE(vec3 z)
 #preset Default
 FOV = 0.38096
 Eye = 0.401364,-1.82231,0.222432
-Target = -4.13189,0.883827,3.67049
-Up = -0.513594,0.202142,-0.833882
+Target = -2.92807,1.95137,4.02202
+Up = -0.63252,0.196333,-0.749247
 AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -2.50362
-DetailNormal = -2.625
+Detail = -2.41598
+DetailAO = -1.07142
 FudgeFactor = 1
 MaxRaySteps = 261
-MaxRayStepsDiv = 9
 BoundingSphere = 8.1928
 Dither = 0.5797
 AO = 0,0,0,1
@@ -57,8 +55,11 @@ SpecularExp = 28.125
 SpotLight = 0.972549,1,0.705882,0.17391
 SpotLightDir = -0.52382,0.1
 CamLight = 0.894118,0.996078,1,1
+CamLightMin = 0.16667
 Glow = 1,1,1,0
 Fog = 0.55034
+HardShadow = 0.38462
+Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 0.74257
 X = 0.5,0.6,0.6,0.02362
@@ -69,9 +70,13 @@ BackgroundColor = 0.6,0.6,0.45
 GradientBackground = 0.3
 CycleColors = true
 Cycles = 3.81524
+EnableFloor = false
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
 Iterations = 11
+ColorIterations = 8
 Scale = 2.78872
 BubbleSize = 1.94828
-ColorIterations = 8
 #endpreset
 
