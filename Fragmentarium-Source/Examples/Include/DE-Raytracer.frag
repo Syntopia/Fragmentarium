@@ -74,6 +74,9 @@ uniform float BoundingSphere;slider[0,2,100];
 // Can be used to remove banding
 uniform float Dither;slider[0,0.5,1];
 
+// Used to prevent normals from being evaluated inside objects.
+uniform float NormalBackStep; slider[0,1,10] Locked
+
 #group Light
 
 // AO based on the number of raymarching steps
@@ -98,6 +101,8 @@ uniform float Fog; slider[0,0.0,2]
 // Hard shadows shape is controlled by SpotLightDir
 uniform float HardShadow; slider[0,0,1] Locked
 
+uniform float ShadowSoft; slider[0.0,2.0,20]
+
 uniform float Reflection; slider[0,0,1] Locked
 
 vec4 orbitTrap = vec4(10000.0);
@@ -108,7 +113,7 @@ float fractionalCount = 0.0;
 // This is the pure color of object (in white light)
 uniform vec3 BaseColor; color[1.0,1.0,1.0];
 // Determines the mix between pure light coloring and pure orbit trap coloring
-uniform float OrbitStrength; slider[0,0.8,1]
+uniform float OrbitStrength; slider[0,0,1]
 
 // Closest distance to YZ-plane during orbit
 uniform vec4 X; color[-1,0.7,1,0.5,0.6,0.6];
@@ -143,6 +148,7 @@ vec3 normal(vec3 pos, float normalDistance) {
 }
 
 #group Floor
+
 uniform bool EnableFloor; checkbox[false] Locked
 uniform vec3 FloorNormal; slider[(-1,-1,-1),(0,0,0),(1,1,1)]
 uniform float FloorHeight; slider[-5,0,5]
@@ -154,15 +160,36 @@ vec3 floorNormal = normalize(FloorNormal);
 float DEF(vec3 p) {
 	if (EnableFloor) {
 		floorDist = abs(dot(floorNormal,p)-FloorHeight);
-		return min(floorDist,DE(p));
+		return min(floorDist, DE(p));
  	} else {
 		return DE(p);
 	}
 }
 
+
+// Uses the soft-shadow approach by Quilez:
+// http://iquilezles.org/www/articles/rmshadows/rmshadows.htm
+float shadow(vec3 pos, vec3 sdir, float eps) {
+		float totalDist =2.0*eps;
+		float s = 1.0; // where 1.0 means no shadow!
+ 		for (int steps=0; steps<MaxRaySteps && totalDist<MaxDistance; steps++) {
+			vec3 p = pos + totalDist * sdir;
+			float dist = DEF(p);
+			if (dist < eps)  return 1.0;
+			s = min(s, ShadowSoft*dist/totalDist);
+			totalDist += dist;
+		}
+		return 1.0-s;	
+}
+
+float rand(vec2 co){
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 	vec3 spotDir =-normalize(dirDx)*tan(SpotLightDir.x*0.5*3.14)+
-	normalize(dirDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
+	normalize(dirDy)*tan(SpotLightDir.y*0.5*3.14) ;//+  dir;
 	spotDir = normalize(spotDir);
 	
 	// Calculate perfectly reflected light
@@ -175,23 +202,10 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 	
 	if (HardShadow>0.0) {
 		// check path from pos to spotDir
-		vec3 sdir = -spotDir;
-		float totalDist = 2.0*eps;
-		int maxSteps = MaxRaySteps;
-		int steps;
-		for (steps=0; steps<maxSteps; steps++) {
-			vec3 p = pos + totalDist * sdir;
-			float dist = DEF(p);
-			if (dist<eps && steps==0) eps = dist;
-			totalDist += dist;
-			if (dist < eps ||  totalDist >MaxDistance) break;
-		}
-		if (steps==maxSteps) totalDist =MaxDistance;
-		if (totalDist>MaxDistance) totalDist = MaxDistance;
-		float f = 1.0-(totalDist/MaxDistance);
+		float f = shadow(pos, -spotDir, eps);
 		ambient = mix(ambient,0.0,HardShadow*f);
-		// specular = mix(specular,0.0,HardShadow*f); 
 		diffuse = mix(diffuse,0.0,HardShadow*f);
+		// specular = mix(specular,0.0,HardShadow*f); 
 		if (f>0.0) specular = 0.0; // always turn off specular, if blocked
 	}
 
@@ -199,11 +213,6 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps) {
 }
 
 vec3 colorBase = vec3(0.0,0.0,0.0);
-
-float rand(vec2 co){
-	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
-	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
 
 vec3 cycle(vec3 c, float s) {
 	return vec3(0.5)+0.5*vec3(cos(s*Cycles+c.x),cos(s*Cycles+c.y),cos(s*Cycles+c.z));
@@ -253,6 +262,7 @@ vec3 getColor() {
 #ifdef  providesColor
 	vec3 color(vec3 point);
 #endif
+
 
 vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
@@ -336,7 +346,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			hitNormal = floorNormal;	
 			if (dot(hitNormal,direction)>0.0) hitNormal *=-1.0;	
 		} else {
-			hitNormal= normal(hit, epsModified); // /*normalE*epsModified/eps*/
+			hitNormal= normal(hit-NormalBackStep*epsModified*direction, epsModified); // /*normalE*epsModified/eps*/
 		}
 
 		if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
@@ -344,7 +354,6 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		hitColor = mix(BaseColor,  color(hit),  OrbitStrength);
 #else
 		hitColor = getColor();
-//hitColor =vec3(1.0);
 #endif
 
 		if (floorHit) hitColor = FloorColor;

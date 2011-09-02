@@ -30,7 +30,7 @@ float DE(vec3 z)
 {
 	int n = 0;
 	while (n < Iterations) {
-		for (int i = 0; i <=n; i++)	z = rot *z;
+			z = rot *z;
 		z = abs(z);
 	if (z.x<z.y){ z.xy = z.yx;}
 		if (z.x< z.z){ z.xz = z.zx;}

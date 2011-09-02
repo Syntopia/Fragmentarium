@@ -5,7 +5,9 @@
 #group Icosahedron
 // Based on Knighty's Kaleidoscopic IFS 3D Fractals, described here:
 // http://www.fractalforums.com/3d-fractal-generation/kaleidoscopic-%28escape-time-ifs%29/
-
+//
+// Notice, that this polyhedron uses homogeneous coordinates to combine
+// translations, scaling, and fractal rotations into one 4x4 matrix.
 uniform float Scale; slider[0.00,2.0,4.00]
 
 uniform float Phi; slider[-5,1.618,5]

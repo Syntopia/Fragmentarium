@@ -19,9 +19,12 @@ Minor improvements:
 - Added vertical scroll to user parameter groups.
 - Added '#define providesInit', '#define providesColor'
 - Now disables uniformes which are not used in shader.
+- Compiler warnings are now shown in output, also if there is no errors.
 - Bugfix: resize of window now updates aspect ratio.
 - Bugfix: handling of specular exponent = 0
 - BugFix: fixed fps timer for >500ms renders
+- BugFix: Tile Render now works in manual mode.
+- BugFix: Using mouse and key movement at the same time, would result in distance between eye and target getting smaller and smaller.
 
 New fragments:
 

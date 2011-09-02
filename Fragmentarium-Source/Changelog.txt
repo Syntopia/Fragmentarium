@@ -7,6 +7,10 @@ Clean up:
 - Experimental
 Add examples with Spudsville, 4-point, ...
 
+02-09-11 [MHC]
+Changed to Quilez soft-shadow which worked better than my own similar approach.
+Fixed a bug in the shadow dir calculation.
+
 28-07-11 [MHC]
 BugFix: [3] Tile Render: only works in automatic mode.
 BugFix: Using mouse and key movement at the same time, would result in distance between eye and target getting smaller and smaller.

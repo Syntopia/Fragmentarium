@@ -75,15 +75,16 @@ namespace Fragmentarium {
  
 			protected slots:
 				void spinnerChanged(double) {
-					double val = (spinner->value()-minimum)/(maximum-minimum);
-					slider->setValue(val*100000);
+               //double val = (spinner->value()-minimum)/(maximum-minimum);
+               setValue(spinner->value());
+               //slider->setValue(val*100000);
 					myValue = spinner->value();
 					emit changed();
 				}
 
 				void sliderChanged(int) {
 					double val = (slider->value()/100000.0)*(maximum-minimum)+minimum;
-					spinner->setValue(val);
+               setValue(val);
 					myValue = spinner->value();
 					emit changed();
 				}

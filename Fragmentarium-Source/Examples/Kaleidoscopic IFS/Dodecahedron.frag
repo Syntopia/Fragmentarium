@@ -9,9 +9,9 @@
 
 uniform float Scale; slider[0.0,2.617924,4.00]
 
-uniform float Phi; slider[-5,1.618,5]
+uniform float Phi; slider[-5,1.618,5] Locked
 
-uniform float Bailout; slider[4,9,12]
+uniform float Bailout; slider[4,9,12] Locked
 float bailout2 = pow(10.0,Bailout);
 
 vec3 n1 = normalize(vec3(-1.0,Phi-1.0,1.0/(Phi-1.0)));
@@ -46,15 +46,18 @@ float DE(vec3 z)
 	int n = 0;
 	while (n < Iterations) {
 		z *= fracRotation1;
-		t =dot(z,n1); if (t<0.0) { z-=2.0*t*n1; }
-		t =dot(z,n2); if (t<0.0) { z-=2.0*t*n2; }
-		t =dot(z,n3); if (t<0.0) { z-=2.0*t*n3; }
-		t =dot(z,n1); if (t<0.0) { z-=2.0*t*n1; }
-		t =dot(z,n2); if (t<0.0) { z-=2.0*t*n2; }
-		t =dot(z,n3); if (t<0.0) { z-=2.0*t*n3; }
-		t =dot(z,n1); if (t<0.0) { z-=2.0*t*n1; }
-		t =dot(z,n2); if (t<0.0) { z-=2.0*t*n2; }
-		t =dot(z,n3); if (t<0.0) { z-=2.0*t*n3; }
+	
+		// t =dot(z,n1); if (t<0.0) { z-=2.0*t*n1; } <- this form is a bit slower	
+		z-=2.0 * min(0.0, dot(z, n1)) * n1;
+		z-=	2.0 * min(0.0, dot(z, n2)) * n2;
+		z-=	2.0 * min(0.0, dot(z, n3)) * n3;
+		z-=2.0 * min(0.0, dot(z, n1)) * n1;
+		z-=	2.0 * min(0.0, dot(z, n2)) * n2;
+		z-=	2.0 * min(0.0, dot(z, n3)) * n3;
+		z-=2.0 * min(0.0, dot(z, n1)) * n1;
+		z-=	2.0 * min(0.0, dot(z, n2)) * n2;
+		z-=	2.0 * min(0.0, dot(z, n3)) * n3;
+
 		z = z*Scale - offset*(Scale-1.0);
 		z *= fracRotation2;
 		r = dot(z, z);
