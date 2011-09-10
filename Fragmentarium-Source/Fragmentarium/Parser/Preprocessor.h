@@ -9,6 +9,7 @@
 
 #include "../../SyntopiaCore/Exceptions/Exception.h"
 #include "../../SyntopiaCore/Math/Vector3.h"
+#include "../../SyntopiaCore/Math/Vector4.h"
 #include "../../SyntopiaCore/Logging/Logging.h"
 
 namespace Fragmentarium {
@@ -120,6 +121,21 @@ namespace Fragmentarium {
 			Vector3f to;
 			Vector3f defaultValue;
 		};
+
+      class Float4Parameter : public GuiParameter {
+      public:
+         Float4Parameter(QString group, QString name,QString tooltip,  Vector4f from, Vector4f to, Vector4f defaultValue) :
+               GuiParameter(group, name, tooltip), from(from), to(to), defaultValue(defaultValue) {};
+
+               virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(from.toString()).arg(to.toString()); }
+         Vector4f getFrom() { return from; }
+         Vector4f getTo() { return to; }
+         Vector4f getDefaultValue() { return defaultValue; }
+      private:
+         Vector4f from;
+         Vector4f to;
+         Vector4f defaultValue;
+      };
 
 		class ColorParameter : public GuiParameter {
 		public:

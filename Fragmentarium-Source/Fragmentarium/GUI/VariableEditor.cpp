@@ -411,7 +411,18 @@ namespace Fragmentarium {
                   variables.append(f3w);
 						f3w->setUpdated(true);
 						currentWidget->layout()->addWidget(f3w);
-					} else if (dynamic_cast<Parser::Float2Parameter*>(ps[i])) {
+               } else if (dynamic_cast<Parser::Float4Parameter*>(ps[i])) {
+                  Parser::Float4Parameter* f4p = dynamic_cast<Parser::Float4Parameter*>(ps[i]);
+                  QString name = f4p->getName();
+                  Float4Widget* f4w = new Float4Widget(currentWidget, this, name, f4p->getDefaultValue(), f4p->getFrom(), f4p->getTo());
+                  f4w->setToolTip(f4p->getTooltip());
+                  f4w->setStatusTip(f4p->getTooltip());
+                  f4w->setGroup(f4p->getGroup());
+                  f4w->setDefaultLockType(f4p->getLockType());
+                  variables.append(f4w);
+                  f4w->setUpdated(true);
+                  currentWidget->layout()->addWidget(f4w);
+               } else if (dynamic_cast<Parser::Float2Parameter*>(ps[i])) {
 						Parser::Float2Parameter* f2p = dynamic_cast<Parser::Float2Parameter*>(ps[i]);
 						QString name = f2p->getName();
 						Float2Widget* f2w = new Float2Widget(currentWidget, this, name, f2p->getDefaultValue(), f2p->getFrom(), f2p->getTo());

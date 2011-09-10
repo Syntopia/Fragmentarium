@@ -13,6 +13,7 @@
 #include <QHBoxLayout>
 #include <QGLShaderProgram>
 #include "SyntopiaCore/Math/Vector3.h"
+#include "SyntopiaCore/Math/Vector4.h"
 
 #include "../Parser/Preprocessor.h"
 #include "SyntopiaCore/Logging/Logging.h"
@@ -326,8 +327,38 @@ signals:
 			ComboSlider* comboSlider2;
 			ComboSlider* comboSlider3;
 			Vector3f min;
-			Vector3f max;
-		};
+         Vector3f max;
+      };
+
+      /// A widget editor for a float variable.
+      class Float4Widget : public VariableWidget {
+         Q_OBJECT
+      public:
+         /// FloatVariable constructor.
+         Float4Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector4f defaultValue, Vector4f min, Vector4f max);
+         virtual QString getUniqueName();
+         virtual QString getValueAsText() { return ""; };
+         virtual QString toString();
+         virtual void fromString(QString string);
+         Vector4f getValue() { return Vector4f(comboSlider1->getValue(),comboSlider2->getValue(),comboSlider3->getValue(),comboSlider4->getValue()); }
+         void setValue(Vector4f v);
+         virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+         void reset() { setValue(defaultValue); }
+         QString getLockedSubstitution() { return "const vec4 " + name + " = vec4(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z())+ "," + toGLSL(getValue().w()) +");"; };
+         QString getLockedSubstitution2() { return "#define " + name + " vec4(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z())+ "," + toGLSL(getValue().w()) +")"; };
+
+      signals:
+         void doneChanges();
+      private:
+         Vector4f defaultValue;
+         bool normalize;
+         ComboSlider* comboSlider1;
+         ComboSlider* comboSlider2;
+         ComboSlider* comboSlider3;
+         ComboSlider* comboSlider4;
+         Vector4f min;
+         Vector4f max;
+      };
 
 
 		class ColorWidget : public VariableWidget {

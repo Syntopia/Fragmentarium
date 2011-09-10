@@ -12,12 +12,14 @@ Minor improvements:
 - Mousewheel now changes camera position, not FOV
 - Raytracer improvement:
   - Removed 'AntiAliasBlur','MaxRayStepDiv', and 'NormalDetail' setting
-  - Added reflection, hardShadows
+  - Added reflection
+  - Shadows (hard, and pseudo-soft shadows)
   - Added dithering (for banding removal) and very simple RNG functionality.
   - Added new ambient occlusion method (similar to Rrola/Subblue - sample along normal for proximity).
-- Added a port of Subblues Fractal Labs (fractal.io) raytracer. Just include "Subblue-Raytracer.frag" instead of "DE-Raytracer.frag"
+- Added a port of Subblues Fractal Labs (fractal.io) raytracer (GPL). Just include "Subblue-Raytracer.frag" instead of "DE-Raytracer.frag"
 - Added vertical scroll to user parameter groups.
-- Added '#define providesInit', '#define providesColor'
+- Added '#define providesInit', '#define providesColor' (to provide custom coloring)
+- Added vec4 GUI slider type
 - Now disables uniformes which are not used in shader.
 - Compiler warnings are now shown in output, also if there is no errors.
 - Bugfix: resize of window now updates aspect ratio.
@@ -28,6 +30,22 @@ Minor improvements:
 
 New fragments:
 
-- Added GraphPlotter.frag, KaliSet.frag, BurningShip.frag, Spudsville.frag,
-- Added Knighty's:
-- Added 2DJulia.frag and Complex.frag to make 2D fractals easier.
+- GraphPlotter.frag, KaliSet.frag, BurningShip.frag, Spudsville.frag,
+- Knighty's:
+- 2DJulia.frag and Complex.frag to make 2D fractals easier.
+- Subblue-Raytracer.frag
+- QuilezLib with sphere tracing primitives (http://iquilezles.org/www/articles/distfunctions/distfunctions.htm)
+- Ashima-Noise.frag: Noise founctions from: http://www.lighthouse3d.com/2011/03/noise-for-glsl/
+
+Comments:
+
+2D-Escape time fractals are very easy to explore now. Here is an example:
+
+#include "2DJulia.frag"
+#include "Complex.frag"
+
+// 'Ducks' fractal by Samuel Monnier
+vec2 formula(vec2 z, vec2 c) {
+    return cLog(vec2(z.x,abs(z.y)))+c;
+}
+

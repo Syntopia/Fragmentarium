@@ -46,6 +46,10 @@ namespace Fragmentarium {
             p->setLockType(l);
          }
 
+         Vector4f parseVector4f(QString s1, QString s2, QString s3, QString s4) {
+            return Vector4f(parseFloat(s1), parseFloat(s2), parseFloat(s3), parseFloat(s4));
+         };
+
 			Vector3f parseVector3f(QString s1, QString s2, QString s3) {
 				return Vector3f(parseFloat(s1), parseFloat(s2), parseFloat(s3));
 			};
@@ -186,6 +190,7 @@ namespace Fragmentarium {
          const QString lockTypeString = "\\s*(Locked|NotLocked|NotLockable)?\\s*.?$";
 
          // Look for patterns like 'uniform float varName; slider[0.1;1;2.0]'
+         static QRegExp float4Slider("^\\s*uniform\\s+vec4\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+),(\\S+)\\)\\]"+lockTypeString);
          static QRegExp float3Slider("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\]"+lockTypeString);
          static QRegExp float2Slider("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\]"+lockTypeString);
          static QRegExp colorChooser("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\]"+lockTypeString);
@@ -333,7 +338,18 @@ namespace Fragmentarium {
 					Float3Parameter* fp= new Float3Parameter(currentGroup, name, lastComment, from, to, defaults);
                setLockType(fp, float3Slider.cap(11));
                fs.params.append(fp);
-				} else if (float2Slider.indexIn(s) != -1) {
+            } else if (float4Slider.indexIn(s) != -1) {
+
+               QString name = float4Slider.cap(1);
+               fs.source[i] = "uniform vec4 " + name + ";";
+               Vector4f from = parseVector4f(float4Slider.cap(2), float4Slider.cap(3), float4Slider.cap(4), float4Slider.cap(5));
+               Vector4f defaults = parseVector4f(float4Slider.cap(6), float4Slider.cap(7), float4Slider.cap(8), float4Slider.cap(9));
+               Vector4f to = parseVector4f(float4Slider.cap(10), float4Slider.cap(11), float4Slider.cap(12), float4Slider.cap(13));
+
+               Float4Parameter* fp= new Float4Parameter(currentGroup, name, lastComment, from, to, defaults);
+               setLockType(fp, float4Slider.cap(14));
+               fs.params.append(fp);
+            }else if (float2Slider.indexIn(s) != -1) {
 
 					QString name = float2Slider.cap(1);
 					fs.source[i] = "uniform vec2 " + name + ";";

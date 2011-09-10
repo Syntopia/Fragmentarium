@@ -353,6 +353,85 @@ namespace Fragmentarium {
 			}
 		}
 
+      //// ----- Float3Widget -----------------------------------------------
+
+      Float4Widget::Float4Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector4f defaultValue, Vector4f min, Vector4f max)
+         : VariableWidget(parent, variableEditor, name)  {
+            this->defaultValue = defaultValue;
+            QGridLayout* m = new QGridLayout(widget);
+            m->setSpacing(0);
+            m->setContentsMargins (0,0,0,0);
+
+            QLabel* label = new QLabel(widget);
+            label->setText(name);
+            m->addWidget(label,0,0);
+            comboSlider1 = new ComboSlider(parent, defaultValue[0], min[0], max[0]);
+            m->addWidget(comboSlider1,0,1);
+            connect(comboSlider1, SIGNAL(changed()), this, SLOT(valueChanged()));
+
+            comboSlider2 = new ComboSlider(parent, defaultValue[1], min[1], max[1]);
+            m->addWidget(comboSlider2,1,1);
+            connect(comboSlider2, SIGNAL(changed()), this, SLOT(valueChanged()));
+
+            comboSlider3 = new ComboSlider(parent, defaultValue[2], min[2], max[2]);
+            m->addWidget(comboSlider3,2,1);
+            connect(comboSlider3, SIGNAL(changed()), this, SLOT(valueChanged()));
+
+
+            comboSlider4 = new ComboSlider(parent, defaultValue[3], min[3], max[3]);
+            m->addWidget(comboSlider4,3,1);
+            connect(comboSlider4, SIGNAL(changed()), this, SLOT(valueChanged()));
+
+            this->min = min;
+            this->max = max;
+
+      };
+
+      void Float4Widget::setValue(Vector4f v) {
+         comboSlider1->blockSignals(true);
+         comboSlider2->blockSignals(true);
+         comboSlider3->blockSignals(true);
+         comboSlider4->blockSignals(true);
+         comboSlider1->setValue(v.x());
+         comboSlider2->setValue(v.y());
+         comboSlider3->setValue(v.z());
+         comboSlider3->setValue(v.w());
+         comboSlider1->blockSignals(false);
+         comboSlider2->blockSignals(false);
+         comboSlider3->blockSignals(false);
+         comboSlider4->blockSignals(false);
+
+      }
+
+
+
+      QString Float4Widget::getUniqueName() {
+         return QString("%0:%1:%2:%3").arg(group).arg(getName()).arg(min.toString()).arg(max.toString());
+
+      }
+
+      QString Float4Widget::toString() {
+         return QString("%1,%2,%3,%4").arg(comboSlider1->getValue()).arg(comboSlider2->getValue())
+               .arg(comboSlider3->getValue())
+               .arg(comboSlider4->getValue());
+      };
+
+      void Float4Widget::fromString(QString string) {
+         float f1,f2,f3,f4;
+         MiniParser(string).getFloat(f1).getFloat(f2).getFloat(f3).getFloat(f4);
+         comboSlider1->setValue(f1);
+         comboSlider2->setValue(f2);
+         comboSlider3->setValue(f3);
+         comboSlider4->setValue(f4);
+      };
+
+      void Float4Widget::setUserUniform(QGLShaderProgram* shaderProgram) {
+         int l = uniformLocation(shaderProgram);
+         if (l != -1) {
+            shaderProgram->setUniformValue(l, (float)(comboSlider1->getValue()),(float)(comboSlider2->getValue()),(float)(comboSlider3->getValue()),(float)(comboSlider4->getValue()));
+         }
+      }
+
 
 		/// ------------ ColorWidget ---------------------------------------
 

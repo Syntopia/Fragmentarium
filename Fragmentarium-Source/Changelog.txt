@@ -10,6 +10,7 @@ Add examples with Spudsville, 4-point, ...
 02-09-11 [MHC]
 Changed to Quilez soft-shadow which worked better than my own similar approach.
 Fixed a bug in the shadow dir calculation.
+Added include files for Ashima GLSL noise: http://www.lighthouse3d.com/2011/03/noise-for-glsl/
 
 28-07-11 [MHC]
 BugFix: [3] Tile Render: only works in automatic mode.
