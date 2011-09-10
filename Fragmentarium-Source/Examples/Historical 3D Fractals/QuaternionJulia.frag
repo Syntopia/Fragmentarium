@@ -11,12 +11,8 @@
 uniform int Iterations;  slider[0,16,100]
 // Breakout distance
 uniform float Threshold; slider[0,10,100]
-// Quaterion Constant (first three components)
-uniform vec3 C123; slider[(-1,-1,-1),(0.18,0.88,0.24),(1,1,1)]
-// Quaterion Constant (last component)
-uniform float C4; slider[-1,0.16,1]
-
-vec4 c = vec4(C123,C4); // no support for 4-component sliders yet
+// Quaterion Constant
+uniform vec4 C; slider[(-1,-1,-1,-1),(0.18,0.88,0.24,0.16),(1,1,1,1)]
 
 
 // The inline expanded quaterion multiplications make this DE
@@ -26,7 +22,7 @@ float DE(vec3 pos) {
 	vec4 dp = vec4(1.0, 0.0,0.0,0.0);
 	for (int i = 0; i < Iterations; i++) {
 		dp = 2.0* vec4(p.x*dp.x-dot(p.yzw, dp.yzw), p.x*dp.yzw+dp.x*p.yzw+cross(p.yzw, dp.yzw));
-		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) + c;
+		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) + C;
 		float p2 = dot(p,p);
 		orbitTrap = min(orbitTrap, abs(vec4(p.xyz,p2)));
 		if (p2 > Threshold) break;
@@ -73,8 +69,7 @@ FloorHeight = 0
 FloorColor = 1,1,1
 Iterations = 16
 Threshold = 10
-C123 = 0.18,0.88,0.24
-C4 = 0.16
+C = 0.18,0.88,0.24,0.16
 #endpreset
 
 #preset Round
@@ -93,7 +88,6 @@ AO = 0,0,0,0.7
 Specular = 1.5
 SpecularExp = 16
 SpotLight = 1,1,1,0.38043
-
 SpotLightDir = 0.1,0.1
 CamLight = 1,1,1,1
 CamLightMin = 0
@@ -116,7 +110,6 @@ FloorHeight = 0
 FloorColor = 1,1,1
 Iterations = 15
 Threshold = 12.963
-C123 = 0.07246,0.0145,0.0145
-C4 = 0.52
+C = 0.07246,0.0145,0.0145,0.52
 #endpreset
 
