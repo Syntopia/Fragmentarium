@@ -1,5 +1,6 @@
 #info Mandelbulb Distance Estimator
 #define providesInit
+#define providesNormal
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Mandelbulb
@@ -27,7 +28,7 @@ uniform float RotAngle; slider[0.00,0,180]
 mat3 rot;
 
 void init() {
-	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+	rot = rotationMatrix3(normalize(RotVector), RotAngle);
 }
 
 // This is my power function, based on the standard spherical coordinates as defined here:
@@ -69,74 +70,119 @@ void powN2(inout vec3 z, float zr0, inout float dr) {
 }
 
 
+vec3 gradient = vec3(0.0);
+
+vec3 normal(vec3 pos, float normalDistance) {
+	return normalize(gradient);
+}
+
+vec4 mul(vec4  a, vec4 b) {
+	return vec4(
+		a.x*b.x + a.y*b.y  + a.z*b.z-a.w*b.w,
+		a.x*b.y + a.y*b.x-a.z*b.w+a.w*b.z,
+		a.x*b.z+a.y*b.w+a.z*b.x-a.w*b.y,
+		a.x*b.w+ a.y*b.z - a.z*b.y+a.w*b.x);
+}
+
+
+int Iter = 0;
+float potential2( in vec3 pos)
+{
+	vec3 z = pos;
+	float r2 = dot(z,z);
+	for( int i=1; i<Iterations; i++ )
+	{
+		// convert to spherical
+		float r = sqrt(r2);
+		float theta = acos(z.z/r);
+		float phi = atan(z.y,z.x);
+		
+		// scale and rotate the point
+		float zr = pow( r,Power);
+		theta = theta*Power;
+		phi = phi*Power;
+		
+		// convert back to cartesian coordinates, and add constant
+		z = zr*vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta))+pos;
+		//if( (m > Bailout && Iter==0) || Iter == i )
+		r2 = dot(z,z);
+		if (r2 > Bailout)
+		{
+			//  resPot = 0.5*log(m)/pow(8.0,float(i));
+			//            if (Iter == 0) Iter = i;
+			// return log(m);
+			return 0.5*log(r2)/pow(Power,float(i));
+		}
+	}	
+	return 0.0;	
+}
+
+vec3 BulbPower(vec3 z, float power) {
+	float r = length(z);
+	vec3 s = vec3(r,acos(z.z/r),atan(z.y,z.x)); // spherical (r,theta,phi)
+	s = vec3(pow(s.x,Power), s.y*Power, s.z*Power);
+	z = s.x*vec3(sin(s.y)*cos(s.z), sin(s.z)*sin(s.y), cos(s.y));
+	return z;
+}
+
+float potential(in vec3 pos)
+{
+	vec3 z = pos;
+	for(int i=1; i<Iterations; i++ )
+	{
+ 		z = BulbPower(z, Power) + pos;
+		if (dot(z,z) > Bailout) return log(length(z))/pow(Power,float(i));
+	}	
+	return 0.0;	
+}
+
+
+uniform float EPS; slider[0,5,10]
+vec3 e = vec3(0.0,pow(10.0,-EPS),0.0);
 
 // Compute the distance from `pos` to the Mandelbox.
-float DE(vec3 pos) {
-	vec3 z=pos;
-	float r;
-	float dr=1.0;
-	int i=0;
-	r=length(z);
-	while(r<Bailout && (i<Iterations)) {
-		if (AlternateVersion) {
-			powN2(z,r,dr);
-		} else {
-			powN1(z,r,dr);
-		}
-		z+=pos;
-		r=length(z);
-		z*=rot;
-		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,r*r)));
-		i++;
-	}
-	
-	return 0.5*log(r)*r/dr;
-	/*
-	Use this code for some nice intersections (Power=2)
-	float a =  max(0.5*log(r)*r/dr, abs(pos.y));
-	float b = 1000;
-	if (pos.y>0)  b = 0.5*log(r)*r/dr;
-	return min(min(a, b),
-		max(0.5*log(r)*r/dr, abs(pos.z)));
-	*/
+float DE(vec3 p) {
+	//   Iter = 0;
+	float pot = potential(p);
+	if (pot==0.0 ) return 0.0;
+	gradient = (vec3(potential(p+e.yxx),  potential(p+e.xyx), potential(p+e.xxy))-pot)/e.y;
+	//   return (0.5/exp(pot))*sinh(pot)/length(gradient);
+	return 0.5*pot/length(gradient);
 }
 
 #preset Default
 FOV = 0.62536
-Eye = -0.555998,-0.155431,1.88402
-Target = 1.83603,0.639617,-6.61154
-Up = 0.914439,0.193859,0.275613
-AntiAlias = 1 NotLocked
-Detail = -2.91151
-DetailAO = -1.28569
-FudgeFactor = 1
+Eye = -2.02889,-0.0740503,-0.808901
+Target = 6.2469,0.270218,2.34088
+Up = -0.544511,0.439421,0.714435
+AntiAlias = 1
+Detail = -2.81064
+DetailAO = -0.5
+FudgeFactor = 0.80392
 MaxRaySteps = 164
 BoundingSphere = 2
 Dither = 0.5
-NormalBackStep = 1 NotLocked
-AO = 0,0,0,0.90123
-Specular = 3.4177
+AO = 0,0,0,0.7
+Specular = 2.4348
 SpecularExp = 16
-SpotLight = 0.435294,0.737255,1,1
-SpotLightDir = -0.1875,0.03126
-CamLight = 1,0.941176,0.898039,0.73076
-CamLightMin = 1
-Glow = 1,1,1,0.49315
-Fog = 0
-HardShadow = 0.35385 NotLocked
-ShadowSoft = 12.9032
-Reflection = 0 NotLocked
+SpotLight = 1,1,1,0.73563
+SpotLightDir = -0.52,0.1
+CamLight = 1,1,1,0.77273
+CamLightMin = 0
+Glow = 1,1,1,0
+Fog = 0.10738
+HardShadow = 0
+Reflection = 0
 BaseColor = 1,1,1
-OrbitStrength = 0
+OrbitStrength = 0.5625
 X = 0.411765,0.6,0.560784,-0.21312
 Y = 0.666667,0.666667,0.498039,0.86886
 Z = 0.666667,0.333333,1,-0.18032
 R = 0.4,0.7,1,0.0909
-BackgroundColor = 0.607843,0.866667,0.560784
-GradientBackground = 0.3261
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
 CycleColors = true
 Cycles = 18.1816
-EnableFloor = false
 FloorNormal = 0,0,0
 FloorHeight = 0
 FloorColor = 1,1,1

@@ -137,6 +137,10 @@ float DE(vec3 pos) ; // Must be implemented in other file
 uniform bool CycleColors; checkbox[false]
 uniform float Cycles; slider[0.1,1.1,32.3]
 
+#ifdef providesNormal
+	vec3 normal(vec3 pos, float normalDistance);
+
+#else
 vec3 normal(vec3 pos, float normalDistance) {
        normalDistance = max(normalDistance*0.5, 1.0e-7);
 	vec3 e = vec3(0.0,normalDistance,0.0);
@@ -146,6 +150,7 @@ vec3 normal(vec3 pos, float normalDistance) {
 	n =  normalize(n);
 	return n;
 }
+#endif
 
 #group Floor
 
