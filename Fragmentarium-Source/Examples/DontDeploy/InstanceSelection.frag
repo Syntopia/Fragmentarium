@@ -12,7 +12,7 @@ uniform int Iterations;  slider[0,9,100]
 uniform int ColorIterations;  slider[0,9,100]
 
 // Mandelbulb exponent (8 is standard)
-uniform float Power; slider[0,8,16]
+uniform float power; slider[0,8,16]
 
 // Bailout radius
 uniform float Bailout; slider[0,5,30]
@@ -29,6 +29,8 @@ mat3 rot;
 void init() {
 	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
 }
+
+float Power = power;
 
 // This is my power function, based on the standard spherical coordinates as defined here:
 // http://en.wikipedia.org/wiki/Spherical_coordinate_system
@@ -72,6 +74,14 @@ void powN2(inout vec3 z, float zr0, inout float dr) {
 
 // Compute the distance from `pos` to the Mandelbox.
 float DE(vec3 pos) {
+
+vec2 index = pos;
+if (pos.x > -3.5 && pos.y > -3.5) {
+pos.xy =mod(pos.xy,4.0)-vec3(2.0);
+index = (index - pos.xy)/4.0;
+  }
+    Power = index.y+index.x+ 2;
+
 	vec3 z=pos;
 	float r;
 	float dr=1.0;
@@ -103,40 +113,39 @@ float DE(vec3 pos) {
 
 #preset Default
 FOV = 0.62536
-Eye = -0.788003,0.788839,1.62469
-Target = 2.75784,-2.47769,-5.81072
-Up = 0.917561,0.0998113,0.384863
+Eye = -0.555998,-0.155431,1.88402
+Target = 1.83603,0.639617,-6.61154
+Up = 0.914439,0.193859,0.275613
 AntiAlias = 1 NotLocked
 Detail = -2.91151
-DetailAO = -1.57143
+DetailAO = -1.28569
 FudgeFactor = 1
 MaxRaySteps = 164
 BoundingSphere = 2
 Dither = 0.5
 NormalBackStep = 1 NotLocked
 AO = 0,0,0,0.90123
-Specular = 4.4304
+Specular = 3.4177
 SpecularExp = 16
 SpotLight = 0.435294,0.737255,1,1
-SpotLightDir = 0.65626,0.5
-CamLight = 1,0.941176,0.898039,0.8077
+SpotLightDir = -0.1875,0.03126
+CamLight = 1,0.941176,0.898039,0.73076
 CamLightMin = 1
-Glow = 1,1,1,0.46575
-GlowMax = 20
+Glow = 1,1,1,0.49315
 Fog = 0
 HardShadow = 0.35385 NotLocked
 ShadowSoft = 12.9032
 Reflection = 0 NotLocked
 BaseColor = 1,1,1
-OrbitStrength = 0.14286
-X = 0.411765,0.6,0.560784,0.41748
-Y = 0.666667,0.666667,0.498039,-0.16504
-Z = 1,0.258824,0.207843,1
-R = 0.0823529,0.278431,1,0.82352
+OrbitStrength = 0
+X = 0.411765,0.6,0.560784,-0.21312
+Y = 0.666667,0.666667,0.498039,0.86886
+Z = 0.666667,0.333333,1,-0.18032
+R = 0.4,0.7,1,0.0909
 BackgroundColor = 0.607843,0.866667,0.560784
 GradientBackground = 0.3261
 CycleColors = true
-Cycles = 4.04901
+Cycles = 18.1816
 EnableFloor = false
 FloorNormal = 0,0,0
 FloorHeight = 0

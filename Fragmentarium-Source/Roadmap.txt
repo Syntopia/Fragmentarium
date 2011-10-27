@@ -3,15 +3,15 @@ Roadmap.
 V0.9
 * New High Resolution Output Dialog
 * Many minor UI and raytracer fixes
-- Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
+* Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
   - Locked, NotLocked, NotLockable
+* uniform vec4 a; slider[....]
 - Add keyboard remapping (through filter function)
 
 Prioritized ideas:
 
 - Make it easier to shift from continuous to manual.
 - Mouse sensitivity
-- uniform vec4 a; slider[....]
 - Fix: icons
 - Keyframe Animation.
 - A 2D camera which scales from the current mouse position

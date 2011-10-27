@@ -36,7 +36,7 @@ vec2 cInverse(vec2 a) {
        return	vec2(a.x,-a.y)/dot(a,a);
 }
 
-vec2 cExp(vec3 z) {
+vec2 cExp(vec2 z) {
 	return vec2(exp(z.x) * cos(z.y), exp(z.x) * sin(z.y));
 }
 

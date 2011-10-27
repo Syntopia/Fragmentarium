@@ -16,7 +16,7 @@ vec3 c = vec3(C123);
 // Tricomplex multiplication: http://en.wikipedia.org/wiki/Tricomplex_number
 vec3 mul(vec3  a, vec3 b) {
 	return vec3(
-	a.x*b.x + a.y*b.z  + a.z*b.y,
+	a.x*b.x+ a.y*b.z  + a.z*b.y,
      a.x*b.y+a.y*b.x+a.z*b.z,
      a.x*b.z+a.z*b.x+a.y*b.y);
 }
