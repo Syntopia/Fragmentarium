@@ -1,5 +1,7 @@
+#version 120
+#define providesInit
 #info Mandelbox Distance Estimator.
-#include "DE-Raytracer.frag"
+#include "De-Raytracer.frag"
 #include "MathUtils.frag"
 #group Mandelbox
 
@@ -8,53 +10,62 @@ uniform float Scale; slider[-5.00,2.0,4.00]
 
 // Scaling center
 uniform vec3 Offset; slider[(0,0,0),(1,1,1),(5,5,5)]
+uniform vec3 Scale2; slider[(0,0,0),(1,1,1),(25,25,25)]
 
 uniform float fixedRadius2; slider[0.0,1.0,2.3]
 uniform float minRadius2; slider[0.0,0.25,2.3]
-void sphereFold(inout vec3 z, inout float dz) {
+void sphereFold(inout vec3 z, inout mat3 dz) {
 	float r2 = dot(z,z);
- if (r2< minRadius2) {
+	if (r2< minRadius2) {
 		float temp = (fixedRadius2/minRadius2);
-
-		z*= temp;
-		dz*=temp;
-	} else
-    if (r2<fixedRadius2) {
+		z*= temp; dz*=temp;
+	} else if (r2<fixedRadius2) {
 		float temp =(fixedRadius2/r2);
-		z*=temp;
-		dz*=temp;
+		z*=temp; dz*=temp;
 	}
 }
 
+mat3 rot;
+uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
+
+uniform float RotAngle; slider[0.00,0,180]
+
+void init() {
+	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+}
+
+
 uniform float foldingLimit; slider[0.0,1.0,5.0]
-void boxFold(inout vec3 z, inout float dz) {
-/*
-   if (z.x>foldingLimit) { z.x = 2.0*foldingLimit-z.x; } 
-else if (z.x<-foldingLimit)  { z.x = - 2.0*foldingLimit-z.x; }
-   if (z.y>foldingLimit) { z.y =  2.0*foldingLimit-z.y; } 
-else if (z.y<-foldingLimit)  { z.y = - 2.0*foldingLimit-z.y; }
-   if (z.z>foldingLimit) { z.z =  2.0*foldingLimit-z.z; } 
-else if (z.z<-foldingLimit)  { z.z = - 2.0*foldingLimit-z.z; }
-	*/
-z = clamp(z, -foldingLimit, foldingLimit) * 2.0 - z;
+void boxFold(inout vec3 z, inout mat3 dz) {
+	vec3 a = (1.0-2.0*step(vec3(foldingLimit),abs(z)));
+	dz[0]*=a; dz[1]*=a; dz[2]*=a;
+	z = clamp(z, -foldingLimit, foldingLimit) * 2.0 - z;
 }
 uniform int Iterations; slider[0,10,50]
 uniform int ColorIterations; slider[0,2,22]
 uniform float F; slider[0.1,1.1,2.3]
 float DE(vec3 z)
 {
+	mat3 dz = mat3(1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0);
+	
 	vec3 c = z;
-	float dr = 1.0;
+	mat3 dc = dz;
 	for (int n = 0; n < Iterations; n++) {
-		boxFold(z,dr);
-		sphereFold(z,dr);
- 		z*=Scale;
- 		dr=dr*abs(Scale)+1.0;
+		boxFold(z,dz);
+		sphereFold(z,dz);
+		z*=(Scale*Scale2);
+		dz=mat3(dz[0]*Scale*Scale2,dz[1]*Scale*Scale2,dz[2]*Scale*Scale2);
 		z += c*Offset;
+		dz += dc*mat3(Offset,Offset,Offset); // ?
+	z*= rot;
+dz[0]*=rot;
+dz[1]*=rot;dz[2]*=rot;
+		if (length(z)>1000.0) break;
 		if (n<ColorIterations) orbitTrap = min(orbitTrap, (vec4(abs(z),dot(z,z))));
 	}
-	float r = length(z);
-	return (r-F)/abs(dr);
+	//float r = sqrt(dot(z,z));//*0.5/r;
+	//vec3 grad = vec3(dot(z,dz[0]),dot(z,dz[1]),dot(z,dz[2]));
+	return dot(z,z)/length(z*dz);
 }
 
 #preset Default

@@ -21,17 +21,17 @@ namespace Fragmentarium {
 	namespace GUI {
 
 		using namespace SyntopiaCore::Misc;
-		
+
 		VariableEditor::VariableEditor(QWidget* parent, MainWindow* mainWindow) : QWidget(parent) {
 			currentComboSlider = 0;
 			this->mainWindow = mainWindow;
 			layout = new QVBoxLayout(this);
 			layout->setSpacing(0);
 			layout->setContentsMargins (0,0,0,0);
-			
+
 			QWidget* tw = new QWidget(this);
 			QHBoxLayout* topLayout = new QHBoxLayout(tw);
-			
+
 			QLabel* l = new QLabel("Preset:", tw);
 			topLayout->addWidget(l);
 			presetComboBox = new QComboBox(tw);
@@ -41,9 +41,9 @@ namespace Fragmentarium {
 			connect(pb2, SIGNAL(clicked()), this, SLOT(applyPreset()));
 			topLayout->addWidget(pb2);
 			tw->layout()->setContentsMargins(0,0,0,0);
-		
+
 			layout->addWidget(tw);
-			
+
 
 			tabWidget = new QTabWidget(this);
 			layout->addWidget(tabWidget);
@@ -85,7 +85,7 @@ namespace Fragmentarium {
 			if (oldWidget && oldWidget->parent()) oldFloat = qobject_cast<ComboSlider*>(oldWidget->parent());
 			ComboSlider* newFloat = 0;
 			if (newWidget && newWidget->parent()) newFloat = qobject_cast<ComboSlider*>(newWidget->parent());
-			
+
 			if (newFloat) {
 
 				if (currentComboSlider) {
@@ -101,7 +101,7 @@ namespace Fragmentarium {
 				mainWindow->getEngine()->getCameraControl()->setComboSlider(currentComboSlider);
 				connect(currentComboSlider, SIGNAL(destroyed(QObject *)), this, SLOT(sliderDestroyed(QObject *)));
 			}
-			
+
 		}
 
 		void VariableEditor::setPresets(QMap<QString, QString> presets) {
@@ -111,20 +111,21 @@ namespace Fragmentarium {
 			}
 			this->presets = presets;
 		}
-		
-		void VariableEditor::setDefault() {
+
+		bool VariableEditor::setDefault() {
 			int i = presetComboBox->findText("Default", Qt::MatchStartsWith);
 			if (i>=0) {
 				presetComboBox->setCurrentIndex(i);
 				INFO("Found 'default' index. Executing...");
-				applyPreset();
+				return applyPreset();
 			}
+			return false;
 		}
 
-		void VariableEditor::applyPreset() {
+		bool VariableEditor::applyPreset() {
 			QString presetName = presetComboBox->currentText();
 			QString preset = presets[presetName];
-			setSettings(preset);
+			return setSettings(preset);
 		}
 
 		void VariableEditor::resetUniforms() {
@@ -155,50 +156,50 @@ namespace Fragmentarium {
 			setSettings(text);
 		}
 
-      void VariableEditor::lockGroup() {
-         QWidget* t = tabWidget->widget(tabWidget->currentIndex());
+		void VariableEditor::lockGroup() {
+			QWidget* t = tabWidget->widget(tabWidget->currentIndex());
 
-         QMap<QString, QWidget*>::const_iterator it;
-         QString g;
-         for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
-            if (it.value()->parent() == t) {
-               g = it.key();
-            }
-         }
+			QMap<QString, QWidget*>::const_iterator it;
+			QString g;
+			for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
+				if (it.value()->parent() == t) {
+					g = it.key();
+				}
+			}
 
-         foreach (VariableWidget* variable, variables) {
-            if (variable->getGroup() == g) {
-               variable->locked(true);
-            }
-         }
-      }
+			foreach (VariableWidget* variable, variables) {
+				if (variable->getGroup() == g) {
+					variable->locked(true);
+				}
+			}
+		}
 
-      void VariableEditor::unlockGroup() {
-         QWidget* t = tabWidget->widget(tabWidget->currentIndex());
+		void VariableEditor::unlockGroup() {
+			QWidget* t = tabWidget->widget(tabWidget->currentIndex());
 
-         QMap<QString, QWidget*>::const_iterator it;
-         QString g;
-         for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
-            if (it.value()->parent() == t) {
-               g = it.key();
-            }
-         }
+			QMap<QString, QWidget*>::const_iterator it;
+			QString g;
+			for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
+				if (it.value()->parent() == t) {
+					g = it.key();
+				}
+			}
 
-         foreach (VariableWidget* variable, variables) {
-            if (variable->getGroup() == g) {
-               variable->locked(false);
-            }
-         }
-      }
+			foreach (VariableWidget* variable, variables) {
+				if (variable->getGroup() == g) {
+					variable->locked(false);
+				}
+			}
+		}
 
 
 		void VariableEditor::resetGroup() {			
 			QWidget* t = tabWidget->widget(tabWidget->currentIndex());
-			
+
 			QMap<QString, QWidget*>::const_iterator it;
 			QString g;
 			for (it = tabs.constBegin(); it!=tabs.constEnd(); it++ ) {
-            if (it.value()->parent() == t) {
+				if (it.value()->parent() == t) {
 					g = it.key();
 				} 
 			}
@@ -207,103 +208,105 @@ namespace Fragmentarium {
 				if (variable->getGroup() == g) {
 					variable->reset();
 				}
-         }
-			
+			}
+
 			if (g=="Camera") {
 				mainWindow->resetCamera(true);
 			}
-			
+
 			mainWindow->callRedraw();
 		}
 
-      namespace {
-        class ScrollArea : public QScrollArea {
-       public:
-           ScrollArea(QWidget* child): child(child) {};
+		namespace {
+			class ScrollArea : public QScrollArea {
+			public:
+				ScrollArea(QWidget* child): child(child) {};
 
-           virtual void resizeEvent(QResizeEvent*) {
-              child->setMinimumSize( viewport()->size().width(),child->size().height());
-              child->setMaximumSize( viewport()->size().width(),child->size().height());
-              // Seems we have to do this manually...
-              QApplication::postEvent(this, new QEvent(QEvent::LayoutRequest));
-           }
-           QWidget* child;
-        };
-      }
+				virtual void resizeEvent(QResizeEvent*) {
+					child->setMinimumSize( viewport()->size().width(),child->size().height());
+					child->setMaximumSize( viewport()->size().width(),child->size().height());
+					// Seems we have to do this manually...
+					QApplication::postEvent(this, new QEvent(QEvent::LayoutRequest));
+				}
+				QWidget* child;
+			};
+		}
 
-      void VariableEditor::childChanged(bool lockedChanged) {
-         emit changed(lockedChanged);
-      }
+		void VariableEditor::childChanged(bool lockedChanged) {
+			emit changed(lockedChanged);
+		}
 
 
 		void VariableEditor::createGroup(QString g) {
 			//INFO("Creating new "+ g);
 
-         QWidget* w =new QWidget();
+			QWidget* w =new QWidget();
 
 			w->setLayout(new QVBoxLayout(w));
 
-         w->layout()->setSpacing(10);
-         w->layout()->setContentsMargins (10,10,10,10);
+			w->layout()->setSpacing(10);
+			w->layout()->setContentsMargins (10,10,10,10);
 
-         w->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
+			w->layout()->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
-         w->setMinimumSize(10,10);
+			w->setMinimumSize(10,10);
 
-         ScrollArea* sa = new ScrollArea(w);
-         sa->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-         w->setMinimumSize(10,10);
-         sa->setWidget(w);
-         w->setParent(sa);
+			ScrollArea* sa = new ScrollArea(w);
+			sa->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+			w->setMinimumSize(10,10);
+			sa->setWidget(w);
+			w->setParent(sa);
 
-         tabWidget->addTab(sa, g);
-         tabs[g] = w;
+			tabWidget->addTab(sa, g);
+			tabs[g] = w;
 
 			QWidget* b = new QWidget();
-         b->setLayout(new QHBoxLayout(b));
+			b->setLayout(new QHBoxLayout(b));
 			b->layout()->setSpacing(0);
 			b->layout()->setContentsMargins (0,0,0,0);
 
-         QPushButton* pb = new QPushButton(b);
+			QPushButton* pb = new QPushButton(b);
 			pb->setText("Reset group");
 			b->layout()->addWidget(pb);
 			connect(pb, SIGNAL(clicked()), this, SLOT(resetGroup()));
-         pb = new QPushButton(b);
-         pb->setText("Lock group");
-         b->layout()->addWidget(pb);
-         connect(pb, SIGNAL(clicked()), this, SLOT(lockGroup()));
-         pb = new QPushButton(b);
-         pb->setText("Unlock group");
-         b->layout()->addWidget(pb);
-         connect(pb, SIGNAL(clicked()), this, SLOT(unlockGroup()));
+			pb = new QPushButton(b);
+			pb->setText("Lock group");
+			b->layout()->addWidget(pb);
+			connect(pb, SIGNAL(clicked()), this, SLOT(lockGroup()));
+			pb = new QPushButton(b);
+			pb->setText("Unlock group");
+			b->layout()->addWidget(pb);
+			connect(pb, SIGNAL(clicked()), this, SLOT(unlockGroup()));
 
 			w->layout()->addWidget(b);
 			spacers[w] = b;
 		}
 
 
-      void VariableEditor::substituteLockedVariables(Parser::FragmentSource* fs) {
-         static QRegExp exp("^\\s*uniform\\s+(\\S+)\\s+(\\S+)\\s*;\\s*$");
+		void VariableEditor::substituteLockedVariables(Parser::FragmentSource* fs) {
+			static QRegExp exp("^\\s*uniform\\s+(\\S+)\\s+(\\S+)\\s*;\\s*$");
 
-         QMap<QString, VariableWidget*> map;
-         for (int i = 0; i < variables.count(); i++) {
-            if (variables[i]->getLockType() == Locked) {
-               map[variables[i]->getName()] = variables[i];
-            }
-         }
-         INFO(QString("Locked variables: %1").arg(map.count()));
+			QMap<QString, VariableWidget*> map;
+			QStringList names;
+			for (int i = 0; i < variables.count(); i++) {
+				if (variables[i]->getLockType() == Locked) {
+					map[variables[i]->getName()] = variables[i];
+					names.append(variables[i]->getName());
+				}
+			}
+			INFO(QString("%1 locked variables: %2").arg(map.count()).arg(names.join(",")));
 
 
-         for (int i = 0; i < fs->source.count(); i++) {
-            QString s = fs->source[i];
-            if (exp.indexIn(s)!=-1) {
-               if (map.contains(exp.cap(2))) {
-                  fs->source[i] = map[exp.cap(2)]->getLockedSubstitution();
-                  //INFO("Substituted: " + s + " -> " + fs->source[i]);
-               }
-            }
-         }
-      }
+			for (int i = 0; i < fs->source.count(); i++) {
+				QString s = fs->source[i];
+				if (exp.indexIn(s)!=-1) {
+					if (map.contains(exp.cap(2))) {
+						fs->source[i] = map[exp.cap(2)]->getLockedSubstitution();
+						//INFO("Substituted: " + s + " -> " + fs->source[i]);
+					}
+				}
+			}
+		}
 
 
 		void VariableEditor::updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI) {
@@ -335,10 +338,10 @@ namespace Fragmentarium {
 				} else {
 					if (tabStillPresent.contains(g)) tabStillPresent[g] = true;
 
-            }
+				}
 				currentWidget = tabs[g];
 
-            bool found = false;
+				bool found = false;
 				for (int j = 0; j < variables.count(); j++) {
 					QString name = variables[j]->getUniqueName();
 					// INFO("Checking " + name + " -> " +  ps[i]->getUniqueName());
@@ -347,8 +350,8 @@ namespace Fragmentarium {
 						variables[j]->setUpdated(true);
 
 
-                  variables[j]->setPalette(QApplication::palette(variables[j]));
-                  variables[j]->setAutoFillBackground(false);
+						variables[j]->setPalette(QApplication::palette(variables[j]));
+						variables[j]->setAutoFillBackground(false);
 
 						//INFO("Found existing: " + variables[j]->getName() + QString(" value: %1").arg(variables[j]->getValueAsText()));
 					}
@@ -363,8 +366,8 @@ namespace Fragmentarium {
 						fw->setToolTip(fp->getTooltip());
 						fw->setStatusTip(fp->getTooltip());
 						fw->setGroup(fp->getGroup());
-                  fw->setDefaultLockType(fp->getLockType());
-                  variables.append(fw);
+						fw->setDefaultLockType(fp->getLockType());
+						variables.append(fw);
 						fw->setUpdated(true);
 						currentWidget->layout()->addWidget(fw);
 					} else if (dynamic_cast<Parser::IntParameter*>(ps[i])) {
@@ -374,8 +377,8 @@ namespace Fragmentarium {
 						iw->setGroup(ip->getGroup());
 						iw->setToolTip(ip->getTooltip());
 						iw->setStatusTip(ip->getTooltip());
-                  iw->setDefaultLockType(ip->getLockType());
-                  variables.append(iw);
+						iw->setDefaultLockType(ip->getLockType());
+						variables.append(iw);
 						iw->setUpdated(true);
 						currentWidget->layout()->addWidget(iw);
 					} else if (dynamic_cast<Parser::ColorParameter*>(ps[i])) {
@@ -385,8 +388,8 @@ namespace Fragmentarium {
 						cw->setGroup(cp->getGroup());
 						cw->setToolTip(cp->getTooltip());
 						cw->setStatusTip(cp->getTooltip());
-                  cw->setDefaultLockType(cp->getLockType());
-                  variables.append(cw);
+						cw->setDefaultLockType(cp->getLockType());
+						variables.append(cw);
 						cw->setUpdated(true);
 						currentWidget->layout()->addWidget(cw);
 					} else if (dynamic_cast<Parser::FloatColorParameter*>(ps[i])) {
@@ -396,8 +399,8 @@ namespace Fragmentarium {
 						cw->setGroup(cp->getGroup());
 						cw->setToolTip(cp->getTooltip());
 						cw->setStatusTip(cp->getTooltip());
-                  cw->setDefaultLockType(cp->getLockType());
-                  variables.append(cw);
+						cw->setDefaultLockType(cp->getLockType());
+						variables.append(cw);
 						cw->setUpdated(true);
 						currentWidget->layout()->addWidget(cw);
 					} else if (dynamic_cast<Parser::Float3Parameter*>(ps[i])) {
@@ -407,30 +410,30 @@ namespace Fragmentarium {
 						f3w->setToolTip(f3p->getTooltip());
 						f3w->setStatusTip(f3p->getTooltip());
 						f3w->setGroup(f3p->getGroup());
-                  f3w->setDefaultLockType(f3p->getLockType());
-                  variables.append(f3w);
+						f3w->setDefaultLockType(f3p->getLockType());
+						variables.append(f3w);
 						f3w->setUpdated(true);
 						currentWidget->layout()->addWidget(f3w);
-               } else if (dynamic_cast<Parser::Float4Parameter*>(ps[i])) {
-                  Parser::Float4Parameter* f4p = dynamic_cast<Parser::Float4Parameter*>(ps[i]);
-                  QString name = f4p->getName();
-                  Float4Widget* f4w = new Float4Widget(currentWidget, this, name, f4p->getDefaultValue(), f4p->getFrom(), f4p->getTo());
-                  f4w->setToolTip(f4p->getTooltip());
-                  f4w->setStatusTip(f4p->getTooltip());
-                  f4w->setGroup(f4p->getGroup());
-                  f4w->setDefaultLockType(f4p->getLockType());
-                  variables.append(f4w);
-                  f4w->setUpdated(true);
-                  currentWidget->layout()->addWidget(f4w);
-               } else if (dynamic_cast<Parser::Float2Parameter*>(ps[i])) {
+					} else if (dynamic_cast<Parser::Float4Parameter*>(ps[i])) {
+						Parser::Float4Parameter* f4p = dynamic_cast<Parser::Float4Parameter*>(ps[i]);
+						QString name = f4p->getName();
+						Float4Widget* f4w = new Float4Widget(currentWidget, this, name, f4p->getDefaultValue(), f4p->getFrom(), f4p->getTo());
+						f4w->setToolTip(f4p->getTooltip());
+						f4w->setStatusTip(f4p->getTooltip());
+						f4w->setGroup(f4p->getGroup());
+						f4w->setDefaultLockType(f4p->getLockType());
+						variables.append(f4w);
+						f4w->setUpdated(true);
+						currentWidget->layout()->addWidget(f4w);
+					} else if (dynamic_cast<Parser::Float2Parameter*>(ps[i])) {
 						Parser::Float2Parameter* f2p = dynamic_cast<Parser::Float2Parameter*>(ps[i]);
 						QString name = f2p->getName();
 						Float2Widget* f2w = new Float2Widget(currentWidget, this, name, f2p->getDefaultValue(), f2p->getFrom(), f2p->getTo());
 						f2w->setToolTip(f2p->getTooltip());
 						f2w->setStatusTip(f2p->getTooltip());
 						f2w->setGroup(f2p->getGroup());
-                  f2w->setDefaultLockType(f2p->getLockType());
-                  variables.append(f2w);
+						f2w->setDefaultLockType(f2p->getLockType());
+						variables.append(f2w);
 						f2w->setUpdated(true);
 						currentWidget->layout()->addWidget(f2w);
 					} else if (dynamic_cast<Parser::BoolParameter*>(ps[i])) {
@@ -440,15 +443,15 @@ namespace Fragmentarium {
 						bw->setToolTip(bp->getTooltip());
 						bw->setStatusTip(bp->getTooltip());
 						bw->setGroup(bp->getGroup());
-                  bw->setDefaultLockType(bp->getLockType());
-                  variables.append(bw);
+						bw->setDefaultLockType(bp->getLockType());
+						variables.append(bw);
 						bw->setUpdated(true);
 						currentWidget->layout()->addWidget(bw);
 					} else {
 						WARNING("Unsupported parameter");
 					}
 
-               // We need to move the spacer to bottom.
+					// We need to move the spacer to bottom.
 					currentWidget->layout()->removeWidget(spacers[currentWidget]);
 					currentWidget->layout()->addWidget(spacers[currentWidget]);
 
@@ -460,7 +463,7 @@ namespace Fragmentarium {
 					variables.remove(i);
 					i = 0;
 				} else if (!variables[i]->isUpdated()) {
-               delete(variables[i]);
+					delete(variables[i]);
 					variables.remove(i);
 					i = 0;
 				} else {
@@ -472,9 +475,9 @@ namespace Fragmentarium {
 			while (it.hasNext()) {
 				it.next();
 				if (it.value() == false) {
-               spacers.remove(tabs[it.key()]);
-               delete((tabs[it.key()]->parent()));
-               tabs.remove(it.key());
+					spacers.remove(tabs[it.key()]);
+					delete((tabs[it.key()]->parent()));
+					tabs.remove(it.key());
 				}
 			}
 
@@ -490,13 +493,13 @@ namespace Fragmentarium {
 			QStringList l;
 			for (int i = 0; i < variables.count(); i++) {
 				QString name = variables[i]->getName();
-            QString val = variables[i]->toSettingsString();
+				QString val = variables[i]->toSettingsString();
 				l.append(name + " = " + val);
 			}
 			return l.join("\n");
 		};
 
-		void VariableEditor::setSettings(QString text) {
+		bool VariableEditor::setSettings(QString text) {
 			QStringList l = text.split("\n");
 			QMap<QString, QString> maps;
 			foreach (QString s, l) {
@@ -513,9 +516,10 @@ namespace Fragmentarium {
 				maps[first] = second;
 			}
 
+			bool requiresRecompile = false;
 			for (int i = 0; i < variables.count(); i++) {
 				if (maps.contains(variables[i]->getName())) {
-               variables[i]->fromSettingsString(maps[variables[i]->getName()]);
+					requiresRecompile = requiresRecompile | variables[i]->fromSettingsString(maps[variables[i]->getName()]);
 					//INFO("Found: "+variables[i]->getName());
 					maps.remove(variables[i]->getName());
 				}
@@ -524,6 +528,7 @@ namespace Fragmentarium {
 			foreach (QString s, maps.keys()) {
 				WARNING("Could not find: " + s);
 			}
+			return requiresRecompile;
 		};
 
 		VariableWidget* VariableEditor::getWidgetFromName(QString name) {
@@ -536,15 +541,15 @@ namespace Fragmentarium {
 		}
 
 		void VariableEditor::updateCamera(CameraControl* c) {
-		
+
 			QString g = "Camera";
 			if (!tabs.contains(g)) {
-					createGroup(g);
+				createGroup(g);
 			}
-			
+
 			c->connectWidgets(this);
 			QVector<VariableWidget*> added= c->addWidgets(tabs[g], this);
-			
+
 			foreach (VariableWidget* v, added) {
 				if (variables.contains(v)) continue;
 				v->setGroup(g);
@@ -553,7 +558,7 @@ namespace Fragmentarium {
 				tabs[g]->layout()->addWidget(v);
 			}
 		}	
-			
+
 
 	}
 }

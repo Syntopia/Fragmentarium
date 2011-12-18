@@ -219,7 +219,7 @@ namespace Fragmentarium {
 		public:
 			Preprocessor(QStringList includePaths) : includePaths(includePaths) {};
 			
-			FragmentSource parse(QString input, QString fileName, bool moveMain);
+         FragmentSource parse(QString input, QString fileName, bool moveMain, bool doublify);
          FragmentSource createAutosaveFragment(QString input, QString fileName);
 			void parseSource(FragmentSource* fs,QString input, QString fileName, bool includeOnly);
 			QString resolveName(QString fileName, QString originalFileName) ;

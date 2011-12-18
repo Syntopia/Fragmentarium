@@ -29,7 +29,7 @@ float height(vec3 pos) {
 	return r;
 }
 
-vec3 color(vec3 pos) {
+vec3 color(vec3 pos, vec3 normal) {
 	float dr = height(pos);
 	if (dr==WaterLevel) return vec3(0.0,0.0,1.0);
 	dr = 1.0-clamp(dr, 0.0, 1.0);

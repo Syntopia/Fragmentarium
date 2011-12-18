@@ -5,6 +5,7 @@ mkdir imageformats
 cd ..
 xcopy ..\Examples\*.* "Fragmentarium"\Examples\  /E
 rmdir /S /Q "Fragmentarium"\Examples\DontDeploy
+rmdir /S /Q "Fragmentarium"\Examples\Theory
 xcopy ..\Misc\*.* "Fragmentarium"\Misc\  /E
 xcopy Microsoft.VC90.CRT\*.* "Fragmentarium"\Microsoft.VC90.CRT\  /E
 copy Release\Fragmentarium.exe "Fragmentarium"\  

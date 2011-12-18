@@ -70,40 +70,32 @@ vec3 getColor2D(vec2 c) {
 	vec2 dz = vec2(1,0);
 	for (i = 0; i < Iterations; i++) {
 		dz = complexMul(z,dz)*2.0 + (Julia ? vec2(0.0) : vec2(1.0,0.0));
-	//	dr = length(z)*dr*2.0;
+		//	dr = length(z)*dr*2.0;
 		z = complexMul(z,z) + (Julia ? c2 : c);
 		
 		if (dot(z,z)> BR*BR*BR*BR) break;
 	}
- if ( i == Iterations) return vec3(0.0);
+	if ( i == Iterations) return vec3(0.0);
 	
 	float r = length(z);
-	 dr = length(dz);
-
+	dr = length(dz);
+	
 	
 	float de =(Zoom/100.0)* r*log2(r)/dr;
-de = log(de);
+	if (mod(de*2000,1.0) > 0.9) return vec3(1.0,0.0,0.0);
+	if (de<BR/1000000.0) return vec3(0.0,0.0,0.0);
+	//if (mod(de*2000,1.0) > 0.5) return vec3(0.9);
 	
-	vec3 cc = vec3(0,0,0);
-	float _min = Dist;
-	float _max = Dist2;
-	 if (de < _min) return vec3(0.0,0.0,0.0);
-	 if (de >_max) return vec3(1.0,1.0,1.0);
-de = (de-_min)/(_max-_min);
-de = pow(de,EXP);
-	    return mix(vec3(0.0),vec3(1.0), de);
-	//if (de<_min) return vec3(1.0);
-	
-	return vec3(smoothstep(_min,_max,de));
+	return vec3(1.0);
 }
 
 
-#preset nice Default
-Center = -0.0141844,0.0133333
+#preset Default
+Center = -0.0644841,-0.00353997
 Zoom = 1
 AntiAliasScale = 1
 AntiAlias = 2
-Iterations = 1351
+Iterations = 181
 R = 0
 G = 0.4
 B = 0.7
@@ -112,7 +104,7 @@ JuliaX = -0.77896
 JuliaY = 0.12536
 ShowMap = false
 MapZoom = 0.45925
-BR = 31.8157
+BR = 4.06396
 Dist = -18.7756
 EXP = 1.6667
 Dist2 = -9.7826

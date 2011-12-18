@@ -1,6 +1,6 @@
 #info Mandelbulb Distance Estimator
 #define providesInit
-#include "DE-Raytracer.frag"
+#include "DE-Raytracer-Slicer.frag"
 #include "MathUtils.frag"
 #group Mandelbulb
 
@@ -70,11 +70,13 @@ void powN2(inout vec3 z, float zr0, inout float dr) {
 
 
 
-uniform bool Julia; checkbox[false]
-uniform vec3 JuliaC; slider[(-2,-2,-2),(0,0,0),(2,2,2)]
+float DE2(vec3 pos,int type) {
+orbitTrap = min(orbitTrap, vec4(normalize(pos),1.0));
+return 1.5*length(pos)-1.0;
+}
 
 // Compute the distance from `pos` to the Mandelbox.
-float DE(vec3 pos) {
+float DE(vec3 pos,int type) {
 	vec3 z=pos;
 	float r;
 	float dr=1.0;
@@ -86,7 +88,8 @@ float DE(vec3 pos) {
 		} else {
 			powN1(z,r,dr);
 		}
-		z+=(Julia ? JuliaC : pos);
+		z+=pos;
+if (type==1) dr+=1.0;
 		r=length(z);
 		z*=rot;
 		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(z.x,z.y,z.z,r*r)));
@@ -109,14 +112,14 @@ FOV = 0.62536
 Eye = -0.788003,0.788839,1.62469
 Target = 2.75784,-2.47769,-5.81072
 Up = 0.917561,0.0998113,0.384863
-AntiAlias = 1 
+AntiAlias = 1 NotLocked
 Detail = -2.91151
 DetailAO = -1.57143
 FudgeFactor = 1
 MaxRaySteps = 164
 BoundingSphere = 2
 Dither = 0.5
-NormalBackStep = 1 
+NormalBackStep = 1 NotLocked
 AO = 0,0,0,0.90123
 Specular = 4.4304
 SpecularExp = 16
@@ -127,9 +130,9 @@ CamLightMin = 1
 Glow = 1,1,1,0.46575
 GlowMax = 20
 Fog = 0
-HardShadow = 0.35385 
+HardShadow = 0.35385 NotLocked
 ShadowSoft = 12.9032
-Reflection = 0 
+Reflection = 0 NotLocked
 BaseColor = 1,1,1
 OrbitStrength = 0.14286
 X = 0.411765,0.6,0.560784,0.41748

@@ -20,11 +20,16 @@ uniform vec2 pixelSize;
 varying vec2 coord;
 varying float zoom;
 varying vec3 dir;
+varying vec3 MulX;
+varying vec3 MulY;
+varying vec3 Off;
+
 void main(void)
 {
 	gl_Position =  gl_Vertex;
 	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
 	coord.x*= pixelSize.y/pixelSize.x;
+	
 	// we will only use gl_ProjectionMatrix to scale and translate, so the following should be OK.
 	vec2 ps =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
 	zoom = length(ps);
@@ -34,8 +39,9 @@ void main(void)
 	up = normalize(up);
 	vec3 Right = normalize( cross(Dir,up));
 	dir = (coord.x*Right + coord.y*up )*FOV+Dir;
-	dirDy = ps.y*up*FOV;
-	dirDx = ps.x*Right*FOV;
+	MulX = Right*FOV;
+	MulY = up*FOV;
+	Off = Dir;
 }
 #endvertex
 
@@ -47,12 +53,20 @@ varying vec2 coord;
 varying float zoom;
 
 // HINT: for better results use Tile Renders and resize the image yourself
-uniform int AntiAlias;slider[1,1,5] Locked
+uniform int AntiAlias;slider[1,1,5];
+// Smoothens the image (when AA is enabled)
+//uniform float AntiAliasBlur;slider[0.0,1,2];
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
+// The maximum length we will follow a ray
+//uniform float MaxDist;slider[-2,2,3];
+// The resolution for normals (used for lighting)
+uniform float DetailNormal;slider[-7,-2.8,0];
 // The step size when sampling AO (set to 0 for old AO)
 uniform float DetailAO;slider[-7,-0.5,0];
 
+// The power of the clarity function
+//uniform float ClarityPower;slider[0,1,5];
 const float ClarityPower = 1.0;
 
 // Lower this if the system is missing details
@@ -60,7 +74,7 @@ uniform float FudgeFactor;slider[0,1,1];
 
 float minDist = pow(10.0,Detail);
 float aoEps = pow(10.0,DetailAO);
-float MaxDistance = 100.0;
+const float MaxDistance = 100.0;
 
 // Maximum number of  raymarching steps.
 uniform int MaxRaySteps;  slider[0,56,2000]
@@ -69,13 +83,10 @@ uniform int MaxRaySteps;  slider[0,56,2000]
 //uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 
 // Used to speed up and improve calculation
-uniform float BoundingSphere;slider[0,12,100];
+uniform float BoundingSphere;slider[0,2,100];
 
 // Can be used to remove banding
 uniform float Dither;slider[0,0.5,1];
-
-// Used to prevent normals from being evaluated inside objects.
-uniform float NormalBackStep; slider[0,1,10] Locked
 
 #group Light
 
@@ -94,28 +105,24 @@ uniform vec2 SpotLightDir;  slider[(-1,-1),(0.1,0.1),(1,1)]
 uniform vec4 CamLight; color[0,1,2,1.0,1.0,1.0];
 // Controls the minimum ambient light, regardless of directionality
 uniform float CamLightMin; slider[0.0,0.0,1.0]
-// Glow based on distance from fractal
+// Glow based on the number of raymarching steps
 uniform vec4 Glow; color[0,0.0,1,1.0,1.0,1.0];
-//uniform vec4 InnerGlow; color[0,0.0,1,1.0,1.0,1.0];
-uniform int GlowMax; slider[0,20,1000]
 // Adds fog based on distance
 uniform float Fog; slider[0,0.0,2]
 // Hard shadows shape is controlled by SpotLightDir
-uniform float HardShadow; slider[0,0,1] Locked
+uniform float HardShadow; slider[0,0.0,1]
 
-uniform float ShadowSoft; slider[0.0,2.0,20]
-
-uniform float Reflection; slider[0,0,1] Locked
+uniform float Reflection; slider[0,0,1]
 
 vec4 orbitTrap = vec4(10000.0);
-float fractionalCount = 0.0;
+
 
 #group Coloring
 
 // This is the pure color of object (in white light)
 uniform vec3 BaseColor; color[1.0,1.0,1.0];
 // Determines the mix between pure light coloring and pure orbit trap coloring
-uniform float OrbitStrength; slider[0,0,1]
+uniform float OrbitStrength; slider[0,0.8,1]
 
 // Closest distance to YZ-plane during orbit
 uniform vec4 X; color[-1,0.7,1,0.5,0.6,0.6];
@@ -134,131 +141,59 @@ uniform vec3 BackgroundColor; color[0.6,0.6,0.45]
 // Vignette background
 uniform float GradientBackground; slider[0.0,0.3,5.0]
 
-float DE(vec3 pos) ; // Must be implemented in other file
+float DE(vec3 pos, int type) ; // Must be implemented in other file
 
 uniform bool CycleColors; checkbox[false]
 uniform float Cycles; slider[0.1,1.1,32.3]
 
-#ifdef providesNormal
-	vec3 normal(vec3 pos, float normalDistance);
-
-#else
-vec3 normal(vec3 pos, float normalDistance) {
-       normalDistance = max(normalDistance*0.5, 1.0e-7);
+vec3 normal(inout vec3 pos,  float normalDistance) {
+	normalDistance = max(normalDistance*0.5, 1.0e-7);
 	vec3 e = vec3(0.0,normalDistance,0.0);
-	vec3 n = vec3(DE(pos+e.yxx)-DE(pos-e.yxx),
-		DE(pos+e.xyx)-DE(pos-e.xyx),
-		DE(pos+e.xxy)-DE(pos-e.xxy));
+	vec3 n = vec3(DE(pos+e.yxx,0)-DE(pos-e.yxx,0),
+		DE(pos+e.xyx,0)-DE(pos-e.xyx,0),
+		DE(pos+e.xxy,0)-DE(pos-e.xxy,0));
 	n =  normalize(n);
 	return n;
 }
-#endif
 
 #group Floor
-
-uniform bool EnableFloor; checkbox[false] Locked
 uniform vec3 FloorNormal; slider[(-1,-1,-1),(0,0,0),(1,1,1)]
 uniform float FloorHeight; slider[-5,0,5]
 uniform vec3 FloorColor; color[1,1,1]
-bool floorHit = false;
-float floorDist = 0.0;
-vec3 floorNormal = normalize(FloorNormal);
-int fSteps = 0;
-float DEF(vec3 p) {
-	float d = DE(p);
-	if (EnableFloor) {
-		floorDist = abs(dot(floorNormal,p)-FloorHeight);
-		if (d<floorDist) {
-			fSteps++;
-			return d;
-		}  else return floorDist;		
- 	} else {	
-		fSteps++;
-		return d;
-	}
-}
 
-float DEF2(vec3 p) {
-	if (EnableFloor) {
-		floorDist = abs(dot(floorNormal,p)-FloorHeight);
-		return min(floorDist, DE(p));
- 	} else {
-		return DE(p);
-	}
-}
-
-
-// Uses the soft-shadow approach by Quilez:
-// http://iquilezles.org/www/articles/rmshadows/rmshadows.htm
-float shadow(vec3 pos, vec3 sdir, float eps) {
-		float totalDist =2.0*eps;
-		float s = 1.0; // where 1.0 means no shadow!
- 		for (int steps=0; steps<MaxRaySteps/10 && totalDist<MaxDistance; steps++) {
-			vec3 p = pos + totalDist * sdir;
-			float dist = DEF2(p);
-			if (dist < eps)  return 1.0;
-			s = min(s, ShadowSoft*(dist/totalDist));
-			totalDist += dist;
-		}
-		return 1.0-s;	
-}
-
-float rand(vec2 co){
-	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
-	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-
-vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shadowStrength) {
-	shadowStrength = 0.0;
-	vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
+vec3 lighting( vec3 n,  vec3 color, inout vec3 pos,inout  vec3 dir,inout  float eps) {
+	vec3 spotDir =-normalize(dirDx)*tan(SpotLightDir.x*0.5*3.14)+
+	normalize(dirDy)*tan(SpotLightDir.y*0.5*3.14) + dir;
 	spotDir = normalize(spotDir);
+	
 	// Calculate perfectly reflected light
-
-	//if (dot(dir,n)>0.0) n = -n;
-
 	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
-
 	float s = max(0.0,dot(dir,-r));
 	
-
 	float diffuse = max(0.0,dot(-n,spotDir))*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
 	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
-
-       if (dot(n,dir)<0.0) { specular = 0.0; }	
-
-	if (HardShadow>0.0) {
-		// check path from pos to spotDir
-		shadowStrength = shadow(pos+n*eps, -spotDir, eps);
-		ambient = mix(ambient,0.0,HardShadow*shadowStrength);
-		diffuse = mix(diffuse,0.0,HardShadow*shadowStrength);
-		// specular = mix(specular,0.0,HardShadow*f); 
-		if (shadowStrength>0.0) specular = 0.0; // always turn off specular, if blocked
-	}
-
+	
+	
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }
 
 vec3 colorBase = vec3(0.0,0.0,0.0);
 
-vec3 cycle(vec3 c, float s) {
-	return vec3(0.5)+0.5*vec3(cos(s*Cycles+c.x),cos(s*Cycles+c.y),cos(s*Cycles+c.z));
-}
-
 // Ambient occlusion approximation.
 // Sample proximity at a few points in the direction of the normal.
 float ambientOcclusion(vec3 p, vec3 n) {
 	float ao = 0.0;
-	float de = DEF(p);
+	float de = DE(p,0);
 	float wSum = 0.0;
 	float w = 1.0;
-       float d = 1.0-(Dither*rand(p.xy));
+	float d = 1.0;
 	for (float i =1.0; i <6.0; i++) {
 		// D is the distance estimate difference.
 		// If we move 'n' units in the normal direction,
 		// we would expect the DE difference to be 'n' larger -
 		// unless there is some obstructing geometry in place
-		float D = (DEF(p+ d*n*i*i*aoEps) -de)/(d*i*i*aoEps);
+		float D = (DE(p+ d*n*i*i*aoEps,0) -de)/(d*i*i*aoEps);
 		w *= 0.6;
 		ao += w*clamp(1.0-D,0.0,1.0);
 		wSum += w;
@@ -269,34 +204,21 @@ float ambientOcclusion(vec3 p, vec3 n) {
 vec3 getColor() {
 	orbitTrap.w = sqrt(orbitTrap.w);
 	
-	vec3 orbitColor;
-	if (CycleColors) {
-		orbitColor = cycle(X.xyz,orbitTrap.x)*X.w*orbitTrap.x +
-		cycle(Y.xyz,orbitTrap.y)*Y.w*orbitTrap.y +
-		cycle(Z.xyz,orbitTrap.z)*Z.w*orbitTrap.z +
-		cycle(R.xyz,orbitTrap.w)*R.w*orbitTrap.w;
-	} else {
-		orbitColor = X.xyz*X.w*orbitTrap.x +
+	
+	return mix(BaseColor, X.xyz*X.w*orbitTrap.x +
 		Y.xyz*Y.w*orbitTrap.y +
 		Z.xyz*Z.w*orbitTrap.z +
-		R.xyz*R.w*orbitTrap.w;
-	}
-	
-	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
-	return color;
+		R.xyz*R.w*orbitTrap.w,  OrbitStrength);
 }
 
-#ifdef  providesColor
-	vec3 color(vec3 point, vec3 normal);
-#endif
-
-
+//uniform bool Preview; checkbox[true]
+bool Preview = true;
+bool Cut = false;
+uniform float XLevel; slider[-5,0,5]
 vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(dir);
-      floorHit = false;
-	floorDist = 0.0;
 	
 	float dist = 0.0;
 	float totalDist = 0.0;
@@ -307,7 +229,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// Check for bounding sphere
 	float dotFF = dot(from,from);
 	float d = 0.0;
-	fSteps = 0;
+	
 	float dotDE = dot(direction,from);
 	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
 	
@@ -329,7 +251,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
-		
+	
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
 		dist = MaxDistance;
@@ -340,106 +262,117 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		for (steps=0; steps<MaxRaySteps; steps++) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
-			dist = DEF(p);
-			//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
+			dist = DE(p,0);
+			if (Cut) dist = max(dist, p.x-XLevel);
 			dist *= FudgeFactor;
-
-			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 			totalDist += dist;
-			epsModified = pow(totalDist,ClarityPower)*eps;
-			if (dist < epsModified) break;
-                    if (totalDist > MaxDistance) break;
+			epsModified = totalDist*eps;
+			if (dist < epsModified || totalDist > MaxDistance) break;
 		}
 	}
-	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
- 	
 	vec3 hitColor;
-	float stepFactor = clamp((float(fSteps))/float(GlowMax),0.0,1.0);
+	float stepFactor = clamp((float(steps))/float(MaxRaySteps),0.0,1.0);
 	vec3 backColor = BackgroundColor;
-	if (GradientBackground>0.0) {
-		float t = length(coord);
-		backColor = mix(backColor, vec3(0.0,0.0,0.0), t*GradientBackground);
-	}
 	
 	if (  steps==MaxRaySteps) orbitTrap = vec4(0.0);
 	
-	float shadowStrength = 0.0;
 	if ( dist < epsModified) {
 		// We hit something, or reached MaxRaySteps
 		hit = from + totalDist * direction;
 		float ao = AO.w*stepFactor ;
-
-		if (floorHit) {
-			hitNormal = floorNormal;	
-			if (dot(hitNormal,direction)>0.0) hitNormal *=-1.0;	
-		} else {
-			hitNormal= normal(hit-NormalBackStep*epsModified*direction, epsModified); // /*normalE*epsModified/eps*/
-		}
-
+		hitNormal= normal(hit, epsModified); // /*normalE*epsModified/eps*/
+		ao = ambientOcclusion(hit, hitNormal);
+		//hitColor = getColor();
+		hitColor = BaseColor;//*(1.0-ao);
+		hitColor = lighting( hitNormal,mix(hitColor, AO.xyz ,ao),  hit,  direction,eps);
 		
-#ifdef  providesColor
-		hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
-#else
-		hitColor = getColor();
-#endif
-            if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
-
-		if (floorHit) {
-			hitColor = FloorColor;
-		}
-		
-		hitColor = mix(hitColor, AO.xyz ,ao);	
-		hitColor = lighting(hitNormal, hitColor,  hit,  direction,epsModified,shadowStrength);
-		// OpenGL  GL_EXP2 like fog
-		float f = totalDist;
-		hitColor = mix(hitColor, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
-		if (floorHit) {
-			hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
-		}	
-	}
-	else {
+		//	hitColor = lighting( mix(hitColor, AO.xyz ,ao), hitColor,  hit,  direction,eps);
+	} else {
 		hitColor = backColor;
-		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
-	
 	}
-		
-	
 	
 	return hitColor;
 }
 
 #ifdef providesInit
-	void init(); // forward declare
+void init(); // forward declare
 #else
-	void init() {}
-#endif 
+void init() {}
+#endif
+varying vec3 MulX;
+varying vec3 MulY;
+varying vec3 Off;
+uniform float PlaneZoom; slider[0.0,1.0,10.0]
+uniform float GraphZoom; slider[0.0,1.0,10.0]
+uniform float ZLevel; slider[-10,0,10]
+uniform float Delta; slider[-10,-1,0]
+uniform float RAD; slider[0,0.091,0.001]
 
 void main() {
 	init();
+	vec3 hitNormal;
+	vec3 hit;
 	
-	vec3 color = vec3(0.0,0.0,0.0);
-	for (int x = 0; x<AntiAlias; x++) {
-		float  dx = float(x)/float(AntiAlias);
-		for (int y = 0; y<AntiAlias; y++) {
-			float dy = float(y)/float(AntiAlias);
-			vec3 nDir = dir+dirDx*dx+dirDy*dy;
-			vec3 hitNormal = vec3(0.0);
-			vec3 hit;
-			vec3 c = trace(from,nDir,hit,hitNormal);
-			if (Reflection>0.0 && (hit != vec3(.0))) {
-				vec3 d; vec3 d2 = vec3(0.0);
-				// todo: minDist = modifiedEps?
-				vec3 r = normalize(nDir - 2.0 * dot(hitNormal, nDir) * hitNormal);
+	vec3 d = vec3(0.0);
 	
-				vec3 c2 = trace(hit+4.0*r*minDist,r,d,d2);
-				color += c+c2*Reflection;
-			} else {
-				color += c;
-			} 			
-
-		}
+	if (coord.x<0.0)
+	d = (coord.x*2.0+1.)*MulX ;
+	else {
+		Cut = true;
+		d =  (coord.x*2.0-1.)*MulX;
 	}
 	
-	color = clamp(color/float(AntiAlias*AntiAlias), 0.0, 1.0);
-	gl_FragColor = vec4(color, 1.0);
+	if (coord.y<0.0)
+	d += (coord.y*2.0+1.0)*MulY +Off;
+	else
+	d +=  (coord.y*2.0-1.0)*MulY+Off;
+	
+	
+	
+	if (coord.y<0.0 && coord.x < 0.0) {
+		vec3 p = vec3(XLevel,(coord.x*2.0+1.0)*PlaneZoom,(coord.y*2.0+1.0)*PlaneZoom);
+		if (abs(p.z-ZLevel)<0.01) { gl_FragColor = vec4(1.0,0.0,0.0,1.0); return; }
+		float dist = DE(p,0);
+		if (dist < minDist) {
+			gl_FragColor = vec4(getColor(),1.0);
+
+		} else {
+			gl_FragColor =vec4( 0.8,0.8,0.8,1.0);
+		}
+	} else if (coord.y<0.0 && coord.x > 0.0) {
+gl_FragColor = vec4(0.0);
+int steps =3;
+ for (int a = 0; a < steps; a++) {
+ for (int b = 0;b < steps; b++) {
+vec2 o = vec2(float(a)*RAD*10,float(b)*RAD*10);
+		vec3 p = vec3(XLevel,((coord.x+o.x)*2.0-1.0)*PlaneZoom,ZLevel);
+		float dist = DE(p,0);
+		float del = pow(10,Delta);
+		float distX = DE(p+vec3(0.0,del,0.0),0);
+		float distX2 = DE(p-vec3(0.0,del,0.0),0);
+		float grad = (distX-distX2)/(2.0*del);
+		float dist2 = DE(p,1);
+		float yy = ((coord.y+o.y)*2.0+1.0)*GraphZoom;
+		if (abs(yy-dist) < 0.01*GraphZoom) {
+			gl_FragColor += vec4(0.0,0.0,1.0,1.0); // DE-plot
+		} else if (abs(yy-grad) < 0.01*GraphZoom) {
+			gl_FragColor += vec4(1.,0.0,0.,1.0); // Derivative of DE
+//return;
+		}  else if (abs(yy-dist2) < 0.01*GraphZoom) {
+			gl_FragColor += vec4(0.0,1.0,1.0,1.0); // Alt DE
+		}  else if (abs(yy) < 0.01*GraphZoom) {
+			gl_FragColor += vec4(0.0,0.0,0.0,1.0); // y = 0
+		}  else if (abs(mod(yy,1.0)) < 0.01*GraphZoom) {
+			gl_FragColor += vec4(0.0,0.0,0.0,1.0); // y units
+		} else if (abs(mod(p.y,1.0)) < 0.01*GraphZoom) {
+			gl_FragColor += vec4(0.0,0.0,0.0,1.0); // x units
+		} else {
+			gl_FragColor +=vec4( 1.,1.,1.,1.0);
+		}
+}
+}
+gl_FragColor /= float(steps*steps);
+	}
+	else
+	gl_FragColor = vec4(clamp( trace(from,d,hit,hitNormal),0.0,1.0), 1.0);
 }

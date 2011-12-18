@@ -14,20 +14,22 @@ vec2 formula(vec2 z, vec2 c) {
 }
 
 #preset Default
-Center = -0.847692,0.0356639
-Zoom = 22.7046
+Center = -0.983448,0.033656
+Zoom = 19.6131
 AntiAliasScale = 1
 AntiAlias = 3
 Iterations = 33
 PreIterations = 15
 R = 1
-G = 0.4
+G = 0.47059
 B = 0.725
 C = 1.64706
 Julia = false
 JuliaX = 0.23528
 JuliaY = 5.5384
-ShowMap = true
-MapZoom = 2.1
-EscapeSize = 6.07453
+ShowMap = false
+MapZoom = 2.25625
+EscapeSize = 3.94031
+ColoringType = 1
+ColorFactor = 1
 #endpreset

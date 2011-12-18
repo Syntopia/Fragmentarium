@@ -198,6 +198,7 @@ namespace Fragmentarium {
 			QLabel* fpsLabel;
 			QWidget* splashWidget;
 			QDockWidget* animationController;
+			bool rebuildRequired;
 		};
 	}
 }

@@ -71,21 +71,21 @@ namespace Fragmentarium {
 				emit changed();
 			}
 
-			signals:
+signals:
 			void changed();
- 
+
 			protected slots:
 				void spinnerChanged(double) {
-               //double val = (spinner->value()-minimum)/(maximum-minimum);
-               setValue(spinner->value());
-               //slider->setValue(val*100000);
+					//double val = (spinner->value()-minimum)/(maximum-minimum);
+					setValue(spinner->value());
+					//slider->setValue(val*100000);
 					myValue = spinner->value();
 					emit changed();
 				}
 
 				void sliderChanged(int) {
 					double val = (slider->value()/100000.0)*(maximum-minimum)+minimum;
-               setValue(val);
+					setValue(val);
 					myValue = spinner->value();
 					emit changed();
 				}
@@ -196,7 +196,7 @@ signals:
 
 			Q_OBJECT
 		public:
-         VariableWidget(QWidget* parent, QWidget* variableEditor, QString name);
+			VariableWidget(QWidget* parent, QWidget* variableEditor, QString name);
 			virtual QString getValueAsText() { return ""; };
 			QString getName() const { return name; };
 			virtual void reset() = 0;
@@ -205,46 +205,46 @@ signals:
 			bool isUpdated() const { return updated; };
 			void setUpdated(bool value) { updated = value; };
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram) = 0;
-         QString toSettingsString();
-         void fromSettingsString(QString string);
-         virtual QString toString() = 0;
+			QString toSettingsString();
+			bool fromSettingsString(QString string);
+			virtual QString toString() = 0;
 			virtual void fromString(QString string) = 0;
 			virtual QString getUniqueName() = 0;
 			void setSystemVariable(bool v) { systemVariable = v; }
 			bool isSystemVariable() { return systemVariable; } 
 			int uniformLocation(QGLShaderProgram* shaderProgram);
 			bool isLocked();
-         LockType getDefaultLockType() { return defaultLockType; }
-         void setDefaultLockType(LockType lt);
-         LockType getLockType() { return lockType; }
-         void setLockType(LockType lt) ;
-         virtual QString getLockedSubstitution() = 0;
-         virtual QString getLockedSubstitution2() = 0;
+			LockType getDefaultLockType() { return defaultLockType; }
+			void setDefaultLockType(LockType lt);
+			LockType getLockType() { return lockType; }
+			void setLockType(LockType lt) ;
+			virtual QString getLockedSubstitution() = 0;
+			virtual QString getLockedSubstitution2() = 0;
 
-		public slots:
-         void locked(bool l);
-         void valueChanged();
+			public slots:
+				void locked(bool l);
+				void valueChanged();
 
-      signals:
-         void changed(bool lockedChanged);
+signals:
+				void changed(bool lockedChanged);
 
-      protected:
-         QString toGLSL(double d) {
-            QString n = QString::number(d,'g',12);
-            // GLSL requires a dot in floats.
-            if (n.contains(".") || n.contains("e")) return n;
-            return n+".0";
-         }
+		protected:
+			QString toGLSL(double d) {
+				QString n = QString::number(d,'g',12);
+				// GLSL requires a dot in floats.
+				if (n.contains(".") || n.contains("e")) return n;
+				return n+".0";
+			}
 
-         LockType defaultLockType;
-         LockType lockType;
-         QPushButton* lockButton;
+			LockType defaultLockType;
+			LockType lockType;
+			QPushButton* lockButton;
 			QString name;
 			QString group;
 			bool updated;
 			bool systemVariable;
 			QWidget* widget;
-         QWidget* variableEditor;
+			QWidget* variableEditor;
 		};
 
 
@@ -260,9 +260,9 @@ signals:
 			double getValue() { return comboSlider->getValue(); } 
 			void setValue(double f) { comboSlider->setValue(f); }
 			void reset() { setValue(defaultValue); }
-         QString getLockedSubstitution() { return "const float " + name + " = " + toGLSL(getValue()) +";"; };
-         QString getLockedSubstitution2() { return "#define " + name + " " + toGLSL(getValue()); };
-      private:
+			QString getLockedSubstitution() { return "const float " + name + " = " + toGLSL(getValue()) +";"; };
+			QString getLockedSubstitution2() { return "#define " + name + " " + toGLSL(getValue()); };
+		private:
 			ComboSlider* comboSlider;
 			double min;
 			double max;
@@ -284,8 +284,8 @@ signals:
 			Vector3f getValue() { return Vector3f(comboSlider1->getValue(),comboSlider2->getValue(),0.0); }
 			void setValue(Vector3f v) { comboSlider1->setValue(v.x()); comboSlider2->setValue(v.y()); } 
 			void reset() { setValue(defaultValue); }
-         QString getLockedSubstitution() { return "const vec2 " + name + " = vec2(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) +");"; };
-         QString getLockedSubstitution2() { return "#define " + name + "  vec2(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) +")"; };
+			QString getLockedSubstitution() { return "const vec2 " + name + " = vec2(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) +");"; };
+			QString getLockedSubstitution2() { return "#define " + name + "  vec2(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) +")"; };
 
 		private:
 
@@ -311,15 +311,15 @@ signals:
 			void setValue(Vector3f v);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			void reset() { setValue(defaultValue); }
-         QString getLockedSubstitution() { return "const vec3 " + name + " = vec3(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z()) +");"; };
-         QString getLockedSubstitution2() { return "#define " + name + " vec3(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z()) +")"; };
+			QString getLockedSubstitution() { return "const vec3 " + name + " = vec3(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z()) +");"; };
+			QString getLockedSubstitution2() { return "#define " + name + " vec3(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z()) +")"; };
 
-		public slots:
-			void n1Changed();
-			void n2Changed();
-			void n3Changed();
-		signals:
-			void doneChanges();
+			public slots:
+				void n1Changed();
+				void n2Changed();
+				void n3Changed();
+signals:
+				void doneChanges();
 		private:
 			Vector3f defaultValue;
 			bool normalize;
@@ -327,38 +327,38 @@ signals:
 			ComboSlider* comboSlider2;
 			ComboSlider* comboSlider3;
 			Vector3f min;
-         Vector3f max;
-      };
+			Vector3f max;
+		};
 
-      /// A widget editor for a float variable.
-      class Float4Widget : public VariableWidget {
-         Q_OBJECT
-      public:
-         /// FloatVariable constructor.
-         Float4Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector4f defaultValue, Vector4f min, Vector4f max);
-         virtual QString getUniqueName();
-         virtual QString getValueAsText() { return ""; };
-         virtual QString toString();
-         virtual void fromString(QString string);
-         Vector4f getValue() { return Vector4f(comboSlider1->getValue(),comboSlider2->getValue(),comboSlider3->getValue(),comboSlider4->getValue()); }
-         void setValue(Vector4f v);
-         virtual void setUserUniform(QGLShaderProgram* shaderProgram);
-         void reset() { setValue(defaultValue); }
-         QString getLockedSubstitution() { return "const vec4 " + name + " = vec4(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z())+ "," + toGLSL(getValue().w()) +");"; };
-         QString getLockedSubstitution2() { return "#define " + name + " vec4(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z())+ "," + toGLSL(getValue().w()) +")"; };
+		/// A widget editor for a float variable.
+		class Float4Widget : public VariableWidget {
+			Q_OBJECT
+		public:
+			/// FloatVariable constructor.
+			Float4Widget(QWidget* parent, QWidget* variableEditor, QString name, Vector4f defaultValue, Vector4f min, Vector4f max);
+			virtual QString getUniqueName();
+			virtual QString getValueAsText() { return ""; };
+			virtual QString toString();
+			virtual void fromString(QString string);
+			Vector4f getValue() { return Vector4f(comboSlider1->getValue(),comboSlider2->getValue(),comboSlider3->getValue(),comboSlider4->getValue()); }
+			void setValue(Vector4f v);
+			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			void reset() { setValue(defaultValue); }
+			QString getLockedSubstitution() { return "const vec4 " + name + " = vec4(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z())+ "," + toGLSL(getValue().w()) +");"; };
+			QString getLockedSubstitution2() { return "#define " + name + " vec4(" + toGLSL(getValue().x()) + "," + toGLSL(getValue().y()) + "," + toGLSL(getValue().z())+ "," + toGLSL(getValue().w()) +")"; };
 
-      signals:
-         void doneChanges();
-      private:
-         Vector4f defaultValue;
-         bool normalize;
-         ComboSlider* comboSlider1;
-         ComboSlider* comboSlider2;
-         ComboSlider* comboSlider3;
-         ComboSlider* comboSlider4;
-         Vector4f min;
-         Vector4f max;
-      };
+signals:
+			void doneChanges();
+		private:
+			Vector4f defaultValue;
+			bool normalize;
+			ComboSlider* comboSlider1;
+			ComboSlider* comboSlider2;
+			ComboSlider* comboSlider3;
+			ComboSlider* comboSlider4;
+			Vector4f min;
+			Vector4f max;
+		};
 
 
 		class ColorWidget : public VariableWidget {
@@ -371,9 +371,9 @@ signals:
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			void reset() { colorChooser->setColor(defaultValue); }
-         QString getLockedSubstitution() { return "const vec3 " + name + " = vec3(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) +");"; };
-         QString getLockedSubstitution2() { return "#define " + name + " vec3(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) +")"; };
-      private:
+			QString getLockedSubstitution() { return "const vec3 " + name + " = vec3(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) +");"; };
+			QString getLockedSubstitution2() { return "#define " + name + " vec3(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) +")"; };
+		private:
 			ColorChooser* colorChooser;
 			Vector3f defaultValue;
 		};
@@ -388,9 +388,9 @@ signals:
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			void reset() { comboSlider->setValue(defaultValue); colorChooser->setColor(defaultColorValue); }
-         QString getLockedSubstitution() { return "const vec4 " + name + " = vec4(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) + "," + toGLSL(comboSlider->getValue()) +");"; };
-         QString getLockedSubstitution2() { return "#define " + name + " vec4(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) + "," + toGLSL(comboSlider->getValue()) +")"; };
-      private:
+			QString getLockedSubstitution() { return "const vec4 " + name + " = vec4(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) + "," + toGLSL(comboSlider->getValue()) +");"; };
+			QString getLockedSubstitution2() { return "#define " + name + " vec4(" + toGLSL(colorChooser->getValue()[0]) + "," + toGLSL(colorChooser->getValue()[1]) + "," + toGLSL(colorChooser->getValue()[2]) + "," + toGLSL(comboSlider->getValue()) +")"; };
+		private:
 			ComboSlider* comboSlider;
 			double min;
 			double max;
@@ -409,9 +409,9 @@ signals:
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			void reset() { comboSlider->setValue(defaultValue); }
-         QString getLockedSubstitution() { return "const int " + name + " = " + QString::number(comboSlider->getValue()) + ";"; };
-         QString getLockedSubstitution2() { return "#define " + name + " " + QString::number(comboSlider->getValue()) + ""; };
-      private:
+			QString getLockedSubstitution() { return "const int " + name + " = " + QString::number(comboSlider->getValue()) + ";"; };
+			QString getLockedSubstitution2() { return "#define " + name + " " + QString::number(comboSlider->getValue()) + ""; };
+		private:
 			IntComboSlider* comboSlider;
 			int min;
 			int max;
@@ -427,9 +427,9 @@ signals:
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			void reset() { checkBox->setChecked(defaultValue); }
-         QString getLockedSubstitution() { return "const bool " + name + " = " + (checkBox->isChecked() ? "true" : "false")+ ";"; };
-         QString getLockedSubstitution2() { return "#define " + name + " " + (checkBox->isChecked() ? "true" : "false")+ ""; };
-      private:
+			QString getLockedSubstitution() { return "const bool " + name + " = " + (checkBox->isChecked() ? "true" : "false")+ ";"; };
+			QString getLockedSubstitution2() { return "#define " + name + " " + (checkBox->isChecked() ? "true" : "false")+ ""; };
+		private:
 			bool defaultValue;
 			QCheckBox* checkBox;
 		};

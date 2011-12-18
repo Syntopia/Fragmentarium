@@ -20,7 +20,7 @@
 /// The editor window for GUI variables (uniforms)
 namespace Fragmentarium {
 	namespace GUI {
-	
+
 		using namespace SyntopiaCore::Logging;
 		using namespace SyntopiaCore::Math;
 
@@ -29,7 +29,7 @@ namespace Fragmentarium {
 
 		/// The Variable Editor window.
 		class VariableEditor : public QWidget {
-		Q_OBJECT
+			Q_OBJECT
 		public:
 			VariableEditor(QWidget* parent, MainWindow* mainWindow);
 
@@ -37,29 +37,28 @@ namespace Fragmentarium {
 			void updateCamera(CameraControl* c);
 			void setUserUniforms(QGLShaderProgram* shaderProgram);
 			QString getSettings();
-			void setSettings(QString text);
+			bool setSettings(QString text);
 			void createGroup(QString g);
 			VariableWidget* getWidgetFromName(QString name);
 			void setPresets(QMap<QString, QString> presets);
 			ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
-			void setDefault();
-         void substituteLockedVariables(Parser::FragmentSource* fs);
-			//void keyReleaseEvent(QKeyEvent* ev);
-			//void keyPressEvent(QKeyEvent* ev);
-		signals:
-         void changed(bool lockedChanged);
+			bool setDefault();
+			void substituteLockedVariables(Parser::FragmentSource* fs);
+signals:
 
-		public slots:
-			void sliderDestroyed(QObject* o);
-			void focusChanged(QWidget* oldWidget,QWidget* newWidget);
-			void applyPreset();
-			void resetUniforms();
-         void resetGroup();
-         void lockGroup();
-         void unlockGroup();
-			void copy();
-			void paste();
-         void childChanged(bool lockedChanged);
+			void changed(bool lockedChanged);
+
+			public slots:
+				void sliderDestroyed(QObject* o);
+				void focusChanged(QWidget* oldWidget,QWidget* newWidget);
+				bool applyPreset();
+				void resetUniforms();
+				void resetGroup();
+				void lockGroup();
+				void unlockGroup();
+				void copy();
+				void paste();
+				void childChanged(bool lockedChanged);
 
 		private:
 			QMap<QString, QString> presets;
@@ -69,14 +68,14 @@ namespace Fragmentarium {
 			QVBoxLayout* layout;
 			QComboBox* presetComboBox;
 			QWidget* currentWidget;
-			
+
 			QMap<QString, QWidget*> tabs;
 			QMap<QWidget*, QWidget*> spacers;
 			QTabWidget* tabWidget;
 			ComboSlider* currentComboSlider;
 		};
 
-	
+
 	}
 }
 

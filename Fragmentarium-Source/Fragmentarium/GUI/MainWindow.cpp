@@ -63,6 +63,11 @@ namespace Fragmentarium {
 					checkBox = new QCheckBox(tab);
 					checkBox->setObjectName("checkBox");
 					verticalLayout->addWidget(checkBox);
+
+					checkBox2 = new QCheckBox(tab);
+					checkBox2->setObjectName("checkBox2");
+					verticalLayout->addWidget(checkBox2);
+
 					horizontalLayout = new QHBoxLayout();
 					horizontalLayout->setObjectName("horizontalLayout");
 					label = new QLabel(tab);
@@ -92,11 +97,15 @@ namespace Fragmentarium {
 					checkBox->setText("Move main() to end");
 					checkBox->setStatusTip(tr("For compatibility with some GPU's."));
 
+					checkBox2->setText("Replace all 'float' types with 'double' types.");
+					checkBox2->setStatusTip(tr("Also replaces matrix and vector types."));
+
 					label->setText("Include paths:");
 					tabWidget->setTabText(tabWidget->indexOf(tab),  "Main");
 
 					QSettings settings;
 					checkBox->setChecked(settings.value("moveMain", true).toBool());
+					checkBox2->setChecked(settings.value("doublify", false).toBool());
 					lineEdit->setText(settings.value("includePaths", "Examples/Include;").toString());
 				} 
 
@@ -108,7 +117,8 @@ namespace Fragmentarium {
 				void saveSettings() {
 					QSettings settings;
 					settings.setValue("moveMain", checkBox->isChecked());
-               settings.setValue("includePaths", lineEdit->text());
+					settings.setValue("includePaths", lineEdit->text());
+					settings.setValue("doublify",  checkBox2->isChecked());
 				}
 
 				QVBoxLayout *verticalLayout_2;
@@ -116,6 +126,7 @@ namespace Fragmentarium {
 				QWidget *tab;
 				QVBoxLayout *verticalLayout;
 				QCheckBox *checkBox;
+				QCheckBox *checkBox2;
 				QHBoxLayout *horizontalLayout;
 				QLabel *label;
 				QLineEdit *lineEdit;
@@ -137,7 +148,7 @@ namespace Fragmentarium {
 				preprocessorMenu->addAction("#group parameter_group_name", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#preset preset_name", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#endpreset", textEdit , SLOT(insertText()));
-				
+
 				QMenu *uniformMenu = new QMenu("Special Uniforms", 0);
 				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec2 pixelSize;", textEdit , SLOT(insertText()));
@@ -149,12 +160,12 @@ namespace Fragmentarium {
 				uniformMenu->addAction("uniform sampler2D tex; file[tex.jpg]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec3 color; color[0.0,0.0,0.0]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec4 color; color[0.0,1.0,0.0,0.0,0.0,0.0]", textEdit , SLOT(insertText()));
-				
+
 				QAction* before = 0;
 				if (menu->actions().count() > 0) before = menu->actions()[0];
 				menu->insertMenu(before, preprocessorMenu);
 				menu->insertMenu(before, uniformMenu);
-				
+
 				menu->insertSeparator(before);
 			}
 		}
@@ -172,9 +183,9 @@ namespace Fragmentarium {
 		}
 
 
-      class FragmentHighlighter : public QSyntaxHighlighter {
+		class FragmentHighlighter : public QSyntaxHighlighter {
 		public:
-         FragmentHighlighter(QTextEdit* e) : QSyntaxHighlighter(e) {
+			FragmentHighlighter(QTextEdit* e) : QSyntaxHighlighter(e) {
 				keywordFormat.setFontWeight(QFont::Bold);
 				keywordFormat.setForeground(Qt::darkMagenta);
 				bracketFormat.setFontWeight(QFont::Bold);
@@ -192,8 +203,8 @@ namespace Fragmentarium {
 				primitives = QRegExp("(abs|acos|all|any|asin|atan|ceil|sin|clamp|cos|cross|dFdx|dFdy|degrees|distance|dot|equal|exp|exp2|faceforward|floor|fract|ftransform|fwidth|greaterThan|greaterThanqual|inversesqrt|length|lessThan|lessThanEqual|log|log2|matrixCompMult|max|min|mix|mod|noise1|noise2|noise3|noise4|normalize|not|notEqual|pow|radians|reflect|reract|shadow1D|shadow1DLod|shadow1DProj|shadow1DProjLod|shadow2D|shadow2DLod|shadow2DProj|shadow2DProjLod|sign|sin|smoothstep|sqrt|step|tan|texture1D|texture1DLod|texture1DProj|texture1DProjLod|texture2D|texture2DLod|texture2DProj|texture2DProjLod|texture3D|texture3DLod|texture3DProj|texture3DProjLod|textureCube|textureCubeLod)");
 				randomNumber = QRegExp("(random\\[[-+]?[0-9]*\\.?[0-9]+,[-+]?[0-9]*\\.?[0-9]+\\])"); // random[-2.3,3.4]
 
-            float4Slider = QRegExp("^\\s*uniform\\s+vec4\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+),(\\S+)\\)\\].*$");
-            float3Slider = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$");
+				float4Slider = QRegExp("^\\s*uniform\\s+vec4\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+),(\\S+)\\)\\].*$");
+				float3Slider = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\),\\((\\S+),(\\S+),(\\S+)\\)\\].*$");
 				float2Slider = QRegExp("^\\s*uniform\\s+vec2\\s+(\\S+)\\s*;\\s*slider\\[\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\),\\((\\S+),(\\S+)\\)\\].*$"); 
 				colorChooser = QRegExp("^\\s*uniform\\s+vec3\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+)\\].*$"); 
 				floatColorChooser = QRegExp("^\\s*uniform\\s+vec4\\s+(\\S+)\\s*;\\s*color\\[(\\S+),(\\S+),(\\S+),(\\S+),(\\S+),(\\S+)\\].*$"); 
@@ -202,7 +213,7 @@ namespace Fragmentarium {
 				boolChooser = QRegExp("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$"); 
 				replace = QRegExp("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
 				sampler2D = QRegExp("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$"); 
-				
+
 				expression.setCaseSensitivity(Qt::CaseInsensitive);
 				primitives.setCaseSensitivity(Qt::CaseInsensitive);
 				randomNumber.setCaseSensitivity(Qt::CaseInsensitive);
@@ -234,10 +245,10 @@ namespace Fragmentarium {
 				// Line parsing
 				QString current;
 				int startMatch = 0;				
-            if (float2Slider.exactMatch(text) || float3Slider.exactMatch(text) || float4Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
-				intSlider.exactMatch(text) || boolChooser.exactMatch(text) || replace.exactMatch(text) ||
-				sampler2D.exactMatch(text) || floatColorChooser.exactMatch(text)) {
-					setFormat(0, text.length()-1, preprocessor2Format);
+				if (float2Slider.exactMatch(text) || float3Slider.exactMatch(text) || float4Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
+					intSlider.exactMatch(text) || boolChooser.exactMatch(text) || replace.exactMatch(text) ||
+					sampler2D.exactMatch(text) || floatColorChooser.exactMatch(text)) {
+						setFormat(0, text.length()-1, preprocessor2Format);
 				}
 
 				for (int i = 0; i < text.length(); i++) {
@@ -294,9 +305,9 @@ namespace Fragmentarium {
 			QTextCharFormat warningFormat;
 			QTextCharFormat preprocessorFormat;
 			QTextCharFormat preprocessor2Format;
-			
-         QRegExp float4Slider;
-         QRegExp float3Slider;
+
+			QRegExp float4Slider;
+			QRegExp float3Slider;
 			QRegExp float2Slider;
 			QRegExp colorChooser;
 			QRegExp floatSlider;
@@ -438,7 +449,7 @@ namespace Fragmentarium {
 
 			QTextStream in(&file);
 			QString text = in.readAll();
-		
+
 			QMessageBox mb(this);
 			mb.setText(text);
 			mb.setWindowTitle("Mouse and Keyboard Control");
@@ -457,12 +468,14 @@ namespace Fragmentarium {
 		{
 			setAcceptDrops(true);
 
+			rebuildRequired = false;
+
 			hasBeenResized = true;
 
 			oldDirtyPosition = -1;
 			setFocusPolicy(Qt::StrongFocus);
 
-			version = SyntopiaCore::Misc::Version(0, 8, 0, -1, " (\"Springtime\")");
+			version = SyntopiaCore::Misc::Version(0, 9, 0, -1, " (\"Sun Ra\")");
 			setAttribute(Qt::WA_DeleteOnClose);
 
 			QSplitter*	splitter = new QSplitter(this);
@@ -540,14 +553,14 @@ namespace Fragmentarium {
 			vboxLayout2->addWidget(variableEditor);
 			editorDockWidget->setWidget(editorLogContents);
 			addDockWidget(Qt::RightDockWidgetArea, editorDockWidget);
-         connect(variableEditor, SIGNAL(changed(bool)), this, SLOT(variablesChanged(bool)));
+			connect(variableEditor, SIGNAL(changed(bool)), this, SLOT(variablesChanged(bool)));
 
 			editorDockWidget->setHidden(true);
 			setMouseTracking(true);
 
 			INFO(QString("Welcome to Fragmentarium version %1. A Syntopia Project.").arg(version.toLongString()));
 			INFO("");
-         WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
+			WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
 
 			fullScreenEnabled = false;
 			createOpenGLContextMenu();
@@ -566,7 +579,7 @@ namespace Fragmentarium {
 			animationController->setFloating(true);
 			connect(((AnimationController*)animationController)->getAnimationSettings(), SIGNAL(timeUpdated()), this, SLOT(callRedraw()));
 			connect(animationController, SIGNAL(wasHidden()), this, SLOT(animationControllerHidden()));
-			
+
 			renderModeChanged(0);
 
 		}
@@ -581,11 +594,11 @@ namespace Fragmentarium {
 			variableEditor->setUserUniforms(shaderProgram);
 		}
 
-      void MainWindow::variablesChanged(bool lockedChanged) {
-         if (lockedChanged) {
-            highlightBuildButton(true);
-         }
-         engine->requireRedraw();
+		void MainWindow::variablesChanged(bool lockedChanged) {
+			if (lockedChanged) {
+				highlightBuildButton(true);
+			}
+			engine->requireRedraw();
 		}
 
 
@@ -692,7 +705,7 @@ namespace Fragmentarium {
 			renderAction->setShortcut(tr("F5"));
 			renderAction->setStatusTip(tr("Render the current ruleset"));
 			connect(renderAction, SIGNAL(triggered()), this, SLOT(render()));
-			
+
 			aboutAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Shows the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -752,23 +765,23 @@ namespace Fragmentarium {
 			createCommandHelpMenu(m, this);
 			editMenu->addSeparator();
 			editMenu->addAction("Preferences...", this, SLOT(preferences()));
-			
+
 
 			// -- Render Menu --
 			renderMenu = menuBar()->addMenu(tr("&Render"));
 			renderMenu->addAction(renderAction);
-         renderMenu->addAction("High Resolution Render", this, SLOT(tileBasedRender()));
+			renderMenu->addAction("High Resolution Render", this, SLOT(tileBasedRender()));
 			renderMenu->addSeparator();
 			renderMenu->addAction("Output Preprocessed Script (for Debug)", this, SLOT(showDebug()));
 			renderMenu->addSeparator();
 			renderMenu->addAction(fullScreenAction);
-			
+
 
 			// -- Render Menu --
 			QMenu* parametersMenu = menuBar()->addMenu(tr("&Parameters"));
-         parametersMenu->addAction("Reset All", variableEditor, SLOT(resetUniforms()), QKeySequence("F1"));
+			parametersMenu->addAction("Reset All", variableEditor, SLOT(resetUniforms()), QKeySequence("F1"));
 			parametersMenu->addSeparator();
-         parametersMenu->addAction("Copy to Clipboard", variableEditor, SLOT(copy()), QKeySequence("F2"));
+			parametersMenu->addAction("Copy to Clipboard", variableEditor, SLOT(copy()), QKeySequence("F2"));
 			parametersMenu->addAction("Paste from Clipboard", variableEditor, SLOT(paste()), QKeySequence("F3"));
 			parametersMenu->addAction("Paste from Selected Text", this, SLOT(pasteSelected()), QKeySequence("F4"));
 			parametersMenu->addSeparator();
@@ -843,43 +856,43 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::tileBasedRender() {
-         OutputDialog od(this, engine->width(), engine->height());
-         if (od.exec() == QDialog:: Accepted) {
-            if (od.doSaveFragment()) {
-               QString fileName = od.getFragmentFileName();
-               logger->getListWidget()->clear();
-               if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; }
-               QString inputText = getTextEdit()->toPlainText();
-               QSettings settings;
-               QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
-               Preprocessor p(includePaths);
-               try {
-                  QString file = tabInfo[tabBar->currentIndex()].filename;
-                  FragmentSource fs = p.createAutosaveFragment(inputText,file);
-                  QString prepend =  "// Output generated from file: " + file + "\n";
-                  prepend += "// Created: " + QDateTime::currentDateTime().toString() + "\n";
-                  QString append = "\n\n#preset default\n" + variableEditor->getSettings() + "\n#endpreset\n\n";
-                  QString final = prepend + fs.getText() + append;
+			OutputDialog od(this, engine->width(), engine->height());
+			if (od.exec() == QDialog:: Accepted) {
+				if (od.doSaveFragment()) {
+					QString fileName = od.getFragmentFileName();
+					logger->getListWidget()->clear();
+					if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; }
+					QString inputText = getTextEdit()->toPlainText();
+					QSettings settings;
+					QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
+					Preprocessor p(includePaths);
+					try {
+						QString file = tabInfo[tabBar->currentIndex()].filename;
+						FragmentSource fs = p.createAutosaveFragment(inputText,file);
+						QString prepend =  "// Output generated from file: " + file + "\n";
+						prepend += "// Created: " + QDateTime::currentDateTime().toString() + "\n";
+						QString append = "\n\n#preset default\n" + variableEditor->getSettings() + "\n#endpreset\n\n";
+						QString final = prepend + fs.getText() + append;
 
-                  QFile fileStream(fileName);
-                  if (!fileStream.open(QFile::WriteOnly | QFile::Text)) {
-                     QMessageBox::warning(this, tr("Fragmentarium"),
-                        tr("Cannot write file %1:\n%2.")
-                        .arg(fileName)
-                        .arg(fileStream.errorString()));
-                     return;
-                  }
+						QFile fileStream(fileName);
+						if (!fileStream.open(QFile::WriteOnly | QFile::Text)) {
+							QMessageBox::warning(this, tr("Fragmentarium"),
+								tr("Cannot write file %1:\n%2.")
+								.arg(fileName)
+								.arg(fileStream.errorString()));
+							return;
+						}
 
-                  QTextStream out(&fileStream);
-                  out << final;
-                  INFO("Saved fragment + settings as: " + fileName);
+						QTextStream out(&fileStream);
+						out << final;
+						INFO("Saved fragment + settings as: " + fileName);
 
-               } catch (Exception& e) {
-                  WARNING(e.getMessage());
-               }
-            }
-            engine->setupTileRender(od.getTiles(),od.getFileName());
-         };			
+					} catch (Exception& e) {
+						WARNING(e.getMessage());
+					}
+				}
+				engine->setupTileRender(od.getTiles(),od.getFileName());
+			};			
 		}
 
 		TileRenderDialog::TileRenderDialog(QWidget* parent, int w, int h) : QDialog(parent), w(w), h(h) {
@@ -914,27 +927,27 @@ namespace Fragmentarium {
 			variableEditor->setSettings(settings);
 			statusBar()->showMessage(tr("Pasted selected settings"), 2000);
 		}
-		
+
 		void MainWindow::saveParameters() {
 			QString filter = "Fragment Parameters (*.fragparams);;All Files (*.*)";
 			QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), "", filter);
 			if (fileName.isEmpty())
 				return;
-		
-         QFile file(fileName);
-         if (!file.open(QFile::WriteOnly | QFile::Text)) {
-            QMessageBox::warning(this, tr("Fragmentarium"),
-               tr("Cannot write file %1:\n%2.")
-               .arg(fileName)
-               .arg(file.errorString()));
-            return;
-         }
 
-         QTextStream out(&file);
-         out << variableEditor->getSettings();
+			QFile file(fileName);
+			if (!file.open(QFile::WriteOnly | QFile::Text)) {
+				QMessageBox::warning(this, tr("Fragmentarium"),
+					tr("Cannot write file %1:\n%2.")
+					.arg(fileName)
+					.arg(file.errorString()));
+				return;
+			}
+
+			QTextStream out(&file);
+			out << variableEditor->getSettings();
 			statusBar()->showMessage(tr("Settings saved to file"), 2000);
 		}
-		
+
 		void MainWindow::loadParameters(QString fileName) {
 			QFile file(fileName);
 			if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -956,12 +969,12 @@ namespace Fragmentarium {
 			QString fileName = QFileDialog::getOpenFileName(this, tr("Load"), "", filter);
 			if (fileName.isEmpty())
 				return;
-		
+
 			loadParameters(fileName);
 		}
-		
-			
-			
+
+
+
 		void MainWindow::createToolBars()
 		{
 			fileToolBar = addToolBar(tr("File Toolbar"));
@@ -976,13 +989,13 @@ namespace Fragmentarium {
 
 			renderToolBar = addToolBar(tr("Render Toolbar"));
 			renderToolBar->addAction(renderAction);
-         buildLabel = new QLabel("Build    ", this);
-         renderToolBar->addWidget(buildLabel);
-			
+			buildLabel = new QLabel("Build    ", this);
+			renderToolBar->addWidget(buildLabel);
+
 			renderModeToolBar = addToolBar(tr("Rendering Mode"));
-			
+
 			renderModeToolBar->addWidget(new QLabel("Render mode:", this));
-			
+
 			renderCombo= new QComboBox(renderModeToolBar);
 			renderCombo->addItem("Automatic");
 			renderCombo->addItem("Manual");
@@ -997,12 +1010,12 @@ namespace Fragmentarium {
 			// renderButton->setShortcut(Qt::Key_F6); doesn't work?
 			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
 			renderModeToolBar->addWidget(renderButton);
-			
+
 			viewLabel = new QLabel("Tile Preview (off)", renderModeToolBar);
 			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
 			viewSlider->setTickInterval(1);
 			viewSlider->setMinimum(0);
-         viewSlider->setMaximum(12);
+			viewSlider->setMaximum(12);
 			viewSlider->setTickPosition(QSlider::TicksBelow);
 			viewSlider->setMaximumWidth(100);
 			connect(viewSlider, SIGNAL(valueChanged(int)), this, SLOT(viewSliderChanged(int)));
@@ -1132,7 +1145,15 @@ namespace Fragmentarium {
 		void MainWindow::loadFile(const QString &fileName)
 		{
 			insertTabPage(fileName);
-			if (render()) variableEditor->setDefault();
+			if (render()) {
+				bool requiresRecompile = variableEditor->setDefault();
+				if (requiresRecompile || rebuildRequired) {
+					INFO("The 'default' settings needs to update the locking. Performing recompile.");
+					render();
+				} else {
+					//INFO("No recompile");
+				}
+			}
 		}
 
 		bool MainWindow::saveFile(const QString &fileName)
@@ -1179,31 +1200,33 @@ namespace Fragmentarium {
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
 			QSettings settings;
 			bool moveMain = settings.value("moveMain", true).toBool();
+			bool doublify = settings.value("doublify", false).toBool();
 			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
 			Preprocessor p(includePaths);	
 			try {
-				FragmentSource fs = p.parse(inputText,filename,moveMain);
+				FragmentSource fs = p.parse(inputText,filename,moveMain,doublify);
 				QString prepend =  "#define highp\n"
-									"#define mediump\n"
-									"#define lowp\n";
+					"#define mediump\n"
+					"#define lowp\n";
 				insertTabPage("")->setText(prepend+fs.getText());
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
 			}
 		}
-		
-      void MainWindow::highlightBuildButton(bool value) {
-         QWidget* w = buildLabel->parentWidget();
-         if (value) {
-            QPalette pal = w->palette();
-            pal.setColor(w->backgroundRole(), Qt::yellow);
-            w->setPalette(pal);
-            w->setAutoFillBackground(true);
-         } else {
-            w->setPalette(QApplication::palette(w));
-            w->setAutoFillBackground(false);
-         }
-      }
+
+		void MainWindow::highlightBuildButton(bool value) {
+			QWidget* w = buildLabel->parentWidget();
+			if (value) {
+				QPalette pal = w->palette();
+				pal.setColor(w->backgroundRole(), Qt::yellow);
+				w->setPalette(pal);
+				w->setAutoFillBackground(true);
+			} else {
+				w->setPalette(QApplication::palette(w));
+				w->setAutoFillBackground(false);
+			}
+			rebuildRequired = value;
+		}
 
 		bool MainWindow::render() {
 			logger->getListWidget()->clear();
@@ -1215,24 +1238,25 @@ namespace Fragmentarium {
 			QSettings settings;
 			bool moveMain = settings.value("moveMain", true).toBool();
 			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
-         QTime start = QTime::currentTime();
-         Preprocessor p(includePaths);
-	
+			QTime start = QTime::currentTime();
+			Preprocessor p(includePaths);
+			bool doublify = settings.value("doublify", false).toBool();
+
 			try {
-				FragmentSource fs = p.parse(inputText,filename,moveMain);
+				FragmentSource fs = p.parse(inputText,filename,moveMain, doublify);
 				bool showGUI = false;
-            highlightBuildButton(false);
-            variableEditor->updateFromFragmentSource(&fs, &showGUI);
-            variableEditor->substituteLockedVariables(&fs);
+				highlightBuildButton(false);
+				variableEditor->updateFromFragmentSource(&fs, &showGUI);
+				variableEditor->substituteLockedVariables(&fs);
 				editorDockWidget->setHidden(!showGUI);
 				engine->setFragmentShader(fs);
 				variableEditor->updateCamera(engine->getCameraControl());				
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
 			}	
-         int ms = start.msecsTo(QTime::currentTime());
-         INFO(QString("Compiled script in %1 ms.").arg(ms));
-         return true;
+			int ms = start.msecsTo(QTime::currentTime());
+			INFO(QString("Compiled script in %1 ms.").arg(ms));
+			return true;
 		}
 
 		namespace {
@@ -1276,13 +1300,13 @@ namespace Fragmentarium {
 			if (!this->getTextEdit()) return;
 			int pos = this->getTextEdit()->textCursor().position();
 			int blockNumber = this->getTextEdit()->textCursor().blockNumber();
-			
+
 			// Do reverse look up...
 			FragmentSource* fs = engine->getFragmentSource();
 			QString x;
 			QStringList ex;
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
-			
+
 			for (int i = 0; i < fs->lines.count(); i++) {
 				// fs->sourceFiles[fs->sourceFile[i]]->fileName()
 				if (fs->lines[i] == blockNumber && 
@@ -1303,7 +1327,7 @@ namespace Fragmentarium {
 
 			textEdit->setLineWrapMode(QTextEdit::NoWrap);
 			textEdit->setTabStopWidth(20);
-         new FragmentHighlighter(textEdit);
+			new FragmentHighlighter(textEdit);
 
 			QString s = QString("// Write fragment code here...\r\n");
 			textEdit->setText(s);
@@ -1367,7 +1391,7 @@ namespace Fragmentarium {
 		void MainWindow::resetCamera(bool fullReset) {
 			engine->resetCamera(fullReset);
 		}
-			
+
 		void MainWindow::tabChanged(int index) {
 			if (index > tabInfo.size()) return;
 			if (index < 0) return;
@@ -1427,7 +1451,7 @@ namespace Fragmentarium {
 		void MainWindow::makeScreenshot() {
 			saveImage(engine->grabFrameBuffer());
 		}
-		
+
 		void MainWindow::saveImage(QImage image) {
 			QString filename = SyntopiaCore::Misc::GetImageFileName(this, "Save screenshot as:");
 			if (filename.isEmpty()) return;
@@ -1522,7 +1546,7 @@ namespace Fragmentarium {
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 
 			QString text = ((QAction*)sender())->text();
-         getTextEdit()->insertPlainText(text.section("//",0,0)); // strip comments
+			getTextEdit()->insertPlainText(text.section("//",0,0)); // strip comments
 		}
 
 		void MainWindow::preferences() {
@@ -1533,41 +1557,41 @@ namespace Fragmentarium {
 		void MainWindow::indent() {
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 
-         int hValue =  getTextEdit()->horizontalScrollBar()->value();
-         int vValue =  getTextEdit()->verticalScrollBar()->value();
-         int cPos = getTextEdit()->textCursor().position();
-         QStringList l = getTextEdit()->toPlainText().split("\n");
+			int hValue =  getTextEdit()->horizontalScrollBar()->value();
+			int vValue =  getTextEdit()->verticalScrollBar()->value();
+			int cPos = getTextEdit()->textCursor().position();
+			QStringList l = getTextEdit()->toPlainText().split("\n");
 			QStringList out;
 			int indent = 0;
 			foreach (QString s, l) {
-            int offset = s.trimmed().startsWith("}") ? -1 : 0;
-            QString newString = s.trimmed();
-            for (int i = 0; i < indent+offset; i++) newString.push_front("\t");
-            out.append(newString);
-            indent = indent + s.count("{")+s.count("(") - s.count("}") -s.count(")");
+				int offset = s.trimmed().startsWith("}") ? -1 : 0;
+				QString newString = s.trimmed();
+				for (int i = 0; i < indent+offset; i++) newString.push_front("\t");
+				out.append(newString);
+				indent = indent + s.count("{")+s.count("(") - s.count("}") -s.count(")");
 			}
 			getTextEdit()->setText(out.join("\n"));
 
-         getTextEdit()->horizontalScrollBar()->setValue(hValue);
-         getTextEdit()->verticalScrollBar()->setValue(vValue);
-         QTextCursor tc = getTextEdit()->textCursor();
-         tc.setPosition(cPos);
-         getTextEdit()->setTextCursor(tc);
+			getTextEdit()->horizontalScrollBar()->setValue(hValue);
+			getTextEdit()->verticalScrollBar()->setValue(vValue);
+			QTextCursor tc = getTextEdit()->textCursor();
+			tc.setPosition(cPos);
+			getTextEdit()->setTextCursor(tc);
 
-      }
+		}
 
 		void MainWindow::setFPS(float fps) {
-			
+
 			if (renderCombo->currentIndex()!=2) {
 				fpsLabel->setText("FPS: n.a.");
 				return;
 			}
-			
+
 			if (fps>0) {
 				fpsLabel->setText("FPS: " + QString::number(fps, 'f' ,1) + " (" +  QString::number(1.0/fps, 'f' ,1) + "s)");
 			}
 		}
-			
+
 
 	}
 

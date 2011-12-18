@@ -1,10 +1,4 @@
 TODO:
-Unlocking should not gray out vars in cont. mode
-Reset should work with unlock
-
-Fragments:
-Clean up:
-- Experimental
 Add examples with Spudsville, 4-point, ...
 
 02-09-11 [MHC]

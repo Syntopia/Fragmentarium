@@ -92,7 +92,6 @@ FloorNormal = 0,0,0
 FloorHeight = 0
 FloorColor = 1,1,1
 ShadowSoft = 0.0001
-ShadowSoft2 = 10
 Scale = 2
 Offset = 1,1,1
 Angle1 = 0

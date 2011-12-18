@@ -2,15 +2,15 @@ TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
 I've released a new build of Fragmentarium, version 0.9 ("Sun Ra").
 
-New major features:
+New features:
 
 - New high resolution output dialog (with auto-naming and auto-backup of scripts and parameters)
-- Locking of parameters (makes rendering up to 4x faster)
+- Locking of parameters (makes rendering considerably faster in some cases by turning uniforms into constants)
 
 Minor improvements:
 
 - Mousewheel now changes camera position, not FOV
-- Raytracer improvement:
+- Default raytracer improvement:
   - Removed 'AntiAliasBlur','MaxRayStepDiv', and 'NormalDetail' setting
   - Added reflection
   - Shadows (hard, and pseudo-soft shadows)
@@ -30,8 +30,8 @@ Minor improvements:
 
 New fragments:
 
+- A whole collection of new fragments from Knight
 - GraphPlotter.frag, KaliSet.frag, BurningShip.frag, Spudsville.frag,
-- Knighty's:
 - 2DJulia.frag and Complex.frag to make 2D fractals easier.
 - Subblue-Raytracer.frag
 - QuilezLib with sphere tracing primitives (http://iquilezles.org/www/articles/distfunctions/distfunctions.htm)
