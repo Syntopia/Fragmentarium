@@ -1148,7 +1148,7 @@ namespace Fragmentarium {
 			if (render()) {
 				bool requiresRecompile = variableEditor->setDefault();
 				if (requiresRecompile || rebuildRequired) {
-					INFO("The 'default' settings needs to update the locking. Performing recompile.");
+					INFO("The 'default' settings needs to update the locking. You should recompile.");
 					render();
 				} else {
 					//INFO("No recompile");

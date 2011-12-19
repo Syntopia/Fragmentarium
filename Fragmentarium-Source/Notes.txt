@@ -1,11 +1,13 @@
 TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
 I've released a new build of Fragmentarium, version 0.9 ("Sun Ra").
+It can be downloaded at Github: http://syntopia.github.com/Fragmentarium/get.html
+(As of now only Windows builds are available)
 
 New features:
 
 - New high resolution output dialog (with auto-naming and auto-backup of scripts and parameters)
-- Locking of parameters (makes rendering considerably faster in some cases by turning uniforms into constants)
+- Locking of parameters (makes rendering considerably faster in some cases by turning uniforms into constants): http://blog.hvidtfeldts.net/index.php/2011/07/optimizing-glsl-code/
 
 Minor improvements:
 
@@ -16,6 +18,7 @@ Minor improvements:
   - Shadows (hard, and pseudo-soft shadows)
   - Added dithering (for banding removal) and very simple RNG functionality.
   - Added new ambient occlusion method (similar to Rrola/Subblue - sample along normal for proximity).
+- Added a simpler, but faster version of my raytracer (GPL). Just include "Fast-Raytracer.frag" instead of "DE-Raytracer.frag"
 - Added a port of Subblues Fractal Labs (fractal.io) raytracer (GPL). Just include "Subblue-Raytracer.frag" instead of "DE-Raytracer.frag"
 - Added vertical scroll to user parameter groups.
 - Added '#define providesInit', '#define providesColor' (to provide custom coloring)
@@ -30,16 +33,19 @@ Minor improvements:
 
 New fragments:
 
-- A whole collection of new fragments from Knight
-- GraphPlotter.frag, KaliSet.frag, BurningShip.frag, Spudsville.frag,
+- A whole collection of new fragments from Knighty!
+- Some of my own new fragments: GraphPlotter (http://blog.hvidtfeldts.net/index.php/2011/07/plotting-high-frequency-functions-using-a-gpu/), KaliSet, BurningShip, Spudsville, Mandelbrot2D, Terrain.
 - 2DJulia.frag and Complex.frag to make 2D fractals easier.
-- Subblue-Raytracer.frag
+- New raytracers: Subblue-Raytracer.frag, Fast-Raytracer.frag
 - QuilezLib with sphere tracing primitives (http://iquilezles.org/www/articles/distfunctions/distfunctions.htm)
 - Ashima-Noise.frag: Noise founctions from: http://www.lighthouse3d.com/2011/03/noise-for-glsl/
 
 Comments:
 
-2D-Escape time fractals are very easy to explore now. Here is an example:
+Some of the new utility libraries makes fractals very easy to explore. 
+For instance, 2D-Escape time fractals are very easy to explore now. 
+
+Here is an example:
 
 #include "2DJulia.frag"
 #include "Complex.frag"
@@ -48,4 +54,15 @@ Comments:
 vec2 formula(vec2 z, vec2 c) {
     return cLog(vec2(z.x,abs(z.y)))+c;
 }
+
+which produces the attached output.
+
+For more example of images generated with the new version, take a look at the Flickr Fragmentarium stream:
+http://www.flickr.com/groups/fragmentarium/
+
+ATI users
+
+Several fragments fail on ATI cards. This seems to be due to faulty GLSL driver optimizations. A workaround is to lock the 'iterations' variable (click the padlock next to it).
+Adding a bailout check inside the main DE loop (e.g. 'if (length(z)>1000.0) break;') also seems to do the job.
+
 

@@ -53,17 +53,24 @@ JuliaY = 5.5384
 #endpreset
 
 #preset Default
-Center = -1.075,-0.0833163
-Zoom = 0.454
-Iterations = 54
-PreIterations = 9
-R = 0.44375
-G = 0.55
-B = 0.62112
-C = 0.775
+Center = 0,0
+Zoom = 1
+AntiAliasScale = 1
+AntiAlias = 2
+Iterations = 200
+PreIterations = 1
+R = 0
+G = 0.4
+B = 0.7
+C = 1
 Julia = true
-JuliaY = 5.05716
-JuliaX = -0.11766
+JuliaX = 0.23528
+JuliaY = 5.5384
+ShowMap = true
+MapZoom = 2.1
+EscapeSize = 5
+ColoringType = 0
+ColorFactor = 0.5
 #endpreset
 
 

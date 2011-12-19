@@ -43,7 +43,7 @@ JuliaY = 1.63084
 
 #preset P1
 Center = -0.245621,-0.0387084
-Zoom = 0.255094
+Zoom = 0.209867
 AntiAliasScale = 1
 AntiAlias = 2
 Iterations = 46
@@ -58,6 +58,8 @@ JuliaY = 1.18487
 ShowMap = false
 MapZoom = 2.1
 EscapeSize = 5.62793
+ColoringType = 0
+ColorFactor = 1
 MinRadius = 0
 Scaling = -1.9231
 #endpreset
