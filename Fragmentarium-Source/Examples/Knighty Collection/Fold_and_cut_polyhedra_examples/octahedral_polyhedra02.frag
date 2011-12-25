@@ -1,4 +1,5 @@
 #info Icosahedral polyhedra Distance Estimator (knighty 2011)
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Icosahedral

@@ -51,7 +51,7 @@ uniform int checker0;slider[0,1,1]
 uniform int checker1;slider[0,1,1]
 uniform int checker2;slider[0,1,1]
 
-uniform sampler2D texture; file[circle_limit_I.jpg]
+//uniform sampler2D texture; file[circle_limit_I.jpg]
 
 uniform float fade;slider[0,1,1]
 uniform vec2 pcenter;slider[(-1.,-1.),(0.,0.),(1.,1.)]
@@ -98,9 +98,9 @@ vec3 getColor2D(vec2 z) {
 	ptex=mat2(cos(radians(angle)),sin(radians(angle)),-sin(radians(angle)),cos(radians(angle)))*ptex;
 	ptex-=pcenter;
 	ptex=ptex*0.5+0.5;
-	vec3 col= texture2DLod(texture,ptex,0).xyz;
-
-	return mix(col,col1,fade);
+	//vec3 col= texture2DLod(texture,ptex,0).xyz;
+	return col1;
+	//return mix(col,col1,fade);
 }
 #preset circle_limit
 Center = 0,0

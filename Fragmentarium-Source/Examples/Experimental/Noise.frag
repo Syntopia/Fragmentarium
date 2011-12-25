@@ -3,7 +3,7 @@
 #define providesColor
 #define providesNormalOffset
 #include "Classic-Noise.frag"
-#include "DE-Raytracer3.frag"
+#include "DE-Raytracer.frag"
 #group Menger
 
 
@@ -20,20 +20,20 @@ uniform float Amplitude; slider[0.01,0.1,2.3]
 uniform float Amplitude2; slider[0.01,0.1,2.3]
 float DE(vec3 z)
 {
-
- float l = abs(length(z)-2.0 );
-float tt = time*0.4;
-if (l<2.5*Amplitude) {
-z+=Amplitude*vec3(cnoise( vec4(z*Scale,tt) ))
-+Amplitude2*vec3(cnoise( vec4(z*Scale2,tt) ));
-} else return l;
+	
+	float l = abs(length(z)-2.0 );
+	float tt = time*0.4;
+	if (l<2.5*Amplitude) {
+		z+=Amplitude*vec3(cnoise( vec4(z*Scale,tt) ))
+		+Amplitude2*vec3(cnoise( vec4(z*Scale2,tt) ));
+	} else return l;
 	return abs(length(z)-2.0 ) ;
 }
 
-vec3 color(vec3 z) {
-float tt = time*0.151;
+vec3 color(vec3 z, vec3 n) {
+	float tt = time*0.151;
 	return vec3(cnoise(vec4(1.0*z,tt*1.2)),
-cnoise(vec4(1.0*z,tt)),cnoise(vec4(1.0*z,tt*1.4)));
+		cnoise(vec4(1.0*z,tt)),cnoise(vec4(1.0*z,tt*1.4)));
 }
 
 vec3 normalOffset(vec3 z) {

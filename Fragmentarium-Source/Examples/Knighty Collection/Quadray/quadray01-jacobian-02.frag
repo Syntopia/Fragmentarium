@@ -4,6 +4,7 @@
 //Looks like there is still some work to do on the DE formula
 #version 120
 #info Quadray sets Distance Estimator
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Quadray

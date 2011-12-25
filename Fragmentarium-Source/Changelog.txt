@@ -1,5 +1,11 @@
-TODO:
-Add examples with Spudsville, 4-point, ...
+
+25-12-11 [MHC] Fixed some error in the included fragments: Noise, Tetrahedron, and several of Knighty's examples were missing a 'providesInit'. Fixed specular bug in standard-raytracer.
+
+19-12-11 -- v0.8 release --
+
+18-12-11 [MHC] Cleanup 
+
+10-09-11 [MHC] Added vec4 and other changes.
 
 02-09-11 [MHC]
 Changed to Quilez soft-shadow which worked better than my own similar approach.

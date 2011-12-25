@@ -1,4 +1,5 @@
 #info Icosahedral polyhedra Distance Estimator (knighty 2011 some of the code is from Syntopia)
+#define providesInit
 #include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group Icosahedral
@@ -71,7 +72,7 @@ float DE(vec3 z)
 	return abs(s*dot(z-vec3(Size,0.,0.),normalize(plnormal)));
 }
 
-#preset
+#preset Default
 FOV = 0.4
 Eye = -0.903034,2.48873,-0.168968
 Target = 2.05914,-5.9956,0.373042
