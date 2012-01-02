@@ -891,7 +891,7 @@ namespace Fragmentarium {
 						WARNING(e.getMessage());
 					}
 				}
-				engine->setupTileRender(od.getTiles(),od.getFileName());
+				engine->setupTileRender(od.getTiles(),od.getFrames(), od.getFileName());
 			};			
 		}
 
@@ -1092,6 +1092,7 @@ namespace Fragmentarium {
 				engine->resetTime();
 			} else {
 				engine->requireRedraw();
+				
 			}
 			engine->setDisableRedraw(state);
 

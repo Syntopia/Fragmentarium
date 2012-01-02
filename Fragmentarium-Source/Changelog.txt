@@ -1,4 +1,21 @@
 
+02-01-12 [MHC] Added some experimental shaders:
+			   Soft-Raytracer.frag - progressive DOF using finite aperture
+			   Progressive2D.frag, Progressive2DJulia.frag - progresive AA
+			   
+02-01-12 [MHC] Added support for specifying a custom (vertex+pixel) shader from the intermediate to screen buffer, e.g.:
+					#buffershader "BufferShader.frag"
+			   This is necessary to render acumulated buffer correctly.
+			   All buffers and buffershaders should work correctly with preview and hires rendering.
+			   
+02-01-12 [MHC] Added support for rendering to an intermediate buffer. The following buffertypes are available:
+					#buffer NONE, RGBA8, RGBA16, RGBA32F
+			   The front buffer is swapped after each frame to the backbuffer, which can be accessed as:
+					uniform sampler2D backbuffer;
+			   The current frame can be accessed through
+					uniform int backbufferCount;
+			   NOTICE: for the buffer to swap continously, the render mode must be continous!
+			   
 25-12-11 [MHC] Fixed some error in the included fragments: Noise, Tetrahedron, and several of Knighty's examples were missing a 'providesInit'. Fixed specular bug in standard-raytracer.
 
 19-12-11 -- v0.8 release --

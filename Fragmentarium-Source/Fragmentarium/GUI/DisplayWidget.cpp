@@ -43,8 +43,15 @@ namespace Fragmentarium {
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
 			previewBuffer = 0;
+			backBuffer = 0;
+			backBufferCounter = 0;
+			bufferShaderProgram = 0;
 			animationSettings = 0;
 			shaderProgram = 0;
+			bufferType = None;
+			nextActiveTexture = 0;
+			tileFrame = 0;
+			tileFrameMax = 0;
 
 			viewFactor = 0;
 			previewFactor = 0.0;
@@ -94,7 +101,7 @@ namespace Fragmentarium {
 				fragmentSource.camera = "2D";
 			}
 			if (cameraControl->getID() != fragmentSource.camera) {
-            if (fragmentSource.camera == "2D") {
+				if (fragmentSource.camera == "2D") {
 					delete(cameraControl);
 					cameraControl = new Camera2D(mainWindow->statusBar());
 				} else if (fragmentSource.camera == "3D") {
@@ -106,16 +113,35 @@ namespace Fragmentarium {
 			}
 			cameraControl->printInfo();
 
+			QString b = fragmentSource.buffer.toUpper();
 
+			if (b=="" || b=="NONE") {
+				bufferType = None;
+			} else if (b == "RGBA8") {
+				bufferType = RGBA8;
+			} else if (b == "RGBA16") {
+				bufferType = RGBA16;
+			} else if (b == "RGBA32F") {
+				bufferType = RGBA32F;
+			} else {
+				WARNING("Unknown buffertype requested: " + b + ". Type must be: NONE, RGBA8, RGBA16, RGBA32F");
+				bufferType = None;
+			}
+
+			makeBuffers();
 			requireRedraw();
 			setupFragmentShader();
 		}
 
 
 		void DisplayWidget::requireRedraw() {
-         if (disableRedraw && tiles==0) return;
+			if (disableRedraw && tiles==0) return;
 			pendingRedraws = requiredRedraws;
+			// Clear backbuffer?
+			if (!tiles) clearBackBuffer();
+			if (tiles && (tileFrame == 0)) clearBackBuffer();
 		}
+
 
 
 		void DisplayWidget::setupFragmentShader() {
@@ -133,7 +159,7 @@ namespace Fragmentarium {
 				WARNING("No vertex shader found!");
 				s = false;
 			}
-			
+
 			if (!s) WARNING("Could not create vertex shader: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
 			if (!shaderProgram->log().isEmpty()) INFO("Vertex shader compiled with warnings: " + shaderProgram->log());
@@ -146,9 +172,9 @@ namespace Fragmentarium {
 			if (!shaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + shaderProgram->log());
 
 			s = shaderProgram->link();
-         if (!s) WARNING("Could not link shaders: " + shaderProgram->log());
+			if (!s) WARNING("Could not link shaders: " + shaderProgram->log());
 			if (!s) { delete(shaderProgram); shaderProgram = 0; return; }
-         if (!shaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + shaderProgram->log());
+			if (!shaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + shaderProgram->log());
 
 			s = shaderProgram->bind();
 			if (!s) WARNING("Could not bind shaders: " + shaderProgram->log());
@@ -156,6 +182,29 @@ namespace Fragmentarium {
 
 			// Setup textures.
 			int u = 0;
+
+			// Bind first texture to backbuffer
+			int l = shaderProgram->uniformLocation("backbuffer");
+			if (l != -1) {
+				if (bufferType != None) {
+					glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
+					GLuint i = backBuffer->texture();
+					glBindTexture(GL_TEXTURE_2D,i);
+					shaderProgram->setUniformValue(l, (GLuint)u);
+
+					INFO(QString("Binding back buffer (ID: %1) to active texture %2").arg(backBuffer->texture()).arg(u));
+
+					INFO(QString("Setting uniform backbuffer to active texture %2").arg(u));
+
+
+					u++;
+				} else {
+					WARNING("Trying to use a backbuffer, but no bufferType set.");
+					WARNING("Use the buffer define, e.g.: '#buffer RGBA8' ");
+				}
+			}
+
+
 			for (QMap<QString, QString>::iterator it = fragmentSource.textures.begin(); it!=fragmentSource.textures.end(); it++) {
 				QImage im(it.value());
 				if (im.isNull()) {
@@ -167,39 +216,88 @@ namespace Fragmentarium {
 						glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
 						GLuint i = bindTexture(it.value(), GL_TEXTURE_2D, GL_RGBA);
 						glBindTexture(GL_TEXTURE_2D,i);
+						INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(it.key()+":"+it.value()).arg(i).arg(u));
 
 						shaderProgram->setUniformValue(l, (GLuint)u);
-						INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i));
+						INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+
+						//INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i) + " - " + QString::number(u) );
+
 
 					} else {
 						WARNING("Could not locate sampler2D uniform: " + it.key());
 					}
 					u++;
 				}
+			}
+			nextActiveTexture = u;
 
+			if (fragmentSource.bufferShaderSource) {
+				INFO("Setting up buffer shader");
+				setupBufferShader();
+			}
+		}
+
+
+		void DisplayWidget::setupBufferShader() {
+
+			if (bufferShaderProgram) {
+				bufferShaderProgram->release();
+			}
+			delete(bufferShaderProgram);
+			bufferShaderProgram = new QGLShaderProgram(this);
+
+			// Vertex shader
+			bool s = false;
+			s = bufferShaderProgram->addShaderFromSourceCode(QGLShader::Vertex,fragmentSource.bufferShaderSource->vertexSource.join("\n"));
+			if (fragmentSource.bufferShaderSource->vertexSource.count() == 0) {
+				WARNING("No buffer shader vertex shader found!");
+				s = false;
 			}
 
+			if (!s) WARNING("Could not create buffer vertex shader: " + bufferShaderProgram->log());
+			if (!s) { delete(bufferShaderProgram); bufferShaderProgram = 0; return; }
+			if (!bufferShaderProgram->log().isEmpty()) INFO("Buffer vertex shader compiled with warnings: " + bufferShaderProgram->log());
+
+			// Fragment shader
+			s = bufferShaderProgram->addShaderFromSourceCode(QGLShader::Fragment,
+				fragmentSource.bufferShaderSource->getText());
+			if (!s) WARNING("Could not create buffer fragment shader: " + bufferShaderProgram->log());
+			if (!s) { delete(bufferShaderProgram); bufferShaderProgram = 0; return; }
+			if (!bufferShaderProgram->log().isEmpty()) INFO("Buffer fragment shader compiled with warnings: " + bufferShaderProgram->log());
+
+			s = bufferShaderProgram->link();
+			if (!s) WARNING("Could not link shaders: " + bufferShaderProgram->log());
+			if (!s) { delete(bufferShaderProgram); bufferShaderProgram = 0; return; }
+			if (!bufferShaderProgram->log().isEmpty()) INFO("Fragment shader compiled with warnings: " + bufferShaderProgram->log());
+
+			s = bufferShaderProgram->bind();
+			if (!s) WARNING("Could not bind shaders: " + bufferShaderProgram->log());
+			if (!s) { delete(shaderProgram); bufferShaderProgram = 0; return; }
 		}
 
 
-      void DisplayWidget::setupTileRender(int tiles, QString fileName) {
-         outputFile = fileName;
+		void DisplayWidget::setupTileRender(int tiles, int tileFrameMax, QString fileName) {
+			outputFile = fileName;
 			this->tiles = tiles;
 			tilesCount = 0;
-         requireRedraw();
+			this->tileFrameMax = tileFrameMax;
+			this->tileFrame = 0;
+			requireRedraw();
+			tileRenderStart = QDateTime::currentDateTime();
 		}
 
-      void DisplayWidget::tileRender() {
+		void DisplayWidget::tileRender() {
 			glLoadIdentity();
 			if (!tiles && viewFactor==0) return;
 			if (!tiles && viewFactor > 0) {
 				glScalef(1.0/(viewFactor+1.0),1.0/(viewFactor+1.0),1.0);
 				return;	
 			}
-			requireRedraw();
 			
 			if (tilesCount==tiles*tiles) {
-				INFO("Tile rendering complete");
+				int s = tileRenderStart.secsTo(QDateTime::currentDateTime());
+				INFO(QString("Tile rendering complete in %1 seconds").arg(s));
 				// Now assemble image
 				int w = cachedTileImages[0].width();
 				int h = cachedTileImages[0].height();
@@ -219,25 +317,46 @@ namespace Fragmentarium {
 				}
 
 				cachedTileImages.clear();
-            tiles = 0;
+				tiles = 0;
 
-            bool succes = im.save(outputFile);
-            if (succes) {
-                 INFO("Saved image as: " + outputFile);
-            } else {
-                  WARNING("Save failed! Filename: " + outputFile);
-            }
+				bool succes = im.save(outputFile);
+				if (succes) {
+					INFO("Saved image as: " + outputFile);
+				} else {
+					WARNING("Save failed! Filename: " + outputFile);
+				}
 
+			    s = tileRenderStart.secsTo(QDateTime::currentDateTime());
+				INFO(QString("Render + recombination completed in %1 seconds").arg(s));
+				
+				tileFrame = 0;
+				tileFrameMax = 0;
 				return;
 			}
-			INFO(QString("Rendering tile: %1 of %2").arg(tilesCount+1).arg(tiles*tiles));
+
+			if (tileFrameMax) {
+				if (tileFrame == 0) {
+					//clearBackBuffer();
+				}
+				INFO(QString("Rendering tile %1 of %2, subframe %3 of %4").arg(tilesCount+1).arg(tiles*tiles)
+					.arg(tileFrame).arg(tileFrameMax));
+			} else {
+				INFO(QString("Rendering tile: %1 of %2").arg(tilesCount+1).arg(tiles*tiles));
+
+			}
 			float x = (tilesCount / tiles) - (tiles-1)/2.0;
 			float y = (tilesCount % tiles) - (tiles-1)/2.0;
 
+			glLoadIdentity();
 			glTranslatef( x * (2.0/tiles) , y * (2.0/tiles), 1.0);
 			glScalef( 1.0/tiles,1.0/tiles,1.0);	
 
-			tilesCount++;
+			if (tileFrame >= tileFrameMax-1) {
+				tilesCount++;
+				tileFrame = 0;
+			} else {
+				tileFrame++;
+			}
 		}
 
 		void DisplayWidget::setViewFactor(int val) {
@@ -252,34 +371,66 @@ namespace Fragmentarium {
 
 		void DisplayWidget::setPreviewFactor(int val) {
 			previewFactor = val;
+			makeBuffers();
+			requireRedraw();
+		};
+
+		void DisplayWidget::makeBuffers() {
 			makeCurrent();
 
-			delete(previewBuffer);
-			if (previewFactor == 0) {
-				previewBuffer = 0;
-				requireRedraw();
-				INFO("Disabling preview");
-				return;
-			} else {
-				int w = width()/(previewFactor+1);
-				int h = height()/(previewFactor+1);
-				previewBuffer = new QGLFramebufferObject(w, h);
-				INFO(QString("Setting preview size to: %1x%2").arg(w).arg(h));
+			delete(previewBuffer); previewBuffer = 0;
+			delete(backBuffer); backBuffer = 0;
 
+			int w = width()/(previewFactor+1);
+			int h = height()/(previewFactor+1);
+
+			GLenum type = GL_RGBA8;
+			QString b = "None";
+			if (bufferType==RGBA8) { b = "RGBA8"; }
+			else if (bufferType==RGBA16) { b = "RGBA16";  type = GL_RGBA16; }
+			else if (bufferType==RGBA32F)  { b = "RGBA32F";  type = 0x8814 /*GL_RGBA32F*/; } 
+			else b = "UNKNOWN";
+
+			if (bufferType==None) {
+				if (previewFactor==0) {
+					INFO(QString("No buffers. Direct render as %1x%2 %3.").arg(w).arg(h).arg("RGBA8"));
+				} else {
+					previewBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
+					INFO(QString("Created front buffer as %1x%2 %3.").arg(w).arg(h).arg("RGBA8"));
+				}
+			} else {
+				// we must create both the backbuffer and previewBuffer
+				backBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
+				previewBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
+				INFO(QString("Created front and back buffers as %1x%2 %3.").arg(w).arg(h).arg(b));
 			}
-			requireRedraw();
+
+			clearBackBuffer();
+
 		}	
+
+		void DisplayWidget::clearBackBuffer() {
+					
+			if (backBuffer) {
+				if (!backBuffer->bind()) { WARNING("Failed to bind backbuffer BFO"); return; } 
+				glClearColor(0.0f,0.0f,0.0f,0.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				if (!backBuffer->release()) { WARNING("Failed to release backbuffer FBO");  } 
+				backBufferCounter = 0;
+			}
+		}
 
 		void DisplayWidget::drawFragmentProgram(int w,int h) {
 			shaderProgram->bind();
-			
+
 			glDisable( GL_CULL_FACE );
 			glDisable( GL_LIGHTING );
 			glDisable( GL_DEPTH_TEST );
 
 			// -- Viewport
 			glViewport( 0, 0,w, h);
-			
+
 			// -- Projection
 			// The projection mode as used here
 			// allow us to render only a region of the viewport.
@@ -288,12 +439,12 @@ namespace Fragmentarium {
 			tileRender();
 
 			cameraControl->transform(width(), height());
-			
+
 			int l = shaderProgram->uniformLocation("pixelSize");
 			if (l != -1) {
 				shaderProgram->setUniformValue(l, (float)(1.0/w),(float)(1.0/h));
 			}
-			
+
 			l = shaderProgram->uniformLocation("time");
 			if (l != -1) {
 				float t = 0;
@@ -305,6 +456,23 @@ namespace Fragmentarium {
 					t = 0;
 				}
 				shaderProgram->setUniformValue(l, (float)t);
+			}
+
+			if (bufferType!=None) {
+				l = shaderProgram->uniformLocation("backbuffer");
+				if (l != -1) {
+					glActiveTexture(GL_TEXTURE0); // non-standard (>OpenGL 1.3) gl extension
+					GLuint i = backBuffer->texture();
+					glBindTexture(GL_TEXTURE_2D,i);
+					shaderProgram->setUniformValue(l, 0);
+					//INFO(QString("Binding backbuffer (ID: %1) to active texture %2").arg(i).arg(0));
+					//INFO(QString("Setting uniform backbuffer to active texture %2").arg(0));
+				}
+
+				l = shaderProgram->uniformLocation("backbufferCounter");
+				if (l != -1) {
+					shaderProgram->setUniformValue(l, backBufferCounter);
+				}
 			}
 
 			// Setup User Uniforms
@@ -323,7 +491,9 @@ namespace Fragmentarium {
 
 			glFinish();
 			shaderProgram->release();
-			
+
+		   
+
 		}
 
 		void DisplayWidget::drawToFrameBufferObject() {
@@ -333,17 +503,31 @@ namespace Fragmentarium {
 			}
 			if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; } 
 			QSize s = previewBuffer->size();
+			//INFO(QString("* Drawing to front buffer, ID: %1").arg(previewBuffer->texture()));
 			drawFragmentProgram(s.width(),s.height());
 			if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; } 
-		
+
 			// Draw a textured quad using the preview texture.
+			if (bufferShaderProgram) {
+				bufferShaderProgram->bind();
+				int l = bufferShaderProgram->uniformLocation("frontbuffer");
+				if (l != -1) {
+					bufferShaderProgram->setUniformValue(l, 0);
+				} else {
+					WARNING("No front buffer sampler found in buffer shader. This doesn't make sense.");
+				}
+			}
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glViewport(0, 0, width(),height());
+			glActiveTexture(GL_TEXTURE0); // non-standard (>OpenGL 1.3) gl extension	
 			glBindTexture(GL_TEXTURE_2D, previewBuffer->texture());
+			//INFO(QString("Binding front buffer (ID: %1) to active texture %2").arg(previewBuffer->texture()).arg(nextActiveTexture));
+			//INFO(QString("* Drawing from front to screen buffer, ID: %1").arg(previewBuffer->texture()));
+
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glEnable(GL_TEXTURE_2D);
@@ -353,6 +537,8 @@ namespace Fragmentarium {
 			glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  0.0f);	
 			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  0.0f);	
 			glEnd();
+			if (bufferShaderProgram) bufferShaderProgram->release();
+
 		}
 
 		void DisplayWidget::paintGL() {
@@ -371,7 +557,7 @@ namespace Fragmentarium {
 				return;
 			}
 
-		
+
 			QTime t = QTime::currentTime();
 
 			if (previewBuffer) {
@@ -379,7 +565,7 @@ namespace Fragmentarium {
 			} else {
 				drawFragmentProgram(width(),height());
 			}
-			
+
 			//INFO("Painting");
 			//int msx = t.msecsTo(QTime::currentTime());
 			//INFO(QString("GPU: render took %1 ms.").arg(msx));
@@ -395,15 +581,25 @@ namespace Fragmentarium {
 				}
 			}
 
-			
+
 			// Tile based rendering
 			if (tiles) {
-				QImage im = grabFrameBuffer();
-				cachedTileImages.append(im);
-				INFO("Stored image: " + QString::number(cachedTileImages.count()));
+				if (!tileFrameMax || (tileFrame == 0)) {
+					QImage im = grabFrameBuffer();
+				//	QImage im = previewBuffer->toImage();
+					cachedTileImages.append(im);
+					INFO("Stored image: " + QString::number(cachedTileImages.count()));
+				}
 			};
 
-	
+			if (backBuffer) {
+				QGLFramebufferObject* temp = backBuffer;
+				backBuffer= previewBuffer;
+				previewBuffer = temp;	
+				backBufferCounter++;
+			}
+
+
 			QTime cur = QTime::currentTime();
 			long ms = t.msecsTo(cur);
 			fpsCounter++;
@@ -411,7 +607,7 @@ namespace Fragmentarium {
 
 			// If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
 			if (ms>500) {
-            fps = 1000.0f/((float)ms);
+				fps = 1000.0f/((float)ms);
 			} else {
 				// Else measure over two seconds.
 				long ms2 = fpsTimer.msecsTo(cur);
@@ -423,12 +619,14 @@ namespace Fragmentarium {
 			}
 
 			mainWindow->setFPS(fps);
+			 if (tiles) requireRedraw();
+
 		};
 
 		void DisplayWidget::resizeGL( int /* width */, int /* height */) {
 			// When resizing the perspective must be recalculated
-         updatePerspective();
-         QTimer::singleShot(500, this, SLOT(clearPreviewBuffer()));
+			updatePerspective();
+			QTimer::singleShot(500, this, SLOT(clearPreviewBuffer()));
 
 		};
 
@@ -446,7 +644,7 @@ namespace Fragmentarium {
 				requireRedraw();
 			}
 
-         if (this != QApplication::focusWidget () && cameraControl) cameraControl->releaseControl();
+			if (this != QApplication::focusWidget () && cameraControl) cameraControl->releaseControl();
 			if (cameraControl && cameraControl->wantsRedraw()) {
 				requireRedraw(); 
 				cameraControl->updateState();
@@ -509,17 +707,14 @@ namespace Fragmentarium {
 			}
 		}
 
-      void DisplayWidget::clearPreviewBuffer() {
-         if (previewFactor != 0) {
-            INFO("Re-allocating preview buffer.");
-            setPreviewFactor(previewFactor);
-         }
-         requireRedraw();
-
-      }
+		void DisplayWidget::clearPreviewBuffer() {
+			INFO("Rebuilding buffers after resize.");
+			setPreviewFactor(previewFactor);
+			requireRedraw();
+		}
 
 
-		
+
 		void DisplayWidget::keyReleaseEvent(QKeyEvent* ev) {
 			bool redraw = cameraControl->keyPressEvent(ev);
 			if (redraw) {

@@ -28,6 +28,7 @@ namespace Fragmentarium {
          OutputDialog(QWidget* parent, int w, int h);
          ~OutputDialog();
          int getTiles();
+		 int getFrames() { return frameSpinBox->value(); }
       public slots:
          void chooseFile();
          void tilesChanged(int);
@@ -66,6 +67,7 @@ namespace Fragmentarium {
          QCheckBox *autoSaveCheckBox;
          QSpacerItem *verticalSpacer_4;
          QDialogButtonBox *buttonBox;
+		 QSpinBox* frameSpinBox;
 
          QStringList extensions;
          QString fragmentFileName;

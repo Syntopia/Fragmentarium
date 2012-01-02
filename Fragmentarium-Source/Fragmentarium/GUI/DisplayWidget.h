@@ -22,10 +22,10 @@ namespace Fragmentarium {
 		class VariableWidget;
 		class CameraControl;
 
-		
+
 		/// Widget for the mini OpenGL engine.
 		class DisplayWidget : public QGLWidget {
-         Q_OBJECT
+			Q_OBJECT
 		public:
 			/// Constructor
 			DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent);
@@ -43,20 +43,21 @@ namespace Fragmentarium {
 			void setDisabled(bool disabled) { this->disabled = disabled; }
 			void setFragmentShader(FragmentSource fs);
 			void setupFragmentShader();
+			void setupBufferShader();
 			void setContinuous(bool value) { continuous = value; }
 			void setDisableRedraw(bool value) { disableRedraw = value; }
 			bool isRedrawDisabled() { return disableRedraw; }
 			CameraControl* getCameraControl() { return cameraControl; }
-         void setupTileRender(int tiles, QString outputFile);
+			void setupTileRender(int tiles, int tileFrameMax, QString outputFile);
 			void resetTime() { time = QTime::currentTime(); }
 			void setViewFactor(int val);
-         void setPreviewFactor(int val);
+			void setPreviewFactor(int val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
-      public slots:
-            void clearPreviewBuffer();
+			public slots:
+				void clearPreviewBuffer();
 		protected:
 			void tileRender();
 			void drawFragmentProgram(int w,int h);
@@ -75,23 +76,30 @@ namespace Fragmentarium {
 			/// Triggers a perspective update and a redraw
 			void resizeGL(int w, int h);
 			void wheelEvent(QWheelEvent* e);
-				
+
 		private:
 			QGLFramebufferObject* previewBuffer;
+			QGLFramebufferObject* backBuffer;
 			bool continuous;
 			bool disableRedraw;
 			bool fragmentShader;
 			QGLShaderProgram* shaderProgram;
-		
+			QGLShaderProgram* bufferShaderProgram;
+
+			void clearBackBuffer();
 			void updatePerspective();	
+			void makeBuffers();
 			int pendingRedraws; // the number of times we must redraw 
 			int requiredRedraws;
 			QColor backgroundColor;
+			int backBufferCounter;
 
 			QMenu* contextMenu;
-		
+
 			bool disabled;
-			
+			int tileFrame;
+			int tileFrameMax;
+
 			MainWindow* mainWindow;
 			CameraControl* cameraControl;
 			FragmentSource fragmentSource;
@@ -104,7 +112,12 @@ namespace Fragmentarium {
 			int viewFactor;
 			int previewFactor;
 			AnimationSettings* animationSettings;
-         QString outputFile;
+			QString outputFile;
+			enum BufferType { None, RGBA8, RGBA16, RGBA32F };
+			BufferType bufferType;
+			int nextActiveTexture;
+
+			QDateTime tileRenderStart;
 		};
 	};
 
