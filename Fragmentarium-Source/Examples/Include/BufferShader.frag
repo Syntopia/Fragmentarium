@@ -14,10 +14,16 @@ void main(void)
 
 #endvertex
 
+uniform float Gamma;
+uniform float Exposure;
 varying vec2 coord;
 uniform sampler2D frontbuffer;
 void main() {
 	vec2 pos = (coord+vec2(1.0))/2.0;
 	vec4 tex = texture2D(frontbuffer, pos);
-	gl_FragColor = vec4(tex.xyz/tex.a,1.0);
+	vec3 c = tex.xyz/tex.a;
+	c = pow(c, Gamma);
+	c = c*Exposure;
+	c = c/(1.0+c);
+	gl_FragColor = vec4(c,1.0);
 }

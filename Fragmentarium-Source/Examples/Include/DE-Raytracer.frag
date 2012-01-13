@@ -1,10 +1,10 @@
 #donotrun
-
+#version 130
 #info Default Raytracer (by Syntopia)
 #camera 3D
 
 #vertex
-
+#version 130 
 #group Camera
 
 // Field-of-view
@@ -13,13 +13,14 @@ uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
 uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
 uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
 
-varying vec3 dirDx;
-varying vec3 dirDy;
-varying vec3 from;
+out vec3 dirDx;
+out vec3 dirDy;
+out vec3 from;
 uniform vec2 pixelSize;
-varying vec2 coord;
-varying float zoom;
-varying vec3 dir;
+out vec2 coord;
+out float zoom;
+out vec3 dir;
+in vec4 gl_Vertex;
 void main(void)
 {
 	gl_Position =  gl_Vertex;
@@ -42,9 +43,9 @@ void main(void)
 #group Raytracer
 
 // Camera position and target.
-varying vec3 from,dir,dirDx,dirDy;
-varying vec2 coord;
-varying float zoom;
+in vec3 from,dir,dirDx,dirDy;
+in vec2 coord;
+in float zoom;
 
 // HINT: for better results use Tile Renders and resize the image yourself
 uniform int AntiAlias;slider[1,1,5] Locked
@@ -413,7 +414,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 #else
 	void init() {}
 #endif 
-
+out vec4 gl_FragColor;
 void main() {
 	init();
 	

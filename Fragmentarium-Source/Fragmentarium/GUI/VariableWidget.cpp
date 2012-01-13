@@ -155,8 +155,8 @@ namespace Fragmentarium {
 			int i = shaderProgram->uniformLocation(name);
 			if (i == -1) {
 				if (isEnabled()) {
-					setEnabled(false);
-					INFO("Unable to find '" + name + "' in shader program. Disabling widget.");
+					//setEnabled(false);
+					//INFO("Unable to find '" + name + "' in shader program. Disabling widget.");
 
 				}
 			} else {

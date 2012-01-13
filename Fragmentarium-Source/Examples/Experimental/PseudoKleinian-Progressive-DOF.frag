@@ -124,7 +124,6 @@ DEoffset = 0
 Offset = 0.88888,0,0
 FocalPlane = 0.8108
 Aperture = 0.0122
-ClearBuffer = false
 #endpreset
 
 #preset p2
@@ -176,5 +175,56 @@ DEoffset = 0
 Offset = 0.88888,0.4568,0.03704
 FocalPlane = 0.4054
 Aperture = 0.0122
-ClearBuffer = false
+#endpreset
+
+#preset P
+FOV = 0.54166
+Eye = 2.64306,5.47113,2.51499
+Target = -0.194884,13.1568,8.51726
+Up = -0.14286,0.604253,-0.783881
+AntiAlias = 1
+Detail = -3.34516
+DetailAO = -0.5
+FudgeFactor = 1
+MaxRaySteps = 132
+BoundingSphere = 10
+Dither = 0.52632
+NormalBackStep = 1
+AO = 0,0,0,0.7
+Specular = 3.9796
+SpecularExp = 16
+SpotLight = 1,1,1,0.42647
+SpotLightDir = 0.90362,0.51808
+CamLight = 1,1,1,1.57746
+CamLightMin = 0
+Glow = 1,1,1,0.13333
+GlowMax = 20
+Fog = 0.37038
+HardShadow = 0
+ShadowSoft = 2
+Reflection = 0
+BaseColor = 1,1,1
+OrbitStrength = 1
+X = 0.5,0.6,0.6,1
+Y = 1,0.6,0,-0.33334
+Z = 0.8,0.78,1,0.5
+R = 0.4,0.7,1,0.5
+BackgroundColor = 0,0.333333,1
+GradientBackground = 0
+CycleColors = true
+Cycles = 10.29
+EnableFloor = false
+FloorNormal = 0,0,0
+FloorHeight = 0
+FloorColor = 1,1,1
+MI = 10
+Size = 2
+CSize = 0.92308,1.67522,1.84616
+C = 0.37456,0.61576,0.1212
+DEoffset = 0
+FocalPlane = 1.46739
+Aperture = 0.014
+AntiAliasScale = 1
+TThickness = 0.01
+Offset = 1,0,0
 #endpreset

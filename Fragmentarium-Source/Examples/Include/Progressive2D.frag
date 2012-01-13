@@ -43,24 +43,7 @@ varying vec2 viewCoord;
 vec2 aaCoord;
 uniform vec2 pixelSize;
 
-// Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
-uniform int AntiAlias;slider[1,2,15];
-
 vec3 getColor2D(vec2 z) ;
-
-vec3 getColor2Daa(vec2 z) {
-	vec3 v = vec3(0.0,0.0,0.0);
-	float d = 1.0/float(AntiAlias);
-	vec2 ard = vec2(pixelSize.x,pixelSize.y)*d;
-	for (int x=0; x <AntiAlias;x++) {
-		for (int y=0; y <AntiAlias;y++) {
-		       aaCoord = (viewCoord + vec2(x,y)*ard);
-			v +=  getColor2D(z+vec2(x,y)*d*aaScale);
-             }
-	}
-	
-	return v/(float(AntiAlias*AntiAlias));
-}
 
 void init(); // forward declare
 
@@ -77,6 +60,8 @@ uniform sampler2D backbuffer;
 uniform float AARange; slider[0.1,1.,15.3]
 uniform float AAExp; slider[0.1,1,15.3]
 uniform bool GaussianAA; checkbox[true]
+uniform float Gamma; slider[0,1,10]
+uniform float Exposure; slider[0,1,10]
 void main() {
 	init();
 
@@ -88,6 +73,6 @@ void main() {
       vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	float w =1.0;
 	if (GaussianAA) w= exp(-(dot(r,r)*AARange*AARange)/AAExp);
-	gl_FragColor = prev+vec4(color*w, w);
+	gl_FragColor = prev+vec4(pow(color,1.0/Gamma)*w, w);
 }
 

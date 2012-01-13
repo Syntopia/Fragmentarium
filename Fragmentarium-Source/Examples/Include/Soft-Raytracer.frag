@@ -10,49 +10,57 @@
 
 #group Camera
 
+
 // Field-of-view
 uniform float FOV; slider[0,0.4,2.0] NotLockable
 uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
 uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
 uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
 
-varying vec3 dirDx;
-varying vec3 dirDy;
 varying vec3 from;
 uniform vec2 pixelSize;
 varying vec2 coord;
 varying vec2 viewCoord;
-varying float zoom;
 varying vec3 dir;
 varying vec3 Dir;
 varying vec3 UpOrtho;
 varying vec3 Right;
+uniform int backbufferCounter;
+varying vec2 PixelScale;
+
+vec2 rand(vec2 co){
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return
+	vec2(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
+		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631));
+}
+
+
+
 void main(void)
 {
 	gl_Position =  gl_Vertex;
 	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
-	viewCoord = gl_Vertex.xy;;
 	coord.x*= pixelSize.y/pixelSize.x;
+	
 	// we will only use gl_ProjectionMatrix to scale and translate, so the following should be OK.
-	vec2 ps =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
-	zoom = length(ps);
+	PixelScale =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
+	viewCoord = gl_Vertex.xy;
 	from = Eye;
 	Dir = normalize(Target-Eye);
-	UpOrtho = Up-dot(Dir,Up)*Dir;
-	UpOrtho = normalize(UpOrtho);
+	UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
 	Right = normalize( cross(Dir,UpOrtho));
-	dir = ((coord.x*Right + coord.y*UpOrtho )*FOV+Dir);
-	dirDy =( ps.y*UpOrtho*FOV);
-	dirDx =(ps.x*Right*FOV);
+	coord*=FOV;
 }
 #endvertex
 
 #group Raytracer
+uniform float Gamma; slider[0.0,1.0,5.0]
+uniform float Exposure; slider[0.0,1.0,30.0]
 
 // Camera position and target.
-varying vec3 from,dir,dirDx,dirDy;
+varying vec3 from,dir;
 varying vec2 coord;
-varying float zoom;
 
 // HINT: for better results use Tile Renders and resize the image yourself
 uniform int AntiAlias;slider[1,1,5] Locked
@@ -95,9 +103,10 @@ uniform float Specular; slider[0,4.0,10.0];
 // The specular exponent
 uniform float SpecularExp; slider[0,16.0,100.0];
 // Color and strength of the directional light
-uniform vec4 SpotLight; color[0.0,0.4,1.0,1.0,1.0,1.0];
+uniform vec4 SpotLight; color[0.0,0.4,10.0,1.0,1.0,1.0];
 // Direction to the spot light (spherical coordinates)
-uniform vec2 SpotLightDir;  slider[(-1,-1),(0.1,0.1),(1,1)]
+uniform vec3 SpotLightPos;  slider[(-10,-10,-10),(5,0,0),(10,10,10)]
+uniform float SpotLightSize; slider[0.0,0.1,2.3]
 // Light coming from the camera position (diffuse lightning)
 uniform vec4 CamLight; color[0,1,2,1.0,1.0,1.0];
 // Controls the minimum ambient light, regardless of directionality
@@ -170,25 +179,79 @@ uniform float FloorHeight; slider[-5,0,5]
 uniform vec3 FloorColor; color[1,1,1]
 
 
+vec3 rand3(vec2 co){
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return
+	vec3(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
+		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631),
+              fract(sin(dot(co.xy ,vec2(0.23,1.111))) *392820.023));
+}
+
+uniform int backbufferCounter;
+uniform sampler2D backbuffer;
+varying vec2 viewCoord;
+
+float rand1(vec2 co){
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+uniform float ShadowBackstep; slider[0,2,10]
+float checkShadow(vec3 from, vec3 direction, float maxDist) {
+	float totalDist = ShadowBackstep*minDist;
+	float dist = 0.0;
+	for (int steps=0; steps<MaxRaySteps; steps++) {
+		vec3 p = from + totalDist * direction;
+		dist = DE(p);
+		//dist *= FudgeFactor;
+		//if (steps == 0) dist*=(Dither*rand1(direction.xy*float(backbufferCounter+1)))+(1.0-Dither);
+		totalDist += dist;
+		if (dist < minDist) return 0.0;
+		if (totalDist > maxDist) return 1.0;
+	}
+}
+
+float getAO(vec3 from, vec3 normal) {
+	float totalDist = ShadowBackstep*minDist;
+       vec3 direction = rand3(123.3*viewCoord.xy*(float(1.0+backbufferCounter)))-vec3(0.5);
+	
+       if (dot(direction, normal)<0.0) direction*=-1.0;
+     direction = normalize(direction);
+	
+      float dist = 0.0;
+	for (int steps=0; steps<MaxRaySteps; steps++) {
+		vec3 p = from + totalDist * direction;
+		dist = DE(p);
+		totalDist += dist;
+		if (dist < minDist) return 1.0;
+		if (totalDist > pow(10,DetailAO)) return 0.0;
+	}
+}
+
 vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shadowStrength) {
 	shadowStrength = 0.0;
-	vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
-	spotDir = normalize(spotDir);
+	vec3 spotPos = SpotLightPos;
+	vec3 spotDir =normalize(spotPos-pos);
 	// Calculate perfectly reflected light
 	
 	//if (dot(dir,n)>0.0) n = -n;
 	
 	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
 	
-	float s = max(0.0,dot(dir,-r));
+	float s = max(0.0,dot(dir,r));
 	
-	
-	float diffuse = max(0.0,dot(-n,spotDir))*SpotLight.w;
+	//s= 1.0-abs(dot(dir,n));
+	float diffuse = max(0.0,dot(n,spotDir))*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
-	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
-	
-	if (dot(n,dir)<0.0) { specular = 0.0; }
-	
+	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular*10.0;
+	vec3 jitPos = SpotLightPos  + ShadowSoft*
+(rand3(viewCoord*(float(backbufferCounter)))-vec3(0.5));
+
+	float  shadow = checkShadow(pos, normalize(jitPos-pos), length(jitPos-pos));
+	shadow= mix(1.0,shadow,HardShadow);	
+       ambient*=shadow;
+	specular*=shadow;
+       diffuse*=shadow;
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }
 
@@ -226,12 +289,6 @@ vec3 color(vec3 point, vec3 normal);
 #endif
 
 
-uniform int backbufferCounter; 
-
-float rand1(vec2 co){
-	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
-	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
 
 vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
@@ -305,10 +362,12 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	if ( dist < epsModified) {
 		// We hit something, or reached MaxRaySteps
 		hit = from + totalDist * direction;
-		float ao = AO.w*stepFactor ;
 		
 		hitNormal= normal(hit-NormalBackStep*epsModified*direction, epsModified); // /*normalE*epsModified/eps*/
-		
+		float ao = AO.w*stepFactor ;
+		if (DetailAO<0.0) {
+    			ao = AO.w* getAO(hit-NormalBackStep*epsModified*direction, hitNormal);
+             }
 		
 		#ifdef  providesColor
 		hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
@@ -317,9 +376,9 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		#endif
 		
 		
-		hitColor = mix(hitColor, AO.xyz ,ao);
 		float shadowStrength = 0.0;
-		hitColor = lighting(hitNormal, hitColor,  hit,  direction,epsModified,shadowStrength);
+		hitColor = lighting(hitNormal, hitColor,  hit-NormalBackStep*epsModified*direction,  direction,epsModified,shadowStrength);
+		hitColor = mix(hitColor, AO.xyz ,ao);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
 		hitColor = mix(hitColor, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
@@ -340,14 +399,17 @@ void init(); // forward declare
 void init() {}
 #endif
 
-uniform sampler2D backbuffer;
-varying vec2 viewCoord;
 
 vec2 rand(vec2 co){
 	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
 	return
 	vec2(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
 		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631));
+}
+
+vec2 uniformDisc(vec2 co) {
+	vec2 r = rand(co);
+	return sqrt(r.y)*vec2(cos(r.x*6.28),sin(r.x*6.28));
 }
 
 varying vec3 Dir;
@@ -358,27 +420,32 @@ varying vec3 Right;
 
 uniform float FocalPlane; slider[0,1,3]
 uniform float Aperture; slider[0,0.04,0.2]
+uniform float AntiAliasScale; slider[0,1,10]
+varying vec2 PixelScale;
+uniform float FOV;
 
 void main() {
 	init();
 	vec3 hitNormal = vec3(0.0);
 	vec3 hit;
-	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
-	// we want to sample a circular diaphragm
-      r = Aperture*r.x*vec2(cos(r.y*6.28),sin(r.y*6.28));
-
-      // far plane is at Dir*FarPlane
-	// we will hit far plane at mDir + from
-	vec3 mDir = normalize(dir);
-       mDir = (FocalPlane/dot(mDir,Dir))*mDir;
 	
-      vec3 newFrom = from + r.x*Right + r.y*UpOrtho;
-
-	vec3 newDir = normalize( mDir- (newFrom-from));
-
-	vec3 color =  trace(newFrom,newDir,hit,hitNormal);
-	//	color = clamp(color, 0.0, 1.0);
+	// A Thin Lens camera model with Depth-Of-Field
 	
+	// We want to sample a circular diaphragm
+	// Notice: this is not sampled with uniform density
+	vec2 r = Aperture*uniformDisc(viewCoord*(float(backbufferCounter)+1.0));
+	
+	vec2 jitteredCoord = coord + AntiAliasScale*PixelScale*FOV*uniformDisc(coord*float(1+backbufferCounter)); // subsample jitter
+	
+	
+	// Direction from Lens positon to point on FocalPlane
+	vec3 lensOffset =  r.x*Right + r.y*UpOrtho;
+	vec3 rayDir =  (Dir+ jitteredCoord.x*Right+jitteredCoord.y*UpOrtho)*FocalPlane
+	-(lensOffset);
+	
+	vec3 color =  trace(from+lensOffset,rayDir,hit,hitNormal);
+	
+	// Accumulate
 	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
-	gl_FragColor = prev+vec4(color, 1.0);
+	gl_FragColor = prev+vec4(pow(color,1.0/Gamma), 1.0);
 }
