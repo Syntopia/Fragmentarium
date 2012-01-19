@@ -54,9 +54,14 @@ void main(void)
 }
 #endvertex
 
+#group Post
+uniform float Gamma; slider[0.0,2.2,5.0]
+uniform bool ExponentialExposure; checkbox[false]
+uniform float Exposure; slider[0.0,1.3,30.0]
+uniform float Brightness; slider[0.0,1.0,5.0];
+uniform float Contrast; slider[0.0,1.0,5.0];
+uniform float Saturation; slider[0.0,1.0,5.0];
 #group Raytracer
-uniform float Gamma; slider[0.0,1.0,5.0]
-uniform float Exposure; slider[0.0,1.0,30.0]
 
 // Camera position and target.
 varying vec3 from,dir;
@@ -184,7 +189,7 @@ vec3 rand3(vec2 co){
 	return
 	vec3(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
 		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631),
-              fract(sin(dot(co.xy ,vec2(0.23,1.111))) *392820.023));
+		fract(sin(dot(co.xy ,vec2(0.23,1.111))) *392820.023));
 }
 
 uniform int backbufferCounter;
@@ -213,18 +218,18 @@ float checkShadow(vec3 from, vec3 direction, float maxDist) {
 
 float getAO(vec3 from, vec3 normal) {
 	float totalDist = ShadowBackstep*minDist;
-       vec3 direction = rand3(123.3*viewCoord.xy*(float(1.0+backbufferCounter)))-vec3(0.5);
+	vec3 direction = rand3(123.3*viewCoord.xy*(1.0+float(backbufferCounter)))-vec3(0.5);
 	
-       if (dot(direction, normal)<0.0) direction*=-1.0;
-     direction = normalize(direction);
+	if (dot(direction, normal)<0.0) direction*=-1.0;
+	direction = normalize(direction);
 	
-      float dist = 0.0;
+	float dist = 0.0;
 	for (int steps=0; steps<MaxRaySteps; steps++) {
 		vec3 p = from + totalDist * direction;
 		dist = DE(p);
 		totalDist += dist;
 		if (dist < minDist) return 1.0;
-		if (totalDist > pow(10,DetailAO)) return 0.0;
+		if (totalDist > pow(10.0,DetailAO)) return 0.0;
 	}
 }
 
@@ -245,13 +250,13 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
 	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular*10.0;
 	vec3 jitPos = SpotLightPos  + ShadowSoft*
-(rand3(viewCoord*(float(backbufferCounter)))-vec3(0.5));
-
+	(rand3(viewCoord*(float(backbufferCounter)))-vec3(0.5));
+	
 	float  shadow = checkShadow(pos, normalize(jitPos-pos), length(jitPos-pos));
-	shadow= mix(1.0,shadow,HardShadow);	
-       ambient*=shadow;
+	shadow= mix(1.0,shadow,HardShadow);
+	ambient*=shadow;
 	specular*=shadow;
-       diffuse*=shadow;
+	diffuse*=shadow;
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }
 
@@ -366,8 +371,8 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		hitNormal= normal(hit-NormalBackStep*epsModified*direction, epsModified); // /*normalE*epsModified/eps*/
 		float ao = AO.w*stepFactor ;
 		if (DetailAO<0.0) {
-    			ao = AO.w* getAO(hit-NormalBackStep*epsModified*direction, hitNormal);
-             }
+			ao = AO.w* getAO(hit-NormalBackStep*epsModified*direction, hitNormal);
+		}
 		
 		#ifdef  providesColor
 		hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
@@ -418,9 +423,9 @@ varying vec3 Right;
 
 #group Raytracer
 
-uniform float FocalPlane; slider[0,1,3]
-uniform float Aperture; slider[0,0.04,0.2]
-uniform float AntiAliasScale; slider[0,1,10]
+uniform float FocalPlane; slider[0,1,5]
+uniform float Aperture; slider[0,0.00,0.2]
+uniform float AntiAliasScale; slider[0,2,10]
 varying vec2 PixelScale;
 uniform float FOV;
 
@@ -434,9 +439,9 @@ void main() {
 	// We want to sample a circular diaphragm
 	// Notice: this is not sampled with uniform density
 	vec2 r = Aperture*uniformDisc(viewCoord*(float(backbufferCounter)+1.0));
+	vec2 disc = uniformDisc(coord*float(1+backbufferCounter)); // subsample jitter
 	
-	vec2 jitteredCoord = coord + AntiAliasScale*PixelScale*FOV*uniformDisc(coord*float(1+backbufferCounter)); // subsample jitter
-	
+	vec2 jitteredCoord = coord + AntiAliasScale*PixelScale*FOV*disc;
 	
 	// Direction from Lens positon to point on FocalPlane
 	vec3 lensOffset =  r.x*Right + r.y*UpOrtho;
@@ -447,5 +452,7 @@ void main() {
 	
 	// Accumulate
 	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
-	gl_FragColor = prev+vec4(pow(color,1.0/Gamma), 1.0);
+	float w =1.0-length(disc);  //w=1.0;
+	w = exp(-length(disc)*2.0);
+	gl_FragColor = prev+vec4(pow(color,vec3(1.0/Gamma))*w, w);
 }

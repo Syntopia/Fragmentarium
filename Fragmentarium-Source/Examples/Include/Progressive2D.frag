@@ -36,6 +36,17 @@ void main(void)
 
 #endvertex
 
+#group Post
+uniform float Gamma; slider[0.0,2.2,5.0]
+uniform bool ExponentialExposure; checkbox[false]
+uniform float Exposure; slider[0.0,1.3,30.0]
+uniform float Brightness; slider[0.0,1.0,5.0];
+uniform float Contrast; slider[0.0,1.0,5.0];
+uniform float Saturation; slider[0.0,1.0,5.0];
+
+uniform float AARange; slider[0.1,1.,15.3]
+uniform float AAExp; slider[0.1,1,15.3]
+uniform bool GaussianAA; checkbox[true]
 
 varying vec2 coord;
 varying vec2 aaScale;
@@ -57,11 +68,7 @@ vec2 rand(vec2 co){
 }
 
 uniform sampler2D backbuffer;
-uniform float AARange; slider[0.1,1.,15.3]
-uniform float AAExp; slider[0.1,1,15.3]
-uniform bool GaussianAA; checkbox[true]
-uniform float Gamma; slider[0,1,10]
-uniform float Exposure; slider[0,1,10]
+
 void main() {
 	init();
 
