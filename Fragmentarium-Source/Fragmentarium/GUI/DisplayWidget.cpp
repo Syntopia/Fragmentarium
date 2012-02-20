@@ -231,11 +231,7 @@ namespace Fragmentarium {
 				}
 			}
 			nextActiveTexture = u;
-
-			if (fragmentSource.bufferShaderSource) {
-				INFO("Setting up buffer shader");
-				setupBufferShader();
-			}
+			setupBufferShader();
 		}
 
 
@@ -245,6 +241,10 @@ namespace Fragmentarium {
 				bufferShaderProgram->release();
 			}
 			delete(bufferShaderProgram);
+			bufferShaderProgram = 0;
+
+			if (!fragmentSource.bufferShaderSource) return;
+			
 			bufferShaderProgram = new QGLShaderProgram(this);
 
 			// Vertex shader

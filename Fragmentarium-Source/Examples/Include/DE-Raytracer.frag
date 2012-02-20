@@ -394,7 +394,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
 		hitColor = mix(hitColor, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
-		if (floorHit) {
+		if (floorHit ) {
 			hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 		}	
 	}

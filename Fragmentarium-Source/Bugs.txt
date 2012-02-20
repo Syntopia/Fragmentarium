@@ -2,8 +2,10 @@ Bug List:
 ---------
 Priority 0-5, 5 is worst:
 
-[4] Mac only: Every keypress, click and change of focus re-calculates the render, even with Manual Update switched on
+[3] Sliders should respond to cursor keys no matter where kbd focus is.
 [3] Reset should work with unlock
+[3] Mac only: Every keypress, click and change of focus re-calculates the render, even with Manual Update switched on
+[2] Sometimes you need to double-click to unlock
 [2] Bug: Unlocking should not gray out vars in cont. mode
 [1] Bug: padlock icon vsize grows!
 

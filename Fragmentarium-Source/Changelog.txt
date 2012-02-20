@@ -1,4 +1,9 @@
 
+20-02-12 [MHC] 
+				Fixed: The 2x/4x/.. buffers are dimmed when rendering with DE-Raytracer after Soft-Raytracer
+				Fixed: Copying from web is sometimes weird (should strip rich text)
+				Autosave files now creates a directory with output files (necessary since the #BufferShader directive broke the old 'include all in one file' system).
+
 02-01-12 [MHC] Added some experimental shaders:
 			   Soft-Raytracer.frag - progressive DOF using finite aperture
 			   Progressive2D.frag, Progressive2DJulia.frag - progresive AA

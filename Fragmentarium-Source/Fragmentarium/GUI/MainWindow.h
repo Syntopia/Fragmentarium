@@ -19,7 +19,7 @@ class QMenu;
 
 namespace Fragmentarium {
 	namespace GUI {
- 
+
 		// Information about the current tab
 		struct TabInfo {
 			TabInfo() {}; 
@@ -29,34 +29,36 @@ namespace Fragmentarium {
 			bool unsaved;
 			QTextEdit* textEdit;
 			bool hasBeenSavedOnce;			
-        };
+		};
 
 		// A modified QTextEdit with an extended context menu
 		class TextEdit : public QTextEdit {
 			Q_OBJECT
-			public:
-				TextEdit() : QTextEdit() {};
-				TextEdit(QWidget* parent) : QTextEdit(parent) {};
-				void contextMenuEvent(QContextMenuEvent *event);
+		public:
+			TextEdit() : QTextEdit() {};
+			TextEdit(QWidget* parent) : QTextEdit(parent) {};
+			void contextMenuEvent(QContextMenuEvent *event);
+			void insertFromMimeData (const QMimeData * source );
+		
 			public slots:
 				void insertText();
 		};
 
-      // An input dialog for the tile based render thingy
+		// An input dialog for the tile based render thingy
 		class TileRenderDialog: public QDialog {
 			Q_OBJECT
 		public:
 			TileRenderDialog(QWidget* parent, int w, int h);
 			int getTiles() { return tileSlider->value(); }
-		public slots:
-			void tilesChanged(int);
+			public slots:
+				void tilesChanged(int);
 		private: 
 			QLabel* tileLabel;
 			QSlider* tileSlider;
 			int w;
 			int h;
 		};
-		
+
 		/// The main window of the application.
 		class MainWindow : public QMainWindow
 		{
@@ -81,56 +83,56 @@ namespace Fragmentarium {
 			void enableAll();
 			void loadParameters(QString fileName);
 			void setSplashWidget(QWidget* w);
-         void highlightBuildButton(bool value);
-		
+			void highlightBuildButton(bool value);
+
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);
 			void dropEvent(QDropEvent *ev);
 			void closeEvent(QCloseEvent* ev);
 			void keyReleaseEvent(QKeyEvent* ev);
-		
-		public slots:
-			void animationControllerHidden();
-         void removeSplash();
-			void viewSliderChanged(int);
-			void previewSliderChanged(int);
-			void tileBasedRender();
-			void makeScreenshot();
-			void callRedraw();
-			void showDebug();
-			void pasteSelected();
-         void renderModeChanged(int);
-			void saveParameters();
-			void loadParameters();
-			void indent();
-			void preferences();
-			void insertText();
-         void variablesChanged(bool lockedChanged);
-			void closeTab(int id);
-			void cut();
-			void copy();
-			void paste();
-			void cursorPositionChanged();
-			void tabChanged(int index);
-			void closeTab();
-			void launchSfHome();
-			void launchGallery();
-			void launchGLSLSpecs();
-			void launchReferenceHome();
-			void openFile();
-			void newFile();
-			void open();
-			bool save();
-			bool saveAs();
-			void about();
-			void showControlHelp();
-			void documentWasModified();
-			bool render();
-			void toggleFullScreen();
-		
+
+			public slots:
+				void animationControllerHidden();
+				void removeSplash();
+				void viewSliderChanged(int);
+				void previewSliderChanged(int);
+				void tileBasedRender();
+				void makeScreenshot();
+				void callRedraw();
+				void showDebug();
+				void pasteSelected();
+				void renderModeChanged(int);
+				void saveParameters();
+				void loadParameters();
+				void indent();
+				void preferences();
+				void insertText();
+				void variablesChanged(bool lockedChanged);
+				void closeTab(int id);
+				void cut();
+				void copy();
+				void paste();
+				void cursorPositionChanged();
+				void tabChanged(int index);
+				void closeTab();
+				void launchSfHome();
+				void launchGallery();
+				void launchGLSLSpecs();
+				void launchReferenceHome();
+				void openFile();
+				void newFile();
+				void open();
+				bool save();
+				bool saveAs();
+				void about();
+				void showControlHelp();
+				void documentWasModified();
+				bool render();
+				void toggleFullScreen();
+
 		private:
 			QList<QWidget *> disabledWidgets;
-         QLabel* buildLabel;
+			QLabel* buildLabel;
 			QSlider* viewSlider;
 			QSlider* previewSlider;
 			QLabel* viewLabel;

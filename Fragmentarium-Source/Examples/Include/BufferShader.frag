@@ -19,7 +19,7 @@ uniform float Exposure;
 uniform float Brightness;
 uniform float Contrast;
 uniform float Saturation;
-uniform bool ExponentialExposure; 
+uniform bool ExponentialExposure;
 /*
 ** Based on: http://mouaif.wordpress.com/2009/01/22/photoshop-gamma-correction-shader/
 **
@@ -47,7 +47,7 @@ void main() {
 	vec4 tex = texture2D(frontbuffer, pos);
 	vec3 c = tex.xyz/tex.a;
 	c = pow(c, vec3(Gamma));
-	
+
 	if (ExponentialExposure) {
 		c = vec3(1.0)-exp(-c*Exposure);
 	} else {

@@ -181,6 +181,11 @@ namespace Fragmentarium {
 			QString text = ((QAction*)sender())->text();
 			insertPlainText(text.section("//",0,0)); // strip comments
 		}
+		
+		void TextEdit::insertFromMimeData ( const QMimeData * source )
+		{
+			QTextEdit::insertPlainText ( source->text() );
+		}
 
 
 		class FragmentHighlighter : public QSyntaxHighlighter {
@@ -874,7 +879,21 @@ namespace Fragmentarium {
 						QString append = "\n\n#preset default\n" + variableEditor->getSettings() + "\n#endpreset\n\n";
 						QString final = prepend + fs.getText() + append;
 
-						QFile fileStream(fileName);
+						
+						QString f = od.getFileName();
+						QDir oDir(QFileInfo(f).absolutePath());
+						QString subdirName = f + " Files";
+						if (!oDir.mkdir(subdirName)) {
+
+							QMessageBox::warning(this, tr("Fragmentarium"),
+								tr("Could not create directory %1:\n.")
+								.arg(oDir.filePath(subdirName)));
+							return;
+						}
+						subdirName = oDir.filePath(subdirName); // full name
+						
+
+						QFile fileStream(subdirName + "/" + fileName);
 						if (!fileStream.open(QFile::WriteOnly | QFile::Text)) {
 							QMessageBox::warning(this, tr("Fragmentarium"),
 								tr("Cannot write file %1:\n%2.")
@@ -886,7 +905,21 @@ namespace Fragmentarium {
 						QTextStream out(&fileStream);
 						out << final;
 						INFO("Saved fragment + settings as: " + fileName);
+	
+						// Copy files.
+						QStringList ll = p.getDependencies();
+						foreach (QString l, ll) {
+							QString from = l;
+							QString to =  QDir(subdirName).absoluteFilePath( QFileInfo(l).fileName() );
+							if (!QFile::copy(from,to)) {
+								QMessageBox::warning(this, tr("Fragmentarium"),
+									tr("Could not copy dependency:\n'%1' to \n'%2'.")
+								.arg(from)
+								.arg(to));
+							return;
+							}
 
+						}
 					} catch (Exception& e) {
 						WARNING(e.getMessage());
 					}

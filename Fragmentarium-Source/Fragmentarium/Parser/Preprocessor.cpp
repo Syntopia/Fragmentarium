@@ -90,12 +90,12 @@ namespace Fragmentarium {
 			throw Exception("Could not resolve path for file: " + fileName);
 		};
 
-		void Preprocessor::parseSource(FragmentSource* fs,QString input, QString originalFileName, bool includeOnly) {
+		void Preprocessor::parseSource(FragmentSource* fs,QString input, QString originalFileName, bool dontAdd) {
 			fs->sourceFileNames.append(originalFileName);
 			int sf = fs->sourceFileNames.count()-1;
 
 			QStringList in = input.split(QRegExp("\r\n|\r|\n"));
-			in.append("#group default"); // make sure we fall back to the default group after including a file.
+			if (!isCreatingAutoSave) in.append("#group default"); // make sure we fall back to the default group after including a file.
 
 			QList<int> lines;
 			for (int i = 0; i < in.count(); i++) lines.append(i);
@@ -110,15 +110,11 @@ namespace Fragmentarium {
 
 			for (int i = 0; i < in.count(); i++) {
 				if (includeCommand.indexIn(in[i]) != -1) {	
-					if (includeOnly) continue;
 					QString fileName =  includeCommand.cap(2);
 					QString post = includeCommand.cap(1);
-					bool only = false;
 					if (post == "") {
-					} else if (post == "only") {
-						only = true;
 					} else {
-						throw Exception("'#include' or '#includeonly' expected");
+						throw Exception("'#include' expected");
 					}
 					QString fName = resolveName(fileName, originalFileName);
 					QFile f(fName);
@@ -127,7 +123,13 @@ namespace Fragmentarium {
 
 					INFO("Including file: " + fName);
 					QString a = f.readAll();
-					parseSource(fs, a, fName, only);
+					parseSource(fs, a, fName, isCreatingAutoSave);
+					dependencies.append(fName);
+					if (!dontAdd && isCreatingAutoSave) {
+						fs->lines.append(lines[i]);
+						fs->sourceFile.append(source[i]);
+						fs->source.append(in[i]);
+					}
 				} else if (bufferShaderCommand.indexIn(in[i]) != -1) {
 					QString fileName =  bufferShaderCommand.cap(1);
 					QString fName = resolveName(fileName, originalFileName);
@@ -137,12 +139,20 @@ namespace Fragmentarium {
 
 					INFO("Including buffershader: " + fName);
 					QString a = f.readAll();
-					FragmentSource bs = parse(a, fName, false, false);
+					FragmentSource bs = parse(a, fName, false, isCreatingAutoSave);
 					fs->bufferShaderSource = new FragmentSource(bs);
+					dependencies.append(fName);
+					if (!dontAdd && isCreatingAutoSave) {
+						fs->lines.append(lines[i]);
+						fs->sourceFile.append(source[i]);
+						fs->source.append(in[i]);
+					}
 				} else {
-					fs->lines.append(lines[i]);
-					fs->sourceFile.append(source[i]);
-					fs->source.append(in[i]);
+					if (!dontAdd) {
+						fs->lines.append(lines[i]);
+						fs->sourceFile.append(source[i]);
+						fs->source.append(in[i]);
+					}
 				}
 			}
 		}
@@ -155,6 +165,8 @@ namespace Fragmentarium {
 
 		FragmentSource Preprocessor::createAutosaveFragment(QString input, QString file) {
 			FragmentSource fs;
+			dependencies.clear();
+			isCreatingAutoSave = true;
 
 			// Run the preprocessor...
 			parseSource(&fs, input, file, false);

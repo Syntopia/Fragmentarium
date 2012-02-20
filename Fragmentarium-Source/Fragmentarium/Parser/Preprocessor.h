@@ -220,14 +220,17 @@ namespace Fragmentarium {
 		class Preprocessor {
 
 		public:
-			Preprocessor(QStringList includePaths) : includePaths(includePaths) {};
+			Preprocessor(QStringList includePaths) : includePaths(includePaths), isCreatingAutoSave(false) {};
 			FragmentSource parse(QString input, QString fileName, bool moveMain, bool doublify);
 			FragmentSource createAutosaveFragment(QString input, QString fileName);
-			void parseSource(FragmentSource* fs,QString input, QString fileName, bool includeOnly);
+			void parseSource(FragmentSource* fs,QString input, QString fileName, bool dontAdd);
 			QString resolveName(QString fileName, QString originalFileName) ;
+			QStringList getDependencies() { return dependencies; }
 
 		private:
 			QStringList includePaths;
+			QStringList dependencies;
+			bool isCreatingAutoSave;
 		
 		};
 

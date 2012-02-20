@@ -287,13 +287,14 @@ namespace Fragmentarium {
 				}
 
 				uniqueCheckBox->setText(QString("Add unique ID to filename (%1)").arg(uname));
-				fragmentFileName = uname.section(".",0,-2)+".frag";
+				fragmentFileName = QFileInfo( uname.section(".",0,-2)+".frag").fileName();
 			} else {
 				uniqueCheckBox->setText("Add unique ID to filename");
-				fragmentFileName =  filenameEdit->text().section(".",0,-2)+".frag";
+				fragmentFileName =  QFileInfo(filenameEdit->text().section(".",0,-2)+".frag").fileName();
 
 			}
-			if (autoSaveCheckBox) autoSaveCheckBox->setText(QString("Autosave fragment and settings (as %1)").arg(fragmentFileName));
+			if (autoSaveCheckBox) autoSaveCheckBox->setText(QString("Autosave fragments and settings (in directory: '%1)").arg(
+				QFileInfo(getFileName()).fileName()+ " Files'"));
 
 		}
 

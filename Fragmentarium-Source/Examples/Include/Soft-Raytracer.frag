@@ -219,7 +219,7 @@ float checkShadow(vec3 from, vec3 direction, float maxDist) {
 float getAO(vec3 from, vec3 normal) {
 	float totalDist = ShadowBackstep*minDist;
 	vec3 direction = rand3(123.3*viewCoord.xy*(1.0+float(backbufferCounter)))-vec3(0.5);
-	
+	float maxDist =  pow(10.0,DetailAO/10.0);
 	if (dot(direction, normal)<0.0) direction*=-1.0;
 	direction = normalize(direction);
 	
@@ -228,9 +228,14 @@ float getAO(vec3 from, vec3 normal) {
 		vec3 p = from + totalDist * direction;
 		dist = DE(p);
 		totalDist += dist;
-		if (dist < minDist) return 1.0;
-		if (totalDist > pow(10.0,DetailAO)) return 0.0;
+		if (dist < minDist) {
+			return 1.0-totalDist/maxDist;
+		}
+		if (totalDist >maxDist) {			
+			return 0.0;			
+		}
 	}
+	return 1.0;
 }
 
 vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shadowStrength) {
@@ -284,6 +289,7 @@ vec3 getColor() {
 	}
 	
 	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
+	color = max(color,0.0);
 	return color;
 }
 
@@ -383,6 +389,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		
 		float shadowStrength = 0.0;
 		hitColor = lighting(hitNormal, hitColor,  hit-NormalBackStep*epsModified*direction,  direction,epsModified,shadowStrength);
+		
 		hitColor = mix(hitColor, AO.xyz ,ao);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
@@ -449,10 +456,10 @@ void main() {
 	-(lensOffset);
 	
 	vec3 color =  trace(from+lensOffset,rayDir,hit,hitNormal);
-	
+	color = max(vec3(0.0),color);
 	// Accumulate
 	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	float w =1.0-length(disc);  //w=1.0;
 	w = exp(-length(disc)*2.0);
-	gl_FragColor = prev+vec4(pow(color,vec3(1.0/Gamma))*w, w);
+	gl_FragColor = prev+vec4(color*w, w);
 }

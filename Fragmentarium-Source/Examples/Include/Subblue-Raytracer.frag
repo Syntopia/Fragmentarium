@@ -163,14 +163,14 @@ vec3 generateNormal(vec3 z, float d)
 {
     float e = max(d * 0.5, MIN_NORM);
     
-    float dx1 = DE(z + vec3(e, 0, 0)).x;
-    float dx2 = DE(z - vec3(e, 0, 0)).x;
+    float dx1 = DE(z + vec3(e, 0, 0));
+    float dx2 = DE(z - vec3(e, 0, 0));
     
-    float dy1 = DE(z + vec3(0, e, 0)).x;
-    float dy2 = DE(z - vec3(0, e, 0)).x;
+    float dy1 = DE(z + vec3(0, e, 0));
+    float dy2 = DE(z - vec3(0, e, 0));
     
-    float dz1 = DE(z + vec3(0, 0, e)).x;
-    float dz2 = DE(z - vec3(0, 0, e)).x;
+    float dz1 = DE(z + vec3(0, 0, e));
+    float dz2 = DE(z - vec3(0, 0, e));
     
     return normalize(vec3(dx1 - dx2, dy1 - dy2, dz1 - dz2));
 }
@@ -205,7 +205,7 @@ float ambientOcclusion(vec3 p, vec3 n, float eps)
     float d = 2.0 * eps;            // Start ray a little off the surface
     
     for (int i = 0; i < aoIterations; ++i) {
-        o -= (d - DE(p + n * d).x) * k;
+        o -= (d - DE(p + n * d)) * k;
         d += eps;
         k *= 0.5;                   // AO contribution drops as we move further from the surface 
     }
