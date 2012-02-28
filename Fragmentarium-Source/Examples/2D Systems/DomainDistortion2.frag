@@ -4,9 +4,6 @@
 // Not as good as his, but still interesting.
 // 
 #include "2D.frag"
-void init() {}
-
-
 
 uniform float Mul; slider[0,2,10]
 uniform float Decay; slider[0,0.5,2]
@@ -67,7 +64,8 @@ uniform vec3 color1; color[0.0,1.0,0.0]
 uniform vec3 color2; color[1.0,0.0,0.0]
 uniform vec3 color3; color[0.0,1.0,0.0]
 uniform vec3 color4; color[0.0,0.0,1.0]
-vec3 getColor2D(vec2 c) {
+
+vec3 color(vec2 c) {
 	vec2 q;
 	vec2 r;
 	float f = pattern(c*0.01,q,r);

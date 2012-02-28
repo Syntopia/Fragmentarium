@@ -41,9 +41,9 @@ vec2 aaCoord;
 uniform vec2 pixelSize;
 
 // Anti-alias [1=1 samples / pixel, 2 = 4 samples, ...]
-uniform int AntiAlias;slider[1,2,15];
+uniform int AntiAlias;slider[1,1,15];
 
-vec3 getColor2D(vec2 z) ;
+vec3 color(vec2 z) ;
 
 vec3 getColor2Daa(vec2 z) {
 	vec3 v = vec3(0.0,0.0,0.0);
@@ -52,17 +52,21 @@ vec3 getColor2Daa(vec2 z) {
 	for (int x=0; x <AntiAlias;x++) {
 		for (int y=0; y <AntiAlias;y++) {
 		       aaCoord = (viewCoord + vec2(x,y)*ard);
-			v +=  getColor2D(z+vec2(x,y)*d*aaScale);
+			v +=  color(z+vec2(x,y)*d*aaScale);
              }
 	}
 	
 	return v/(float(AntiAlias*AntiAlias));
 }
 
+#ifdef providesInit
 void init(); // forward declare
+#endif
 
 void main() {
-	init();
+#ifdef providesInit
+	init(); 
+#endif
 	gl_FragColor = vec4(getColor2Daa(coord.xy),1.0);
 }
 

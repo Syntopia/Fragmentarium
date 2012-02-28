@@ -11,11 +11,9 @@ uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
 uniform float B; slider[0,0.7,1]
 uniform float C; slider[0,1,2]
-uniform bool Julia; checkbox[true]
+uniform bool Julia; checkbox[false]
 uniform float JuliaX; slider[-15,0.23528,8]
 uniform float JuliaY; slider[-15,5.53840,8]
-
-void init() {}
 
 vec2 formula(vec2 p, vec2 c);
 
@@ -51,7 +49,7 @@ vec3 getMapColor2D(vec2 c) {
 uniform int ColoringType; slider[0,0,2]
 uniform float ColorFactor; slider[0,0.5,1]
 
-vec3 getColor2D(vec2 c) {
+vec3 color(vec2 c) {
 	if (ShowMap && Julia) {
 		vec2 w = (aaCoord-mapCenter);
 		w.y/=(pixelSize.y/pixelSize.x);

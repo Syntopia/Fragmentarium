@@ -17,8 +17,6 @@ uniform sampler2D texture; file[texture2.jpg]
 // uniform sampler2D texture2; file[texture.jpg]
 uniform vec2 params; slider[(-1,-1),(-0.5,0.24),(1,1)]
 
-void init() {}
-
 vec3 a(vec2 z, float t) {
 	vec2 m =  params.xy;
 	float a1 = atan(z.x-m.y,z.x-m.x);
@@ -34,7 +32,7 @@ vec3 a(vec2 z, float t) {
 }
 
 
-vec3 getColor2D(vec2 z) {
+vec3 color(vec2 z) {
 	z.y*=2.0;
 	z.x*=1.5;
 	vec3 acc = vec3(0.0);

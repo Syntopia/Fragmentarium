@@ -40,6 +40,8 @@ using namespace Fragmentarium::Parser;
 namespace Fragmentarium {
 	namespace GUI {
 
+
+		
 		namespace {
 			int MaxRecentFiles = 5;
 
@@ -139,7 +141,7 @@ namespace Fragmentarium {
 
 		namespace {
 
-			void createCommandHelpMenu(QMenu* menu, QWidget* textEdit) {
+			void createCommandHelpMenu(QMenu* menu, QWidget* textEdit, MainWindow* mainWindow) {
 				QMenu *preprocessorMenu = new QMenu("Special Includes", 0);
 				preprocessorMenu->addAction("#include \"some.frag\"", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#camera 3D", textEdit , SLOT(insertText()));
@@ -161,18 +163,22 @@ namespace Fragmentarium {
 				uniformMenu->addAction("uniform vec3 color; color[0.0,0.0,0.0]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec4 color; color[0.0,1.0,0.0,0.0,0.0,0.0]", textEdit , SLOT(insertText()));
 
+				QMenu *presetMenu = new QMenu("Presets", 0);
+				presetMenu->addAction("Insert Preset from Current Settings",mainWindow, SLOT(insertPreset()));
+				
 				QAction* before = 0;
 				if (menu->actions().count() > 0) before = menu->actions()[0];
 				menu->insertMenu(before, preprocessorMenu);
 				menu->insertMenu(before, uniformMenu);
-
+				menu->insertMenu(before, presetMenu);
+			
 				menu->insertSeparator(before);
 			}
 		}
 		void TextEdit::contextMenuEvent(QContextMenuEvent *event)
 		{	
 			QMenu *menu = createStandardContextMenu();
-			createCommandHelpMenu(menu, this);
+			createCommandHelpMenu(menu, this, mainWindow);
 			menu->exec(event->globalPos());
 			delete menu;
 		}
@@ -181,6 +187,7 @@ namespace Fragmentarium {
 			QString text = ((QAction*)sender())->text();
 			insertPlainText(text.section("//",0,0)); // strip comments
 		}
+
 		
 		void TextEdit::insertFromMimeData ( const QMimeData * source )
 		{
@@ -371,6 +378,10 @@ namespace Fragmentarium {
 		void MainWindow::newFile()
 		{
 			insertTabPage("");
+		}
+
+		void MainWindow::insertPreset() {
+			getTextEdit()->insertPlainText("\n\n#preset Noname\n" + variableEditor->getSettings()+ "\n#endpreset\n"); 
 		}
 
 		void MainWindow::open()
@@ -735,6 +746,13 @@ namespace Fragmentarium {
 			glslHomeAction->setStatusTip(tr("The official specifications for all GLSL versions."));
 			connect(glslHomeAction, SIGNAL(triggered()), this, SLOT(launchGLSLSpecs()));
 
+			introAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("Introduction to Distance Estimated Fractals (web link)"), this);
+			connect(introAction, SIGNAL(triggered()), this, SLOT(launchIntro()));
+
+			faqAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("Fragmentarium FAQ (web link)"), this);
+			connect(faqAction, SIGNAL(triggered()), this, SLOT(launchFAQ()));
+
+
 			for (int i = 0; i < MaxRecentFiles; ++i) {
 				QAction* a = new QAction(this);
 				a->setVisible(false);
@@ -767,7 +785,7 @@ namespace Fragmentarium {
 			editMenu->addSeparator();
 			editMenu->addAction("Indent Script", this, SLOT(indent()));
 			QMenu* m = editMenu->addMenu("Insert Command");
-			createCommandHelpMenu(m, this);
+			createCommandHelpMenu(m, this, this);
 			editMenu->addSeparator();
 			editMenu->addAction("Preferences...", this, SLOT(preferences()));
 
@@ -858,6 +876,8 @@ namespace Fragmentarium {
 			helpMenu->addAction(sfHomeAction);
 			helpMenu->addAction(galleryAction);
 			helpMenu->addAction(glslHomeAction);
+			helpMenu->addAction(faqAction);
+			helpMenu->addAction(introAction);
 		}
 
 		void MainWindow::tileBasedRender() {
@@ -1356,7 +1376,7 @@ namespace Fragmentarium {
 		}
 
 		QTextEdit* MainWindow::insertTabPage(QString filename) {
-			QTextEdit* textEdit = new TextEdit();
+			QTextEdit* textEdit = new TextEdit(this);
 			connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
 
 			textEdit->setLineWrapMode(QTextEdit::NoWrap);
@@ -1466,6 +1486,18 @@ namespace Fragmentarium {
 		void MainWindow::launchGLSLSpecs() {
 			INFO("Launching web browser...");
 			bool s = QDesktopServices::openUrl(QUrl("http://www.opengl.org/registry/"));
+			if (!s) WARNING("Failed to open browser...");
+		}
+
+		void MainWindow::launchIntro() {
+			INFO("Launching web browser...");
+			bool s = QDesktopServices::openUrl(QUrl("http://blog.hvidtfeldts.net/index.php/2011/06/distance-estimated-3d-fractals-part-i/"));
+			if (!s) WARNING("Failed to open browser...");
+		}
+
+		void MainWindow::launchFAQ() {
+			INFO("Launching web browser...");
+			bool s = QDesktopServices::openUrl(QUrl("http://blog.hvidtfeldts.net/index.php/2011/12/fragmentarium-faq/"));
 			if (!s) WARNING("Failed to open browser...");
 		}
 

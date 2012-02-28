@@ -6,7 +6,7 @@ void init() {}
 
 uniform sampler2D backbuffer;
 uniform float time;
-vec3 getColor2D(vec2 z) {
+vec3 color(vec2 z) {
 	vec3 col4 = texture2D(backbuffer,(viewCoord*0.9+vec2(1.0))/2.0).xyz;
 	vec3 col3 = texture2D(backbuffer,(viewCoord*1.01+vec2(1.0))/2.0).xyz;
 	vec3 col = max(col4,col3);

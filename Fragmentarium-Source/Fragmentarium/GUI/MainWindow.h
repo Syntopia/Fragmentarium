@@ -31,19 +31,8 @@ namespace Fragmentarium {
 			bool hasBeenSavedOnce;			
 		};
 
-		// A modified QTextEdit with an extended context menu
-		class TextEdit : public QTextEdit {
-			Q_OBJECT
-		public:
-			TextEdit() : QTextEdit() {};
-			TextEdit(QWidget* parent) : QTextEdit(parent) {};
-			void contextMenuEvent(QContextMenuEvent *event);
-			void insertFromMimeData (const QMimeData * source );
 		
-			public slots:
-				void insertText();
-		};
-
+		
 		// An input dialog for the tile based render thingy
 		class TileRenderDialog: public QDialog {
 			Q_OBJECT
@@ -118,9 +107,12 @@ namespace Fragmentarium {
 				void launchSfHome();
 				void launchGallery();
 				void launchGLSLSpecs();
+				void launchFAQ();
+				void launchIntro();
 				void launchReferenceHome();
 				void openFile();
 				void newFile();
+				void insertPreset();
 				void open();
 				bool save();
 				bool saveAs();
@@ -160,6 +152,8 @@ namespace Fragmentarium {
 			QAction* screenshotAction;
 			QAction* sfHomeAction;
 			QAction* glslHomeAction;
+			QAction* introAction;
+			QAction* faqAction;
 			QAction* referenceAction;
 			QAction* galleryAction;
 			QMenu *fileMenu;
@@ -202,6 +196,23 @@ namespace Fragmentarium {
 			QDockWidget* animationController;
 			bool rebuildRequired;
 		};
+
+		// A modified QTextEdit with an extended context menu
+		class TextEdit : public QTextEdit {
+			Q_OBJECT
+		public:
+			TextEdit() : QTextEdit(), mainWindow(0) {};
+			TextEdit(MainWindow* parent) : QTextEdit(parent), mainWindow(parent) {};
+			void contextMenuEvent(QContextMenuEvent *event);
+			void insertFromMimeData (const QMimeData * source );
+		
+		public slots:
+				void insertText();
+		private:
+			MainWindow* mainWindow;
+		};
+
+
 	}
 }
 

@@ -1,3 +1,13 @@
+To be adressed:
+- Redraw timer
+- #Version 130 warnings? Should we switch?
+- 
+
+28-02-12 [MHC]
+				Created tutorials
+				Removed init() for 2D systems (need to '#define providesInit' now)
+				Changed OpenGL redraw timer to 2ms.
+				Added context menu option to insert preset based on current settings.
 
 20-02-12 [MHC] 
 				Fixed: The 2x/4x/.. buffers are dimmed when rendering with DE-Raytracer after Soft-Raytracer

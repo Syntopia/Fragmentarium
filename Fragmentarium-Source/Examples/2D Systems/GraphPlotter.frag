@@ -4,8 +4,6 @@
 #info Plotter
 #group Plotter2D
 
-void init() {};
-
 float rand(vec2 co){
 	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
 	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -20,7 +18,7 @@ uniform float Jitter; slider[0,0.5,2]
 uniform float Detail; slider[0,5,20]
 uniform int Samples; slider[0,3,100]
 uniform float AxisDetail; slider[1,1,10]
-vec3 getColor2D(vec2 pos) {
+vec3 color(vec2 pos) {
 	vec2 step = Detail*vec2(aaScale.x,aaScale.y)/float(Samples);
 	float samples = float(Samples);
 	

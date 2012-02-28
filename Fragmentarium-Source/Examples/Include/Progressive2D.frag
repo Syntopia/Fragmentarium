@@ -80,6 +80,6 @@ void main() {
       vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	float w =1.0;
 	if (GaussianAA) w= exp(-(dot(r,r)*AARange*AARange)/AAExp);
-	gl_FragColor = prev+vec4(pow(color,1.0/Gamma)*w, w);
+	gl_FragColor = prev+vec4(color*w, w);
 }
 

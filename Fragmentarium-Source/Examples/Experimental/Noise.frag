@@ -1,9 +1,8 @@
 #info Noise thing
-#define providesInit
 #define providesColor
 #define providesNormalOffset
-#include "Classic-Noise.frag"
 #include "DE-Raytracer.frag"
+#include "Classic-Noise.frag"
 #group Menger
 
 
@@ -11,9 +10,6 @@
 // Scale parameter. A perfect Menger is 3.0
 uniform float Scale; slider[0.00,1.0,4.00]
 uniform float Scale2; slider[0.00,1.0,4.00]
-
-void init() {
-}
 
 uniform float time;
 uniform float Amplitude; slider[0.01,0.1,2.3]
@@ -37,7 +33,7 @@ vec3 color(vec3 z, vec3 n) {
 }
 
 vec3 normalOffset(vec3 z) {
-	return 0; //0.0084*vec3(cnoise(0.5*z)+cnoise(0.1*z));
+	return vec3(0.0); //0.0084*vec3(cnoise(0.5*z)+cnoise(0.1*z));
 }
 
 #preset Default

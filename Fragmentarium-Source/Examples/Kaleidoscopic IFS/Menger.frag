@@ -19,7 +19,7 @@ uniform vec3 Offset; slider[(0,0,0),(1,1,1),(1,1,1)]
 mat3 rot;
 
 void init() {
-	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+	rot = rotationMatrix3(normalize(RotVector), RotAngle);
 }
 
 // Number of fractal iterations.
@@ -30,15 +30,15 @@ float DE(vec3 z)
 {
 	int n = 0;
 	while (n < Iterations) {
-			z = rot *z;
+		z = rot *z;
 		z = abs(z);
-	if (z.x<z.y){ z.xy = z.yx;}
+		if (z.x<z.y){ z.xy = z.yx;}
 		if (z.x< z.z){ z.xz = z.zx;}
 		if (z.y<z.z){ z.yz = z.zy;}
-          z = Scale*z-Offset*(Scale-1.0);
-	   	if( z.z<-0.5*Offset.z*(Scale-1.0))  z.z+=Offset.z*(Scale-1.0);
-	if (n<ColorIterations) orbitTrap = min(orbitTrap, (vec4(abs(z),dot(z,z))));		
-	
+		z = Scale*z-Offset*(Scale-1.0);
+		if( z.z<-0.5*Offset.z*(Scale-1.0))  z.z+=Offset.z*(Scale-1.0);
+		if (n<ColorIterations) orbitTrap = min(orbitTrap, (vec4(abs(z),dot(z,z))));
+		
 		n++;
 	}
 	

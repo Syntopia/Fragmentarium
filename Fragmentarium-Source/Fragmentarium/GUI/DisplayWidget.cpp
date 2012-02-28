@@ -67,7 +67,7 @@ namespace Fragmentarium {
 			updatePerspective();
 			pendingRedraws = 0;
 			requiredRedraws = 1; // 2 for double buffering?
-			startTimer( 20 );
+			startTimer( 1 );
 			setMouseTracking(true);
 			backgroundColor = QColor(30,30,30);
 			contextMenu = 0;
@@ -402,6 +402,7 @@ namespace Fragmentarium {
 				// we must create both the backbuffer and previewBuffer
 				backBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
 				previewBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
+				
 				INFO(QString("Created front and back buffers as %1x%2 %3.").arg(w).arg(h).arg(b));
 			}
 
@@ -550,6 +551,8 @@ namespace Fragmentarium {
 				shownInfo = true;
 				INFO("This video card supports: " + GetOpenGLFlags().join(", "));
 			}
+			if (height() == 0 || width() == 0) return;
+		
 
 			if (pendingRedraws > 0) pendingRedraws--;
 

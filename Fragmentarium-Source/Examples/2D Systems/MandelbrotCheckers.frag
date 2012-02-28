@@ -15,8 +15,6 @@ uniform float JuliaY; slider[-2,1.3,2]
 
 vec2 c2 = vec2(JuliaX,JuliaY);
 
-void init() {}
-
 vec2 complexMul(vec2 a, vec2 b) {
 	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
 }
@@ -46,7 +44,7 @@ if (length(w-vec2(0.5,0.5))<0.5) a = (1.0-a);
 
 uniform bool Accumulate; checkbox[true]
 
-vec3 getColor2D(vec2 c) {
+vec3 color(vec2 c) {
 	
 	vec2 z = Julia ?  c : vec2(0.0,0.0);
 	
