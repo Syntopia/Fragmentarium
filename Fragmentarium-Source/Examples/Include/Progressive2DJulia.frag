@@ -51,7 +51,7 @@ vec3 getMapColor2D(vec2 c) {
 uniform int ColoringType; slider[0,0,2]
 uniform float ColorFactor; slider[0,0.5,1]
 
-vec3 getColor2D(vec2 c) {
+vec3 color(vec2 c) {
 	if (ShowMap && Julia) {
 		vec2 w = (aaCoord-mapCenter);
 		w.y/=(pixelSize.y/pixelSize.x);

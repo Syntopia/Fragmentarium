@@ -28,9 +28,7 @@ void main(void)
 	float ar = pixelSize.y/pixelSize.x;
 	gl_Position =  gl_Vertex;
 	viewCoord = (gl_Vertex).xy;
-	coord = ((gl_ProjectionMatrix*gl_Vertex).xy/Zoom+  Center);
-	coord.x*= ar;
-     
+	coord = (((gl_ProjectionMatrix*gl_Vertex).xy*vec2(ar,1.0))/Zoom+  Center);
 	aaScale = vec2(gl_ProjectionMatrix[0][0],gl_ProjectionMatrix[1][1])*pixelSize*AntiAliasScale/Zoom;
 }
 
@@ -54,9 +52,11 @@ varying vec2 viewCoord;
 vec2 aaCoord;
 uniform vec2 pixelSize;
 
-vec3 getColor2D(vec2 z) ;
+vec3 color(vec2 z) ;
 
+#ifdef providesInit
 void init(); // forward declare
+#endif
 
 uniform int backbufferCounter;
 
@@ -70,13 +70,14 @@ vec2 rand(vec2 co){
 uniform sampler2D backbuffer;
 
 void main() {
+    aaCoord = viewCoord;
+#ifdef providesInit
 	init();
-
+#endif
       vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);	
 	if (GaussianAA) r*=AARange;
       vec2 c = coord.xy+aaScale*r;
-	vec3 color =  getColor2D(c);
-      
+	vec3 color =  color(c);
       vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	float w =1.0;
 	if (GaussianAA) w= exp(-(dot(r,r)*AARange*AARange)/AAExp);

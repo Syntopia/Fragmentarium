@@ -596,13 +596,14 @@ namespace Fragmentarium {
 			connect(((AnimationController*)animationController)->getAnimationSettings(), SIGNAL(timeUpdated()), this, SLOT(callRedraw()));
 			connect(animationController, SIGNAL(wasHidden()), this, SLOT(animationControllerHidden()));
 
-			renderModeChanged(0);
+			renderModeChanged();
 
 		}
 
 		void MainWindow::animationControllerHidden() {
 			INFO("Animation Controller closed. Switching to automatic render mode.");
-			renderCombo->setCurrentIndex(0);
+			renderModeChanged();
+
 		}
 
 		void MainWindow::setUserUniforms(QGLShaderProgram* shaderProgram) {
@@ -1049,7 +1050,32 @@ namespace Fragmentarium {
 
 			renderModeToolBar->addWidget(new QLabel("Render mode:", this));
 
-			renderCombo= new QComboBox(renderModeToolBar);
+			
+			autoRefreshButton = new QPushButton( "Auto",renderModeToolBar);
+			autoRefreshButton->setCheckable(true);
+			manualRefreshButton = new QPushButton("Manual",renderModeToolBar);
+			manualRefreshButton->setCheckable(true);
+			continousRefreshButton = new QPushButton( "Continuous",renderModeToolBar);
+			continousRefreshButton->setCheckable(true);
+			animationButton = new QPushButton("Animation", renderModeToolBar );
+			animationButton->setCheckable(true);
+			QButtonGroup* bg =new QButtonGroup(renderModeToolBar);
+			bg->addButton(autoRefreshButton);
+			bg->addButton(manualRefreshButton);
+			bg->addButton(continousRefreshButton);
+			bg->addButton(animationButton);
+			
+			connect(autoRefreshButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
+			connect(manualRefreshButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
+			connect(continousRefreshButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
+			connect(animationButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
+			
+			renderModeToolBar->addWidget(autoRefreshButton);
+			renderModeToolBar->addWidget(manualRefreshButton);
+			renderModeToolBar->addWidget(continousRefreshButton);
+			renderModeToolBar->addWidget(animationButton);
+
+			/*
 			renderCombo->addItem("Automatic");
 			renderCombo->addItem("Manual");
 			renderCombo->addItem("Continuous");
@@ -1057,7 +1083,8 @@ namespace Fragmentarium {
 			//renderCombo->addItem("Custom Resolution");
 			connect(renderCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(renderModeChanged(int)));
 			renderModeToolBar->addWidget(renderCombo);
-
+			*/
+			
 			renderButton = new QPushButton(renderModeToolBar);
 			renderButton->setText("");
 			// renderButton->setShortcut(Qt::Key_F6); doesn't work?
@@ -1109,18 +1136,19 @@ namespace Fragmentarium {
 			engine->setPreviewFactor(v);
 		}
 
-		void MainWindow::renderModeChanged(int) {
-			int i = renderCombo->currentIndex() ;
-			if (i == 0) {
+		void MainWindow::renderModeChanged() {
+			
+			QObject* o = QObject::sender();
+			if (0 == 0 || o == autoRefreshButton) {
 				INFO("Automatic screen updates. Every time a parameter or camera changes, an update is triggered.");
-			} else if (i == 1) {
+			} else if (o == manualRefreshButton) {
 				INFO("Manual screen updates. Press 'update' to refresh the screen.");
-			} else if (i == 2) {
+			} else if (o == continousRefreshButton) {
 				INFO("Continuous screen updates. Updates at a fixed interval.");
-			}  else if (i == 3) {
+			}  else if (o == animationButton) {
 				INFO("Animation mode. Use controller to jump in time.");
 			}
-			if (i==3) {
+			if (o == animationButton) {
 				animationController->show();
 				engine->setAnimationSettings(((AnimationController*)animationController)->getAnimationSettings());
 				animationController->resize(animationController->width(), animationController->minimumHeight());
@@ -1128,20 +1156,19 @@ namespace Fragmentarium {
 				engine->setAnimationSettings(0);
 				animationController->hide();
 			}
-			renderButton->setEnabled(i!=0 && i!=3);
-			renderButton->setText( (i==2) ? "Reset Time" : "Update (F6)");
-			engine->setContinuous(i == 2);
-			engine->setDisableRedraw(i == 1);
+			renderButton->setEnabled(o!=autoRefreshButton && o!=animationButton);
+			renderButton->setText( (o==continousRefreshButton) ? "Reset Time" : "Update (F6)");
+			engine->setContinuous(o==continousRefreshButton);
+			engine->setDisableRedraw(o == manualRefreshButton);
 
-			if (i!=2) setFPS(0);
+			if (o!=continousRefreshButton) setFPS(0);
 		}
 
 		void MainWindow::callRedraw() {
-			int i = renderCombo->currentIndex() ;
 			bool state = engine->isRedrawDisabled();
 			engine->setDisableRedraw(false);
 
-			if (i==2) {
+			if (continousRefreshButton->isChecked()) {
 				engine->resetTime();
 			} else {
 				engine->requireRedraw();
@@ -1648,7 +1675,7 @@ namespace Fragmentarium {
 
 		void MainWindow::setFPS(float fps) {
 
-			if (renderCombo->currentIndex()!=2) {
+			if (!continousRefreshButton->isChecked()) {
 				fpsLabel->setText("FPS: n.a.");
 				return;
 			}

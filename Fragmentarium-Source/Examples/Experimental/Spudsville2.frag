@@ -1,5 +1,5 @@
 #info Spudsville
-#include "DE-Raytracer.frag"
+#include "Soft-Raytracer.frag"
 //#include "Fast-Raytracer.frag"
 #group Spudsville
 
@@ -56,14 +56,13 @@ void powN2(inout vec3 z, float zr0, inout float dr) {
 
 
 uniform int MN; slider[0,5,50]
-float DE(vec3 z, inout float dz, inout int iter)
+float DE(vec3 z)
 {
 	vec3 c = z;
 	int n = 0;
+       float dz = 1.0;
 	float r = length(z);
-	while (r<10 && n < 14) {
-		if (n==iter)break;
-		
+	while (r<10.0 && n < 14) {
 		if (n<MN) {
 			boxFold(z,dz);
 			sphereFold(z,dz);
@@ -76,30 +75,11 @@ float DE(vec3 z, inout float dz, inout int iter)
 		}
 		r = length(z);
 		
-		if (n<2 && iter<0) orbitTrap = min(orbitTrap, (vec4(abs(4.0*z),dot(z,z))));
+		if (n<2) orbitTrap = min(orbitTrap, (vec4(abs(4.0*z),dot(z,z))));
 		n++;
 	}
-	if (iter<0) iter = n;
 	
-	return r; // (r*log(r) / dz);
-}
-uniform bool Analytic; checkbox[true]
-
-uniform float DetailGrad;slider[-7,-2.8,7];
-float gradEPS = pow(10.0,DetailGrad);
-
-float DE(vec3 pos) {
-	int iter = -1;
-	float dz = 1.0;
-	if (Analytic) {
-		float r = DE(pos, dz, iter);
-		return (r*log(r) / dz);
-	} else  {
-		vec3 e = vec3(0.0,gradEPS,0.0);
-		float r = abs(DE(pos, dz, iter));
-		vec3 grad =vec3( DE(pos+e.yxx, dz, iter),  DE(pos+e.xyx, dz, iter),  DE(pos+e.xxy,dz,  iter) )-vec3(r);
-		return r*log(r)*0.5/ length( grad/gradEPS);
-	}
+	return (r*log(r) / dz);
 }
 
 

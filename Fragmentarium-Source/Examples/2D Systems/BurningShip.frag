@@ -14,8 +14,8 @@ vec2 formula(vec2 z, vec2 c) {
 }
 
 #preset Default
-Center = -0.983448,0.033656
-Zoom = 19.6131
+Center = -1.7553,0.0335209
+Zoom = 23.1601
 AntiAliasScale = 1
 AntiAlias = 3
 Iterations = 33

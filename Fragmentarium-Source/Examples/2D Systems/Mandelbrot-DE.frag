@@ -80,7 +80,7 @@ vec3 color(vec2 c) {
 	
 	
 	float de =(Zoom/100.0)* r*log2(r)/dr;
-	if (mod(de*2000,1.0) > 0.9) return vec3(1.0,0.0,0.0);
+	if (mod(de*2000.0,1.0) > 0.9) return vec3(1.0,0.0,0.0);
 	if (de<BR/1000000.0) return vec3(0.0,0.0,0.0);
 	//if (mod(de*2000,1.0) > 0.5) return vec3(0.9);
 	

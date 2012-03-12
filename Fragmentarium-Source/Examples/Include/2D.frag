@@ -25,9 +25,7 @@ void main(void)
 	float ar = pixelSize.y/pixelSize.x;
 	gl_Position =  gl_Vertex;
 	viewCoord = (gl_ProjectionMatrix*gl_Vertex).xy;
-	coord = ((gl_ProjectionMatrix*gl_Vertex).xy/Zoom+  Center);
-	coord.x*= ar;
-     
+	coord = (((gl_ProjectionMatrix*gl_Vertex).xy*vec2(ar,1.0))/Zoom+  Center);
 	aaScale = vec2(gl_ProjectionMatrix[0][0],gl_ProjectionMatrix[1][1])*pixelSize*AntiAliasScale/Zoom;
 }
 

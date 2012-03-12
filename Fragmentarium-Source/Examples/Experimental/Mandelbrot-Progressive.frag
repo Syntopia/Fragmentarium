@@ -52,7 +52,7 @@ vec3 getMapColor2D(vec2 c) {
 	
 }
 
-vec3 getColor2D(vec2 c) {
+vec3 color(vec2 c) {
 	if (ShowMap && Julia) {
 		vec2 w = (aaCoord-mapCenter);
 		w.y/=(pixelSize.y/pixelSize.x);

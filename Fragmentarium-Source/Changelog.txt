@@ -3,6 +3,12 @@ To be adressed:
 - #Version 130 warnings? Should we switch?
 - 
 
+11-03-12 [MHC] Fixed error in 2D.frag, where changing aspect ratio would mess up viewport translation.
+			   Fixed error in Progressive2DJulia.frag, where the HUD-display would sometimes not appear.
+			   Cleaned up examples.
+			   Added Knighty's 'hyperbolic-tesselation-3-5-3-colored-02'
+			   The syntax for 2D systems has changed, simply call 'vec2 color(vec2)' now.
+			   
 28-02-12 [MHC]
 				Created tutorials
 				Removed init() for 2D systems (need to '#define providesInit' now)

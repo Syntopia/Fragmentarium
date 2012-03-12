@@ -36,6 +36,10 @@ vec2 cInverse(vec2 a) {
        return	vec2(a.x,-a.y)/dot(a,a);
 }
 
+vec2 cDiv(vec2 a, vec2 b) {
+	return cMul( a,cInverse(b));
+}
+
 vec2 cExp(vec2 z) {
 	return vec2(exp(z.x) * cos(z.y), exp(z.x) * sin(z.y));
 }
@@ -44,6 +48,10 @@ vec2 cLog(vec2 a) {
 	float b =  atan(a.y,a.x);
 	if (b>0.0) b-=2.0*3.1415;
 	return vec2(log(length(a)),b);
+}
+
+vec2 cSqr(vec2 z) {
+	return vec2(z.x*z.x-z.y*z.y,2.*z.x*z.y);
 }
 
 vec2 cSin(vec2 z) {

@@ -10,10 +10,11 @@ V0.9
 
 Prioritized ideas:
 
-- Make it easier to shift from continuous to manual.
++ Make it easier to shift from continuous to manual.
+- Keyframe Animation.
+- HDRI Panorama for background, lighting, and specular.
 - Mouse sensitivity
 - Fix: icons
-- Keyframe Animation.
 - A 2D camera which scales from the current mouse position
 - Update raytracer: environment mapping?
 - Commandline support

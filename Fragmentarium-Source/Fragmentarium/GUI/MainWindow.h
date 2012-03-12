@@ -90,7 +90,7 @@ namespace Fragmentarium {
 				void callRedraw();
 				void showDebug();
 				void pasteSelected();
-				void renderModeChanged(int);
+				void renderModeChanged();
 				void saveParameters();
 				void loadParameters();
 				void indent();
@@ -123,6 +123,12 @@ namespace Fragmentarium {
 				void toggleFullScreen();
 
 		private:
+			QPushButton* autoRefreshButton;
+			QPushButton* manualRefreshButton;
+			QPushButton* continousRefreshButton;
+			QPushButton* animationButton;
+
+			
 			QList<QWidget *> disabledWidgets;
 			QLabel* buildLabel;
 			QSlider* viewSlider;
@@ -163,7 +169,6 @@ namespace Fragmentarium {
 			QToolBar *fileToolBar;
 			QToolBar *renderToolBar;
 			QToolBar *renderModeToolBar;
-			QComboBox* renderCombo;
 			QPushButton* renderButton;
 			QToolBar *editToolBar;
 			QAction *newAction;
@@ -210,6 +215,7 @@ namespace Fragmentarium {
 				void insertText();
 		private:
 			MainWindow* mainWindow;
+
 		};
 
 

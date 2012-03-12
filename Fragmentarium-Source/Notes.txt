@@ -1,68 +1,52 @@
+
+
 TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
-I've released a new build of Fragmentarium, version 0.9 ("Sun Ra").
+I've released a new build of Fragmentarium, version 0.9.1 ("Progression").
 It can be downloaded at Github: http://syntopia.github.com/Fragmentarium/get.html
 (As of now only Windows builds are available)
 
-New features:
+The usual caveats apply: Fragmentarium is very much work in progress, and is best suited for people who likes to experiment with code. 
 
-- New high resolution output dialog (with auto-naming and auto-backup of scripts and parameters)
-- Locking of parameters (makes rendering considerably faster in some cases by turning uniforms into constants): http://blog.hvidtfeldts.net/index.php/2011/07/optimizing-glsl-code/
+The main new feature is support for dual buffers and dual shaders.
+The front buffer is swapped after each frame to the backbuffer, which can be accessed as: 'uniform sampler2D backbuffer;'.
+Buffers can be created as either 8-bit or 16-bit integer, or 32-bit float.
+The new buffers makes it possible to create accumulated ray tracing, high quality AA for 2D systems, and many types of feedback systems.
+The easiest way to start exploring these features is by looking at the new tutorials (see below).
 
 Minor improvements:
 
-- Mousewheel now changes camera position, not FOV
-- Default raytracer improvement:
-  - Removed 'AntiAliasBlur','MaxRayStepDiv', and 'NormalDetail' setting
-  - Added reflection
-  - Shadows (hard, and pseudo-soft shadows)
-  - Added dithering (for banding removal) and very simple RNG functionality.
-  - Added new ambient occlusion method (similar to Rrola/Subblue - sample along normal for proximity).
-- Added a simpler, but faster version of my raytracer (GPL). Just include "Fast-Raytracer.frag" instead of "DE-Raytracer.frag"
-- Added a port of Subblues Fractal Labs (fractal.io) raytracer (GPL). Just include "Subblue-Raytracer.frag" instead of "DE-Raytracer.frag"
-- Added vertical scroll to user parameter groups.
-- Added '#define providesInit', '#define providesColor' (to provide custom coloring)
-- Added vec4 GUI slider type
-- Now disables uniformes which are not used in shader.
-- Compiler warnings are now shown in output, also if there is no errors.
-- Bugfix: resize of window now updates aspect ratio.
-- Bugfix: handling of specular exponent = 0
-- BugFix: fixed fps timer for >500ms renders
-- BugFix: Tile Render now works in manual mode.
-- BugFix: Using mouse and key movement at the same time, would result in distance between eye and target getting smaller and smaller.
+- Changed UI a bit to make it easier to change from automatic to continuous rendering.
+- Added context menu option to insert preset based on current settings.
+- Fixed error in 2D.frag, where changing aspect ratio would mess up viewport translation.			   
+- The syntax for using '2D.frag' is simpler now. Just implement: "vec3 color(vec2 c);"
+- Bugfix: Fixed some errors in the included fragments: Noise, Tetrahedron, and several of Knighty's examples were missing a 'providesInit'. 
+- Bugfix: Fixed specular bug in standard-raytracer.
+- Bugfix: Copying from web was sometimes weird (should now strip rich text).
+- Bugfix: Autosave files now creates a directory with output files (necessary since the #BufferShader directive broke the old 'include all in one file' system).
 
 New fragments:
-
-- A whole collection of new fragments from Knighty!
-- Some of my own new fragments: GraphPlotter (http://blog.hvidtfeldts.net/index.php/2011/07/plotting-high-frequency-functions-using-a-gpu/), KaliSet, BurningShip, Spudsville, Mandelbrot2D, Terrain.
-- 2DJulia.frag and Complex.frag to make 2D fractals easier.
-- New raytracers: Subblue-Raytracer.frag, Fast-Raytracer.frag
-- QuilezLib with sphere tracing primitives (http://iquilezles.org/www/articles/distfunctions/distfunctions.htm)
-- Ashima-Noise.frag: Noise founctions from: http://www.lighthouse3d.com/2011/03/noise-for-glsl/
-
-Comments:
-
-Some of the new utility libraries makes fractals very easy to explore. 
-For instance, 2D-Escape time fractals are very easy to explore now. 
-
-Here is an example:
-
-#include "2DJulia.frag"
-#include "Complex.frag"
-
-// 'Ducks' fractal by Samuel Monnier
-vec2 formula(vec2 z, vec2 c) {
-    return cLog(vec2(z.x,abs(z.y)))+c;
-}
-
-which produces the attached output.
-
-For more example of images generated with the new version, take a look at the Flickr Fragmentarium stream:
-http://www.flickr.com/groups/fragmentarium/
+- Added a new 'tutorial' category, with examples of many features in Fragmentarium.
+- Soft-Raytracer.frag - An example progressive (accumulated) ray-tracer. DOF using finite aperture, HDR and tonemapping, soft shadows, and multiple ray ambient occlusion, and sub-pixel jittered high-quality anti-alias. All very experimental.
+- Progressive2D.frag, Progressive2DJulia.frag - Can be used for high-quality (progressive) anti-alias of 2D systems.
+- A Quilez inspired 'Domain Distortion' example (http://www.iquilezles.org/www/articles/warp/warp.htm)
+- A dual-buffered Game of Life example.
+- Mandelbrot Averaged Stripe Coloring example.
+- Lifted Domain Coloring example (in 2D/3D), see http://blog.hvidtfeldts.net/index.php/2012/03/lifted-domain-coloring/
+- New 'Theory' category with examples of the dual number and automatic differentiation method.
+- Some great new scripts from Knighty, for polyhedrons, knots, polychora, and hyperbolic tesselations. See http://blog.hvidtfeldts.net/index.php/2012/02/distance-estimated-polychora/ and http://blog.hvidtfeldts.net/index.php/2012/01/knots-and-polyhedra/
 
 ATI users
 
 Several fragments fail on ATI cards. This seems to be due to faulty GLSL driver optimizations. A workaround is to lock the 'iterations' variable (click the padlock next to it).
-Adding a bailout check inside the main DE loop (e.g. 'if (length(z)>1000.0) break;') also seems to do the job.
+Adding a bailout check inside the main DE loop (e.g. 'if (length(z)>1000.0) break;') also seems to do the job. I don't own an ATI card, so I cannot debug this with people helping.
 
+Mac users
 
+Some Mac users has reported problems with the last version of Fragmentarium. Again, I don't own a Mac, so I cannot solve these issues without help.
+
+Finally, please read the FAQ, before asking questions: 
+http://blog.hvidtfeldts.net/index.php/2011/12/fragmentarium-faq/
+
+For examples of images generated with the new version, take a look at the Flickr Fragmentarium stream:
+http://www.flickr.com/groups/fragmentarium/

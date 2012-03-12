@@ -3,7 +3,7 @@
 #buffer RGBA32F
 #buffershader "BufferShader.frag"
 
-#info Default Raytracer (by Syntopia)
+#info Soft Raytracer - Change render mode to Continuous!
 #camera 3D
 
 #vertex

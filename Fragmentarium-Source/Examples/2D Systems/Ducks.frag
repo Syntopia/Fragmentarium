@@ -75,22 +75,31 @@ ColorFactor = 0.5
 
 
 #preset Cell
-Center = -408.698,10
-Zoom = -0.000493858
-Iterations = 165
+Center = -490.172,-11.2585
+Zoom = -0.000334263
+AntiAliasScale = 1
+AntiAlias = 2
+Iterations = 184
 PreIterations = 4
 R = 0.61875
 G = 0.6125
 B = 0.47205
-C = 1
+C = 1.02522
 Julia = true
 JuliaX = 0.36469
 JuliaY = 5.89285
+ShowMap = true
+MapZoom = 2.1
+EscapeSize = 5
+ColoringType = 0
+ColorFactor = 0.5
 #endpreset
 
 #preset Spooky
-Center = -0.05144,-1.0548
-Zoom = 92.248
+Center = 0.288639,-0.855656
+Zoom = 206.094
+AntiAliasScale = 1
+AntiAlias = 2
 Iterations = 261
 PreIterations = 6
 R = 0.69375
@@ -100,6 +109,11 @@ C = 0.9625
 Julia = true
 JuliaX = 0.38824
 JuliaY = 5.89285
+ShowMap = true
+MapZoom = 2.1
+EscapeSize = 5
+ColoringType = 0
+ColorFactor = 0.5
 #endpreset
 
 

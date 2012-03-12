@@ -37,7 +37,7 @@ vec3 color(vec2 pos) {
 	}
 	vec3 color = vec3(1.0);
 	float ss= abs(float(count))/float(mySamples);
-	if (abs(count)!=mySamples) color =  vec3(ss);
+	if (ss<1.0) color =  vec3(ss);
 	vec2 axisDetail = AxisDetail*aaScale;
 	if (abs(pos.x)<axisDetail.x*1.0 || abs(pos.y)<axisDetail.y*1.0) color-= 1.0-vec3(0.2,0.2,1.0);
 	if (abs(mod(pos.x,1.0))<axisDetail.x || abs(mod(pos.y,1.0))<axisDetail.y) color-= 1.0-vec3(0.8,0.8,1.0);

@@ -11,7 +11,7 @@
 // 
 // Subblue's raytracer is another faster option.
 #include "Fast-Raytracer.frag"
-#include "Subblue-Raytracer.frag"
+//#include "Subblue-Raytracer.frag"
 
 // Here one of the simplest fractals,
 // a distance estimated Menger cube.
