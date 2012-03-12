@@ -21,7 +21,7 @@ namespace Fragmentarium {
 
 		using namespace SyntopiaCore::Misc;
 
-		VariableWidget::VariableWidget(QWidget* parent, QWidget* variableEditor, QString name) : QWidget(parent), variableEditor(variableEditor), name(name), updated(false), systemVariable(false) {
+		VariableWidget::VariableWidget(QWidget* parent, QWidget* variableEditor, QString name) : QWidget(parent), name(name),  updated(false), systemVariable(false), variableEditor(variableEditor)  {
 			connect(this, SIGNAL(changed(bool)), variableEditor, SLOT(childChanged(bool)));
 			QHBoxLayout* vl = new QHBoxLayout(this);
 			vl->setSpacing(0);
