@@ -491,7 +491,7 @@ namespace Fragmentarium {
 			oldDirtyPosition = -1;
 			setFocusPolicy(Qt::StrongFocus);
 
-			version = SyntopiaCore::Misc::Version(0, 9, 0, -1, " (\"Sun Ra\")");
+			version = SyntopiaCore::Misc::Version(0, 9, 1, -1, " (\"Chiaroscuro\")");
 			setAttribute(Qt::WA_DeleteOnClose);
 
 			QSplitter*	splitter = new QSplitter(this);
@@ -1053,6 +1053,7 @@ namespace Fragmentarium {
 			
 			autoRefreshButton = new QPushButton( "Auto",renderModeToolBar);
 			autoRefreshButton->setCheckable(true);
+			autoRefreshButton->setChecked(true);
 			manualRefreshButton = new QPushButton("Manual",renderModeToolBar);
 			manualRefreshButton->setCheckable(true);
 			continousRefreshButton = new QPushButton( "Continuous",renderModeToolBar);
@@ -1139,7 +1140,7 @@ namespace Fragmentarium {
 		void MainWindow::renderModeChanged() {
 			
 			QObject* o = QObject::sender();
-			if (0 == 0 || o == autoRefreshButton) {
+			if (o == 0 || o == autoRefreshButton) {
 				INFO("Automatic screen updates. Every time a parameter or camera changes, an update is triggered.");
 			} else if (o == manualRefreshButton) {
 				INFO("Manual screen updates. Press 'update' to refresh the screen.");
@@ -1336,7 +1337,11 @@ namespace Fragmentarium {
 				WARNING(e.getMessage());
 			}	
 			int ms = start.msecsTo(QTime::currentTime());
-			INFO(QString("Compiled script in %1 ms.").arg(ms));
+			if (engine->hasShader()) {
+				INFO(QString("Compiled script in %1 ms.").arg(ms));
+			} else {
+				WARNING(QString("Failed to compile script (%1 ms).").arg(ms));
+			}
 			return true;
 		}
 

@@ -1,5 +1,5 @@
 #version 130
-#info 3D hyperbolic tessellation. Coxeter group 3-5-3. Poincaré ball model. Distance Estimator (knighty 2012)
+#info 3D hyperbolic tessellation. Coxeter group cyclic m-3-n-3. Poincaré ball model. Distance Estimator (knighty 2012)
 #define providesInit
 #define providesColor
 #include "DE-Raytracer.frag"
@@ -8,6 +8,12 @@
 #group Hyperbolic-tesselation
 // Iteration number.
 uniform int Iterations;  slider[0,10,20]
+
+// Symmetry group type.
+uniform int TypeM;  slider[4,5,5]
+
+// Symmetry group type.
+uniform int TypeN;  slider[3,5,5]
 
 // U 'barycentric' coordinate for the 'principal' node
 uniform float U; slider[0,1,1]
@@ -58,18 +64,18 @@ vec4 hnormalizew(vec4 v){//normalization of (timelike) vectors in Minkowski spac
 	return v*l;
 }
 void init() {
-	float cospin=cos(PI/5.);
-	float scospin=sqrt(4./3.*cospin*cospin-3./4.);
+	float cospim=cos(PI/float(TypeM)), cospin=cos(PI/float(TypeN));
+	float scospim=sqrt(3./4.-cospim*cospim), scospin=sqrt(cospin*cospin+(cospim+cospin)*(cospim+cospin)/(3.-4.*cospim*cospim)-3./4.);
 
 	//na and nb are simply vec4(1.,0.,0.,0.) and vec4(0.,1.,0.,0.) respectively
-	nc=0.5*vec4(0,-1,sqrt(3.),0.);
-	nd=vec4(-0.5,-cospin,-cospin/sqrt(3.),-scospin);
+	nc=vec4(-cospim,-0.5,scospim,0.);
+	nd=vec4(-0.5,-cospin,-0.5*(cospin+cospim)/scospim,-scospin);
 
 	vec4 pabc,pbdc,pcda,pdba;
-	pabc=vec4(0.,0.,0.,0.5*sqrt(3.));
-	pbdc=0.5*sqrt(3.)*vec4(scospin,0.,0.,0.5);
-	pcda=vec4(0.,0.5*sqrt(3.)*scospin,0.5*scospin,cospin*2./sqrt(3.));
-	pdba=vec4(0.,0.,scospin,cospin/sqrt(3.));
+	pabc=vec4(0.,0.,0.,nc.z);
+	pbdc=vec4(-nc.z*nd.w,0.,nc.x*nd.w,(-nc.z*nd.x+nc.x*nd.z));
+	pcda=vec4(0.,-nc.z*nd.w,nc.y*nd.w,(nc.y*nd.z-nc.z*nd.y));
+	pdba=vec4(0.,0.,-nd.w,-nd.z);
 	
 	p=hnormalizew(U*pabc+V*pbdc+W*pcda+T*pdba);
 
@@ -167,27 +173,10 @@ vec3 color(vec3 pos, vec3 normal){
 	return color;
 }
 #preset Default
-U = 0
-V = 1
-W = 1
-T = 1
-VRadius = 0.03371
-SRadius = 0.01798
-useUniformRadius = false
-useCameraAsRotVector = true
-RotVector = 0,0,1
-segAColor = 0.815686,0.129412,0.129412
-segBColor = 0.152941,0.741176,0.0862745
-segCColor = 0.145098,0.372549,0.866667
-segDColor = 0.847059,0.109804,0.74902
-verticesColor = 0.792157,0.607843,0.145098
-Iterations = 13
-RotAngle = 0
-CSphRad = 0.999
 FOV = 0.4
 Eye = 0,0,0
-Target = -0.897865,-0.096,0.429677
-Up = -0.0748119,0.995012,0.0659802
+Target = -0.818906,0.0437113,0.57226
+Up = 0.0370439,0.999042,-0.0232953
 AntiAlias = 1
 Detail = -3.53094
 DetailAO = -1.57143
@@ -205,7 +194,7 @@ CamLight = 1,1,1,2
 CamLightMin = 0
 Glow = 1,1,1,0
 GlowMax = 20
-Fog = 1.06422
+Fog = 0.928
 HardShadow = 0
 ShadowSoft = 2
 Reflection = 0
@@ -223,4 +212,23 @@ EnableFloor = false
 FloorNormal = 0,0,0
 FloorHeight = 0
 FloorColor = 1,1,1
+Iterations = 10
+U = 1
+V = 1
+W = 1
+T = 1
+VRadius = 0.13334
+SRadius = 0.04286
+useUniformRadius = false
+useCameraAsRotVector = true
+RotVector = 0,0,1
+RotAngle = 0
+CSphRad = 0.999
+segAColor = 0.815686,0.129412,0.129412
+segBColor = 0.152941,0.741176,0.0862745
+segCColor = 0.145098,0.372549,0.866667
+segDColor = 0.847059,0.109804,0.74902
+verticesColor = 0.792157,0.607843,0.145098
+TypeM = 5
+TypeN = 3
 #endpreset

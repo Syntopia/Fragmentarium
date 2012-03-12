@@ -18,7 +18,7 @@ varying vec3 from; // out
 varying vec2 coord; // out
 varying float zoom; // out
 varying vec3 dir; // out
-in vec4 gl_Vertex; // in 
+// in vec4 gl_Vertex; // in 
 void main(void)
 {
 	gl_Position =  gl_Vertex;

@@ -42,6 +42,7 @@ namespace Fragmentarium {
 			void resetCamera(bool fullReset);
 			void setDisabled(bool disabled) { this->disabled = disabled; }
 			void setFragmentShader(FragmentSource fs);
+			bool hasShader() { return (shaderProgram!=0); }
 			void setupFragmentShader();
 			void setupBufferShader();
 			void setContinuous(bool value) { continuous = value; }
