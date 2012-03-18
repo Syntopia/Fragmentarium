@@ -162,7 +162,7 @@ uniform vec3 FloorColor; color[1,1,1]
 bool floorHit = false;
 float floorDist = 0.0;
 vec3 floorNormal = normalize(FloorNormal);
-int fSteps = 0;
+float fSteps = 0.0;
 float DEF(vec3 p) {
 	float d = DE(p);
 	if (EnableFloor) {
@@ -306,7 +306,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// Check for bounding sphere
 	float dotFF = dot(from,from);
 	float d = 0.0;
-	fSteps = 0;
+	fSteps = 0.0;
 	float dotDE = dot(direction,from);
 	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
 	
@@ -328,7 +328,6 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
-		
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
 		dist = MaxDistance;
@@ -347,13 +346,15 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
 			if (dist < epsModified) break;
-                    if (totalDist > MaxDistance) break;
+                    if (totalDist > MaxDistance) {
+				fSteps -= (totalDist-MaxDistance)/dist;
+				break;
+			}
 		}
 	}
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
- 	
-	vec3 hitColor;
-	float stepFactor = clamp((float(fSteps))/float(GlowMax),0.0,1.0);
+ 	vec3 hitColor;
+	float stepFactor = clamp((fSteps)/float(GlowMax),0.0,1.0);
 	vec3 backColor = BackgroundColor;
 	if (GradientBackground>0.0) {
 		float t = length(coord);
