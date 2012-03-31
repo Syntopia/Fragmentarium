@@ -490,7 +490,7 @@ namespace Fragmentarium {
 				glRectf(-1,-1,1,1); 
 			}
 
-			glFinish();
+			//	glFinish(); <-- should we call this?
 			shaderProgram->release();
 
 		   

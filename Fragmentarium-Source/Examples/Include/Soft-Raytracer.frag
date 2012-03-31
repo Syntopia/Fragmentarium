@@ -456,7 +456,9 @@ void main() {
 	-(lensOffset);
 	
 	vec3 color =  trace(from+lensOffset,rayDir,hit,hitNormal);
-	color = max(vec3(0.0),color);
+	color = max(vec3(0.0),color); // necessary?
+       if (color!=color) { color = 0.0; } // NAN check
+
 	// Accumulate
 	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	float w =1.0-length(disc);  //w=1.0;

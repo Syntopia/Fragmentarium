@@ -51,8 +51,8 @@ void main() {
 	if (ExponentialExposure) {
 		c = vec3(1.0)-exp(-c*Exposure);
 	} else {
-		c = c*Exposure;
-		c = c/(vec3(1.0)+c);
+		//c = c*Exposure;
+		//c = c/(vec3(1.0)+c);
 	}
 	c = ContrastSaturationBrightness(c, Brightness, Saturation, Contrast);
 	gl_FragColor = vec4(c,1.0);

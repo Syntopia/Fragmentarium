@@ -42,8 +42,8 @@ uniform float Brightness; slider[0.0,1.0,5.0];
 uniform float Contrast; slider[0.0,1.0,5.0];
 uniform float Saturation; slider[0.0,1.0,5.0];
 
-uniform float AARange; slider[0.1,1.,15.3]
-uniform float AAExp; slider[0.1,1,15.3]
+uniform float AARange; slider[0.0,1.,15.3]
+uniform float AAExp; slider[0.0,1,15.3]
 uniform bool GaussianAA; checkbox[true]
 
 varying vec2 coord;
@@ -69,18 +69,34 @@ vec2 rand(vec2 co){
 
 uniform sampler2D backbuffer;
 
+
+vec2 uniformDisc(vec2 co) {
+	vec2 r = rand(co);
+	return sqrt(r.y)*vec2(cos(r.x*6.28),sin(r.x*6.28));
+}
+
 void main() {
     aaCoord = viewCoord;
 #ifdef providesInit
 	init();
 #endif
-      vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);	
-	if (GaussianAA) r*=AARange;
-      vec2 c = coord.xy+aaScale*r;
+    //  vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);	
+	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter)+1.0) );
+	float w =1.0;
+      if (GaussianAA) {
+	 	// Gaussian
+		w= exp(-dot(r,r)/AAExp)-exp(-1.0/AAExp);
+		r*=AARange;
+				
+	      // Lancos
+	      // w = sin(r.x)*sin(r.x/AARange)*sin(r.y)*sin(r.y/AARange)/(r.x*r.x*r.y*r.y*AARange*AARange);
+	      // if (w!=w) w = 1.0;
+	}
+	vec2 c = coord.xy+aaScale*r;
 	vec3 color =  color(c);
       vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
-	float w =1.0;
-	if (GaussianAA) w= exp(-(dot(r,r)*AARange*AARange)/AAExp);
-	gl_FragColor = prev+vec4(color*w, w);
+
+	if (color!=color) { color = 0.0; w = 0.0; } // NAN check
+      gl_FragColor = prev+vec4(color*w, w);
 }
 
