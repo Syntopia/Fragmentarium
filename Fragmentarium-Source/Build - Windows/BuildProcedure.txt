@@ -8,43 +8,8 @@ Windows:
 - Check dependencies in Process Explorer - update Build\Windows\copyWin32Files.bat to reflect this.
 - Run copyWin32Files.bat
 - Zip the content of 'Fragmentarium' and name the files after the following template: "Fragmentarium-Windows_Binary_v0.8.0.zip"
-- Run the Inno Setup installer.
-- Make an 'export' of the Trunk SVN directory (e.g. right-mouse-button-drag the directory to a new location, and use the context menu) into a directory named 'Fragmentarium Source Code' and zip the contents into an archive named "Fragmentarium-Source-v0.8.0.zip".
-- Log onto SourceForge choose 'Admin | File Releases'. Choose 'Fragmentarium | Add Release'. Choose a suitable name: "Version 0.8.0 (Exonautica)"
-
-- Update the SourceForge web pages.
-- Send out SourceForge news.
-- Mention on Syntopia Blog.
 
 
-
-
-Template for SourceForge news updates:
-
-Fragmentarium 0.9.0 ("Glasnost") Released
--------------------------------------------
-
-Binaries for Windows XP and Vista. Source for Linux and Mac. 
-(Mac binaries will be available shortly)
- 
-New features: 
-- Template renderers: camera export is now working.
-- Implemented a 'Triangle' primitive. E.g.: 'Triangle[0,0,0;1,0,0;0.5,0.5,0.5]' is now a valid primitive. 
-- Added support for '#define varname value' preprocessor substitutions (useful for declaring constant variables).
-
-Minor changes and bug fixes:
-- Added 'FastRotate' button (draws a subset while rotating/translating the view).
-- Template Renderer: Missing primitives no longer cancels the renderer, but only warns.
-- OpenGL renderer now turns off GLWidget when rendering (makes build phase faster).
-- Fixed CR+CR+LF export bug.
-- Enabled the Cut,Paste,Copy main menu
-- Removed an extensive memory leak (leaked 16 bytes per created state).
-- When resizing the OpenGL window, width/height/aspect ratio is shown.
-- Corrected some syntax highlighter bugs
-- Fixed a bug when going into full screen mode (not all chrome was hidden)
-
-Download instructions at:
-http://structuresynth.sourceforge.net/download.php
 
 
                 
