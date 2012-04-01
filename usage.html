@@ -131,9 +131,7 @@
 // Number of iterations
 uniform int Iterations; slider[10,100,1000]
 
-void init() {}
-
-vec3 getColor2D(vec2 c) {
+vec3 color(vec2 c) {
   vec2 z = vec2(0.0);
   for (int i = 0; i < Iterations; i++) {
     z = vec2(z.x*z.x-z.y*z.y,2*z.x*z.y) +  c;
@@ -148,8 +146,7 @@ vec3 getColor2D(vec2 c) {
 					<img src="images/mandel.png" /><br/>
 					The first line includes the "2D.frag" which is a very simple fragment - its only task is to take care of anti-alias.
 					Using "2D.frag" simply requires that the user implements a function 'getColor2D', which gets the 2D model position as input, and must return a RGB color in a three component vector.<br/><br/>
-					The "void init() {}" line does nothing. It can be used to run initialization code, but is not needed here. Since the 'main' function in "2D.frag" expect this function to be defined, it is necessary to provide it, even though it is empty.<br/><br/>
-
+				
 					Also notice the 'uniform int Iterations' line. This line creates a slider in the Fragmentarium UI, and binds it to the 'Iterations' variable in the GLSL script. The comment line above this line will appear as a tooltip in UI as well.
 					<br /><br />
 					</p>
@@ -163,8 +160,6 @@ vec3 getColor2D(vec2 c) {
 						The second example shows how to implement a Distance Estimated system. Distance Estimated systems belongs to a special class of systems, defined by a function which is able to calculate an upper bound to the distance to the closest part of the object. Many interesting fractals can be expressed by a distance estimator. In the example below, the distance estimator represents a system of eight spheres located at the corners of a cube.
 					<pre>
 #include "DE-Raytracer.frag"
-
-void init() {}
 
 float DE(vec3 pos) {
 	return abs(length(abs(pos)+vec3(-1.0))-1.2);
