@@ -37,6 +37,8 @@ namespace Fragmentarium {
 			/// Calling this function multiple times will still only result in one redraw
 			void requireRedraw();
 			void clearWorld();
+			void updateRefreshRate();
+
 			void reset();
 			void setContextMenu(QMenu* contextMenu) { this->contextMenu = contextMenu; }
 			void resetCamera(bool fullReset);
@@ -57,8 +59,9 @@ namespace Fragmentarium {
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
-			public slots:
-				void clearPreviewBuffer();
+		public slots:
+			void clearPreviewBuffer();
+			void timerSignal();
 		protected:
 			void tileRender();
 			void drawFragmentProgram(int w,int h);
@@ -68,9 +71,8 @@ namespace Fragmentarium {
 			void mouseReleaseEvent ( QMouseEvent * ev);
 			void mousePressEvent ( QMouseEvent * ev);
 			void initializeGL();
-			void timerEvent( QTimerEvent * );
 			void paintEvent(QPaintEvent * ev);  
-
+			
 			/// Actual drawing is implemented here
 			void paintGL();
 
@@ -119,6 +121,9 @@ namespace Fragmentarium {
 			int nextActiveTexture;
 
 			QDateTime tileRenderStart;
+			QMap<QString, int> TextureCache;
+			bool doClearBackBuffer;
+			QTimer* timer;
 		};
 	};
 

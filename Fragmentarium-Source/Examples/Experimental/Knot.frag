@@ -20,7 +20,7 @@ void rotate(inout vec2 v, float angle) {
 		-sin(angle)*v.x+cos(angle)*v.y);
 }
 
-vec3 color(vec3 p, vec3 n) {
+vec3 baseColor(vec3 p, vec3 n) {
 	vec3 pos = p;
 	float mobius = ((a+b)/polyfoldOrder) * atan(p.y,p.x);
 	p.x = length(p.xy)-R1;

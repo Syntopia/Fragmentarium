@@ -1,74 +1,9 @@
 #donotrun
-
-#buffer RGBA32F
-#buffershader "BufferShader.frag"
-
 #info Soft Raytracer - Change render mode to Continuous!
-#camera 3D
+#include "3D.frag"
 
-#vertex
-
-#group Camera
-
-
-// Field-of-view
-uniform float FOV; slider[0,0.4,2.0] NotLockable
-uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
-uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
-uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
-
-varying vec3 from;
-uniform vec2 pixelSize;
-varying vec2 coord;
-varying vec2 viewCoord;
-varying vec3 dir;
-varying vec3 Dir;
-varying vec3 UpOrtho;
-varying vec3 Right;
-uniform int backbufferCounter;
-varying vec2 PixelScale;
-
-vec2 rand(vec2 co){
-	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
-	return
-	vec2(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
-		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631));
-}
-
-
-
-void main(void)
-{
-	gl_Position =  gl_Vertex;
-	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
-	coord.x*= pixelSize.y/pixelSize.x;
-	
-	// we will only use gl_ProjectionMatrix to scale and translate, so the following should be OK.
-	PixelScale =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
-	viewCoord = gl_Vertex.xy;
-	from = Eye;
-	Dir = normalize(Target-Eye);
-	UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
-	Right = normalize( cross(Dir,UpOrtho));
-	coord*=FOV;
-}
-#endvertex
-
-#group Post
-uniform float Gamma; slider[0.0,2.2,5.0]
-uniform bool ExponentialExposure; checkbox[false]
-uniform float Exposure; slider[0.0,1.3,30.0]
-uniform float Brightness; slider[0.0,1.0,5.0];
-uniform float Contrast; slider[0.0,1.0,5.0];
-uniform float Saturation; slider[0.0,1.0,5.0];
 #group Raytracer
 
-// Camera position and target.
-varying vec3 from,dir;
-varying vec2 coord;
-
-// HINT: for better results use Tile Renders and resize the image yourself
-uniform int AntiAlias;slider[1,1,5] Locked
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
 // The step size when sampling AO (set to 0 for old AO)
@@ -192,9 +127,6 @@ vec3 rand3(vec2 co){
 		fract(sin(dot(co.xy ,vec2(0.23,1.111))) *392820.023));
 }
 
-uniform int backbufferCounter;
-uniform sampler2D backbuffer;
-varying vec2 viewCoord;
 
 float rand1(vec2 co){
 	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
@@ -296,7 +228,7 @@ vec3 getColor() {
 
 
 #ifdef  providesColor
-vec3 color(vec3 point, vec3 normal);
+vec3 baseColor(vec3 point, vec3 normal);
 #endif
 
 
@@ -381,7 +313,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		}
 		
 		#ifdef  providesColor
-		hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
+		hitColor = mix(BaseColor,  baseColor(hit,hitNormal),  OrbitStrength);
 		#else
 		hitColor = getColor();
 		#endif
@@ -405,63 +337,9 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	return hitColor;
 }
 
-#ifdef providesInit
-void init(); // forward declare
-#else
-void init() {}
-#endif
 
-
-vec2 rand(vec2 co){
-	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
-	return
-	vec2(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
-		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631));
-}
-
-vec2 uniformDisc(vec2 co) {
-	vec2 r = rand(co);
-	return sqrt(r.y)*vec2(cos(r.x*6.28),sin(r.x*6.28));
-}
-
-varying vec3 Dir;
-varying vec3 UpOrtho;
-varying vec3 Right;
-
-#group Raytracer
-
-uniform float FocalPlane; slider[0,1,5]
-uniform float Aperture; slider[0,0.00,0.2]
-uniform float AntiAliasScale; slider[0,2,10]
-varying vec2 PixelScale;
-uniform float FOV;
-
-void main() {
-	init();
+vec3 color(vec3 from, vec3 dir) {
+	vec3 hit = vec3(0.0);
 	vec3 hitNormal = vec3(0.0);
-	vec3 hit;
-	
-	// A Thin Lens camera model with Depth-Of-Field
-	
-	// We want to sample a circular diaphragm
-	// Notice: this is not sampled with uniform density
-	vec2 r = Aperture*uniformDisc(viewCoord*(float(backbufferCounter)+1.0));
-	vec2 disc = uniformDisc(coord*float(1+backbufferCounter)); // subsample jitter
-	
-	vec2 jitteredCoord = coord + AntiAliasScale*PixelScale*FOV*disc;
-	
-	// Direction from Lens positon to point on FocalPlane
-	vec3 lensOffset =  r.x*Right + r.y*UpOrtho;
-	vec3 rayDir =  (Dir+ jitteredCoord.x*Right+jitteredCoord.y*UpOrtho)*FocalPlane
-	-(lensOffset);
-	
-	vec3 color =  trace(from+lensOffset,rayDir,hit,hitNormal);
-	color = max(vec3(0.0),color); // necessary?
-       if (color!=color) { color = 0.0; } // NAN check
-
-	// Accumulate
-	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
-	float w =1.0-length(disc);  //w=1.0;
-	w = exp(-length(disc)*2.0);
-	gl_FragColor = prev+vec4(color*w, w);
+	return  trace(from,dir,hit,hitNormal);
 }

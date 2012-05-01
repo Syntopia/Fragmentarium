@@ -1,26 +1,19 @@
 Roadmap.
 --------
-V0.9
-* New High Resolution Output Dialog
-* Many minor UI and raytracer fixes
-* Choose 'uniform' or 'constant' for GUI sliders (last option will require recompile when changed)
-  - Locked, NotLocked, NotLockable
-* uniform vec4 a; slider[....]
-- Add keyboard remapping (through filter function)
+V0.9.2
++ HDRI Panorama for background, lighting, and specular.
+- TextureManager
+- Limit number of frames in continous mode.
+- Export in RGBE?
+- Fix BufferShader, so that it can handle GUI widgets...
 
 Prioritized ideas:
 
-+ Make it easier to shift from continuous to manual.
 - Keyframe Animation.
-- HDRI Panorama for background, lighting, and specular.
 - Mouse sensitivity
 - Fix: icons
 - A 2D camera which scales from the current mouse position
-- Update raytracer: environment mapping?
 - Commandline support
 - Check for updates
 - WebGL export
-- Post processing (add another render step to FBO): HDR, Blur, ...
-- Restore Visual Studio makefiles (make sure they work in Debug mode)
-- Sourceforge page. -> Add latest version as downloadable files. Add GitHub link.
 - Clipping planes

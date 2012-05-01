@@ -3,6 +3,10 @@
 #include "VariableWidget.h"
 #include "../../ThirdPartyCode/glextensions.h"
 
+#include "../../ThirdPartyCode/hdrloader.h"
+
+#include <stdio.h>
+
 using namespace SyntopiaCore::Math;
 using namespace SyntopiaCore::Logging;
 
@@ -43,6 +47,7 @@ namespace Fragmentarium {
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
 			previewBuffer = 0;
+			doClearBackBuffer = true;
 			backBuffer = 0;
 			backBufferCounter = 0;
 			bufferShaderProgram = 0;
@@ -67,12 +72,23 @@ namespace Fragmentarium {
 			updatePerspective();
 			pendingRedraws = 0;
 			requiredRedraws = 1; // 2 for double buffering?
-			startTimer( 1 );
 			setMouseTracking(true);
 			backgroundColor = QColor(30,30,30);
 			contextMenu = 0;
 			setupFragmentShader();
 			setFocusPolicy(Qt::WheelFocus);
+			timer = 0;
+		}
+
+		void DisplayWidget::updateRefreshRate() {
+			QSettings settings;
+			int i = settings.value("refreshRate", 20).toInt();
+			if (!timer) {
+				timer = new QTimer();
+				connect(timer, SIGNAL(timeout()), this, SLOT(timerSignal()));
+			}
+			timer->start(i);
+			INFO(QString("Setting display update timer to %1 ms (max %2 FPS).").arg(i).arg(1000.0/i,0,'f',2));
 		}
 
 
@@ -206,24 +222,63 @@ namespace Fragmentarium {
 
 
 			for (QMap<QString, QString>::iterator it = fragmentSource.textures.begin(); it!=fragmentSource.textures.end(); it++) {
-				QImage im(it.value());
-				if (im.isNull()) {
+				QImage im(it.value() );
+				if (im.isNull() && !it.value().endsWith(".hdr", Qt::CaseInsensitive)) {
 					WARNING("Failed to load texture: " + QFileInfo(it.value()).absoluteFilePath());
 				} else {
 
 					int l = shaderProgram->uniformLocation(it.key());
 					if (l != -1) {
-						glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
-						GLuint i = bindTexture(it.value(), GL_TEXTURE_2D, GL_RGBA);
-						glBindTexture(GL_TEXTURE_2D,i);
-						INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(it.key()+":"+it.value()).arg(i).arg(u));
+					
+						if (im.isNull()) {
+							
+						
+							GLuint texture = 0;
 
-						shaderProgram->setUniformValue(l, (GLuint)u);
-						INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+							// set current texture
+							glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
+							
+							// allocate a texture id
 
-						//INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i) + " - " + QString::number(u) );
+							if (TextureCache.contains(it.value().toAscii().data())) {
+								
+								int textureID = TextureCache[it.value().toAscii().data()];
+								glBindTexture(GL_TEXTURE_2D, textureID );
+								INFO(QString("Found texture ID: %1 (%2)").arg(texture).arg(it.value().toAscii().data()));
 
+							} else {
+								glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	    
+								glGenTextures(1, &texture );
+								INFO(QString("Allocated texture ID: %1").arg(texture));
 
+								glBindTexture(GL_TEXTURE_2D, texture );
+								glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+								glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+								HDRLoaderResult result;
+								HDRLoader::load(it.value().toAscii().data(), result);
+								INFO(QString("Hdrloader: %1 x %2").arg(result.width).arg(result.height));
+								glTexImage2D(GL_TEXTURE_2D, 0, 0x8815  /* GL_RGB32F*/, result.width, result.height, 0, GL_RGB, GL_FLOAT, result.cols);
+			
+								INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(it.key()+":"+it.value()).arg(texture).arg(u));
+								TextureCache[it.value().toAscii().data()] = texture;
+							}
+
+							shaderProgram->setUniformValue(l, (GLuint)u);
+							INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+
+						} else {
+							glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
+							GLuint i = bindTexture(it.value(), GL_TEXTURE_2D, GL_RGBA);
+							glBindTexture(GL_TEXTURE_2D,i);
+							INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(it.key()+":"+it.value()).arg(i).arg(u));
+
+							shaderProgram->setUniformValue(l, (GLuint)u);
+							INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+
+							//INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i) + " - " + QString::number(u) );
+						}
 					} else {
 						WARNING("Could not locate sampler2D uniform: " + it.key());
 					}
@@ -411,15 +466,8 @@ namespace Fragmentarium {
 		}	
 
 		void DisplayWidget::clearBackBuffer() {
-					
-			if (backBuffer) {
-				if (!backBuffer->bind()) { WARNING("Failed to bind backbuffer BFO"); return; } 
-				glClearColor(0.0f,0.0f,0.0f,0.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-				if (!backBuffer->release()) { WARNING("Failed to release backbuffer FBO");  } 
-				backBufferCounter = 0;
-			}
+			doClearBackBuffer = true;		
+			
 		}
 
 		void DisplayWidget::drawFragmentProgram(int w,int h) {
@@ -483,14 +531,14 @@ namespace Fragmentarium {
 			if (disableRedraw) {
 				QTime tx = QTime::currentTime();
 				glRectf(-1,-1,1,1); 
-				glFinish();
+				//glFinish();
 				//int msx = tx.msecsTo(QTime::currentTime());
 				//INFO(QString("GPU: render took %1 ms.").arg(msx));
 			} else {
 				glRectf(-1,-1,1,1); 
 			}
 
-			//	glFinish(); <-- should we call this?
+			glFinish();// <-- should we call this?
 			shaderProgram->release();
 
 		   
@@ -520,7 +568,7 @@ namespace Fragmentarium {
 				mainWindow->setUserUniforms(bufferShaderProgram);
 			
 			}
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			glMatrixMode(GL_MODELVIEW);
@@ -539,6 +587,8 @@ namespace Fragmentarium {
 			glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  0.0f);	
 			glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  0.0f);	
 			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  0.0f);	
+			
+			
 			glEnd();
 			if (bufferShaderProgram) bufferShaderProgram->release();
 
@@ -562,6 +612,17 @@ namespace Fragmentarium {
 				return;
 			}
 
+
+
+			if (doClearBackBuffer && backBuffer) {
+				if (!backBuffer->bind()) { WARNING("Failed to bind backbuffer BFO"); return; } 
+				glClearColor(0.0f,0.0f,0.0f,0.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				if (!backBuffer->release()) { WARNING("Failed to release backbuffer FBO");  } 
+				backBufferCounter = 0;
+				doClearBackBuffer = false;
+			}
 
 			QTime t = QTime::currentTime();
 
@@ -641,7 +702,7 @@ namespace Fragmentarium {
 			mainWindow-> statusBar()->showMessage(infoText, 5000);
 		}
 
-		void DisplayWidget::timerEvent(QTimerEvent*) {
+		void DisplayWidget::timerSignal() {
 			static bool firstTime = true;
 			if (firstTime) {
 				firstTime = false;

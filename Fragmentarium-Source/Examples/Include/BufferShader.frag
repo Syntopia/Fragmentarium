@@ -19,7 +19,7 @@ uniform float Exposure;
 uniform float Brightness;
 uniform float Contrast;
 uniform float Saturation;
-uniform bool ExponentialExposure;
+uniform int ToneMapping;
 /*
 ** Based on: http://mouaif.wordpress.com/2009/01/22/photoshop-gamma-correction-shader/
 **
@@ -46,14 +46,28 @@ void main() {
 	vec2 pos = (coord+vec2(1.0))/2.0;
 	vec4 tex = texture2D(frontbuffer, pos);
 	vec3 c = tex.xyz/tex.a;
-	c = pow(c, vec3(Gamma));
 
-	if (ExponentialExposure) {
-		c = vec3(1.0)-exp(-c*Exposure);
-	} else {
-		//c = c*Exposure;
-		//c = c/(vec3(1.0)+c);
+	c = pow(c, vec3(1.0/Gamma));
+
+	
+	if (ToneMapping==1) {
+		// Linear
+	       c = c*Exposure;
+	} else if (ToneMapping==2) {
+		// ExponentialExposure
+	       c = vec3(1.0)-exp(-c*Exposure);
+	} else if (ToneMapping==3) {
+		// Filmic: http://filmicgames.com/archives/75
+	      c*=Exposure;
+            vec3 x = max(vec3(0.),c-vec3(0.004));
+             c = (x*(6.2*x+.5))/(x*(6.2*x+1.7)+0.06);
+	} else if (ToneMapping==4) {
+		// Reinhart
+	      c*=Exposure;
+             c = c/(1.+c);
 	}
+
+      
 	c = ContrastSaturationBrightness(c, Brightness, Saturation, Contrast);
 	gl_FragColor = vec4(c,1.0);
 }

@@ -52,7 +52,11 @@ varying vec2 viewCoord;
 vec2 aaCoord;
 uniform vec2 pixelSize;
 
-vec3 color(vec2 z) ;
+#ifdef providesFiltering
+	vec4 color(vec2 z) ;
+#else 
+	vec3 color(vec2 z) ;
+#endif
 
 #ifdef providesInit
 void init(); // forward declare
@@ -71,6 +75,7 @@ uniform sampler2D backbuffer;
 
 
 vec2 uniformDisc(vec2 co) {
+	if (co == 0.0) return vec2(0.0);
 	vec2 r = rand(co);
 	return sqrt(r.y)*vec2(cos(r.x*6.28),sin(r.x*6.28));
 }
@@ -81,7 +86,11 @@ void main() {
 	init();
 #endif
     //  vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);	
-	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter)+1.0) );
+#ifdef providesFiltering
+	 vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
+      gl_FragColor = prev+color(coord.xy);
+#else
+	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter)) );
 	float w =1.0;
       if (GaussianAA) {
 	 	// Gaussian
@@ -96,7 +105,8 @@ void main() {
 	vec3 color =  color(c);
       vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 
-	if (color!=color) { color = 0.0; w = 0.0; } // NAN check
+	if (color!=color) { color =vec3( 0.0); w = 0.0; } // NAN check
       gl_FragColor = prev+vec4(color*w, w);
+#endif
 }
 

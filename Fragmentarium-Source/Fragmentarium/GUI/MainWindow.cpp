@@ -70,6 +70,22 @@ namespace Fragmentarium {
 					checkBox2->setObjectName("checkBox2");
 					verticalLayout->addWidget(checkBox2);
 
+					
+
+					QHBoxLayout* horizontalLayout2 = new QHBoxLayout();
+					horizontalLayout2->setObjectName("horizontalLayout2");
+					QLabel* label2 = new QLabel(tab);
+					label2->setText("OpenGL refresh rate (in milliseconds)");
+					label2->setObjectName("label");
+					horizontalLayout2->addWidget(label2);
+					refreshSpinBox = new QSpinBox(this);
+					refreshSpinBox->setMaximum(100);
+					refreshSpinBox->setMinimum(0);
+					refreshSpinBox->setValue(20);
+					horizontalLayout2->addWidget(refreshSpinBox);
+					verticalLayout->addLayout(horizontalLayout2);
+
+
 					horizontalLayout = new QHBoxLayout();
 					horizontalLayout->setObjectName("horizontalLayout");
 					label = new QLabel(tab);
@@ -79,6 +95,7 @@ namespace Fragmentarium {
 					lineEdit->setObjectName("lineEdit");
 					horizontalLayout->addWidget(lineEdit);
 					verticalLayout->addLayout(horizontalLayout);
+
 					verticalSpacer = new QSpacerItem(20, 167, QSizePolicy::Minimum, QSizePolicy::Expanding);
 					verticalLayout->addItem(verticalSpacer);
 
@@ -99,8 +116,10 @@ namespace Fragmentarium {
 					checkBox->setText("Move main() to end");
 					checkBox->setStatusTip(tr("For compatibility with some GPU's."));
 
-					checkBox2->setText("Replace all 'float' types with 'double' types.");
+					checkBox2->setText("Replace all 'float' types with 'double' types. (Not working!)");
 					checkBox2->setStatusTip(tr("Also replaces matrix and vector types."));
+
+					
 
 					label->setText("Include paths:");
 					tabWidget->setTabText(tabWidget->indexOf(tab),  "Main");
@@ -108,6 +127,7 @@ namespace Fragmentarium {
 					QSettings settings;
 					checkBox->setChecked(settings.value("moveMain", true).toBool());
 					checkBox2->setChecked(settings.value("doublify", false).toBool());
+					refreshSpinBox->setValue(settings.value("refreshRate", 20).toInt());
 					lineEdit->setText(settings.value("includePaths", "Examples/Include;").toString());
 				} 
 
@@ -121,6 +141,7 @@ namespace Fragmentarium {
 					settings.setValue("moveMain", checkBox->isChecked());
 					settings.setValue("includePaths", lineEdit->text());
 					settings.setValue("doublify",  checkBox2->isChecked());
+					settings.setValue("refreshRate",  refreshSpinBox->value());
 				}
 
 				QVBoxLayout *verticalLayout_2;
@@ -135,6 +156,7 @@ namespace Fragmentarium {
 				QSpacerItem *verticalSpacer;
 				QWidget *tab_2;
 				QDialogButtonBox *buttonBox;
+				QSpinBox* refreshSpinBox ;
 			};
 
 		}
@@ -504,6 +526,7 @@ namespace Fragmentarium {
 			format.setDoubleBuffer(false);
 			engine = new DisplayWidget(format, this,splitter);
 			engine->makeCurrent();
+			engine->updateRefreshRate();
 			if (!getGLExtensionFunctions().resolve(engine->context())) {
 				QMessageBox::critical(0, "OpenGL features missing",
 					"Failed to resolve OpenGL functions required to run this application.\n"
@@ -1396,7 +1419,8 @@ namespace Fragmentarium {
 			for (int i = 0; i < fs->lines.count(); i++) {
 				// fs->sourceFiles[fs->sourceFile[i]]->fileName()
 				if (fs->lines[i] == blockNumber && 
-					(filename == fs->sourceFileNames[fs->sourceFile[i]])) ex.append(QString::number(i+4));
+					QString::compare(filename,fs->sourceFileNames[fs->sourceFile[i]], Qt::CaseInsensitive)==0
+				) ex.append(QString::number(i+4));
 			}
 			if (ex.count()) {
 				x = " Line in preprocessed script: " + ex.join(",");
@@ -1650,6 +1674,7 @@ namespace Fragmentarium {
 		void MainWindow::preferences() {
 			PreferencesDialog pd(this);
 			pd.exec();
+			getEngine()->updateRefreshRate();
 		}
 
 		void MainWindow::indent() {

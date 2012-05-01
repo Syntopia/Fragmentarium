@@ -326,6 +326,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\ThirdPartyCode\hdrloader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\ThirdPartyCode\hdrloader.h"
+					>
+				</File>
+				<File
 					RelativePath="..\ThirdPartyCode\MersenneTwister\MersenneTwister.h"
 					>
 				</File>
