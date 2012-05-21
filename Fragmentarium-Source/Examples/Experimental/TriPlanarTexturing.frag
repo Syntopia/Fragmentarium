@@ -16,9 +16,9 @@ p*=TextureScale;
 n = abs(n);
 n = n/(n.x+n.y+n.z);
 float G= 2.2;
-vec3 t = pow( texture2D(tex, p.yz),G)*n.x
-		+ pow( texture2D(tex, p.xz),G)*n.y+
-		 pow( texture2D(tex, p.xy),G)*n.z;
+vec3 t = pow( texture2D(tex, p.yz).xyz,vec3(G))*n.x
+		+ pow( texture2D(tex, p.xz).xyz,vec3(G))*n.y+
+		 pow( texture2D(tex, p.xy).xyz,vec3(G))*n.z;
 
 	return t;
 }

@@ -47,7 +47,6 @@ uniform vec3 segCColor; color[0.0,0.0,0.0]
 uniform vec3 segDColor; color[0.0,0.0,0.0]
 uniform vec3 verticesColor; color[0.0,0.0,0.0]
 
-#define PI 3.14159
 vec4 nc,nd,p;
 float cVR,sVR,cSR,sSR,cRA,sRA;
 float hdot(vec4 a, vec4 b){//dot product for Minkowski space.
@@ -148,7 +147,7 @@ float DE(vec3 pos) {
 	return max(r-CSphRad,min(dist2Vertex(z4,r),dist2Segments(z4, r)));
 }
 
-vec3 color(vec3 pos, vec3 normal){
+vec3 baseColor(vec3 pos, vec3 normal){
 	float r=length(pos);
 	vec4 z4=vec4(2.*pos,1.+r*r)*1./(1.-r*r);
 	z4=Rotate(z4);

@@ -44,6 +44,7 @@ namespace Fragmentarium {
 			ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
 			bool setDefault();
 			void substituteLockedVariables(Parser::FragmentSource* fs);
+			void updateTextures(Parser::FragmentSource* fs, FileManager* fileManager);
 signals:
 
 			void changed(bool lockedChanged);

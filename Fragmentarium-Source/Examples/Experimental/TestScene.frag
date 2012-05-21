@@ -124,5 +124,4 @@ SpecularMax = 10
 Sun = -1.57075,-0.63403
 SunSize = 0.0219905
 ShowFloor = false
-RAND = 1,1
 #endpreset

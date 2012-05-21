@@ -69,7 +69,7 @@ vec3 c2dx(vec2 p) {
 
 bool floor = false;
 
-vec3 color(vec3 z,vec3 n) {
+vec3 baseColor(vec3 z,vec3 n) {
 	floor = false;
 	DE(z);
 	

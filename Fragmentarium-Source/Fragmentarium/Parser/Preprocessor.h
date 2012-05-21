@@ -7,18 +7,22 @@
 #include <QVector>
 #include <QMap>
 
+#include "../GUI/FileManager.h"
+
 #include "../../SyntopiaCore/Exceptions/Exception.h"
 #include "../../SyntopiaCore/Math/Vector3.h"
 #include "../../SyntopiaCore/Math/Vector4.h"
 #include "../../SyntopiaCore/Logging/Logging.h"
 
 namespace Fragmentarium {
+	using namespace GUI;
+
 	namespace Parser {	
 
 		using namespace SyntopiaCore::Math;
 		using namespace SyntopiaCore::Logging;
 
-		enum LockTypeInner { Locked, NotLocked, NotLockable, Unknown } ;
+		enum LockTypeInner { Locked, NotLocked, NotLockable, AlwaysLocked, Unknown } ;
 
 		class LockType {
 		public:
@@ -36,6 +40,8 @@ namespace Fragmentarium {
 					return "NotLocked";
 				} else if (inner == NotLockable) {
 					return "NotLockable";
+				} else if (inner == AlwaysLocked) {
+					return "AlwaysLocked";
 				} else {
 					return "???";
 				}
@@ -49,6 +55,8 @@ namespace Fragmentarium {
 					inner = NotLocked;
 				} else if (s == "notlockable") {
 					inner = NotLockable;
+				} else if (s == "alwayslocked") {
+					inner = AlwaysLocked;
 				} else {
 					inner = Unknown;
 				}
@@ -90,6 +98,17 @@ namespace Fragmentarium {
 			double from;
 			double to;
 			double defaultValue;
+		};
+
+		class SamplerParameter : public GuiParameter {
+		public:
+			SamplerParameter(QString group, QString name,QString tooltip, QString defaultValue) :
+			  GuiParameter(group, name, tooltip), defaultValue(defaultValue) {};
+
+			  virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()); }
+			  QString getDefaultValue() { return defaultValue; }
+		private:
+			QString defaultValue;
 		};
 
 		class Float2Parameter : public GuiParameter {
@@ -220,15 +239,14 @@ namespace Fragmentarium {
 		class Preprocessor {
 
 		public:
-			Preprocessor(QStringList includePaths) : includePaths(includePaths), isCreatingAutoSave(false) {};
+			Preprocessor(FileManager* fileManager) : fileManager(fileManager), isCreatingAutoSave(false) {};
 			FragmentSource parse(QString input, QString fileName, bool moveMain, bool doublify);
 			FragmentSource createAutosaveFragment(QString input, QString fileName);
 			void parseSource(FragmentSource* fs,QString input, QString fileName, bool dontAdd);
-			QString resolveName(QString fileName, QString originalFileName) ;
 			QStringList getDependencies() { return dependencies; }
 
 		private:
-			QStringList includePaths;
+			FileManager* fileManager;
 			QStringList dependencies;
 			bool isCreatingAutoSave;
 		

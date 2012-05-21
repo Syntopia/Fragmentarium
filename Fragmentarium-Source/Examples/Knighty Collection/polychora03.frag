@@ -33,7 +33,6 @@ uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
 
 uniform float RotAngle; slider[0.00,0,180]
 
-#define PI 3.14159
 mat3 rot;
 vec4 nc,nd,p;
 void init() {

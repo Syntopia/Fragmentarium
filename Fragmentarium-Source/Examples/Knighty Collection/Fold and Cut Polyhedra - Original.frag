@@ -84,7 +84,7 @@ float DE(vec3 pos) {
 	return d;
 }
 
-vec3 color(vec3 pos, vec3 normal){
+vec3 baseColor(vec3 pos, vec3 normal){
 	pos=fold(pos);
 	float d0=1000.0,d1=1000.0,d2=1000.,dv=1000.,ds=1000.;
 	if(displayFaces){

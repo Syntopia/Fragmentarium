@@ -26,7 +26,7 @@ float DE(vec3 z)
 	return abs(length(z)-2.0 ) ;
 }
 
-vec3 color(vec3 z, vec3 n) {
+vec3 baseColor(vec3 z, vec3 n) {
 	float tt = time*0.151;
 	return vec3(cnoise(vec4(1.0*z,tt*1.2)),
 		cnoise(vec4(1.0*z,tt)),cnoise(vec4(1.0*z,tt*1.4)));

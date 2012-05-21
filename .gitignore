@@ -3,3 +3,7 @@ Fragmentarium-Source/Fragmentarium.app
 Fragmentarium-Source/Fragmentarium.pro
 Fragmentarium-Source/Fragmentarium.xcodeproj
 Fragmentarium-Source/Info.plist
+
+/Fragmentarium-Source/Build - Windows/tmp
+/Fragmentarium-Source/Build - Windows/Fragmentarium
+/Fragmentarium-Source/Build - Windows/release

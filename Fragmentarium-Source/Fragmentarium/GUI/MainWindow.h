@@ -31,8 +31,7 @@ namespace Fragmentarium {
 			bool hasBeenSavedOnce;			
 		};
 
-		
-		
+
 		// An input dialog for the tile based render thingy
 		class TileRenderDialog: public QDialog {
 			Q_OBJECT
@@ -73,7 +72,8 @@ namespace Fragmentarium {
 			void loadParameters(QString fileName);
 			void setSplashWidget(QWidget* w);
 			void highlightBuildButton(bool value);
-
+			FileManager* getFileManager() { return &fileManager; }
+			void setSubFrameDisplay(int i);
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);
 			void dropEvent(QDropEvent *ev);
@@ -83,6 +83,7 @@ namespace Fragmentarium {
 			public slots:
 				void animationControllerHidden();
 				void removeSplash();
+				void maxSubSamplesChanged(int);
 				void viewSliderChanged(int);
 				void previewSliderChanged(int);
 				void tileBasedRender();
@@ -128,7 +129,7 @@ namespace Fragmentarium {
 			QPushButton* continousRefreshButton;
 			QPushButton* animationButton;
 
-			
+
 			QList<QWidget *> disabledWidgets;
 			QLabel* buildLabel;
 			QSlider* viewSlider;
@@ -200,6 +201,10 @@ namespace Fragmentarium {
 			QWidget* splashWidget;
 			QDockWidget* animationController;
 			bool rebuildRequired;
+			FileManager fileManager;
+			QLabel* frameLabel;
+			QSpinBox* frameSpinBox;
+
 		};
 
 		// A modified QTextEdit with an extended context menu
@@ -210,8 +215,8 @@ namespace Fragmentarium {
 			TextEdit(MainWindow* parent) : QTextEdit(parent), mainWindow(parent) {};
 			void contextMenuEvent(QContextMenuEvent *event);
 			void insertFromMimeData (const QMimeData * source );
-		
-		public slots:
+
+			public slots:
 				void insertText();
 		private:
 			MainWindow* mainWindow;

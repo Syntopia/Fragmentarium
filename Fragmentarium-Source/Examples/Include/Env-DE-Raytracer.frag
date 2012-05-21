@@ -54,15 +54,16 @@ uniform float Shadow; slider[0,0,1]
 //uniform sampler2D texture; file[C:\Users\Mikael\Desktop\Sketches3\sketchx-16.png]
 //uniform sampler2D texture; file[f:\HDR\LA_Downtown_Helipad_GoldenHour_Env.hdr]
 //uniform sampler2D texture2; file[f:\HDR\LA_Downtown_Helipad_GoldenHour_Env.hdr]
-uniform sampler2D texture2; file[f:\HDR\Mt-Washington-Cave-Room_Env.hdr]
-uniform sampler2D texture; file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
-//uniform sampler2D texture; file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
-uniform vec2 EnvSpecular; slider[(0,0),(1,0),(1,0.1)]
-uniform vec3 EnvDiffuse;slider[(0,0,0),(1,0,1),(1,0.1,10)]
+uniform sampler2D Background; file[f:\HDR\Mt-Washington-Cave-Room_Env.hdr]
+//uniform sampler2D texture; file[f:\HDR\Alexs_Apt_Env.hdr]
+uniform sampler2D Specular; file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
+uniform sampler2D Diffuse; file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
+uniform float EnvSpecular; slider[0,1,1]
+uniform float EnvDiffuse;slider[0,1,1]
 // Limits the maximum specular strength to avoid artifacts
 uniform float SpecularMax; slider[0,10,100]
 uniform vec2 Sun; slider[(-3.1415,-1.57),(0,0),(3.1415,1.57)]
-uniform float SunSize; slider[0,0,3.1415] 
+uniform float SunSize; slider[0,0.01,0.4] 
 
 
 vec4 orbitTrap = vec4(10000.0);
@@ -201,21 +202,19 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	//float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
 	vec3 reflected = -2.0*dot(dir,n)*n+dir;
 	
-	vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
-	vec3 diffuse =  EnvDiffuse.x*texture2D(texture2,spherical(normalize(n)).yx+f*EnvDiffuse.y).xyz;
+	//vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
+	vec3 diffuse =  EnvDiffuse*texture2D(Diffuse,spherical(normalize(n)).yx).xyz;
 	
-	vec3 specular = EnvSpecular.x*texture2D(texture,spherical(normalize(reflected)).yx+f*EnvSpecular.y).xyz;
+	vec3 specular = EnvSpecular*texture2D(Specular,spherical(normalize(reflected)).yx).xyz;
 	specular = min(vec3(SpecularMax),specular);
 
 	
 	if (Shadow>0.0) {
 		// check path from pos to spotDir
-
-	
 		shadowStrength = 1.0-shadow(pos+n*eps,eps);
 		ambient = mix(ambient,0.0,Shadow*shadowStrength);
 		diffuse = mix(diffuse,vec3(0.0),Shadow*shadowStrength);
-		specular = mix(specular,vec3(0.0),Shadow);
+		specular = mix(specular,vec3(0.0),Shadow*shadowStrength);
 	}
 	
 	return (diffuse+CamLight.xyz*ambient)*color+specular;
@@ -337,7 +336,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
 	vec3 hitColor;
 	float stepFactor = clamp((fSteps)/float(GlowMax),0.0,1.0);
-	vec3 backColor = texture2D(texture,spherical(normalize(dir)).yx).xyz;
+	vec3 backColor = texture2D(Background,spherical(normalize(dir)).yx).xyz;
 	
 	
 	if (  steps==MaxRaySteps) orbitTrap = vec4(0.0);
@@ -365,7 +364,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		
 		if (floorHit) {
 			vec2 c = spherical(normalize(dir));
-			hitColor =texture2D(texture,c.yx).xyz;
+			hitColor =texture2D(Background,c.yx).xyz;
 			if (ShowFloor) {
 				vec3 proj = hit-dot(hit, FloorNormal)*hit;
 				if (mod(proj.x,1.0)<0.1 || mod(proj.y,1.0)<0.1)
@@ -392,7 +391,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	}
 	else {
 		vec2 c = spherical(normalize(dir));
-		vec3 col = texture2D(texture2,c.yx).xyz;
+		vec3 col = texture2D(Background,c.yx).xyz;
 		if (dot(fromPhiTheta(Sun),normalize(dir))>1.0-SunSize) col= vec3(100.,0.,0.);
 
 		hitColor = col;

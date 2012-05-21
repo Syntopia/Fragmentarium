@@ -59,6 +59,8 @@ namespace Fragmentarium {
 			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
+			void setMaxSubFrames(int i ) { maxSubFrames = i; }
+
 		public slots:
 			void clearPreviewBuffer();
 			void timerSignal();
@@ -79,7 +81,7 @@ namespace Fragmentarium {
 			/// Triggers a perspective update and a redraw
 			void resizeGL(int w, int h);
 			void wheelEvent(QWheelEvent* e);
-
+			
 		private:
 			QGLFramebufferObject* previewBuffer;
 			QGLFramebufferObject* backBuffer;
@@ -124,6 +126,7 @@ namespace Fragmentarium {
 			QMap<QString, int> TextureCache;
 			bool doClearBackBuffer;
 			QTimer* timer;
+			int maxSubFrames;
 		};
 	};
 

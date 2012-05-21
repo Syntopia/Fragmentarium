@@ -109,7 +109,7 @@ void init() {}
 #group Post
 uniform float Gamma; slider[0.0,1.0,5.0]
 // 1: Linear, 2: Expontial, 3: Filmic, 4: Reinhart
-uniform int ToneMapping; slider[1,3,4]
+uniform int ToneMapping; slider[1,1,4]
 uniform float Exposure; slider[0.0,1.0,30.0]
 uniform float Brightness; slider[0.0,1.0,5.0];
 uniform float Contrast; slider[0.0,1.0,5.0];

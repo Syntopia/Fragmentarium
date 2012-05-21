@@ -76,7 +76,7 @@ uniform float delta; slider[0.0,0.001,1.0]
 
 // Convert to
 uniform float GridWidth; slider[-10,-1,10]
-vec3 color(vec3 pos, vec3 n) {
+vec3 baseColor(vec3 pos, vec3 n) {
 	vec2 z = pos.xy;
 	// Restrict
 	//if (abs(z).x>3.0) return vec3(0.);
@@ -146,10 +146,20 @@ float DE(vec3 pos) {
 
 #preset Default
 FOV = 0.4
-Eye = 0.928048,-2.30571,1.99631
-Target = -1.92818,4.59753,-3.66023
-Up = -0.264724,0.542146,0.795306
-AntiAlias = 1
+Eye = 1.30147,-2.31303,1.76604
+Target = -2.64271,4.5884,-3.19612
+Up = -0.228457,0.481526,0.846133
+EquiRectangular = false
+FocalPlane = 2.11955
+Aperture = 0
+Gamma = 1
+ToneMapping = 3
+Exposure = 1
+Brightness = 1
+Contrast = 1
+Saturation = 1
+GaussianWeight = 1
+AntiAliasScale = 2
 Detail = -2.91151
 DetailAO = -0.35714
 FudgeFactor = 0.08434
@@ -165,11 +175,11 @@ CamLightMin = 0.5303
 Glow = 1,1,1,0.55556
 GlowMax = 24
 Fog = 0.144
-HardShadow = 0.35385 NotLocked
+HardShadow = 0.83077 NotLocked
 ShadowSoft = 1.9354
 Reflection = 0
 BaseColor = 1,1,1
-OrbitStrength = 0.55
+OrbitStrength = 1
 X = 0.5,0.6,0.6,1
 Y = 1,0.6,0,0.48092
 Z = 0.8,0.78,1,0.26718
@@ -193,17 +203,8 @@ JuliaX = -0.6
 JuliaY = 1.3
 delta = 0.001
 GridWidth = -1.628
-Gamma = 2.5463
-ExponentialExposure = false
-Exposure = 1.9566
-Brightness = 1
-Contrast = 1.53465
-Saturation = 1.0215
 SpotLight = 1,1,1,0
 SpotLightPos = 7.4074,-0.3704,3.3334
 SpotLightSize = 0.1
 ShadowBackstep = 2
-FocalPlane = 2.11955
-Aperture = 0
-AntiAliasScale = 2
 #endpreset

@@ -40,7 +40,6 @@ using namespace Fragmentarium::Parser;
 namespace Fragmentarium {
 	namespace GUI {
 
-
 		
 		namespace {
 			int MaxRecentFiles = 5;
@@ -914,7 +913,8 @@ namespace Fragmentarium {
 					QString inputText = getTextEdit()->toPlainText();
 					QSettings settings;
 					QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
-					Preprocessor p(includePaths);
+					fileManager.setIncludePaths(includePaths);
+					Preprocessor p(&fileManager);
 					try {
 						QString file = tabInfo[tabBar->currentIndex()].filename;
 						FragmentSource fs = p.createAutosaveFragment(inputText,file);
@@ -1138,6 +1138,21 @@ namespace Fragmentarium {
 			renderModeToolBar->addWidget(previewLabel);
 			renderModeToolBar->addWidget(previewSlider);
 
+			frameLabel = new QLabel("Subframe 1. Max: ", renderModeToolBar);
+			renderModeToolBar->addWidget(frameLabel);
+			frameSpinBox = new QSpinBox(renderModeToolBar);
+			frameSpinBox->setRange(0,1000);
+			frameSpinBox->setValue(10);
+			frameSpinBox->setSingleStep(5);
+
+			connect(frameSpinBox, SIGNAL(valueChanged(int)), this, SLOT(maxSubSamplesChanged(int)));
+			
+			renderModeToolBar->addWidget(frameSpinBox);
+			
+		}
+
+		void MainWindow::maxSubSamplesChanged(int i) {
+			engine->setMaxSubFrames(i);
 		}
 
 		void MainWindow::viewSliderChanged(int) {
@@ -1165,12 +1180,16 @@ namespace Fragmentarium {
 			QObject* o = QObject::sender();
 			if (o == 0 || o == autoRefreshButton) {
 				INFO("Automatic screen updates. Every time a parameter or camera changes, an update is triggered.");
+				engine->setMaxSubFrames(0);
 			} else if (o == manualRefreshButton) {
 				INFO("Manual screen updates. Press 'update' to refresh the screen.");
+				engine->setMaxSubFrames(0);
 			} else if (o == continousRefreshButton) {
 				INFO("Continuous screen updates. Updates at a fixed interval.");
+				engine->setMaxSubFrames(frameSpinBox->value());
 			}  else if (o == animationButton) {
 				INFO("Animation mode. Use controller to jump in time.");
+				engine->setMaxSubFrames(0);
 			}
 			if (o == animationButton) {
 				animationController->show();
@@ -1186,6 +1205,10 @@ namespace Fragmentarium {
 			engine->setDisableRedraw(o == manualRefreshButton);
 
 			if (o!=continousRefreshButton) setFPS(0);
+		}
+
+		void MainWindow::setSubFrameDisplay(int i) {
+			frameLabel->setText(QString("Subframe %1. Max: ").arg(i));
 		}
 
 		void MainWindow::callRedraw() {
@@ -1307,7 +1330,8 @@ namespace Fragmentarium {
 			bool moveMain = settings.value("moveMain", true).toBool();
 			bool doublify = settings.value("doublify", false).toBool();
 			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
-			Preprocessor p(includePaths);	
+			fileManager.setIncludePaths(includePaths);
+			Preprocessor p(&fileManager);	
 			try {
 				FragmentSource fs = p.parse(inputText,filename,moveMain,doublify);
 				QString prepend =  "#define highp\n"
@@ -1344,7 +1368,10 @@ namespace Fragmentarium {
 			bool moveMain = settings.value("moveMain", true).toBool();
 			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
 			QTime start = QTime::currentTime();
-			Preprocessor p(includePaths);
+			fileManager.setIncludePaths(includePaths);
+			fileManager.setOriginalFileName(filename);
+					
+			Preprocessor p(&fileManager);
 			bool doublify = settings.value("doublify", false).toBool();
 
 			try {
@@ -1353,6 +1380,7 @@ namespace Fragmentarium {
 				highlightBuildButton(false);
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);
 				variableEditor->substituteLockedVariables(&fs);
+				variableEditor->updateTextures(&fs, &fileManager);
 				editorDockWidget->setHidden(!showGUI);
 				engine->setFragmentShader(fs);
 				variableEditor->updateCamera(engine->getCameraControl());				

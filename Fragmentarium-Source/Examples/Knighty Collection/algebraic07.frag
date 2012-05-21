@@ -23,7 +23,7 @@ uniform float time;
 #define PHI4 6.854102
 
 #define Tau (1.+2.*Phi)
-#define PI   3.141593
+
 
 #define Eps 0.00048828125               //epsilon
 #define IEps 2048.0                     //Inverse of epsilon

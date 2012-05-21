@@ -93,7 +93,7 @@ pos*=Scale;
 	return d;
 }
 
-vec3 color(vec3 pos, vec3 normal){
+vec3 baseColor(vec3 pos, vec3 normal){
 float d=abs(pos.x-1-0.002*cnoise(100.0*pos.yz));
 if (DE(pos) == d) return vec3(0.1,0.15,0.1);
 

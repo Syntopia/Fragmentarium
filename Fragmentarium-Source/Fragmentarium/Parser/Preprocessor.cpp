@@ -40,6 +40,8 @@ namespace Fragmentarium {
 					l = NotLocked;
 				} else if (lockTypeString == "notlockable") {
 					l = NotLockable;
+				}  else if (lockTypeString == "alwayslocked") {
+					l = AlwaysLocked;
 				} else {
 					WARNING("Not able to parse lock type: " + lockTypeString);
 				}
@@ -61,35 +63,7 @@ namespace Fragmentarium {
 
 		FragmentSource::FragmentSource() : hasPixelSizeUniform(false), bufferShaderSource(0) {}
 
-		QString Preprocessor::resolveName(QString fileName, QString originalFileName) {
-			// First check absolute filenames
-			if (QFileInfo(fileName).isAbsolute()) return fileName;
-
-			QStringList pathsTried;
-
-			// Check relative to current file
-			if (!originalFileName.isEmpty()) {
-				QDir d = QFileInfo(originalFileName).absolutePath();
-				QString path = d.absoluteFilePath(fileName);
-				if (QFileInfo(path).exists()) return path;
-				pathsTried.append(path);
-			} 
-
-			// Check relative to files in include path
-			foreach (QString p, includePaths) {
-				QDir d(p);
-				QString path = d.absoluteFilePath(fileName);
-				if (QFileInfo(path).exists()) return path;
-				pathsTried.append(path);
-			}
-
-			// We failed.
-			foreach (QString s, pathsTried) {
-				INFO("Tried path: " + s);
-			}
-			throw Exception("Could not resolve path for file: " + fileName);
-		};
-
+		
 		void Preprocessor::parseSource(FragmentSource* fs,QString input, QString originalFileName, bool dontAdd) {
 			fs->sourceFileNames.append(originalFileName);
 			int sf = fs->sourceFileNames.count()-1;
@@ -116,7 +90,7 @@ namespace Fragmentarium {
 					} else {
 						throw Exception("'#include' expected");
 					}
-					QString fName = resolveName(fileName, originalFileName);
+					QString fName = fileManager->resolveName(fileName, originalFileName);
 					QFile f(fName);
 					if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
 						throw Exception("Unable to open: " +  fName);
@@ -132,7 +106,7 @@ namespace Fragmentarium {
 					}
 				} else if (bufferShaderCommand.indexIn(in[i]) != -1) {
 					QString fileName =  bufferShaderCommand.cap(1);
-					QString fName = resolveName(fileName, originalFileName);
+					QString fName = fileManager->resolveName(fileName, originalFileName);
 					QFile f(fName);
 					if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
 						throw Exception("Unable to open: " +  fName);
@@ -308,10 +282,14 @@ namespace Fragmentarium {
 				} else if (sampler2D.indexIn(s) != -1) {
 					QString name = sampler2D.cap(1);
 					fs.source[i] = "uniform sampler2D " + name + ";";
-					QString fileName = resolveName(sampler2D.cap(2),file);
+					QString fileName = fileManager->resolveName(sampler2D.cap(2),file);
 
 					INFO("Added texture: " + name + " -> " + fileName);
 					fs.textures[name] = fileName;
+
+					SamplerParameter* sp= new SamplerParameter(currentGroup, name, lastComment, fileName);
+					setLockType(sp, "alwayslocked");
+					fs.params.append(sp);
 				} 
 				else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);

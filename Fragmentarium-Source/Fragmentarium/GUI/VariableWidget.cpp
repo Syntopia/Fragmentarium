@@ -2,6 +2,7 @@
 
 #include <QPushButton>
 #include <QToolButton>
+#include <QFileDialog>
 #include <QSlider>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
@@ -576,6 +577,83 @@ namespace Fragmentarium {
 				shaderProgram->setUniformValue(l, (int)(comboSlider->getValue()));
 			}
 		}
+
+		// SamplerWidget ------------------------------------------------------------------
+
+		SamplerWidget::SamplerWidget(FileManager* fileManager, QWidget* parent, QWidget* variableEditor,QString name, QString defaultValue) 
+				: fileManager(fileManager), VariableWidget(parent, variableEditor, name), defaultValue(defaultValue) {
+					setLayout(new QHBoxLayout());
+					layout()->setContentsMargins(0,0,0,0);
+					QLabel* l = new QLabel(name, this);
+
+					comboBox = new QComboBox(this);
+					comboBox->setEditable(true);
+					comboBox->addItems(fileManager->getImageFiles());
+					comboBox->setEditText(defaultValue);
+				
+
+					pushButton = new QPushButton("...", this);
+					layout()->addWidget(l);
+					l->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+					layout()->addWidget(comboBox);
+					comboBox->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::Maximum));
+					layout()->addWidget(pushButton);
+					pushButton->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+					connect(comboBox, SIGNAL(editTextChanged(const QString& )), this, SLOT(textChanged(const QString& )));
+					connect(pushButton, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+					textChanged("");
+			}
+
+		void SamplerWidget::textChanged(const QString& ) {
+			if (!fileManager->fileExists(comboBox->currentText())) {
+				QPalette pal = this->palette();
+				pal.setColor(this->backgroundRole(), Qt::red);
+				this->setPalette(pal);
+				this->setAutoFillBackground(true);
+				INFO("did not");
+			} else {
+				this->setPalette(QApplication::palette(this));
+				this->setAutoFillBackground(false);
+				INFO("did");
+			}
+			emit changed();
+		}
+
+		void SamplerWidget::buttonClicked() {
+			QString fileName = QFileDialog::getOpenFileName(this, "Select a Texture",
+                                                 QString(),
+												 "Images (*.hdr *.png *.jpg);;All (*.*)");
+			if (!fileName.isEmpty()) comboBox->setEditText(fileName);
+			
+		}
+
+		QString SamplerWidget::toString() {
+			return QString("%1").arg(comboBox->currentText());
+		};
+
+		QString SamplerWidget::getValue() {
+			return comboBox->currentText();
+		}
+
+		void SamplerWidget::fromString(QString string) {
+			comboBox->setEditText(string);
+		};
+
+		void SamplerWidget::setUserUniform(QGLShaderProgram* /*shaderProgram*/) {
+
+		}
+
+		void SamplerWidget::updateTextures(Parser::FragmentSource* fs,  FileManager* fileManager) {
+			if (fs->textures.contains(name)) {
+				fs->textures[name] = fileManager->resolveName(getValue());
+				INFO("Setting texture to: " + fileManager->resolveName(getValue()));
+			} else {
+				WARNING("Weird, texture not found in fragment source: " + name);
+			}
+		}
+			
+		
+		// BoolWidget -------------------------------------------------
 
 		BoolWidget::BoolWidget(QWidget* parent, QWidget* variableEditor, QString name, bool defaultValue) 
 			: VariableWidget(parent, variableEditor, name)  {

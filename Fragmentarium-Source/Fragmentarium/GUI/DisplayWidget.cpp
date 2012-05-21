@@ -78,6 +78,7 @@ namespace Fragmentarium {
 			setupFragmentShader();
 			setFocusPolicy(Qt::WheelFocus);
 			timer = 0;
+			maxSubFrames = 0;
 		}
 
 		void DisplayWidget::updateRefreshRate() {
@@ -245,7 +246,7 @@ namespace Fragmentarium {
 								int textureID = TextureCache[it.value().toAscii().data()];
 								glBindTexture(GL_TEXTURE_2D, textureID );
 								INFO(QString("Found texture ID: %1 (%2)").arg(texture).arg(it.value().toAscii().data()));
-
+								
 							} else {
 								glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	    
@@ -276,6 +277,12 @@ namespace Fragmentarium {
 
 							shaderProgram->setUniformValue(l, (GLuint)u);
 							INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+
+							//INFO("Setting POINT");
+							glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+							glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+							//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+							//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 							//INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i) + " - " + QString::number(u) );
 						}
@@ -613,6 +620,8 @@ namespace Fragmentarium {
 			}
 
 
+			
+			
 
 			if (doClearBackBuffer && backBuffer) {
 				if (!backBuffer->bind()) { WARNING("Failed to bind backbuffer BFO"); return; } 
@@ -622,6 +631,12 @@ namespace Fragmentarium {
 				if (!backBuffer->release()) { WARNING("Failed to release backbuffer FBO");  } 
 				backBufferCounter = 0;
 				doClearBackBuffer = false;
+			}
+
+			if (!(animationSettings && animationSettings->isRecording()) && !tiles) {
+				if (backBuffer && backBufferCounter>=maxSubFrames && maxSubFrames>0) {
+					return;
+				}
 			}
 
 			QTime t = QTime::currentTime();
@@ -663,6 +678,7 @@ namespace Fragmentarium {
 				backBuffer= previewBuffer;
 				previewBuffer = temp;	
 				backBufferCounter++;
+				mainWindow->setSubFrameDisplay(backBufferCounter);
 			}
 
 

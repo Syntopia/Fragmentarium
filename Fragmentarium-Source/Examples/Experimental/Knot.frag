@@ -5,7 +5,7 @@
 
 #define providesColor
 #include "Soft-Raytracer.frag"
-#define PI 3.1415927
+
 
 #group Knot
 uniform float R1; slider[0.0,1.6,2.3]
@@ -52,17 +52,21 @@ float DE(vec3 p) {
 }
 
 #preset Default
+FOV = 0.4
+Eye = -0.345332,-6.16714,-4.4525
+Target = 0.101118,1.70231,1.70156
+Up = -0.52351,0.281361,-0.804222
+EquiRectangular = false
+FocalPlane = 4.84535
+Aperture = 0.04381
 Gamma = 2.0354
-ExponentialExposure = false
+ToneMapping = 2
 Exposure = 1.5465
 Brightness = 1
 Contrast = 1
 Saturation = 1
-FOV = 0.4
-Eye = -2.62155,-5.82884,-4.13881
-Target = 0.779495,1.61191,1.61168
-Up = -0.116269,0.640082,-0.759458
-AntiAlias = 1
+GaussianWeight = 1
+AntiAliasScale = 2.1053
 Detail = -2.84746
 DetailAO = -0.20391
 FudgeFactor = 0.75
@@ -99,9 +103,6 @@ FloorNormal = 0,0,0
 FloorHeight = 0
 FloorColor = 1,1,1
 ShadowBackstep = 2
-FocalPlane = 4.84535
-Aperture = 0.04381
-AntiAliasScale = 2.1053
 R1 = 2.01036
 R2 = 0.28964
 R3 = 0.86889

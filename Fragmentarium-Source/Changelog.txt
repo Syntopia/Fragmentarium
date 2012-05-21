@@ -1,20 +1,24 @@
 To be adressed:
-- Redraw timer
 - #Version 130 warnings? Should we switch?
-- 
 
-Added option to set OpenGL refresh rate in preferences.
-Fixed filename case sensitivity error when doing reverse lookup of line numbers.
-when using "#define providesColor", now implement a 'vec3 baseColor(vec3)' function.
-Tonemapping in buffershader.
-DE-Raytracer.frag now uses a 'Blinn-Phong with Schickl term and physical normalization'. 
-DE-Raytracer.frag and Soft-Raytracer now uses new '3D.frag' base class.
-Progressive2D.frag now supports custom filtering (using '#define providesFiltering')
-Added support for HDR textures (.hdr RGBE format).
-Added 'Convolution.frag' example
-Added tutorials: 'progressive2D' and 'pure3D'
-Added experimental: 'testScene' and 'triplanarTexturing'
-Added 'Env-DE-Raytracer.frag'
+
+21-05-12 [MHC]
+				Added max subframe counter
+				Added support for widget for changing bound textures.
+				Added texture and file manager.
+				Added option to set OpenGL refresh rate in preferences.
+				Fixed filename case sensitivity error when doing reverse lookup of line numbers.
+				when using "#define providesColor", now implement a 'vec3 baseColor(vec3)' function.
+				Tonemapping in buffershader.
+				DE-Raytracer.frag now uses a 'Blinn-Phong with Schickl term and physical normalization'. 
+				DE-Raytracer.frag and Soft-Raytracer now uses new '3D.frag' base class.
+				Progressive2D.frag now supports custom filtering (using '#define providesFiltering')
+				Added support for HDR textures (.hdr RGBE format).
+				Added 'Convolution.frag' example
+				Added tutorials: 'progressive2D' and 'pure3D'
+				Added experimental: 'testScene' and 'triplanarTexturing'
+				Added 'Env-DE-Raytracer.frag'
+
 
 
 11-03-12 [MHC] Fixed error in 2D.frag, where changing aspect ratio would mess up viewport translation.

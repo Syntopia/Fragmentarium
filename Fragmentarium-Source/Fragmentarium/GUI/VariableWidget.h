@@ -3,6 +3,7 @@
 #include <QString>
 #include <QVector>
 #include <QWidget>
+#include <QComboBox>
 #include <QMap>
 #include <QSlider>
 #include <QTabWidget>
@@ -27,9 +28,6 @@ namespace Fragmentarium {
 
 		using namespace SyntopiaCore::Logging;
 		using namespace SyntopiaCore::Math;
-
-
-
 
 		// A helper class (combined float slider+spinner)
 		class ComboSlider : public QWidget {
@@ -139,6 +137,9 @@ signals:
 			Vector3f value;
 		};
 
+
+	
+
 		// A helper class (combined int slider+spinner)
 		class IntComboSlider : public QWidget {
 			Q_OBJECT
@@ -197,6 +198,7 @@ signals:
 			Q_OBJECT
 		public:
 			VariableWidget(QWidget* parent, QWidget* variableEditor, QString name);
+			virtual void updateTextures(Parser::FragmentSource* /*fs*/,  FileManager* /*fileManager*/) {};
 			virtual QString getValueAsText() { return ""; };
 			QString getName() const { return name; };
 			virtual void reset() = 0;
@@ -246,6 +248,43 @@ signals:
 			QWidget* widget;
 			QWidget* variableEditor;
 		};
+
+
+
+			class SamplerWidget : public VariableWidget {
+			Q_OBJECT
+		public:
+			SamplerWidget(FileManager* fileManager, QWidget* parent, QWidget* variableEditor, QString name, QString defaultValue);
+			virtual QString toString();
+			virtual void fromString(QString string);
+			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
+			virtual void updateTextures(Parser::FragmentSource* fs, FileManager* fileManager);
+			
+		
+			QString getValue() ;
+
+			virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()); }
+			void reset() { comboBox->setEditText(defaultValue); }
+			QString getLockedSubstitution() { return QString(); };
+			QString getLockedSubstitution2() { return QString(); };
+		
+signals:
+			void changed();
+
+			protected slots:
+				
+			void textChanged(const QString& text);
+
+			void buttonClicked();
+		
+		private:
+
+			QString defaultValue;
+			QComboBox* comboBox;
+			QPushButton* pushButton;
+			FileManager* fileManager;
+		};
+
 
 
 		class FloatWidget : public VariableWidget {

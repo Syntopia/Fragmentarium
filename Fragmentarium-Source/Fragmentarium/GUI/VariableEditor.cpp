@@ -283,6 +283,13 @@ namespace Fragmentarium {
 		}
 
 
+		void VariableEditor::updateTextures(Parser::FragmentSource* fs, FileManager* fileManager) {
+			for (int i = 0; i < variables.count(); i++) {
+				variables[i]->updateTextures(fs, fileManager);
+			}
+		}
+
+
 		void VariableEditor::substituteLockedVariables(Parser::FragmentSource* fs) {
 			static QRegExp exp("^\\s*uniform\\s+(\\S+)\\s+(\\S+)\\s*;\\s*$");
 
@@ -301,7 +308,8 @@ namespace Fragmentarium {
 				QString s = fs->source[i];
 				if (exp.indexIn(s)!=-1) {
 					if (map.contains(exp.cap(2))) {
-						fs->source[i] = map[exp.cap(2)]->getLockedSubstitution();
+						QString s = map[exp.cap(2)]->getLockedSubstitution();
+						if (!s.isNull()) fs->source[i] = s;
 						//INFO("Substituted: " + s + " -> " + fs->source[i]);
 					}
 				}
@@ -447,6 +455,17 @@ namespace Fragmentarium {
 						variables.append(bw);
 						bw->setUpdated(true);
 						currentWidget->layout()->addWidget(bw);
+					} else if (dynamic_cast<Parser::SamplerParameter*>(ps[i])) {
+						Parser::SamplerParameter* sp = dynamic_cast<Parser::SamplerParameter*>(ps[i]);
+						QString name = sp->getName();
+						SamplerWidget* sw = new SamplerWidget(mainWindow->getFileManager(), currentWidget, this, name, sp->getDefaultValue());
+						sw->setToolTip(sp->getTooltip());
+						sw->setStatusTip(sp->getTooltip());
+						sw->setGroup(sp->getGroup());
+						sw->setDefaultLockType(sp->getLockType());
+						variables.append(sw);
+						sw->setUpdated(true);
+						currentWidget->layout()->addWidget(sw);
 					} else {
 						WARNING("Unsupported parameter");
 					}
