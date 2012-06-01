@@ -13,7 +13,7 @@ vec3 color(vec2 v) {
 	p=p/pixelSize;
 	
 	if (p.y<40.0) {
-		return vec3(pow(0.73,Gamma));
+		return vec3(pow(0.5,1.0/Gamma));
 	}
 	float r = dot(v,v);
 	float a = 1.0;
@@ -27,15 +27,14 @@ vec3 color(vec2 v) {
 
 #preset Default
 Center = 0.0727965,-0.192122
-Zoom = 0.284263
-AntiAliasScale = 1
-Gamma = 0.4545
-ExponentialExposure = false
-Exposure = 1.3
+Zoom = 0.141329
+Gamma = 2.2
+ToneMapping = 1
+Exposure = 1
 Brightness = 1
 Contrast = 1
 Saturation = 1
-AARange = 4.65655
-AAExp = 1.89429
+AARange = 4.15701
+AAExp = 1.81626
 GaussianAA = true
 #endpreset

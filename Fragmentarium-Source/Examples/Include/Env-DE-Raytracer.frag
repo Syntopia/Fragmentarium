@@ -48,7 +48,7 @@ uniform int GlowMax; slider[0,20,1000]
 // Adds fog based on distance
 uniform float Fog; slider[0,0.0,2]
 
-uniform float Shadow; slider[0,0,1] 
+uniform float Shadow; slider[0,0,1]
 
 
 //uniform sampler2D texture; file[C:\Users\Mikael\Desktop\Sketches3\sketchx-16.png]
@@ -63,7 +63,7 @@ uniform float EnvDiffuse;slider[0,1,1]
 // Limits the maximum specular strength to avoid artifacts
 uniform float SpecularMax; slider[0,10,100]
 uniform vec2 Sun; slider[(-3.1415,-1.57),(0,0),(3.1415,1.57)]
-uniform float SunSize; slider[0,0.01,0.4] 
+uniform float SunSize; slider[0,0.01,0.4]
 
 
 vec4 orbitTrap = vec4(10000.0);
@@ -123,10 +123,10 @@ vec2 spherical(vec3 dir) {
 }
 
 vec3 fromPhiTheta(vec2 p) {
-return vec3(
-	cos(p.x)*sin(p.y),
-	sin(p.x)*sin(p.y),
-	cos(p.y));
+	return vec3(
+		cos(p.x)*sin(p.y),
+		sin(p.x)*sin(p.y),
+		cos(p.y));
 }
 
 uniform bool EnableFloor; checkbox[false]
@@ -163,23 +163,21 @@ float DEF2(vec3 p) {
 
 
 float shadow(vec3 pos, float eps) {
-
-
-		vec3 sunDir = fromPhiTheta(Sun);
-
-		// create orthogonal vector (fails for z,y = 0)
-		vec3 o1 = normalize( vec3(0., -sunDir.z, sunDir.y));
-             vec3 o2 = normalize(cross(sunDir, o1));
-
-		// Convert to spherical coords aliigned to sunDir;
-       	vec2 r = rand2(viewCoord*(float(backbufferCounter)+1.0));
-	       r.x=r.x*2.*PI;
-		r.y= 1.0-r.y*SunSize;	
-		float oneminus = sqrt(1.0-r.y*r.y);
-		vec3 sdir = cos(r.x)*oneminus*o1+
-				   sin(r.x)*oneminus*o2+
-				r.y*sunDir;
-
+	vec3 sunDir = fromPhiTheta(Sun);
+	
+	// create orthogonal vector (fails for z,y = 0)
+	vec3 o1 = normalize( vec3(0., -sunDir.z, sunDir.y));
+	vec3 o2 = normalize(cross(sunDir, o1));
+	
+	// Convert to spherical coords aliigned to sunDir;
+	vec2 r = rand2(viewCoord*(float(backbufferCounter)+1.0));
+	r.x=r.x*2.*PI;
+	r.y= 1.0-r.y*SunSize;
+	float oneminus = sqrt(1.0-r.y*r.y);
+	vec3 sdir = cos(r.x)*oneminus*o1+
+	sin(r.x)*oneminus*o2+
+	r.y*sunDir;
+	
 	float totalDist = 3.*eps;
 	for (int steps=0; steps<MaxRaySteps && totalDist<MaxDistance; steps++) {
 		vec3 p = pos + totalDist * sdir;
@@ -207,7 +205,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	
 	vec3 specular = EnvSpecular*texture2D(Specular,spherical(normalize(reflected)).yx).xyz;
 	specular = min(vec3(SpecularMax),specular);
-
+	
 	
 	if (Shadow>0.0) {
 		// check path from pos to spotDir
@@ -393,7 +391,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		vec2 c = spherical(normalize(dir));
 		vec3 col = texture2D(Background,c.yx).xyz;
 		if (dot(fromPhiTheta(Sun),normalize(dir))>1.0-SunSize) col= vec3(100.,0.,0.);
-
+		
 		hitColor = col;
 		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 		

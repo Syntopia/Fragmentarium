@@ -2,13 +2,17 @@ Roadmap.
 --------
 V0.9.2
 + HDRI Panorama for background, lighting, and specular.
-- TextureGUIWidget
++ 2D shader: both a AntiAliasScale and a AASize... 
++ control wrapping and sampling of textures (#texture Name ...)
++ TextureManager
+   + Delete unused textures
++ TextureGUIWidget
   - Has layout issues
   - Always Locked
+  - Serialization?
 - IBL-raytracer: name, debug sun toggle
-- Limit number of frames in continous mode.
-- TextureManager
-- control wrapping and sampling of textures (#texture Name ...)
++ Limit number of frames in continous mode.
+   - FPS?
 - Export in RGBE?
 - Fix BufferShader, so that it can handle GUI widgets...
 

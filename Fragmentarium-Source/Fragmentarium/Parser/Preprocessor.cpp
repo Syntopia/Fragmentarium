@@ -249,6 +249,15 @@ namespace Fragmentarium {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#camera");
 					fs.camera = c.trimmed();
+				} else if (s.trimmed().startsWith("#TexParameter")) {
+					fs.source[i] = "// " + s;
+					QString c = s.remove("#TexParameter").trimmed();
+					QStringList l = c.split(" ", QString::SkipEmptyParts);
+					if (l.count()!=3) {
+						WARNING("#TexParameter expects three arguments! Found: "+ l.join(","));
+					} else {
+						fs.textureParams[l[0]][l[1]] = l[2];
+					}
 				} else if (s.trimmed().startsWith("#buffer")) {
 					fs.source[i] = "// " + s;
 					QString c = s.remove("#buffer");

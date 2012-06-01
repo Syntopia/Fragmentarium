@@ -1,4 +1,5 @@
-#include "DE-Raytracer.frag"
+#define providesColor
+#include "Soft-Raytracer.frag"
 
 // This is an example of 
 // a simple distance estimated system.
@@ -6,6 +7,10 @@
 // The function "DE" must return 
 // the distance to the closest 
 // point on any objects in any direction.
+vec3 baseColor(vec3 p, vec3 n) {
+	if (mod(length(p*10.0),2.0)<1.0) return vec3(1.0);
+   return vec3(0.0);
+}
 
 float  DE(vec3 z) {
 	float d = (length(z-vec3(1.0,0.0,0.0))-1.0); // A sphere

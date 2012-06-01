@@ -1,63 +1,79 @@
 To be adressed:
 - #Version 130 warnings? Should we switch?
 
+01-06-12 [MHC]
+Added Thorn.frag [MHC]
+Added Doyle-Spirals [KNIGHTY]
+Shader fixes.
+TextureManager working.
+Removed unnecessary buffer rebuilds.
+Added texture parameters preprocessor defines:
+	#TexParameter texture GL_TEXTURE_MIN_FILTER GL_LINEAR
+	#TexParameter texture GL_TEXTURE_MAG_FILTER GL_NEAREST
+	#TexParameter texture GL_TEXTURE_WRAP_S GL_CLAMP
+	#TexParameter texture GL_TEXTURE_WRAP_T GL_REPEAT
+
 
 21-05-12 [MHC]
-				Added max subframe counter
-				Added support for widget for changing bound textures.
-				Added texture and file manager.
-				Added option to set OpenGL refresh rate in preferences.
-				Fixed filename case sensitivity error when doing reverse lookup of line numbers.
-				when using "#define providesColor", now implement a 'vec3 baseColor(vec3)' function.
-				Tonemapping in buffershader.
-				DE-Raytracer.frag now uses a 'Blinn-Phong with Schickl term and physical normalization'. 
-				DE-Raytracer.frag and Soft-Raytracer now uses new '3D.frag' base class.
-				Progressive2D.frag now supports custom filtering (using '#define providesFiltering')
-				Added support for HDR textures (.hdr RGBE format).
-				Added 'Convolution.frag' example
-				Added tutorials: 'progressive2D' and 'pure3D'
-				Added experimental: 'testScene' and 'triplanarTexturing'
-				Added 'Env-DE-Raytracer.frag'
+Added max subframe counter
+Added support for widget for changing bound textures.
+Added texture and file manager.
+Added option to set OpenGL refresh rate in preferences.
+Fixed filename case sensitivity error when doing reverse lookup of line numbers.
+when using "#define providesColor", now implement a 'vec3 baseColor(vec3)' function.
+Tonemapping in buffershader.
+DE-Raytracer.frag now uses a 'Blinn-Phong with Schickl term and physical normalization'. 
+DE-Raytracer.frag and Soft-Raytracer now uses new '3D.frag' base class.
+Progressive2D.frag now supports custom filtering (using '#define providesFiltering')
+Added support for HDR textures (.hdr RGBE format).
+Added 'Convolution.frag' example
+Added tutorials: 'progressive2D' and 'pure3D'
+Added experimental: 'testScene' and 'triplanarTexturing'
+Added 'Env-DE-Raytracer.frag'
 
+01-04-12 -- v0.9.1 release --
 
+11-03-12 [MHC] 
+Fixed error in 2D.frag, where changing aspect ratio would mess up viewport translation.
+Fixed error in Progressive2DJulia.frag, where the HUD-display would sometimes not appear.
+Cleaned up examples.
+Added Knighty's 'hyperbolic-tesselation-3-5-3-colored-02'
+The syntax for 2D systems has changed, simply call 'vec2 color(vec2)' now.
 
-11-03-12 [MHC] Fixed error in 2D.frag, where changing aspect ratio would mess up viewport translation.
-			   Fixed error in Progressive2DJulia.frag, where the HUD-display would sometimes not appear.
-			   Cleaned up examples.
-			   Added Knighty's 'hyperbolic-tesselation-3-5-3-colored-02'
-			   The syntax for 2D systems has changed, simply call 'vec2 color(vec2)' now.
-			   
 28-02-12 [MHC]
-				Created tutorials
-				Removed init() for 2D systems (need to '#define providesInit' now)
-				Changed OpenGL redraw timer to 2ms.
-				Added context menu option to insert preset based on current settings.
+Created tutorials
+Removed init() for 2D systems (need to '#define providesInit' now)
+Changed OpenGL redraw timer to 2ms.
+Added context menu option to insert preset based on current settings.
 
 20-02-12 [MHC] 
-				Fixed: The 2x/4x/.. buffers are dimmed when rendering with DE-Raytracer after Soft-Raytracer
-				Fixed: Copying from web is sometimes weird (should strip rich text)
-				Autosave files now creates a directory with output files (necessary since the #BufferShader directive broke the old 'include all in one file' system).
+Fixed: The 2x/4x/.. buffers are dimmed when rendering with DE-Raytracer after Soft-Raytracer
+Fixed: Copying from web is sometimes weird (should strip rich text)
+Autosave files now creates a directory with output files (necessary since the #BufferShader directive broke the old 'include all in one file' system).
 
-02-01-12 [MHC] Added some experimental shaders:
-			   Soft-Raytracer.frag - progressive DOF using finite aperture
-			   Progressive2D.frag, Progressive2DJulia.frag - progresive AA
+02-01-12 [MHC]
+Added some experimental shaders:
+Soft-Raytracer.frag - progressive DOF using finite aperture
+Progressive2D.frag, Progressive2DJulia.frag - progresive AA
 			   
-02-01-12 [MHC] Added support for specifying a custom (vertex+pixel) shader from the intermediate to screen buffer, e.g.:
-					#buffershader "BufferShader.frag"
-			   This is necessary to render acumulated buffer correctly.
-			   All buffers and buffershaders should work correctly with preview and hires rendering.
+02-01-12 [MHC] 
+Added support for specifying a custom (vertex+pixel) shader from the intermediate to screen buffer, e.g.:
+	#buffershader "BufferShader.frag"
+This is necessary to render acumulated buffer correctly.
+All buffers and buffershaders should work correctly with preview and hires rendering.
 			   
-02-01-12 [MHC] Added support for rendering to an intermediate buffer. The following buffertypes are available:
-					#buffer NONE, RGBA8, RGBA16, RGBA32F
-			   The front buffer is swapped after each frame to the backbuffer, which can be accessed as:
-					uniform sampler2D backbuffer;
-			   The current frame can be accessed through
-					uniform int backbufferCount;
-			   NOTICE: for the buffer to swap continously, the render mode must be continous!
+02-01-12 [MHC] 
+Added support for rendering to an intermediate buffer. The following buffertypes are available:
+	#buffer NONE, RGBA8, RGBA16, RGBA32F
+The front buffer is swapped after each frame to the backbuffer, which can be accessed as:
+	uniform sampler2D backbuffer;
+The current frame can be accessed through
+	uniform int backbufferCount;
+NOTICE: for the buffer to swap continously, the render mode must be continous!
 			   
 25-12-11 [MHC] Fixed some error in the included fragments: Noise, Tetrahedron, and several of Knighty's examples were missing a 'providesInit'. Fixed specular bug in standard-raytracer.
 
-19-12-11 -- v0.8 release --
+19-12-11 -- v0.9 release --
 
 18-12-11 [MHC] Cleanup 
 

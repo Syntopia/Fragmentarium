@@ -1,4 +1,4 @@
-#include "2D.frag"
+#include "Progressive2D.frag"
 #group Mandelbrot
 
 // Number of iterations

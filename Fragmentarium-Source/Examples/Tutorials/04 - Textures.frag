@@ -16,6 +16,11 @@ uniform float time;
 // and to the include path set in the settings.
 uniform sampler2D texture; file[texture2.jpg]
 
+// You can set texture parameters directly:
+#TexParameter texture GL_TEXTURE_MAG_FILTER GL_LINEAR
+#TexParameter texture GL_TEXTURE_WRAP_S GL_REPEAT
+#TexParameter texture GL_TEXTURE_WRAP_T GL_REPEAT
+
 // A simple system based on the 'tunnel' system by Inigo Quilez:
 // http://www.iquilezles.org/apps/shadertoy/
 vec3 color(vec2 c) {

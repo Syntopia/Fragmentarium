@@ -1,5 +1,5 @@
 #group Kaliset
-#include "2DJulia.frag"
+#include "Progressive2DJulia.frag"
 #info Kaliset
 
 //  Fractal by Kali (Kaliset? Kaliduck?)

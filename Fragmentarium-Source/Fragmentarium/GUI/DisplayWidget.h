@@ -127,6 +127,7 @@ namespace Fragmentarium {
 			bool doClearBackBuffer;
 			QTimer* timer;
 			int maxSubFrames;
+			QString oldBufferString;
 		};
 	};
 

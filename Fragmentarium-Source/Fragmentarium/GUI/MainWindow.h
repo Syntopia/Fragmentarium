@@ -84,8 +84,8 @@ namespace Fragmentarium {
 				void animationControllerHidden();
 				void removeSplash();
 				void maxSubSamplesChanged(int);
-				void viewSliderChanged(int);
-				void previewSliderChanged(int);
+				void viewSliderChanged();
+				void previewSliderChanged();
 				void tileBasedRender();
 				void makeScreenshot();
 				void callRedraw();

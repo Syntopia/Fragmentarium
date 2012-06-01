@@ -154,7 +154,7 @@ float shadow(vec3 pos, vec3 sdir, float eps) {
 			vec3 p = pos + totalDist * sdir;
 			float dist = DEF2(p);
 			if (dist < eps)  return 1.0;
-			s = min(s, ShadowSoft*(dist/totalDist));
+			s = min(s, ShadowSoft*pow((dist/totalDist),0.5));
 			totalDist += dist;
 		}
 		return 1.0-s;	
@@ -170,11 +170,11 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
 	spotDir = normalize(spotDir);
 
-	float nDotL = max(0.0,dot(-n,spotDir));
-       vec3 half = normalize(dir +spotDir);
+	float nDotL = max(0.0,dot(n,spotDir));
+       vec3 half = normalize(-dir+spotDir);
 	float diffuse = nDotL*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
-       float hDotN = max(0.,dot(-n,half));
+       float hDotN = max(0.,dot(n,half));
 
 	 // An attempt at Physcical Based Specular Shading:
        // http://renderwonk.com/publications/s2010-shading-course/
@@ -192,7 +192,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 
 	if (HardShadow>0.0) {
 		// check path from pos to spotDir
-		shadowStrength = shadow(pos+n*eps, -spotDir, eps);
+		shadowStrength = shadow(pos+n*eps, spotDir, eps);
 		ambient = mix(ambient,0.0,HardShadow*shadowStrength);
 		diffuse = mix(diffuse,0.0,HardShadow*shadowStrength);
 		// specular = mix(specular,0.0,HardShadow*f); 
@@ -347,8 +347,8 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 #else
 		hitColor = getColor();
 #endif
+	      hitColor = pow(hitColor,vec3(2.2));
             if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
-
 		if (floorHit) {
 			hitColor = FloorColor;
 		}
@@ -365,6 +365,10 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	else {
 		hitColor = backColor;
 		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
+	
+		vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
+		spotDir = normalize(spotDir);
+		if ( dot(spotDir,normalize(dir))>0.9) hitColor= vec3(100.,0.,0.);
 	
 	}
 		

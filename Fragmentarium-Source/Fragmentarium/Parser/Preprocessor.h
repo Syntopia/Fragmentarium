@@ -230,6 +230,7 @@ namespace Fragmentarium {
 			QVector<GuiParameter*> params;
 			QMap<QString, QString> textures; // "Uniform name" -> "File"
 			QMap<QString, QString> presets;
+			QMap<QString, QMap<QString, QString> > textureParams; // foreach texturename, store parameters
 
 			FragmentSource* bufferShaderSource;
 		};

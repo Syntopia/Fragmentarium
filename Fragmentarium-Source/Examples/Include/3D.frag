@@ -17,8 +17,6 @@ vec3 color(vec3 cameraPos, vec3 direction);
 #vertex
 
 #group Camera
-
-
 // Field-of-view
 uniform float FOV; slider[0,0.4,2.0] NotLockable
 uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
@@ -36,6 +34,12 @@ varying vec3 UpOrtho;
 varying vec3 Right;
 uniform int backbufferCounter;
 varying vec2 PixelScale;
+
+#ifdef providesInit
+void init(); // forward declare
+#else
+void init() {}
+#endif
 
 vec2 rand(vec2 co){
 	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
@@ -62,6 +66,7 @@ void main(void)
 	UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
 	Right = normalize( cross(Dir,UpOrtho));
 	coord*=FOV;
+	init();
 }
 #endvertex
 

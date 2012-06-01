@@ -57,10 +57,11 @@ uniform vec4 Glow; color[0,0.0,1,1.0,1.0,1.0];
 uniform int GlowMax; slider[0,20,1000]
 // Adds fog based on distance
 uniform float Fog; slider[0,0.0,2]
-// Hard shadows shape is controlled by SpotLightDir
-uniform float HardShadow; slider[0,0,1] Locked
+// Shadowstrength
+uniform float Shadow; slider[0,0,1] Locked
+uniform vec2 Sun; slider[(-3.1415,-1.57),(0,0),(3.1415,1.57)]
+uniform float SunSize; slider[0,0.01,0.4]
 
-uniform float ShadowSoft; slider[0.0,2.0,20]
 
 uniform float Reflection; slider[0,0,1] Locked
 
@@ -118,6 +119,18 @@ uniform vec3 FloorNormal; slider[(-1,-1,-1),(0,0,0),(1,1,1)]
 uniform float FloorHeight; slider[-5,0,5]
 uniform vec3 FloorColor; color[1,1,1]
 
+#define PI  3.14159265358979323846264
+
+vec2 spherical(vec3 dir) {
+	return vec2( acos(dir.z)/PI, atan(dir.y,dir.x)/(2.0*PI) );
+}
+
+vec3 fromPhiTheta(vec2 p) {
+	return vec3(
+		cos(p.x)*sin(p.y),
+		sin(p.x)*sin(p.y),
+		cos(p.y));
+}
 
 vec3 rand3(vec2 co){
 	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
@@ -133,23 +146,32 @@ float rand1(vec2 co){
 	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-uniform float ShadowBackstep; slider[0,2,10]
-float checkShadow(vec3 from, vec3 direction, float maxDist) {
-	float totalDist = ShadowBackstep*minDist;
-	float dist = 0.0;
-	for (int steps=0; steps<MaxRaySteps; steps++) {
-		vec3 p = from + totalDist * direction;
-		dist = DE(p);
-		//dist *= FudgeFactor;
-		//if (steps == 0) dist*=(Dither*rand1(direction.xy*float(backbufferCounter+1)))+(1.0-Dither);
+float shadow(vec3 pos, float eps) {
+	vec3 sunDir = fromPhiTheta(Sun);
+	
+	// create orthogonal vector (fails for z,y = 0)
+	vec3 o1 = normalize( vec3(0., -sunDir.z, sunDir.y));
+	vec3 o2 = normalize(cross(sunDir, o1));
+	
+	// Convert to spherical coords aliigned to sunDir;
+	vec2 r = rand2(viewCoord*(float(backbufferCounter)+1.0));
+	r.x=r.x*2.*PI;
+	r.y= 1.0-r.y*SunSize;
+	float oneminus = sqrt(1.0-r.y*r.y);
+	vec3 sdir = cos(r.x)*oneminus*o1+sin(r.x)*oneminus*o2+r.y*sunDir;
+	
+	float totalDist = 3.*eps;
+	for (int steps=0; steps<MaxRaySteps && totalDist<MaxDistance; steps++) {
+		vec3 p = pos + totalDist * sdir;
+		float dist = DE(p);
+		if (dist < eps)  return 0.0;
 		totalDist += dist;
-		if (dist < minDist) return 0.0;
-		if (totalDist > maxDist) return 1.0;
 	}
+	return 1.0;
 }
 
 float getAO(vec3 from, vec3 normal) {
-	float totalDist = ShadowBackstep*minDist;
+	float totalDist = 0.0; //ShadowBackstep*minDist;
 	vec3 direction = rand3(123.3*viewCoord.xy*(1.0+float(backbufferCounter)))-vec3(0.5);
 	float maxDist =  pow(10.0,DetailAO/10.0);
 	if (dot(direction, normal)<0.0) direction*=-1.0;
@@ -186,15 +208,17 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	float diffuse = max(0.0,dot(n,spotDir))*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
 	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular*10.0;
-	vec3 jitPos = SpotLightPos  + ShadowSoft*
-	(rand3(viewCoord*(float(backbufferCounter)))-vec3(0.5));
 	
-	float  shadow = checkShadow(pos, normalize(jitPos-pos), length(jitPos-pos));
-	shadow= mix(1.0,shadow,HardShadow);
-	ambient*=shadow;
-	specular*=shadow;
-	diffuse*=shadow;
-	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
+	if (Shadow>0.0) {
+		// check path from pos to spotDir
+		shadowStrength = 1.0-shadow(pos+n*eps,eps);
+		ambient = mix(ambient,0.0,Shadow*shadowStrength);
+		diffuse = mix(diffuse,vec3(0.0),Shadow*shadowStrength);
+		specular = mix(specular,vec3(0.0),Shadow*shadowStrength);
+	}
+	
+	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient)*color+specular*SpotLight.xyz;
+	//return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }
 
 vec3 colorBase = vec3(0.0,0.0,0.0);

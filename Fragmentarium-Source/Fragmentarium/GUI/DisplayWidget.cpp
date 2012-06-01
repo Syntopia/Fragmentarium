@@ -21,6 +21,7 @@ namespace Fragmentarium {
 	namespace GUI {
 
 		namespace {
+			// Literal names for OpenGL flags
 			QStringList GetOpenGLFlags() {
 				QGLFormat::OpenGLVersionFlags f = QGLFormat::openGLVersionFlags ();
 				QStringList s;
@@ -32,7 +33,6 @@ namespace Fragmentarium {
 				if (f & QGLFormat::OpenGL_Version_2_0) s.append("OpenGL2.0");
 				if (f & QGLFormat::OpenGL_Version_2_1) s.append("OpenGL2.1");
 				if (f & QGLFormat::OpenGL_Version_3_0) s.append("OpenGL3.0");
-
 				if (f & QGLFormat::OpenGL_ES_CommonLite_Version_1_0) s.append("OpenGL_ES_CL_1.0");
 				if (f & QGLFormat::OpenGL_ES_Common_Version_1_0) s.append("OpenGL_ES_C_1.0");
 				if (f & QGLFormat::OpenGL_ES_CommonLite_Version_1_1) s.append("OpenGL_ES_CL_1.1");
@@ -57,7 +57,6 @@ namespace Fragmentarium {
 			nextActiveTexture = 0;
 			tileFrame = 0;
 			tileFrameMax = 0;
-
 			viewFactor = 0;
 			previewFactor = 0.0;
 			tiles = 0;
@@ -100,10 +99,8 @@ namespace Fragmentarium {
 		DisplayWidget::~DisplayWidget() {
 		}
 
-
 		void DisplayWidget::contextMenuEvent(QContextMenuEvent* /*ev*/ ) {
 		}
-
 
 		void DisplayWidget::reset() {
 			updatePerspective();
@@ -114,6 +111,7 @@ namespace Fragmentarium {
 		void DisplayWidget::setFragmentShader(FragmentSource fs) { 
 			fragmentSource = fs; 
 
+			// Camera setup
 			if (fragmentSource.camera == "") {
 				fragmentSource.camera = "2D";
 			}
@@ -130,8 +128,8 @@ namespace Fragmentarium {
 			}
 			cameraControl->printInfo();
 
+			// Buffer setup
 			QString b = fragmentSource.buffer.toUpper();
-
 			if (b=="" || b=="NONE") {
 				bufferType = None;
 			} else if (b == "RGBA8") {
@@ -154,14 +152,54 @@ namespace Fragmentarium {
 		void DisplayWidget::requireRedraw() {
 			if (disableRedraw && tiles==0) return;
 			pendingRedraws = requiredRedraws;
-			// Clear backbuffer?
 			if (!tiles) clearBackBuffer();
 			if (tiles && (tileFrame == 0)) clearBackBuffer();
 		}
 
 
+		namespace {
+			void setGlTexParameter(QMap<QString, QString> map) {
+				QMapIterator<QString, QString> i(map);
+				while (i.hasNext()) {
+					i.next();
+					QString key = i.key();
+					QString value = i.value();
+					GLenum k = 0;
+					if (key == "GL_TEXTURE_WRAP_S") {
+						k = GL_TEXTURE_WRAP_S;
+					} else if (key == "GL_TEXTURE_WRAP_T") {
+						k = GL_TEXTURE_WRAP_T;
+					} else if (key == "GL_TEXTURE_MIN_FILTER") {
+						k = GL_TEXTURE_MIN_FILTER;
+					} else if (key == "GL_TEXTURE_MAG_FILTER") {
+						k = GL_TEXTURE_MAG_FILTER;
+					} else {
+						WARNING("Unable to parse TexParameter key: " + key);
+						continue;
+					}
+
+					GLint v = 0;
+					if (value == "GL_CLAMP") {
+						v = GL_CLAMP;
+					} else if (value == "GL_REPEAT") {
+						v = GL_REPEAT;
+					} else if (value == "GL_NEAREST") {
+						v = GL_NEAREST;
+					} else if (value == "GL_LINEAR") {
+						v = GL_LINEAR;
+					} else {
+						WARNING("Unable to parse TexParameter value: " + value);
+						continue;
+					}
+					glTexParameteri(GL_TEXTURE_2D, k, v);
+				}
+				
+			}
+		}
 
 		void DisplayWidget::setupFragmentShader() {
+
+			QMap<QString, bool> textureCacheUsed;
 
 			if (shaderProgram) {
 				shaderProgram->release();
@@ -208,12 +246,8 @@ namespace Fragmentarium {
 					GLuint i = backBuffer->texture();
 					glBindTexture(GL_TEXTURE_2D,i);
 					shaderProgram->setUniformValue(l, (GLuint)u);
-
 					INFO(QString("Binding back buffer (ID: %1) to active texture %2").arg(backBuffer->texture()).arg(u));
-
 					INFO(QString("Setting uniform backbuffer to active texture %2").arg(u));
-
-
 					u++;
 				} else {
 					WARNING("Trying to use a backbuffer, but no bufferType set.");
@@ -223,30 +257,26 @@ namespace Fragmentarium {
 
 
 			for (QMap<QString, QString>::iterator it = fragmentSource.textures.begin(); it!=fragmentSource.textures.end(); it++) {
-				QImage im(it.value() );
-				if (im.isNull() && !it.value().endsWith(".hdr", Qt::CaseInsensitive)) {
-					WARNING("Failed to load texture: " + QFileInfo(it.value()).absoluteFilePath());
+				QString textureName = it.key();
+				QString texturePath = it.value();
+				QImage im(texturePath);
+				if (im.isNull() && !texturePath.endsWith(".hdr", Qt::CaseInsensitive)) {
+					WARNING("Failed to load texture: " + QFileInfo(texturePath).absoluteFilePath());
 				} else {
-
-					int l = shaderProgram->uniformLocation(it.key());
+					int l = shaderProgram->uniformLocation(textureName);
 					if (l != -1) {
-					
 						if (im.isNull()) {
-							
-						
 							GLuint texture = 0;
 
 							// set current texture
 							glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
 							
 							// allocate a texture id
-
-							if (TextureCache.contains(it.value().toAscii().data())) {
-								
-								int textureID = TextureCache[it.value().toAscii().data()];
+							if (TextureCache.contains(texturePath)) {
+								textureCacheUsed[texturePath] = true;
+								int textureID = TextureCache[texturePath];
 								glBindTexture(GL_TEXTURE_2D, textureID );
-								INFO(QString("Found texture ID: %1 (%2)").arg(texture).arg(it.value().toAscii().data()));
-								
+								INFO(QString("Found texture in cache: %1").arg(texturePath));
 							} else {
 								glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	    
@@ -254,46 +284,70 @@ namespace Fragmentarium {
 								INFO(QString("Allocated texture ID: %1").arg(texture));
 
 								glBindTexture(GL_TEXTURE_2D, texture );
-								glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-								glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+								if (fragmentSource.textureParams.contains(textureName)) {
+									setGlTexParameter(fragmentSource.textureParams[textureName]);
+								}
+								//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+								//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 								HDRLoaderResult result;
-								HDRLoader::load(it.value().toAscii().data(), result);
-								INFO(QString("Hdrloader: %1 x %2").arg(result.width).arg(result.height));
+								HDRLoader::load(texturePath.toAscii().data(), result);
+								INFO(QString("Hdrloader found HDR image: %1 x %2").arg(result.width).arg(result.height));
 								glTexImage2D(GL_TEXTURE_2D, 0, 0x8815  /* GL_RGB32F*/, result.width, result.height, 0, GL_RGB, GL_FLOAT, result.cols);
 			
-								INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(it.key()+":"+it.value()).arg(texture).arg(u));
-								TextureCache[it.value().toAscii().data()] = texture;
+								INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(textureName+":"+texturePath).arg(texture).arg(u));
+								TextureCache[texturePath] = texture;
+								textureCacheUsed[texturePath] = true;
 							}
 
 							shaderProgram->setUniformValue(l, (GLuint)u);
-							INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+							INFO(QString("Setting uniform %0 to active texture %2").arg(textureName).arg(u));
 
 						} else {
 							glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
-							GLuint i = bindTexture(it.value(), GL_TEXTURE_2D, GL_RGBA);
-							glBindTexture(GL_TEXTURE_2D,i);
-							INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(it.key()+":"+it.value()).arg(i).arg(u));
+							GLuint textureID;
+							if (TextureCache.contains(texturePath)) {
+								textureCacheUsed[texturePath] = true;
+								textureID = TextureCache[texturePath];
+								glBindTexture(GL_TEXTURE_2D, textureID );
+								INFO(QString("Found texture in cache: %1").arg(texturePath));
+							} else {
+								textureID = bindTexture(texturePath, GL_TEXTURE_2D, GL_RGBA);
+								TextureCache[texturePath] = textureID;
+								textureCacheUsed[texturePath] = true;
+							}
+							glBindTexture(GL_TEXTURE_2D,textureID);
+							INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(textureName+":"+texturePath).arg(textureID).arg(u));
 
 							shaderProgram->setUniformValue(l, (GLuint)u);
-							INFO(QString("Setting uniform %0 to active texture %2").arg(it.key()).arg(u));
+							INFO(QString("Setting uniform %0 to active texture %2").arg(textureName).arg(u));
 
-							//INFO("Setting POINT");
-							glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-							glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-							//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-							//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-							//INFO("Binding " + it.key() + ":" + it.value() + " to " + QString::number(i) + " - " + QString::number(u) );
+							if (fragmentSource.textureParams.contains(textureName)) {
+								setGlTexParameter(fragmentSource.textureParams[textureName]);
+							}
 						}
 					} else {
-						WARNING("Could not locate sampler2D uniform: " + it.key());
+						WARNING("Could not locate sampler2D uniform: " + textureName);
 					}
 					u++;
 				}
 			}
 			nextActiveTexture = u;
 			setupBufferShader();
+
+			// Check for unused textures
+			QMapIterator<QString, int> i(TextureCache);
+			while (i.hasNext()) {
+				i.next();
+				if (!textureCacheUsed.contains(i.key())) {
+					INFO("Removing texture from cache: " +i.key());
+					GLuint id = i.value();
+					glDeleteTextures(1, &id);
+					TextureCache.remove(i.key());
+				} else {
+					INFO("Used texture: " +i.key());
+				}			
+			}
 		}
 
 
@@ -440,9 +494,6 @@ namespace Fragmentarium {
 		void DisplayWidget::makeBuffers() {
 			makeCurrent();
 
-			delete(previewBuffer); previewBuffer = 0;
-			delete(backBuffer); backBuffer = 0;
-
 			int w = width()/(previewFactor+1);
 			int h = height()/(previewFactor+1);
 
@@ -452,21 +503,36 @@ namespace Fragmentarium {
 			else if (bufferType==RGBA16) { b = "RGBA16";  type = GL_RGBA16; }
 			else if (bufferType==RGBA32F)  { b = "RGBA32F";  type = 0x8814 /*GL_RGBA32F*/; } 
 			else b = "UNKNOWN";
+			
+			QString bufferString;
+			if (bufferType==None) {
+				if (previewFactor==0) {
+					bufferString = QString("No buffers. Direct render as %1x%2 %3.").arg(w).arg(h).arg("RGBA8");
+				} else {
+					bufferString = QString("Created front buffer as %1x%2 %3.").arg(w).arg(h).arg("RGBA8");
+				}
+			} else {
+				// we must create both the backbuffer and previewBuffer
+				bufferString = QString("Created front and back buffers as %1x%2 %3.").arg(w).arg(h).arg(b);
+			}
+
+			if (oldBufferString == bufferString) return;
+			oldBufferString = bufferString;
+
+			delete(previewBuffer); previewBuffer = 0;
+			delete(backBuffer); backBuffer = 0;
 
 			if (bufferType==None) {
 				if (previewFactor==0) {
-					INFO(QString("No buffers. Direct render as %1x%2 %3.").arg(w).arg(h).arg("RGBA8"));
 				} else {
 					previewBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
-					INFO(QString("Created front buffer as %1x%2 %3.").arg(w).arg(h).arg("RGBA8"));
 				}
 			} else {
 				// we must create both the backbuffer and previewBuffer
 				backBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
 				previewBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
-				
-				INFO(QString("Created front and back buffers as %1x%2 %3.").arg(w).arg(h).arg(b));
 			}
+			INFO(bufferString);
 
 			clearBackBuffer();
 
@@ -790,7 +856,7 @@ namespace Fragmentarium {
 		}
 
 		void DisplayWidget::clearPreviewBuffer() {
-			INFO("Rebuilding buffers after resize.");
+			//INFO("Rebuilding buffers after resize.");
 			setPreviewFactor(previewFactor);
 			requireRedraw();
 		}

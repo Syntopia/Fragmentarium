@@ -171,14 +171,20 @@ namespace Fragmentarium {
 				preprocessorMenu->addAction("#group parameter_group_name", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#preset preset_name", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#endpreset", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#TexParameter textureName GL_TEXTURE_MAG_FILTER GL_NEAREST", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#TexParameter textureName GL_TEXTURE_WRAP_S GL_CLAMP", textEdit , SLOT(insertText()));
+				
+
+
 
 				QMenu *uniformMenu = new QMenu("Special Uniforms", 0);
 				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec2 pixelSize;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform int i; slider[0,1,2]", textEdit , SLOT(insertText()));
-				uniformMenu->addAction("uniform float f; slider[0.1,1.1,2.3]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform float f; slider[0,1,2]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec2 v; slider[(0,0),(1,1),(1,1)]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec3 v; slider[(0,0,0),(1,1,1),(1,1,1)]", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform vec4 v; slider[(0,0,0,0),(1,1,1,1),(1,1,1,1)]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform bool b; checkbox[true]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform sampler2D tex; file[tex.jpg]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec3 color; color[0.0,0.0,0.0]", textEdit , SLOT(insertText()));
@@ -1122,10 +1128,10 @@ namespace Fragmentarium {
 			viewSlider->setMaximum(12);
 			viewSlider->setTickPosition(QSlider::TicksBelow);
 			viewSlider->setMaximumWidth(100);
-			connect(viewSlider, SIGNAL(valueChanged(int)), this, SLOT(viewSliderChanged(int)));
+			connect(viewSlider, SIGNAL(sliderReleased()), this, SLOT(viewSliderChanged()));
 			renderModeToolBar->addWidget(viewLabel);
 			renderModeToolBar->addWidget(viewSlider);
-			viewSliderChanged(0);
+			viewSliderChanged();
 
 			previewLabel = new QLabel("Preview (off)", renderModeToolBar);
 			previewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
@@ -1134,7 +1140,7 @@ namespace Fragmentarium {
 			previewSlider->setMaximum(4);
 			previewSlider->setTickPosition(QSlider::TicksBelow);
 			previewSlider->setMaximumWidth(100);
-			connect(previewSlider, SIGNAL(valueChanged(int)), this, SLOT(previewSliderChanged(int)));
+			connect(previewSlider, SIGNAL(sliderReleased()), this, SLOT(previewSliderChanged()));
 			renderModeToolBar->addWidget(previewLabel);
 			renderModeToolBar->addWidget(previewSlider);
 
@@ -1155,7 +1161,7 @@ namespace Fragmentarium {
 			engine->setMaxSubFrames(i);
 		}
 
-		void MainWindow::viewSliderChanged(int) {
+		void MainWindow::viewSliderChanged() {
 			int v = viewSlider->value();
 			if (v>0) {
 				viewLabel->setText(QString("  Tile Preview (%1x)").arg(abs(v+1)));
@@ -1165,7 +1171,7 @@ namespace Fragmentarium {
 			engine->setViewFactor(v);
 		}
 
-		void MainWindow::previewSliderChanged(int) {
+		void MainWindow::previewSliderChanged() {
 			int v = previewSlider->value();
 			if (v>0) {
 				previewLabel->setText(QString("  Preview (%1x)").arg(abs(v+1)));
