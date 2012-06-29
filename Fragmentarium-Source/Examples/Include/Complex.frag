@@ -1,25 +1,25 @@
 #donotrun
 
-#if __VERSION__ < 130 
+#if __VERSION__ < 130
 float cosh(float val)
 {
-    float tmp = exp(val);
-    float cosH = (tmp + 1.0 / tmp) / 2.0;
-    return cosH;
+	float tmp = exp(val);
+	float cosH = (tmp + 1.0 / tmp) / 2.0;
+	return cosH;
 }
 
 float tanh(float val)
 {
-    float tmp = exp(val);
-    float tanH = (tmp - 1.0 / tmp) / (tmp + 1.0 / tmp);
-    return tanH;
+	float tmp = exp(val);
+	float tanH = (tmp - 1.0 / tmp) / (tmp + 1.0 / tmp);
+	return tanH;
 }
 
 float sinh(float val)
 {
-    float tmp = exp(val);
-    float sinH = (tmp - 1.0 / tmp) / 2.0;
-   return sinH;
+	float tmp = exp(val);
+	float sinH = (tmp - 1.0 / tmp) / 2.0;
+	return sinH;
 }
 #endif
 
@@ -32,8 +32,10 @@ vec2 cPower(vec2 z, float n) {
 	return pow(r2,n/2.0)*vec2(cos(n*atan(z.y/z.x)),sin(n*atan(z.y/z.x)));
 }
 
+
+
 vec2 cInverse(vec2 a) {
-       return	vec2(a.x,-a.y)/dot(a,a);
+	return	vec2(a.x,-a.y)/dot(a,a);
 }
 
 vec2 cDiv(vec2 a, vec2 b) {
@@ -55,9 +57,13 @@ vec2 cSqr(vec2 z) {
 }
 
 vec2 cSin(vec2 z) {
-  return vec2(sin(z.x)*cosh(z.y), cos(z.x)*sinh(z.y));
+	return vec2(sin(z.x)*cosh(z.y), cos(z.x)*sinh(z.y));
 }
 
 vec2 cCos(vec2 z) {
-  return vec2(cos(z.x)*cosh(z.y), -sin(z.x)*sinh(z.y));
+	return vec2(cos(z.x)*cosh(z.y), -sin(z.x)*sinh(z.y));
+}
+
+vec2 cPower2(vec2 z, vec2 a) {
+	return cExp(cMul(cLog(z), a));
 }

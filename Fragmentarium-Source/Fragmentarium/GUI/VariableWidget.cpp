@@ -1,6 +1,7 @@
 #include "VariableWidget.h"
 
 #include <QPushButton>
+#include <QSizeGrip>
 #include <QToolButton>
 #include <QFileDialog>
 #include <QSlider>
@@ -46,7 +47,7 @@ namespace Fragmentarium {
 		}
 
 		void VariableWidget::valueChanged() {
-			if (lockType == Locked) {
+			if (lockType == Locked || lockType == AlwaysLocked) {
 				QPalette pal = palette();
 				pal.setColor(backgroundRole(), Qt::yellow);
 				setPalette(pal);
@@ -581,28 +582,31 @@ namespace Fragmentarium {
 		// SamplerWidget ------------------------------------------------------------------
 
 		SamplerWidget::SamplerWidget(FileManager* fileManager, QWidget* parent, QWidget* variableEditor,QString name, QString defaultValue) 
-				: fileManager(fileManager), VariableWidget(parent, variableEditor, name), defaultValue(defaultValue) {
-					setLayout(new QHBoxLayout());
-					layout()->setContentsMargins(0,0,0,0);
-					QLabel* l = new QLabel(name, this);
+			: fileManager(fileManager), VariableWidget(parent, variableEditor, name), defaultValue(defaultValue) {
+				QHBoxLayout* l = new QHBoxLayout(widget);
+				l->setSpacing(2);
+				l->setContentsMargins (0,0,0,0);
+				QLabel* lb = new QLabel(name, parent);
+				comboBox = new QComboBox(parent);
+				comboBox->setEditable(true);
+				comboBox->addItems(fileManager->getImageFiles());
+				comboBox->setEditText(defaultValue);
 
-					comboBox = new QComboBox(this);
-					comboBox->setEditable(true);
-					comboBox->addItems(fileManager->getImageFiles());
-					comboBox->setEditText(defaultValue);
-				
+				pushButton = new QPushButton("...", parent);
+				l->addWidget(lb);
+				lb->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+				l->addWidget(comboBox);
+				comboBox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
+				comboBox->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::Maximum));
+				comboBox->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn); // necessarily!
+				comboBox->view()->setCornerWidget(new QSizeGrip(comboBox));
+				l->addWidget(pushButton);
+				pushButton->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
+				connect(comboBox, SIGNAL(editTextChanged(const QString& )), this, SLOT(textChanged(const QString& )));
+				connect(pushButton, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+				textChanged("");
 
-					pushButton = new QPushButton("...", this);
-					layout()->addWidget(l);
-					l->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
-					layout()->addWidget(comboBox);
-					comboBox->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::Maximum));
-					layout()->addWidget(pushButton);
-					pushButton->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
-					connect(comboBox, SIGNAL(editTextChanged(const QString& )), this, SLOT(textChanged(const QString& )));
-					connect(pushButton, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-					textChanged("");
-			}
+		}
 
 		void SamplerWidget::textChanged(const QString& ) {
 			if (!fileManager->fileExists(comboBox->currentText())) {
@@ -610,21 +614,21 @@ namespace Fragmentarium {
 				pal.setColor(this->backgroundRole(), Qt::red);
 				this->setPalette(pal);
 				this->setAutoFillBackground(true);
-				INFO("did not");
 			} else {
 				this->setPalette(QApplication::palette(this));
 				this->setAutoFillBackground(false);
-				INFO("did");
 			}
-			emit changed();
+			//emit changed();
+			valueChanged();
+
 		}
 
 		void SamplerWidget::buttonClicked() {
 			QString fileName = QFileDialog::getOpenFileName(this, "Select a Texture",
-                                                 QString(),
-												 "Images (*.hdr *.png *.jpg);;All (*.*)");
+				QString(),
+				"Images (*.hdr *.png *.jpg);;All (*.*)");
 			if (!fileName.isEmpty()) comboBox->setEditText(fileName);
-			
+
 		}
 
 		QString SamplerWidget::toString() {
@@ -636,6 +640,7 @@ namespace Fragmentarium {
 		}
 
 		void SamplerWidget::fromString(QString string) {
+			INFO("'" + string + "'");
 			comboBox->setEditText(string);
 		};
 
@@ -651,8 +656,8 @@ namespace Fragmentarium {
 				WARNING("Weird, texture not found in fragment source: " + name);
 			}
 		}
-			
-		
+
+
 		// BoolWidget -------------------------------------------------
 
 		BoolWidget::BoolWidget(QWidget* parent, QWidget* variableEditor, QString name, bool defaultValue) 

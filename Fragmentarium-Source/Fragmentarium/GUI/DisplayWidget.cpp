@@ -197,7 +197,8 @@ namespace Fragmentarium {
 			}
 		}
 
-		void DisplayWidget::setupFragmentShader() {
+			void DisplayWidget::setupFragmentShader() {
+
 
 			QMap<QString, bool> textureCacheUsed;
 
@@ -245,6 +246,10 @@ namespace Fragmentarium {
 					glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
 					GLuint i = backBuffer->texture();
 					glBindTexture(GL_TEXTURE_2D,i);
+					if (fragmentSource.textureParams.contains("backbuffer")) {
+						setGlTexParameter(fragmentSource.textureParams["backbuffer"]);
+
+					}
 					shaderProgram->setUniformValue(l, (GLuint)u);
 					INFO(QString("Binding back buffer (ID: %1) to active texture %2").arg(backBuffer->texture()).arg(u));
 					INFO(QString("Setting uniform backbuffer to active texture %2").arg(u));
@@ -266,17 +271,19 @@ namespace Fragmentarium {
 					int l = shaderProgram->uniformLocation(textureName);
 					if (l != -1) {
 						if (im.isNull()) {
+													
 							GLuint texture = 0;
 
 							// set current texture
 							glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
 							
 							// allocate a texture id
+
 							if (TextureCache.contains(texturePath)) {
 								textureCacheUsed[texturePath] = true;
 								int textureID = TextureCache[texturePath];
 								glBindTexture(GL_TEXTURE_2D, textureID );
-								INFO(QString("Found texture in cache: %1").arg(texturePath));
+								INFO(QString("Found texture in cache: %1 (id: %2)").arg(texturePath).arg(textureID));
 							} else {
 								glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	    
@@ -284,16 +291,19 @@ namespace Fragmentarium {
 								INFO(QString("Allocated texture ID: %1").arg(texture));
 
 								glBindTexture(GL_TEXTURE_2D, texture );
+								//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+								
+								// TODO: If I don't keep this line, HDR images don't work.
+								// It must be a symptom of some kind of error in the OpenGL setup.
+								glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 								if (fragmentSource.textureParams.contains(textureName)) {
 									setGlTexParameter(fragmentSource.textureParams[textureName]);
 								}
-								//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-								//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+								
 								HDRLoaderResult result;
 								HDRLoader::load(texturePath.toAscii().data(), result);
 								INFO(QString("Hdrloader found HDR image: %1 x %2").arg(result.width).arg(result.height));
-								glTexImage2D(GL_TEXTURE_2D, 0, 0x8815  /* GL_RGB32F*/, result.width, result.height, 0, GL_RGB, GL_FLOAT, result.cols);
+								glTexImage2D(GL_TEXTURE_2D, 0, 0x8815  , result.width, result.height, 0, GL_RGB, GL_FLOAT, result.cols);
 			
 								INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(textureName+":"+texturePath).arg(texture).arg(u));
 								TextureCache[texturePath] = texture;
@@ -309,7 +319,6 @@ namespace Fragmentarium {
 							if (TextureCache.contains(texturePath)) {
 								textureCacheUsed[texturePath] = true;
 								textureID = TextureCache[texturePath];
-								glBindTexture(GL_TEXTURE_2D, textureID );
 								INFO(QString("Found texture in cache: %1").arg(texturePath));
 							} else {
 								textureID = bindTexture(texturePath, GL_TEXTURE_2D, GL_RGBA);
@@ -349,7 +358,6 @@ namespace Fragmentarium {
 				}			
 			}
 		}
-
 
 		void DisplayWidget::setupBufferShader() {
 
@@ -586,6 +594,9 @@ namespace Fragmentarium {
 					glActiveTexture(GL_TEXTURE0); // non-standard (>OpenGL 1.3) gl extension
 					GLuint i = backBuffer->texture();
 					glBindTexture(GL_TEXTURE_2D,i);
+					if (fragmentSource.textureParams.contains("backbuffer")) {
+						setGlTexParameter(fragmentSource.textureParams["backbuffer"]);
+					}
 					shaderProgram->setUniformValue(l, 0);
 					//INFO(QString("Binding backbuffer (ID: %1) to active texture %2").arg(i).arg(0));
 					//INFO(QString("Setting uniform backbuffer to active texture %2").arg(0));

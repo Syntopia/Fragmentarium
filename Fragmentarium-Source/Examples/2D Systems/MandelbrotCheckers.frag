@@ -24,22 +24,11 @@ float breakout = pow(10.0,Breakout);
 uniform float PatternScale; slider[0,1,200]
 
 vec3 getColor(vec2 w) {
-
-w= fract(w*PatternScale);
-float a = ((w.x<0.5 && w.y<0.5) || (w.x>0.5 && w.y>0.5)) ? 1.0 : 0.0;
-//a = 0.0;
-w=fract(w*2.0);
-if (length(w-vec2(0.5,0.5))<0.5) a = (1.0-a);
- return vec3 (a
-	);
-
-/*
-float r = fract(length(w*PatternScale));
-float a = 0.0;
-if (length(w-vec2(0.5,0.5))<0.5) a = (1.0-a);
- return vec3 (a
-	);
-*/
+	w= fract(w*PatternScale);
+	float a = ((w.x<0.5 && w.y<0.5) || (w.x>0.5 && w.y>0.5)) ? 1.0 : 0.0;
+	w=fract(w*2.0);
+	if (length(w-vec2(0.5,0.5))<0.5) a = (1.0-a);
+	return vec3 (a);
 }
 
 uniform bool Accumulate; checkbox[true]
@@ -59,7 +48,7 @@ vec3 color(vec2 c) {
 	}
 	sum=sum/float(i);
 	if (!Accumulate) sum = last;
-
+	
 	if (i < Iterations) {
 		// The color scheme here is based on one
 		// from Inigo Quilez's Shader Toy:

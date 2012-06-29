@@ -1,18 +1,12 @@
 #buffer RGBA16
-#version 150
 #include "2D.frag"
 
 // A 'Game of Life' implementation
 // demonstrating how to work with a pixel-accurate 
 // back buffer.
-// Switch to Continuous mode.
+// Switch to Continuous mode. Set Subframe max to zero!
 // Make sure AntiAlias is off (set to 1).
 //
-// Notice that this version uses the 'texelFetch' command,
-// to read from the backBuffer - otherwise the filtering
-// seems to create artifacts near the border, and
-// I haven't found a work-around for this.
-// This also means that version 150 is required.
 
 uniform sampler2D backbuffer;
 uniform float time;
@@ -33,15 +27,13 @@ float rand(vec2 co){
 	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+#TexParameter backbuffer GL_TEXTURE_MAG_FILTER GL_NEAREST
+#TexParameter backbuffer GL_TEXTURE_WRAP_S GL_REPEAT
+#TexParameter backbuffer GL_TEXTURE_WRAP_T GL_REPEAT
+
 void  isAlive(float  dx, float  dy, in out int count) {
-	// Simple version: does not work around borders
-	// vec4 v1 = texture2D( backbuffer, mod ( position + pixelSize*vec2( dx, dy ), 1.0 ) );
-	
-	// Better version, using unfiltered samples:
-	vec2 p = mod(position + vec2(dx,dy)*pixelSize,1.0)/pixelSize;
-	vec4 v1 = texelFetch( backbuffer,  ivec2(p),0 );
-		
-	if (v1.x==1.0) count++;
+	 vec4 v1 = texture2D( backbuffer,  position + pixelSize*vec2( dx, dy ) );
+      	 if (v1.x==1.0) count++;
 }
 
 

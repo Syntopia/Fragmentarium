@@ -6,11 +6,11 @@
 //http://klein.math.okstate.edu/IndrasPearls/cusp.pdf
 
 #vertex
-#define providesVertexInit
+#define providesInit
 #endvertex
 
 #define providesColor
-#include "DE-Raytracer-vinit.frag"
+#include "DE-Raytracer.frag"
 
 #vertex
 //all the calculations done here could be (and should be) done in the host program
@@ -61,7 +61,7 @@ vec2 solve(vec2 z){
 	}
 	return z;
 }
-void vinit() {
+void init() {
 	//find estimate
 	//notice that for big P and/or Q the packing will look just like hexagonal one
 	//if we take the centers of all packed circles in log-polar plane we will get almost a triangular array
@@ -136,7 +136,7 @@ vec3 CDoyle(vec3 z){
 	return bc;//serves for the coloring
 }
 
-vec3 color(vec3 p, vec3 n) {
+vec3 baseColor(vec3 p, vec3 n) {
 	//return vec3(1.);
 	if(DoInversion){
 		p=p-InvCenter;

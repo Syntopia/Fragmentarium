@@ -89,7 +89,7 @@ void main() {
 	 vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
       gl_FragColor = prev+pow(color(coord.xy),Gamma);
 #else
-	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter)) );
+	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter+1)) );
 	float w =1.0;
       if (GaussianAA) {
 	 	// Gaussian
@@ -98,7 +98,8 @@ void main() {
 	      // Lancos
 	      // w = sin(r.x)*sin(r.x/AARange)*sin(r.y)*sin(r.y/AARange)/(r.x*r.x*r.y*r.y*AARange*AARange);
 	      // if (w!=w) w = 1.0;
-	}
+	} else {  w =pow( 1.0-length(r),1.0);};
+
 	r*=AARange;
 	vec2 c = coord.xy+aaScale*r;
 #ifdef linearGamma

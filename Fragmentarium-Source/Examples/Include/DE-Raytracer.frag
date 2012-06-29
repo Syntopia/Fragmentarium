@@ -178,17 +178,11 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 
 	 // An attempt at Physcical Based Specular Shading:
        // http://renderwonk.com/publications/s2010-shading-course/
-	// (Blinn-Phong with Schickl term and physical normalization
+	// (Blinn-Phong with Schickl term and physical normalization)
 	float specular =((SpecularExp+2.)/8.)*pow(hDotN,SpecularExp)*
 		(SpecularExp + (1.-SpecularExp)*pow(1.-hDotN,5.))*
 		nDotL*Specular;
        specular = min(SpecularMax,specular);
-
-	/*
-       vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
-	float s = max(0.0,dot(dir,-r));
-	 specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular*10.0;
-	*/
 
 	if (HardShadow>0.0) {
 		// check path from pos to spotDir
@@ -347,7 +341,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 #else
 		hitColor = getColor();
 #endif
-	      hitColor = pow(hitColor,vec3(2.2));
+	      hitColor = pow(clamp(hitColor,0.0,1.0),vec3(2.2));
             if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
 		if (floorHit) {
 			hitColor = FloorColor;

@@ -138,7 +138,7 @@ signals:
 		};
 
 
-	
+
 
 		// A helper class (combined int slider+spinner)
 		class IntComboSlider : public QWidget {
@@ -219,7 +219,7 @@ signals:
 			LockType getDefaultLockType() { return defaultLockType; }
 			void setDefaultLockType(LockType lt);
 			LockType getLockType() { return lockType; }
-			void setLockType(LockType lt) ;
+			virtual void setLockType(LockType lt) ;
 			virtual QString getLockedSubstitution() = 0;
 			virtual QString getLockedSubstitution2() = 0;
 
@@ -251,7 +251,7 @@ signals:
 
 
 
-			class SamplerWidget : public VariableWidget {
+		class SamplerWidget : public VariableWidget {
 			Q_OBJECT
 		public:
 			SamplerWidget(FileManager* fileManager, QWidget* parent, QWidget* variableEditor, QString name, QString defaultValue);
@@ -259,24 +259,22 @@ signals:
 			virtual void fromString(QString string);
 			virtual void setUserUniform(QGLShaderProgram* shaderProgram);
 			virtual void updateTextures(Parser::FragmentSource* fs, FileManager* fileManager);
-			
-		
+			virtual void setLockType(LockType /*lt*/) { lockType = AlwaysLocked; }; // cannot change this
 			QString getValue() ;
-
 			virtual QString getUniqueName() { return QString("%0:%1:%2:%3").arg(group).arg(getName()); }
 			void reset() { comboBox->setEditText(defaultValue); }
 			QString getLockedSubstitution() { return QString(); };
 			QString getLockedSubstitution2() { return QString(); };
-		
+
 signals:
 			void changed();
 
 			protected slots:
-				
-			void textChanged(const QString& text);
 
-			void buttonClicked();
-		
+				void textChanged(const QString& text);
+
+				void buttonClicked();
+
 		private:
 
 			QString defaultValue;

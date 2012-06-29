@@ -462,10 +462,13 @@ namespace Fragmentarium {
 						sw->setToolTip(sp->getTooltip());
 						sw->setStatusTip(sp->getTooltip());
 						sw->setGroup(sp->getGroup());
-						sw->setDefaultLockType(sp->getLockType());
+						sw->setDefaultLockType(AlwaysLocked);
 						variables.append(sw);
 						sw->setUpdated(true);
 						currentWidget->layout()->addWidget(sw);
+						//((ScrollArea*)currentWidget->parent())->resizeEvent(0);
+						//QApplication::postEvent(currentWidget->parent(), new QEvent(QEvent::LayoutRequest));
+						
 					} else {
 						WARNING("Unsupported parameter");
 					}
