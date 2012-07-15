@@ -163,7 +163,7 @@ namespace Fragmentarium {
 		namespace {
 
 			void createCommandHelpMenu(QMenu* menu, QWidget* textEdit, MainWindow* mainWindow) {
-				QMenu *preprocessorMenu = new QMenu("Special Includes", 0);
+				QMenu *preprocessorMenu = new QMenu("Host Preprocessor Commands", 0);
 				preprocessorMenu->addAction("#include \"some.frag\"", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#camera 3D", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#camera 2D", textEdit , SLOT(insertText()));
@@ -171,6 +171,9 @@ namespace Fragmentarium {
 				preprocessorMenu->addAction("#group parameter_group_name", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#preset preset_name", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#endpreset", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#define DontClearOnChange", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#define IterationsBetweenRedraws 10", textEdit , SLOT(insertText()));
+				preprocessorMenu->addAction("#define SubframeMax 20", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#TexParameter textureName GL_TEXTURE_MAG_FILTER GL_NEAREST", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#TexParameter textureName GL_TEXTURE_WRAP_S GL_CLAMP", textEdit , SLOT(insertText()));
 				
@@ -193,11 +196,23 @@ namespace Fragmentarium {
 				QMenu *presetMenu = new QMenu("Presets", 0);
 				presetMenu->addAction("Insert Preset from Current Settings",mainWindow, SLOT(insertPreset()));
 				
+				QMenu *includeMenu = new QMenu("Include (from Preferences Paths)", 0);
+				
+				QStringList filter; filter << "*.frag";
+				QSettings settings;
+				QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
+				mainWindow->getFileManager()->setIncludePaths(includePaths);
+				QStringList files = mainWindow->getFileManager()->getFiles(filter);
+				foreach (QString s, files) {
+					includeMenu->addAction(QString("#include \"%1\"").arg(s),mainWindow, SLOT(insertText()));
+				}
+
 				QAction* before = 0;
 				if (menu->actions().count() > 0) before = menu->actions()[0];
 				menu->insertMenu(before, preprocessorMenu);
 				menu->insertMenu(before, uniformMenu);
 				menu->insertMenu(before, presetMenu);
+				menu->insertMenu(before, includeMenu);
 			
 				menu->insertSeparator(before);
 			}
@@ -643,7 +658,7 @@ namespace Fragmentarium {
 			if (lockedChanged) {
 				highlightBuildButton(true);
 			}
-			engine->requireRedraw();
+			engine->uniformsHasChanged();
 		}
 
 
@@ -1181,6 +1196,12 @@ namespace Fragmentarium {
 			engine->setPreviewFactor(v);
 		}
 
+
+		void MainWindow::setSubFrameMax(int i) {
+			frameSpinBox->setValue(i);
+			engine->setMaxSubFrames(i);
+		}
+
 		void MainWindow::renderModeChanged() {
 			
 			QObject* o = QObject::sender();
@@ -1224,8 +1245,7 @@ namespace Fragmentarium {
 			if (continousRefreshButton->isChecked()) {
 				engine->resetTime();
 			} else {
-				engine->requireRedraw();
-				
+				engine->requireRedraw(true);
 			}
 			engine->setDisableRedraw(state);
 
@@ -1389,7 +1409,9 @@ namespace Fragmentarium {
 				variableEditor->updateTextures(&fs, &fileManager);
 				editorDockWidget->setHidden(!showGUI);
 				engine->setFragmentShader(fs);
-				variableEditor->updateCamera(engine->getCameraControl());				
+				variableEditor->updateCamera(engine->getCameraControl());	
+				engine->requireRedraw(true);
+				engine->resetTime();
 			} catch (Exception& e) {
 				WARNING(e.getMessage());
 			}	

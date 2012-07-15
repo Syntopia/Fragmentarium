@@ -16,6 +16,7 @@
 
 uniform sampler2D backbuffer;
 uniform float time;
+#define IterationsBetweenRedraws 20
 
 /*
 From Wikipedia:

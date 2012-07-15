@@ -7,15 +7,14 @@
 #include "QuilezLib.frag"
 #group New Menger
 
-
 uniform sampler2D tex; file[f:\texture.jpg]
 uniform float TextureScale; slider[0,1,40]
 
 
 vec3 C(vec2 p) {
-if (mod(p.x,1.0)<0.03) return vec3(1.0);
-if (mod(p.y,1.0)<0.03) return vec3(1.0);
-return vec3(0.0);
+if (smoothstep(0.8,1.0,mod(p.x,1.0)) ) return vec3(0.0);
+//if (mod(p.y,1.0)<0.03) return vec3(1.0);
+return vec3(0.2);
 }
 vec3 baseColor(vec3 p, vec3 n) {
 
@@ -25,14 +24,15 @@ p*=TextureScale;
 n = abs(n); //n = sqrt(n);
 n = n/(n.x+n.y+n.z);
 float G= 2.2;
+/*
 vec3 t = pow( texture2D(tex, p.yz),G)*n.x
 		+ pow( texture2D(tex, p.xz),G)*n.y+
 		 pow( texture2D(tex, p.xy),G)*n.z;
 
-return t;
-t =C( p.yz)*n.x*vec3(1,0,0)
-		+C( p.xz)*n.y*vec3(0,1,0)+
-		 C( p.xy)*n.z*vec3(0,0,1);
+return t;*/
+vec3 t =C( p.yz)*n.x
+		+C( p.xz)*n.y+
+		 C( p.xy)*n.z;
 	return t;
 }
 

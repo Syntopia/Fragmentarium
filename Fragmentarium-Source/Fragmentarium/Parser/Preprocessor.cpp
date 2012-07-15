@@ -61,7 +61,14 @@ namespace Fragmentarium {
 			};
 		}
 
-		FragmentSource::FragmentSource() : hasPixelSizeUniform(false), bufferShaderSource(0) {}
+		FragmentSource::FragmentSource() : 
+			hasPixelSizeUniform(false), 
+			bufferShaderSource(0),
+			clearOnChange(true),
+			iterationsBetweenRedraws(0),
+			subframeMax(-1)
+		{
+		}
 
 		
 		void Preprocessor::parseSource(FragmentSource* fs,QString input, QString originalFileName, bool dontAdd) {
@@ -202,6 +209,9 @@ namespace Fragmentarium {
 			static QRegExp main("^\\s*void\\s+main\\s*\\(.*$"); 
 			static QRegExp replace("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
 			static QRegExp sampler2D("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$");
+			static QRegExp doneClear("^\\s*#define\\s+dontclearonchange$",Qt::CaseInsensitive);
+			static QRegExp iterations("^\\s*#define\\s+iterationsbetweenredraws\\s*(\\d+)\\s*$",Qt::CaseInsensitive);
+			static QRegExp subframeMax("^\\s*#define\\s+subframemax\\s*(\\d+)\\s*$",Qt::CaseInsensitive);
 			QString lastComment;
 			QString currentGroup;
 			QMap<QString, QString> replaceMap;
@@ -447,6 +457,28 @@ namespace Fragmentarium {
 					BoolParameter* bp= new BoolParameter(currentGroup, name, lastComment, def);
 					setLockType(bp, boolChooser.cap(3));
 					fs.params.append(bp);
+				} else if (doneClear.indexIn(s) != -1) {
+					fs.clearOnChange = false;
+				} else if (iterations.indexIn(s) != -1) {
+					QString iterationCount = iterations.cap(1);
+					bool succes = false;
+					int i = iterationCount.toInt(&succes);
+					if (!succes) {
+						WARNING("Could not parse iterations value for 'iterationsbetweenredraws': " + iterationCount);
+						continue;
+					}
+					fs.iterationsBetweenRedraws = i;
+
+				} else if (subframeMax.indexIn(s) != -1) {
+					QString maxCount = subframeMax.cap(1);
+					bool succes = false;
+					int i = maxCount.toInt(&succes);
+					if (!succes) {
+						WARNING("Could not parse iterations value for 'subframemax': " + maxCount);
+						continue;
+					}
+					fs.subframeMax = i;
+
 				}
 
 

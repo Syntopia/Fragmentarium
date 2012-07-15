@@ -1,0 +1,214 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+ LivingKIFS 1.0 by Kali
+
+ Script for Fragmentarium (http://syntopia.github.com/Fragmentarium/)
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+ This script is for making animated 3D fractals of the KIFS type. 
+ It was specially designed to make moving fractals that somehow look like strange living creatures, specially underwater ones.
+ As for the main formula, even when I use my own version of KIFS, I have to say that this types of fractals were first introduced by 
+ Knighty at fractalforums.com. This is not specifically based on his works, but I think it's worth mentioning. 
+ Also I want to thank all the nice people at Fractal Forums for their support and for all what I've learned from them. 
+
+ And special thanks to Syntopia (Mikael Hvidtfeldt Christensen) for such a nice fractal programming-rendering tool.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+* Below is a description of the script parameters:
+
+
+1. Fractal tab
+
+   This are for calculating the fractal, and it adds some coloring options also.
+   Play with the parameters to find interesting shapes.
+
+ - Iterations: 
+   Number of total iterations calculated.
+
+ - ColorIterations: 
+   Number of iterations for the coloring calculation.
+
+ - ColoringType:
+   1 - Orbit Trap / 2 - Exponential Smoothing / 3 - Average Magnitude Change
+   Turn CycleColors on coloring tab for options 2 & 3, and specify some amount of cycles for color variation.
+   Option 1 is the fastest.
+
+ - ColorScale:
+   Used to alter the density of the gradient applied for coloring types 2 & 3.
+   When in coloring mode 1, it changes the strength of the orbit trap coloring. 
+
+ - ColorOffset:
+   For adjusting the coloring when using types 2 & 3.
+
+ - Scale:
+   Scaling factor used in the iterated formula.
+
+ - FoldingMode:
+   Specifies the type of "folding" transform used in the formula.
+   1 - x axis only / 2 - x.y axis / 3 - x.y.z axis
+
+ - Fold:
+   A value used in the fold calculation for each axis.
+   It only works on the axis being folded, as specified with FoldingMode.
+
+ - Julia:
+   Constant values added at each iteration of the formula.
+
+ - RotVector:
+   The base vector of the rotation applied in the fractal calculation.
+
+ - RotAngle:
+   The angle of the formula's rotation transform
+
+
+2. Shape tab
+
+   Options for adding asymmetries to the fractal shape. 
+   Use with care as it can lead to nasty distortions.
+
+ - ScaleVary:
+   Varies the scale factor in the fractal calculation along each axis. 
+   The scale variation is calculated based on the distance from the axis origin.
+   Normally you would want to alter two axis at the same time to conserve a symmetric shape.
+   Use MinMaxScale to limit this variation.
+
+ - ScaleVaryStrength:
+   Useful to adjust the scale variation of all axis at the same time.
+
+ - RotVary:
+   Varies the rotation vector in the fractal formula based on the distance from the axis origin.
+   The variation factor of each axis can be adjusted separately.	
+   Use it on two axis at the time (and the same used in ScaleVary) to mantain a symmetry.
+
+ - RotVaryStrength:
+   Controls the RotVector's variation amount applied to all axis (in the same way of ScaleVaryStrength)
+   
+ - MinMaxScale:
+   Limits the variation of the scale factor to a min and max value.
+   Useful for getting rid of undesired effects, specially with low scaling values.
+   Also helps to shape modelling.
+
+ - Fatness:
+   Pretty much descriptive :)
+   Alters the DE to give a thicker/less detailed fractal.
+   (It's not the same as adjusting the "detail" option of the Raytracer)
+
+3. Animation tab (1)
+
+   Basic fractal animation, using sin/cos functions for varying the RotVector parameter through time. 
+
+ - AnimationFunction:
+   The combination of sin/cos functions used.
+   There are four of them to try out.
+
+ - Speeds:
+   Specifies the oscillation speeds for each component of the RotVector.
+   
+ - Amplitudes:
+   Specifies the oscillation amplitudes for each component of the RotVector.
+
+ - UniformSpeed/UniformAmplitude:
+   Makes the RotVector components speed/amplitudes oscillates uniformly, based only on the first slider of Speeds/Amplitudes parameter.
+
+ - SpeedAdjust/AmplitudeAdjust:
+   Controls the overall speed & amplitude of the fractal animation (but it doesn't affect wave effect nor translation).
+   Setting any of this to zero avoids the animation for being calculated. 
+   (This speeds up the rendering when you are working only with the fractal shape parameters).
+
+
+4. Animation tab (2)
+
+   Used for advanced animation parameters and "wave" effect.
+
+ - AmpVary:
+   Varies the amplitude of the movements based on the distance from each axis origin.
+
+ - AmpVaryStrength:
+   Controls amount of AmpVary effect. 
+
+ - SpeedVary:
+   Desyncs the timing of the movements based on the distance from each axis origin.
+
+ - SpeedVaryStrength:
+   Controls amount of SpeedVary effect. 
+
+ - WaveAmp: 
+   Turns on the wave effect, and specifies the amplitude of the waves.
+   This effect deforms the space, making the fractal follow a waving movement.
+   This can be used also with a non-animated fractal to make it look like it's underwater.
+   (see "Bottom" preset)
+
+ - WaveLength:
+   Specifies the length of the waveforms.
+
+ - WaveSpeed:
+   The oscillation speed of the generated waves.
+
+ - WaveZoom:
+   The overall scale of the waves. 
+   Useful to adjust the effect based on the level of zoom you are using to explore the fractal.
+
+
+5. Translation tab
+
+   Used to make the fractal move through space. 
+   Be sure to check BoundingSphere parameter or your fractal could be lost :D
+
+ - TransVector:
+   Vector used for the travelling direction.
+   You'll normally use one axis, depending on the fractal shape, but any 3D vector can be specified.
+
+ - TransSpeed:
+   Travelling speed
+
+ - ImpulseStrength:
+   Turns on the impulse-based translation, and specifies it's strength.
+         
+ - ImpulseRate:
+   Specifies the frequency of the translation impulses.
+   Tip: Simulate swimming by adjusting this parameter to sync the impulses with the movements of the fractal.
+
+ - TRotVector:
+   Vector used for a rotating translation of the fractal.
+
+ - TRotSpeed:
+   Speed of the rotation.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Some notes: 
+
+- I tested the script with Fragmentarium version 0.9.0 on my ATI Radeon 6870. Not sure how it works on other versions, or with other cards.
+- With my configuration, the rendering speed is ok. However, I use "Preview 2x" option for smooth animation.
+- To obtain nice results you have to play with all the params, start with the included presets to get the basic idea of how it works.
+- Coloring modes 2 & 3 are experimental and results can vary a lot with different levels of detail, number of iterations and camera distances.
+- Sometimes the DE has some problems, like noisy missing parts of the fractals that can be avoided by using FudgeFactor parameter of the raytracer.
+- I'll appreciate if you mention me when publishing any pic or movie made with this script, thanks!
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Things to do in next versions: 
+
+- Automatic camera following and other animated camera options.
+- Use of other fractal parameters for animation.
+- Add another fractal formulas (I already made a test script for a swimming mandelbulb)
+- Combination of two or more fractals (i.e. using one fractal as the enviroment of the animated one)
+- Custom raytracer to add more rendering options, like x-ray and more coloring modes.
+ 
+ Any suggestions will be appreciated
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+That's all, have fun! 
+
+
+KALI 
+
+pabloandrioli@arnetbiz.com.ar

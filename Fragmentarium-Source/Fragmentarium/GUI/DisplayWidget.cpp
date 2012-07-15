@@ -46,6 +46,8 @@ namespace Fragmentarium {
 		DisplayWidget::DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent) 
 			: QGLWidget(format,parent), mainWindow(mainWindow) 
 		{
+			clearOnChange = true;
+			iterationsBetweenRedraws = 0;
 			previewBuffer = 0;
 			doClearBackBuffer = true;
 			backBuffer = 0;
@@ -104,12 +106,17 @@ namespace Fragmentarium {
 
 		void DisplayWidget::reset() {
 			updatePerspective();
-			requireRedraw();
+			requireRedraw(true);
 			setupFragmentShader();
 		}
 
 		void DisplayWidget::setFragmentShader(FragmentSource fs) { 
 			fragmentSource = fs; 
+			clearOnChange = fs.clearOnChange;
+			iterationsBetweenRedraws = fs.iterationsBetweenRedraws;
+			if (fs.subframeMax != -1) {
+				mainWindow->setSubFrameMax(fs.subframeMax );
+			}
 
 			// Camera setup
 			if (fragmentSource.camera == "") {
@@ -144,16 +151,26 @@ namespace Fragmentarium {
 			}
 
 			makeBuffers();
-			requireRedraw();
+			requireRedraw(true);
 			setupFragmentShader();
 		}
 
 
-		void DisplayWidget::requireRedraw() {
+		void DisplayWidget::requireRedraw(bool clear) {
 			if (disableRedraw && tiles==0) return;
 			pendingRedraws = requiredRedraws;
-			if (!tiles) clearBackBuffer();
+			if (!tiles) {
+				if (clear) {
+					clearBackBuffer();
+				} else {
+					backBufferCounter = 0;
+				}
+			}
 			if (tiles && (tileFrame == 0)) clearBackBuffer();
+		}
+
+		void DisplayWidget::uniformsHasChanged() {
+			requireRedraw(clearOnChange);
 		}
 
 
@@ -407,7 +424,7 @@ namespace Fragmentarium {
 			tilesCount = 0;
 			this->tileFrameMax = tileFrameMax;
 			this->tileFrame = 0;
-			requireRedraw();
+			requireRedraw(true);
 			tileRenderStart = QDateTime::currentDateTime();
 		}
 
@@ -485,7 +502,7 @@ namespace Fragmentarium {
 
 		void DisplayWidget::setViewFactor(int val) {
 			viewFactor = val;
-			requireRedraw();
+			requireRedraw(true);
 		}
 
 		void DisplayWidget::resetCamera(bool fullReset) {
@@ -496,7 +513,7 @@ namespace Fragmentarium {
 		void DisplayWidget::setPreviewFactor(int val) {
 			previewFactor = val;
 			makeBuffers();
-			requireRedraw();
+			requireRedraw(true);
 		};
 
 		void DisplayWidget::makeBuffers() {
@@ -634,11 +651,27 @@ namespace Fragmentarium {
 				WARNING("Non valid FBO");
 				return;
 			}
-			if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; } 
+			//if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; } 
 			QSize s = previewBuffer->size();
-			//INFO(QString("* Drawing to front buffer, ID: %1").arg(previewBuffer->texture()));
-			drawFragmentProgram(s.width(),s.height());
-			if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; } 
+			//drawFragmentProgram(s.width(),s.height());
+
+
+			for (int i = 0; i <= iterationsBetweenRedraws; i++) {
+				if (backBuffer) {
+					// swap backbuffer
+					QGLFramebufferObject* temp = backBuffer;
+					backBuffer= previewBuffer;
+					previewBuffer = temp;	
+					backBufferCounter++;
+				}
+				if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; } 		
+				drawFragmentProgram(s.width(),s.height());
+				if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; } 	
+			}
+			mainWindow->setSubFrameDisplay(backBufferCounter);
+					
+
+			//if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; } 
 
 			// Draw a textured quad using the preview texture.
 			if (bufferShaderProgram) {
@@ -701,11 +734,11 @@ namespace Fragmentarium {
 			
 
 			if (doClearBackBuffer && backBuffer) {
-				if (!backBuffer->bind()) { WARNING("Failed to bind backbuffer BFO"); return; } 
+				if (!previewBuffer->bind()) { WARNING("Failed to bind previewBuffer BFO"); return; } 
 				glClearColor(0.0f,0.0f,0.0f,0.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				if (!backBuffer->release()) { WARNING("Failed to release backbuffer FBO");  } 
+				if (!previewBuffer->release()) { WARNING("Failed to release previewBuffer FBO");  } 
 				backBufferCounter = 0;
 				doClearBackBuffer = false;
 			}
@@ -750,13 +783,15 @@ namespace Fragmentarium {
 				}
 			};
 
-			if (backBuffer) {
+			/*
+			if(backBuffer) {
 				QGLFramebufferObject* temp = backBuffer;
 				backBuffer= previewBuffer;
 				previewBuffer = temp;	
 				backBufferCounter++;
 				mainWindow->setSubFrameDisplay(backBufferCounter);
 			}
+			*/
 
 
 			QTime cur = QTime::currentTime();
@@ -778,7 +813,7 @@ namespace Fragmentarium {
 			}
 
 			mainWindow->setFPS(fps);
-			 if (tiles) requireRedraw();
+			 if (tiles) requireRedraw(true);
 
 		};
 
@@ -800,12 +835,12 @@ namespace Fragmentarium {
 			if (firstTime) {
 				firstTime = false;
 				updatePerspective(); 
-				requireRedraw();
+				requireRedraw(true);
 			}
 
 			if (this != QApplication::focusWidget () && cameraControl) cameraControl->releaseControl();
 			if (cameraControl && cameraControl->wantsRedraw()) {
-				requireRedraw(); 
+				requireRedraw(clearOnChange); 
 				cameraControl->updateState();
 			}
 
@@ -815,7 +850,7 @@ namespace Fragmentarium {
 
 		void DisplayWidget::initializeGL()
 		{
-			requireRedraw();
+			requireRedraw(true);
 			glEnable( GL_CULL_FACE );
 			glEnable( GL_LIGHTING );
 			glEnable( GL_DEPTH_TEST );
@@ -832,18 +867,18 @@ namespace Fragmentarium {
 			e->accept();
 
 			cameraControl->wheelEvent(e);
-			requireRedraw();
+			requireRedraw(clearOnChange);
 		}
 
 		void DisplayWidget::mouseMoveEvent( QMouseEvent *e ) {
 			e->accept();
 			bool redraw = cameraControl->mouseEvent(e, width(), height());
-			if (redraw) requireRedraw();
+			if (redraw) requireRedraw(clearOnChange);
 		}
 
 		void DisplayWidget::mouseReleaseEvent(QMouseEvent* ev)  {
 			bool redraw = cameraControl->mouseEvent(ev, width(), height());
-			if (redraw) requireRedraw();
+			if (redraw) requireRedraw(clearOnChange);
 			//if (contextMenu) contextMenu->exec(ev->globalPos());
 		}
 
@@ -851,7 +886,7 @@ namespace Fragmentarium {
 		void DisplayWidget::mousePressEvent(QMouseEvent* ev)  {
 			bool redraw = cameraControl->mouseEvent(ev, width(), height());
 			if (redraw) { 
-				requireRedraw(); 
+				requireRedraw(clearOnChange); 
 			}
 			//if (contextMenu) contextMenu->exec(ev->globalPos());
 		}
@@ -859,7 +894,7 @@ namespace Fragmentarium {
 		void DisplayWidget::keyPressEvent(QKeyEvent* ev) {
 			bool redraw = cameraControl->keyPressEvent(ev);
 			if (redraw) {
-				requireRedraw();
+				requireRedraw(clearOnChange);
 				ev->accept();
 			} else {
 				QGLWidget::keyPressEvent(ev);
@@ -869,7 +904,7 @@ namespace Fragmentarium {
 		void DisplayWidget::clearPreviewBuffer() {
 			//INFO("Rebuilding buffers after resize.");
 			setPreviewFactor(previewFactor);
-			requireRedraw();
+			requireRedraw(true);
 		}
 
 
@@ -877,7 +912,7 @@ namespace Fragmentarium {
 		void DisplayWidget::keyReleaseEvent(QKeyEvent* ev) {
 			bool redraw = cameraControl->keyPressEvent(ev);
 			if (redraw) {
-				requireRedraw();
+				requireRedraw(clearOnChange);
 				ev->accept();
 			} else {
 				QGLWidget::keyReleaseEvent(ev);

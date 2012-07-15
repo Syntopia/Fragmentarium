@@ -233,6 +233,9 @@ namespace Fragmentarium {
 			QMap<QString, QMap<QString, QString> > textureParams; // foreach texturename, store parameters
 
 			FragmentSource* bufferShaderSource;
+			bool clearOnChange;
+			int iterationsBetweenRedraws;
+			int subframeMax;
 		};
 
 		/// The preprocessor is responsible for

@@ -191,10 +191,10 @@ vec3 getColor() {
 	orbitTrap.w = sqrt(orbitTrap.w);
 	
 	vec3 orbitColor;
-		orbitColor = X.xyz*X.w*orbitTrap.x +
-		Y.xyz*Y.w*orbitTrap.y +
-		Z.xyz*Z.w*orbitTrap.z +
-		R.xyz*R.w*orbitTrap.w;
+	orbitColor = X.xyz*X.w*orbitTrap.x +
+	Y.xyz*Y.w*orbitTrap.y +
+	Z.xyz*Z.w*orbitTrap.z +
+	R.xyz*R.w*orbitTrap.w;
 	
 	vec3 color = mix(BaseColor, 3.0*orbitColor,  OrbitStrength);
 	return color;
@@ -216,50 +216,22 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
 	
-	// Check for bounding sphere
-	float dotFF = dot(from,from);
-	float d = 0.0;
-	float dotDE = dot(direction,from);
-	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
-	
-	if (sq>0.0) {
-		d = -dotDE - sqrt(sq);
-		if (d<0.0) {
-			// "minimum d" solution wrong direction
-			d = -dotDE + sqrt(sq);
-			if (d<0.0) {
-				// both solution wrong direction
-				sq = -1.0;
-			} else {
-				// inside sphere
-				d = 0.0;
-			}
-		}
-	}
 	
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
 	
-	if (sq<0.0) {
-		// outside bounding sphere - and will never hit
-		dist = MaxDistance;
-		totalDist = MaxDistance;
-		steps = 2;
-	}  else {
-		totalDist += d; // advance ray to bounding sphere intersection
-		for (steps=0; steps<MaxRaySteps; steps++) {
-			orbitTrap = vec4(10000.0);
-			vec3 p = from + totalDist * direction;
-			dist = DE(p);
-			//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
-			dist *= FudgeFactor;
-			
-			totalDist += dist;
-			epsModified = pow(totalDist,ClarityPower)*eps;
-			if (dist < epsModified) break;
-			if (totalDist > MaxDistance) break;
-		}
+	for (steps=0; steps<MaxRaySteps; steps++) {
+		orbitTrap = vec4(10000.0);
+		vec3 p = from + totalDist * direction;
+		dist = DE(p);
+		//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
+		dist *= FudgeFactor;
+		
+		totalDist += dist;
+		epsModified = pow(totalDist,ClarityPower)*eps;
+		if (dist < epsModified) break;
+		if (totalDist > MaxDistance) break;
 	}
 	
 	vec3 hitColor;
@@ -271,7 +243,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	}
 	
 	if (  steps==MaxRaySteps) orbitTrap = vec4(0.0);
-
+	
 	if ( dist < epsModified) {
 		// We hit something, or reached MaxRaySteps
 		hit = from + totalDist * direction;
@@ -288,7 +260,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		
 		
 		hitColor = mix(hitColor, AO.xyz ,ao);
-             float shadowStrength = 0.0;
+		float shadowStrength = 0.0;
 		hitColor = lighting(hitNormal, hitColor,  hit,  direction,epsModified,shadowStrength);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;

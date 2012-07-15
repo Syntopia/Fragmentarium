@@ -1,8 +1,58 @@
+// Output generated from file: C:/Fractales/Fragmentarium/surfkifs.frag
+// Created: dom 5. feb 14:04:32 2012
+// Output generated from file: C:/Fractales/Fragmentarium/Examples/SurfaceKIFS.frag
+// Created: mié 25. ene 22:59:36 2012
+#info Mandelbox Distance Estimator (Rrrola's version).
 #donotrun
-#include "3D.frag"
+
+#info Default Raytracer (by Syntopia)
+#camera 3D
+
+#vertex
+
+#group Camera
+
+// Field-of-view
+uniform float FOV; slider[0,0.4,2.0] NotLockable
+uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
+uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
+uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
+
+varying vec3 dirDx;
+varying vec3 dirDy;
+varying vec3 from;
+uniform vec2 pixelSize;
+varying vec2 coord;
+varying float zoom;
+varying vec3 dir;
+void main(void)
+{
+	gl_Position =  gl_Vertex;
+	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
+	coord.x*= pixelSize.y/pixelSize.x;
+	// we will only use gl_ProjectionMatrix to scale and translate, so the following should be OK.
+	vec2 ps =vec2(pixelSize.x*gl_ProjectionMatrix[0][0], pixelSize.y*gl_ProjectionMatrix[1][1]);
+	zoom = length(ps);
+	from = Eye;
+	vec3 Dir = normalize(Target-Eye);
+	vec3 up = Up-dot(Dir,Up)*Dir;
+	up = normalize(up);
+	vec3 Right = normalize( cross(Dir,up));
+	dir = (coord.x*Right + coord.y*up )*FOV+Dir;
+	dirDy = ps.y*up*FOV;
+	dirDx = ps.x*Right*FOV;
+}
+#endvertex
 
 #group Raytracer
 
+// Camera position and target.
+varying vec3 from,dir,dirDx,dirDy;
+varying vec2 coord;
+varying float zoom;
+
+// HINT: for better results use Tile Renders and resize the image yourself
+uniform int AntiAlias;slider[1,1,5] Locked
 // Distance to object at which raymarching stops.
 uniform float Detail;slider[-7,-2.3,0];
 // The step size when sampling AO (set to 0 for old AO)
@@ -41,8 +91,6 @@ uniform vec4 AO; color[0,0.7,1,0.0,0.0,0.0];
 uniform float Specular; slider[0,4.0,10.0];
 // The specular exponent
 uniform float SpecularExp; slider[0,16.0,100.0];
-// Limits the maximum specular strength to avoid artifacts
-uniform float SpecularMax; slider[0,10,100]
 // Color and strength of the directional light
 uniform vec4 SpotLight; color[0.0,0.4,1.0,1.0,1.0,1.0];
 // Direction to the spot light (spherical coordinates)
@@ -63,7 +111,7 @@ uniform float HardShadow; slider[0,0,1] Locked
 uniform float ShadowSoft; slider[0.0,2.0,20]
 
 uniform float Reflection; slider[0,0,1] Locked
-uniform bool DebugSun; checkbox[false] Locked
+
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
 
@@ -120,7 +168,7 @@ uniform vec3 FloorColor; color[1,1,1]
 bool floorHit = false;
 float floorDist = 0.0;
 vec3 floorNormal = normalize(FloorNormal);
-float fSteps = 0.0;
+int fSteps = 0;
 float DEF(vec3 p) {
 	float d = DE(p);
 	if (EnableFloor) {
@@ -154,7 +202,7 @@ float shadow(vec3 pos, vec3 sdir, float eps) {
 			vec3 p = pos + totalDist * sdir;
 			float dist = DEF2(p);
 			if (dist < eps)  return 1.0;
-			s = min(s, ShadowSoft*pow((dist/totalDist),0.5));
+			s = min(s, ShadowSoft*(dist/totalDist));
 			totalDist += dist;
 		}
 		return 1.0-s;	
@@ -169,24 +217,24 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	shadowStrength = 0.0;
 	vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
 	spotDir = normalize(spotDir);
+	// Calculate perfectly reflected light
 
-	float nDotL = max(0.0,dot(n,spotDir));
-       vec3 half = normalize(-dir+spotDir);
-	float diffuse = nDotL*SpotLight.w;
+	//if (dot(dir,n)>0.0) n = -n;
+
+	vec3 r = spotDir - 2.0 * dot(n, spotDir) * n;
+
+	float s = max(0.0,dot(dir,-r));
+	
+
+	float diffuse = max(0.0,dot(-n,spotDir))*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
-       float hDotN = max(0.,dot(n,half));
+	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
 
-	 // An attempt at Physcical Based Specular Shading:
-       // http://renderwonk.com/publications/s2010-shading-course/
-	// (Blinn-Phong with Schickl term and physical normalization)
-	float specular =((SpecularExp+2.)/8.)*pow(hDotN,SpecularExp)*
-		(SpecularExp + (1.-SpecularExp)*pow(1.-hDotN,5.))*
-		nDotL*Specular;
-       specular = min(SpecularMax,specular);
+       if (dot(n,dir)>0.0) { specular = 0.0; }   
 
 	if (HardShadow>0.0) {
 		// check path from pos to spotDir
-		shadowStrength = shadow(pos+n*eps, spotDir, eps);
+		shadowStrength = shadow(pos+n*eps, -spotDir, eps);
 		ambient = mix(ambient,0.0,HardShadow*shadowStrength);
 		diffuse = mix(diffuse,0.0,HardShadow*shadowStrength);
 		// specular = mix(specular,0.0,HardShadow*f); 
@@ -244,11 +292,10 @@ vec3 getColor() {
 }
 
 #ifdef  providesColor
-	vec3 baseColor(vec3 point, vec3 normal);
+	vec3 color(vec3 point, vec3 normal);
 #endif
 
-//uniform float ColorDist; slider[0.1,1.1,4.3]
-//uniform float ColorDist2; slider[0.1,1.1,2.3]
+
 vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
 	orbitTrap = vec4(10000.0);
@@ -265,7 +312,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// Check for bounding sphere
 	float dotFF = dot(from,from);
 	float d = 0.0;
-	fSteps = 0.0;
+	fSteps = 0;
 	float dotDE = dot(direction,from);
 	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
 	
@@ -287,6 +334,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
+		
 	if (sq<0.0) {
 		// outside bounding sphere - and will never hit
 		dist = MaxDistance;
@@ -305,15 +353,13 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
 			if (dist < epsModified) break;
-                    if (totalDist > MaxDistance) {
-				fSteps -= (totalDist-MaxDistance)/dist;
-				break;
-			}
+                    if (totalDist > MaxDistance) break;
 		}
 	}
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
- 	vec3 hitColor;
-	float stepFactor = clamp((fSteps)/float(GlowMax),0.0,1.0);
+ 	
+	vec3 hitColor;
+	float stepFactor = clamp((float(fSteps))/float(GlowMax),0.0,1.0);
 	vec3 backColor = BackgroundColor;
 	if (GradientBackground>0.0) {
 		float t = length(coord);
@@ -337,12 +383,12 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 
 		
 #ifdef  providesColor
-		hitColor = mix(BaseColor,  baseColor(hit,hitNormal),  OrbitStrength);
+		hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
 #else
 		hitColor = getColor();
 #endif
-	      hitColor = pow(clamp(hitColor,0.0,1.0),vec3(2.2));
             if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
+
 		if (floorHit) {
 			hitColor = FloorColor;
 		}
@@ -352,7 +398,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
 		hitColor = mix(hitColor, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
-		if (floorHit ) {
+		if (floorHit) {
 			hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 		}	
 	}
@@ -360,20 +406,259 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		hitColor = backColor;
 		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 	
-		if (DebugSun) {
-			vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));	
-			spotDir = normalize(spotDir);
-			if (dot(spotDir,normalize(dir))>0.9) hitColor= vec3(100.,0.,0.);
-		}
 	}
 		
-//	if (totalDist>ColorDist && totalDist<ColorDist+ColorDist2) hitColor.x = 1.0;
+	
 	
 	return hitColor;
 }
 
-vec3 color(vec3 from, vec3 dir) {
-	vec3 hit = vec3(0.0);
-	vec3 hitNormal = vec3(0.0);
-	return  trace(from,dir,hit,hitNormal);
+#ifdef providesInit
+	void init(); // forward declare
+#else
+	void init() {}
+#endif 
+
+void main() {
+	init();
+	
+	vec3 color = vec3(0.0,0.0,0.0);
+	for (int x = 0; x<AntiAlias; x++) {
+		float  dx = float(x)/float(AntiAlias);
+		for (int y = 0; y<AntiAlias; y++) {
+			float dy = float(y)/float(AntiAlias);
+			vec3 nDir = dir+dirDx*dx+dirDy*dy;
+			vec3 hitNormal = vec3(0.0);
+			vec3 hit;
+			vec3 c = trace(from,nDir,hit,hitNormal);
+			if (Reflection>0.0 && (hit != vec3(.0))) {
+				vec3 d; vec3 d2 = vec3(0.0);
+				// todo: minDist = modifiedEps?
+				vec3 r = normalize(nDir - 2.0 * dot(hitNormal, nDir) * hitNormal);
+	
+				vec3 c2 = trace(hit+4.0*r*minDist,r,d,d2);
+				color += c+c2*Reflection;
+			} else {
+				color += c;
+			} 			
+
+		}
+	}
+	
+	color = clamp(color/float(AntiAlias*AntiAlias), 0.0, 1.0);
+	gl_FragColor = vec4(color, 1.0);
 }
+
+#group default
+#donotrun
+
+// Standard matrices
+
+// Return rotation matrix for rotating around vector v by angle
+mat3  rotationMatrix3(vec3 v, float angle)
+{
+	float c = cos(radians(angle));
+	float s = sin(radians(angle));
+	
+	return mat3(c + (1.0 - c) * v.x * v.x, (1.0 - c) * v.x * v.y - s * v.z, (1.0 - c) * v.x * v.z + s * v.y,
+		(1.0 - c) * v.x * v.y + s * v.z, c + (1.0 - c) * v.y * v.y, (1.0 - c) * v.y * v.z - s * v.x,
+		(1.0 - c) * v.x * v.z - s * v.y, (1.0 - c) * v.y * v.z + s * v.x, c + (1.0 - c) * v.z * v.z
+		);
+}
+
+mat3 rotationMatrixXYZ(vec3 v) {
+	return rotationMatrix3(vec3(1.0,0.0,0.0), v.x)*
+	rotationMatrix3(vec3(0.0,1.0,0.0), v.y)*
+	rotationMatrix3(vec3(0.0,0.0,1.0), v.z);
+}
+
+// Return rotation matrix for rotating around vector v by angle
+mat4  rotationMatrix(vec3 v, float angle)
+{
+	float c = cos(radians(angle));
+	float s = sin(radians(angle));
+	
+	return mat4(c + (1.0 - c) * v.x * v.x, (1.0 - c) * v.x * v.y - s * v.z, (1.0 - c) * v.x * v.z + s * v.y, 0.0,
+		(1.0 - c) * v.x * v.y + s * v.z, c + (1.0 - c) * v.y * v.y, (1.0 - c) * v.y * v.z - s * v.x, 0.0,
+		(1.0 - c) * v.x * v.z - s * v.y, (1.0 - c) * v.y * v.z + s * v.x, c + (1.0 - c) * v.z * v.z, 0.0,
+		0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 translate(vec3 v) {
+	return mat4(1.0,0.0,0.0,0.0,
+		0.0,1.0,0.0,0.0,
+		0.0,0.0,1.0,0.0,
+		v.x,v.y,v.z,1.0);
+}
+
+mat4 scale4(float s) {
+	return mat4(s,0.0,0.0,0.0,
+		0.0,s,0.0,0.0,
+		0.0,0.0,s,0.0,
+		0.0,0.0,0.0,1.0);
+}
+
+
+
+#group default
+#group Mandelbox
+
+/*
+The distance estimator below was originalled devised by Buddhi.
+This optimized version was created by Rrrola (Jan Kadlec), http://rrrola.wz.cz/
+
+See this thread for more info: http://www.fractalforums.com/3d-fractal-generation/a-mandelbox-distance-estimate-formula/15/
+*/
+
+// Number of fractal iterations.
+uniform int Iterations;  slider[0,17,300]
+uniform int ColorIterations;  slider[0,3,300]
+
+//uniform float MinRad2;  slider[0,0.25,2.0]
+
+// Scale parameter. A perfect Menger is 3.0
+uniform float Scale;  slider[0,1.5,3.0]
+//uniform float bailout;  slider[0,2.0,50]
+uniform vec3 Fold; slider[(0,0,0),(0,0,0),(1,1,1)]
+uniform vec3 Julia; slider[(-2,-2,-2),(-0.5,-0.5,-0.5),(1,1,1)]
+vec4 scale = vec4(Scale, Scale, Scale, abs(Scale));
+
+// precomputed constants
+
+uniform vec3 RotVector; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
+
+
+// Scale parameter. A perfect Menger is 3.0
+uniform float RotAngle; slider[-180,0,180]
+
+mat3 rot;
+
+
+//float absScalem1 = abs(Scale - 1.0);
+//float AbsScaleRaisedTo1mIters = pow(abs(Scale), float(1-Iterations));
+float expsmoothing = 0;
+float l = 0;
+
+
+
+// Compute the distance from `pos` to the Mandelbox.
+float DE(vec3 pos) {
+	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+	vec3 p = pos, p0 = Julia;  // p.w is the distance estimate
+	
+	int i=0;
+	for (i=0; i<Iterations; i++) {
+		p*=rot;
+		p.xy=abs(p.xy+Fold.xy)-Fold.xy;
+		p=p*Scale+p0;
+		l=length(p);
+		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,expsmoothing)));
+	}
+	return (l)*pow(Scale, -float(i));
+}
+
+
+
+/*
+FOV = 1
+Eye = 0.0104856,2.35989e-05,-1.99996
+Target = 3.75959,3.86772,-10.4291
+Up = 0.753402,0.403223,0.51942
+AntiAlias = 1
+AntiAliasBlur = 1
+Detail = -2.3
+DetailNormal = -2.8
+BackStepNormal = 1
+ClarityPower = 1
+MaxDist = 600
+FudgeFactor = 1
+MaxRaySteps = 56
+MaxRayStepsDiv = 1.8
+BandingSmooth = 0
+BoundingSphere = 2
+AO = 0.7
+AOColor = 0,0,0
+SpotLight = 0.4
+Specular = 4
+SpecularExp = 16
+SpotLightColor = 1,1,1
+SpotLightDir = 0.1,0.1
+CamLight = 1
+CamLightColor = 1,1,1
+Glow = 0.2
+GlowColor = 1,1,1
+BackgroundColor = 0.6,0.6,0.45
+GradientBackground = 0.3
+BaseColor = 1,1,1
+OrbitStrength = 0.8
+XStrength = 0.7
+X = 0.5,0.6,0.6
+YStrength = 0.4
+Y = 1,0.6,0
+ZStrength = 0.5
+Z = 0.8,0.78,1
+RStrength = 0.12
+R = 0.4,0.7,1
+Iterations = 17
+Scale = 3
+RotVector = 1,1,1
+RotAngle = 0
+*/
+
+
+
+#group default
+
+
+
+#group default
+
+#preset default
+FOV = 0.4
+Eye = 2.24024,-0.914052,1.26689
+Target = -2.33559,2.99323,-2.33041
+Up = 0.740733,0.611624,-0.277898
+AntiAlias = 2
+Detail = -2.72566
+DetailAO = -1.92857
+FudgeFactor = 0.83133
+MaxRaySteps = 440
+BoundingSphere = 7.5904
+Dither = 0.5
+NormalBackStep = 1
+AO = 0,0,0,0.71429
+Specular = 5.1899
+SpecularExp = 7.273
+SpotLight = 1,1,1,0.54902
+SpotLightDir = -0.4375,-0.09374
+CamLight = 1,1,1,1.34616
+CamLightMin = 0
+Glow = 1,1,1,0.09589
+GlowMax = 52
+Fog = 0.57408
+HardShadow = 0.73846 NotLocked
+ShadowSoft = 7.0968
+Reflection = 0.11538 NotLocked
+BaseColor = 1,1,1
+OrbitStrength = 0.85714
+X = 0.588235,0.6,0.380392,-0.3398
+Y = 1,0.6,0,0.06796
+Z = 1,0.231373,0.207843,0.20388
+R = 0.470588,0.509804,0.854902,-0.05882
+BackgroundColor = 0.117647,0.14902,0.227451
+GradientBackground = 0.5435
+CycleColors = false
+Cycles = 4.04901
+EnableFloor = true
+FloorNormal = -0.68292,-1,0.12196
+FloorHeight = -0.0563
+FloorColor = 1,1,1
+Iterations = 20
+ColorIterations = 14
+Scale = 1.44915
+Fold = 0.13008,0,0
+Julia = -0.04238,-0.80507,-0.16949
+RotVector = 0.2174,1,0.02174
+RotAngle = 93.2544
+#endpreset
+

@@ -35,7 +35,7 @@ namespace Fragmentarium {
 
 			/// Use this whenever an redraw is required.
 			/// Calling this function multiple times will still only result in one redraw
-			void requireRedraw();
+			void requireRedraw(bool clear);
 			void clearWorld();
 			void updateRefreshRate();
 
@@ -60,7 +60,9 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
 			void setMaxSubFrames(int i ) { maxSubFrames = i; }
-
+			void uniformsHasChanged();
+			void setClearOnChange(bool v) { clearOnChange = v; }
+		
 		public slots:
 			void clearPreviewBuffer();
 			void timerSignal();
@@ -128,6 +130,9 @@ namespace Fragmentarium {
 			QTimer* timer;
 			int maxSubFrames;
 			QString oldBufferString;
+
+			bool clearOnChange;
+			int iterationsBetweenRedraws;
 		};
 	};
 

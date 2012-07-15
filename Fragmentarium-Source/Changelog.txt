@@ -1,6 +1,15 @@
 To be adressed:
 - #Version 130 warnings? Should we switch?
 
+More host defines:
+#define DontClearOnChange   <- when sliders/camera changes, the backbuffer is not cleared.
+#define IterationsBetweenRedraws 20  <- makes it possible to do several steps without updating screen.
+#define IterationsBetweenRedraws 20  <- makes it possible to do several steps without updating screen.
+Added Kali's Creations: KaliBox, LivingKIFS, TreeBroccoli, Xray_KIFS.
+Added: Droste system.
+Added examples of working with double precision floats and emulated double precision floats: "Include/EmulatedDouble.frag", "Theory/Mandelbrot - Emulated Doubles.frag"
+
+
 01-06-12 [MHC]
 Added Thorn.frag [MHC]
 Added Doyle-Spirals [KNIGHTY]

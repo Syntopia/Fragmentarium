@@ -4,7 +4,8 @@
 #version 150
 #include "2D.frag"
 #buffershader "BufferShaderIFS.frag"
-
+#define DontClearOnChange
+#define IterationsBetweenRedraws 10
 #group post
 uniform float Gamma; slider[0.0,2.2,5.0]
 uniform bool ExponentialExposure; checkbox[false]
