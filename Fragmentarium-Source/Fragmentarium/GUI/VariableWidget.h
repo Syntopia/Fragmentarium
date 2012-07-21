@@ -33,7 +33,7 @@ namespace Fragmentarium {
 		class ComboSlider : public QWidget {
 			Q_OBJECT
 		public:
-			ComboSlider(QWidget* parent, double defaultValue, double minimum, double maximum) 
+			ComboSlider(QWidget* parent,QWidget* variableEditor, double defaultValue, double minimum, double maximum) 
 				: QWidget(parent), defaultValue(defaultValue), minimum(minimum), maximum(maximum){
 					setLayout(new QHBoxLayout());
 					layout()->setContentsMargins(0,0,0,0);
@@ -49,6 +49,7 @@ namespace Fragmentarium {
 					myValue = defaultValue;
 					layout()->addWidget(slider);
 					layout()->addWidget(spinner);
+					slider->installEventFilter(variableEditor);
 					connect(spinner, SIGNAL(valueChanged(double)), this, SLOT(spinnerChanged(double)));
 					connect(slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
 			}
@@ -69,24 +70,22 @@ namespace Fragmentarium {
 				emit changed();
 			}
 
-signals:
+		signals:
 			void changed();
 
-			protected slots:
-				void spinnerChanged(double) {
-					//double val = (spinner->value()-minimum)/(maximum-minimum);
-					setValue(spinner->value());
-					//slider->setValue(val*100000);
-					myValue = spinner->value();
-					emit changed();
-				}
+		protected slots:
+			void spinnerChanged(double) {
+				setValue(spinner->value());
+				myValue = spinner->value();
+				emit changed();
+			}
 
-				void sliderChanged(int) {
-					double val = (slider->value()/100000.0)*(maximum-minimum)+minimum;
-					setValue(val);
-					myValue = spinner->value();
-					emit changed();
-				}
+			void sliderChanged(int) {
+				double val = (slider->value()/100000.0)*(maximum-minimum)+minimum;
+				setValue(val);
+				myValue = spinner->value();
+				emit changed();
+			}
 
 		private:
 			double myValue;
@@ -108,7 +107,6 @@ signals:
 			}
 
 			void setColor(Vector3f v) {
-				//INFO("Set:" + v.toString());
 				QPalette p = palette();
 				p.setColor(backgroundRole(), QColor(v[0]*255.0,v[1]*255.0,v[2]*255.0));
 				setAutoFillBackground( true );
@@ -119,7 +117,6 @@ signals:
 			Vector3f getValue() { return value; }
 
 			void mouseReleaseEvent(QMouseEvent*) {
-				//INFO("Initial:" + value.toString());
 				QColor initial = QColor((int)(value[0]*255),(int)(value[1]*255),(int)(value[2]*255));
 				QColor c = QColorDialog::getColor(initial, this, "Choose color");
 				if (c.isValid()) {
@@ -129,7 +126,7 @@ signals:
 				}
 			}
 
-signals:
+		signals:
 			void changed();
 
 		private:

@@ -45,7 +45,9 @@ namespace Fragmentarium {
 			bool setDefault();
 			void substituteLockedVariables(Parser::FragmentSource* fs);
 			void updateTextures(Parser::FragmentSource* fs, FileManager* fileManager);
-signals:
+		protected:
+			bool eventFilter(QObject *obj, QEvent *ev);
+		signals:
 
 			void changed(bool lockedChanged);
 

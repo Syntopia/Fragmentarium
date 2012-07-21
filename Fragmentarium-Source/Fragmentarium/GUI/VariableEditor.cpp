@@ -582,6 +582,16 @@ namespace Fragmentarium {
 		}	
 
 
+		bool VariableEditor::eventFilter(QObject *obj, QEvent *ev) {
+			// Pass key events to display widget (to use cursor keys for fine tuning)
+			if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
+				QKeyEvent *keyEvent = static_cast<QKeyEvent*>(ev);
+				mainWindow->getEngine()->keyPressEvent(keyEvent);
+				return true;
+			}
+		
+			return QWidget::eventFilter(obj, ev);
+		}
 	}
 }
 

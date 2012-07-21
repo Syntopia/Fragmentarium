@@ -1,12 +1,18 @@
-To be adressed:
-- #Version 130 warnings? Should we switch?
+PENDING:
+Include old DE-Raytracer versions.
+Manual mode doesn't work correcly.
 
+22-07-12 [MHC]
+Using arrow keys now work when sliders have focus.
+
+15-07-12 [MHC]
+Added support for choosing '#include' through editor context menu.
 More host defines:
-#define DontClearOnChange   <- when sliders/camera changes, the backbuffer is not cleared.
-#define IterationsBetweenRedraws 20  <- makes it possible to do several steps without updating screen.
-#define IterationsBetweenRedraws 20  <- makes it possible to do several steps without updating screen.
+ #define SubframeMax 0
+ #define DontClearOnChange   <- when sliders/camera changes, the backbuffer is not cleared.
+ #define IterationsBetweenRedraws 20  <- makes it possible to do several steps without updating screen.
 Added Kali's Creations: KaliBox, LivingKIFS, TreeBroccoli, Xray_KIFS.
-Added: Droste system.
+Added: Droste system, Reaction-Diffusion.
 Added examples of working with double precision floats and emulated double precision floats: "Include/EmulatedDouble.frag", "Theory/Mandelbrot - Emulated Doubles.frag"
 
 

@@ -7,6 +7,7 @@ using namespace SyntopiaCore::Math;
 using namespace SyntopiaCore::Logging;
 
 #include <QWheelEvent>
+#include <QToolTip>
 #include <QStatusBar>
 #include <QMenu>
 #include <QVector2D>
@@ -29,16 +30,16 @@ namespace Fragmentarium {
 		}
 			
       void CameraControl::releaseControl() {
-         keyStatus.clear();
+		 keyStatus.clear();
          askForRedraw = false;
       }
 
 		bool CameraControl::keyPressEvent(QKeyEvent* ev) {
+			int key = ev->key();
 			if (ev->isAutoRepeat()) {
 				ev->accept();
 				return false;
 			}
-			int key = ev->key();
 			keyStatus[key] = (ev->type() == QEvent::KeyPress);
 			return parseKeys();
 		}
@@ -54,25 +55,29 @@ namespace Fragmentarium {
 
 			if (keyDown(Qt::Key_Up)) {
 				sliderStepSize = sliderStepSize*10.0;
-				INFO(QString("Slider step size: %1").arg(sliderStepSize));
+				QToolTip::showText(comboSlider->mapToGlobal(QPoint()), QString("Step size: %1").arg(sliderStepSize));
 				*keysDown = true;
 				keyStatus[Qt::Key_Up] = false; // only apply once
 			} 
 			
 			if (keyDown(Qt::Key_Down)) {
 				sliderStepSize = sliderStepSize/10.0;
-				INFO(QString("Slider step size: %1").arg(sliderStepSize));
+				QToolTip::showText(comboSlider->mapToGlobal(QPoint()), QString("Step size: %1").arg(sliderStepSize));
+
+
 				*keysDown = true;
 				keyStatus[Qt::Key_Down] = false; // only apply once
 			}
 			
 			if (keyDown(Qt::Key_Left)) {
 				comboSlider->setValue(comboSlider->getValue()-sliderStepSize);
+				QToolTip::showText(comboSlider->mapToGlobal(QPoint()), QString(""));
 				*keysDown = true;
 			} 
 			
 			if (keyDown(Qt::Key_Right)) {
 				comboSlider->setValue(comboSlider->getValue()+sliderStepSize);
+				QToolTip::showText(comboSlider->mapToGlobal(QPoint()), QString(""));
 				*keysDown = true;
 			} 
 			

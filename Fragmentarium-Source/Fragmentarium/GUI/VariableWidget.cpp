@@ -130,9 +130,10 @@ namespace Fragmentarium {
 				QLabel* label = new QLabel(widget);
 				label->setText(name);
 				l->addWidget(label);
-				comboSlider = new ComboSlider(parent, defaultValue, min, max);
+				comboSlider = new ComboSlider(parent, variableEditor, defaultValue, min, max);
 				l->addWidget(comboSlider);
 				connect(comboSlider, SIGNAL(changed()), this, SLOT(valueChanged()));
+				comboSlider->installEventFilter(variableEditor);
 				this->min = min;
 				this->max = max;
 		};
@@ -194,11 +195,11 @@ namespace Fragmentarium {
 				QLabel* label = new QLabel(widget);
 				label->setText(name);
 				m->addWidget(label,0,0);
-				comboSlider1 = new ComboSlider(parent, defaultValue[0], min[0], max[0]);
+				comboSlider1 = new ComboSlider(parent, variableEditor, defaultValue[0], min[0], max[0]);
 				m->addWidget(comboSlider1,0,1);
 				connect(comboSlider1, SIGNAL(changed()), this, SLOT(valueChanged()));
 
-				comboSlider2 = new ComboSlider(parent, defaultValue[1], min[1], max[1]);
+				comboSlider2 = new ComboSlider(parent,  variableEditor, defaultValue[1], min[1], max[1]);
 				m->addWidget(comboSlider2,1,1);
 				connect(comboSlider2, SIGNAL(changed()), this, SLOT(valueChanged()));
 
@@ -244,15 +245,15 @@ namespace Fragmentarium {
 				QLabel* label = new QLabel(widget);
 				label->setText(name);
 				m->addWidget(label,0,0);
-				comboSlider1 = new ComboSlider(parent, defaultValue[0], min[0], max[0]);
+				comboSlider1 = new ComboSlider(parent,  variableEditor, defaultValue[0], min[0], max[0]);
 				m->addWidget(comboSlider1,0,1);
 				connect(comboSlider1, SIGNAL(changed()), this, SLOT(n1Changed()));
 
-				comboSlider2 = new ComboSlider(parent, defaultValue[1], min[1], max[1]);
+				comboSlider2 = new ComboSlider(parent,  variableEditor, defaultValue[1], min[1], max[1]);
 				m->addWidget(comboSlider2,1,1);
 				connect(comboSlider2, SIGNAL(changed()), this, SLOT(n2Changed()));
 
-				comboSlider3 = new ComboSlider(parent, defaultValue[2], min[2], max[2]);
+				comboSlider3 = new ComboSlider(parent,  variableEditor, defaultValue[2], min[2], max[2]);
 				m->addWidget(comboSlider3,2,1);
 				connect(comboSlider3, SIGNAL(changed()), this, SLOT(n3Changed()));
 				connect(this, SIGNAL(doneChanges()), this, SLOT(valueChanged()));
@@ -380,20 +381,20 @@ namespace Fragmentarium {
 				QLabel* label = new QLabel(widget);
 				label->setText(name);
 				m->addWidget(label,0,0);
-				comboSlider1 = new ComboSlider(parent, defaultValue[0], min[0], max[0]);
+				comboSlider1 = new ComboSlider(parent,  variableEditor, defaultValue[0], min[0], max[0]);
 				m->addWidget(comboSlider1,0,1);
 				connect(comboSlider1, SIGNAL(changed()), this, SLOT(valueChanged()));
 
-				comboSlider2 = new ComboSlider(parent, defaultValue[1], min[1], max[1]);
+				comboSlider2 = new ComboSlider(parent,  variableEditor, defaultValue[1], min[1], max[1]);
 				m->addWidget(comboSlider2,1,1);
 				connect(comboSlider2, SIGNAL(changed()), this, SLOT(valueChanged()));
 
-				comboSlider3 = new ComboSlider(parent, defaultValue[2], min[2], max[2]);
+				comboSlider3 = new ComboSlider(parent,  variableEditor, defaultValue[2], min[2], max[2]);
 				m->addWidget(comboSlider3,2,1);
 				connect(comboSlider3, SIGNAL(changed()), this, SLOT(valueChanged()));
 
 
-				comboSlider4 = new ComboSlider(parent, defaultValue[3], min[3], max[3]);
+				comboSlider4 = new ComboSlider(parent,  variableEditor, defaultValue[3], min[3], max[3]);
 				m->addWidget(comboSlider4,3,1);
 				connect(comboSlider4, SIGNAL(changed()), this, SLOT(valueChanged()));
 
@@ -497,7 +498,7 @@ namespace Fragmentarium {
 				QLabel* label = new QLabel(widget);
 				label->setText(name);
 				l->addWidget(label);
-				comboSlider = new ComboSlider(parent, defaultValue, min, max);
+				comboSlider = new ComboSlider(parent,  variableEditor, defaultValue, min, max);
 				l->addWidget(comboSlider);
 				connect(comboSlider, SIGNAL(changed()), this, SLOT(valueChanged()));
 				this->min = min;
