@@ -87,7 +87,8 @@ void main() {
     //  vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);	
 #ifdef providesFiltering
 	 vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
-      gl_FragColor = prev+pow(color(coord.xy),Gamma);
+	vec4 new = color(coord.xy);
+      gl_FragColor = prev+vec4( pow(new.xyz,vec3(Gamma)) , new.w);
 #else
 	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter+1)) );
 	float w =1.0;

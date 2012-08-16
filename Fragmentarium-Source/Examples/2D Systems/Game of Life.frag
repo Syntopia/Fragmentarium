@@ -1,5 +1,5 @@
 #buffer RGBA16
-#version 150
+#version 110
 #include "2D.frag"
 
 // A 'Game of Life' implementation
@@ -8,15 +8,9 @@
 // Switch to Continuous mode.
 // Make sure AntiAlias is off (set to 1).
 //
-// Notice that this version uses the 'texelFetch' command,
-// to read from the backBuffer - otherwise the filtering
-// seems to create artifacts near the border, and
-// I haven't found a work-around for this.
-// This also means that version 150 is required.
 
 uniform sampler2D backbuffer;
 uniform float time;
-#define IterationsBetweenRedraws 20
 
 /*
 From Wikipedia:
@@ -34,6 +28,8 @@ float rand(vec2 co){
 	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+#define SubframeMax 0
+#define IterationsBetweenRedraws 20
 #TexParameter backbuffer GL_TEXTURE_MAG_FILTER GL_NEAREST
 #TexParameter backbuffer GL_TEXTURE_WRAP_S GL_REPEAT
 #TexParameter backbuffer GL_TEXTURE_WRAP_T GL_REPEAT

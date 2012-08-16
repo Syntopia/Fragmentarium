@@ -33,7 +33,7 @@ vec3 color(vec3 pos, vec3 dir) {
 	float intersect = 10000.0;
 	vec3 finalNormal;
 	for (int i = 0; i < 6; i++) {
-	float z = (float(i)-6.0)/2.0;
+		float z = (float(i)-6.0)/2.0;
 		float i = sphereLine(pos,normalize(dir),vec3(1.0,0.0+float(i),z),0.5, normal);
 		if (i<intersect && i>0.) {
 			intersect =i;
@@ -42,14 +42,14 @@ vec3 color(vec3 pos, vec3 dir) {
 	}
 	
 	if (intersect<10000.) {
-
-vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
-
+		
+		vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
+		
 		vec3 reflected = -2.0*dot(dir,finalNormal)*finalNormal+dir;
-	    //  vec3 reflectedP = reflected + 
-// Angle of perturbated vector
-// (cos(phi1)*cos(phi2)*cos(theta2 - theta1) + sin(phi1)*sin(phi2))		
-// Theta wil be y value (after indices are shuffled)
+		//  vec3 reflectedP = reflected +
+		// Angle of perturbated vector
+		// (cos(phi1)*cos(phi2)*cos(theta2 - theta1) + sin(phi1)*sin(phi2))
+		// Theta wil be y value (after indices are shuffled)
 		vec3 col = Specular.x*texture2D(texture,spherical(normalize(reflected)).yx+f*Specular.y).xyz;
 		vec3 col2 = Diffuse.x*texture2D(texture2,spherical(normalize(finalNormal)).yx+f*Diffuse.y).xyz;
 		col2 = pow(col2,Diffuse.z);
@@ -60,3 +60,27 @@ vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
 	
 	return col;
 }
+
+
+
+#preset Default
+FOV = 0.4
+Eye = -11.4956,3.97106,-3.43109
+Target = -1.69016,2.87276,-1.80421
+Up = 0.115064,-0.349871,-0.929705
+EquiRectangular = false
+FocalPlane = 1
+Aperture = 0
+Gamma = 1
+ToneMapping = 1
+Exposure = 1
+Brightness = 1
+Contrast = 1
+Saturation = 1
+GaussianWeight = 1
+AntiAliasScale = 2
+texture = f:\pano.jpg
+texture2 = f:\pano3.jpg
+Specular = 1,0
+Diffuse = 1,0,1
+#endpreset

@@ -26,10 +26,9 @@ vec2 formula(vec2 z,vec2 c) {
 #preset Default
 Center = -0.118362,0.0108127
 Zoom = 10.8053
-AntiAliasScale = 1.37662
-Gamma = 2.2222
-ExponentialExposure = true
-Exposure = 7.1739
+Gamma = 2.5463
+ToneMapping = 3
+Exposure = 1.3044
 Brightness = 1
 Contrast = 1.0396
 Saturation = 1.8817

@@ -22,7 +22,7 @@ uniform float Saturation;
 
 uniform vec2 pixelSize;
 uniform vec3 Light; 
-
+uniform sampler2D tex; 
 /*
 ** Based on: http://mouaif.wordpress.com/2009/01/22/photoshop-gamma-correction-shader/
 **
@@ -43,11 +43,12 @@ vec3 ContrastSaturationBrightness(vec3  color, float brt, float sat, float con)
 	return conColor;
 }
 uniform float Slope;
+uniform float DZ;
 varying vec2 coord;
 uniform sampler2D frontbuffer;
 void main() {
 	vec2 pos = (coord+vec2(1.0))/2.0;
-	vec4 tex = texture2D(frontbuffer, pos);
+	vec4 tex2 = texture2D(frontbuffer, pos);
 	
 
        vec3 e = vec3(pixelSize.x, pixelSize.y, 0.0);
@@ -62,7 +63,7 @@ e = vec3(1.0,1.0,0.0)/740.0;
 	vec3 n = cross(n1,n2);
 	n = normalize(n);
 
-	vec3 c = mod(tex.xyz,1.1);
+	vec3 c = mod(tex2.xyz,1.1);
 	c = c*Exposure;
 	
 	c=c* clamp( clamp(dot(n,Light),0.0,1.0),0.0,1.0);
@@ -72,5 +73,6 @@ e = vec3(1.0,1.0,0.0)/740.0;
 	//c =  (texN-texS)*Exposure;
 	
 	c = ContrastSaturationBrightness(c, Brightness, Saturation, Contrast);
+c= mix(c.xyz, texture2D(tex, pos).xyz, DZ);
 	gl_FragColor = vec4(c,1.0);
 }

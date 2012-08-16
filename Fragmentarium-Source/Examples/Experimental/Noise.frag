@@ -5,9 +5,8 @@
 #include "Classic-Noise.frag"
 #group Menger
 
+// Slow noise thingy
 
-
-// Scale parameter. A perfect Menger is 3.0
 uniform float Scale; slider[0.00,1.0,4.00]
 uniform float Scale2; slider[0.00,1.0,4.00]
 

@@ -1,8 +1,23 @@
 PENDING:
-Include old DE-Raytracer versions.
 Manual mode doesn't work correcly.
+Make a 'IBL-raytracer' demo. (But with which Images?)
+QDialog shown on first run, with some explanations?
+FPS counter not working?
+Make a 'non-progressive' flag, to make Kali's systems work. (Not so important, now the older versions are included)
+
+16-08-12 [MHC] Restored 'reflections' in DE-raytracer. Removed bounding sphere check.
+			   Renamed 'Env-DE-Raytracer.frag' to 'IBL-Raytracer.frag'
+				Include old DE-Raytracer versions.
+				 "#include "DE-Raytracer-v0.9.10.frag"
+				 "#include "DE-Raytracer-v0.9.1.frag"
+				When opening a not-runnable fragment, categories persist.
+
+30-07-12 [MHC]
+Now does a 'reset all' when loading new system (otherwise too confusing).
 
 22-07-12 [MHC]
+Filenames in presets has a whitespace bug.
+An 'uniform sampler2D' with non existent file will not create dialog. 
 Using arrow keys now work when sliders have focus.
 
 15-07-12 [MHC]

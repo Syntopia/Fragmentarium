@@ -642,7 +642,7 @@ namespace Fragmentarium {
 
 		void SamplerWidget::fromString(QString string) {
 			INFO("'" + string + "'");
-			comboBox->setEditText(string);
+			comboBox->setEditText(string.trimmed());
 		};
 
 		void SamplerWidget::setUserUniform(QGLShaderProgram* /*shaderProgram*/) {

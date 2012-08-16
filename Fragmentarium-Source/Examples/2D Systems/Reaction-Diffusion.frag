@@ -37,27 +37,31 @@ float rand(vec2 co){
 #TexParameter backbuffer GL_TEXTURE_WRAP_S GL_REPEAT
 #TexParameter backbuffer GL_TEXTURE_WRAP_T GL_REPEAT
 
+vec4 P = vec4(pixelSize, 0.0, -pixelSize.x);
+
 // nine point stencil
 vec4 laplacian9() {
-	return  0.5* texture2D( backbuffer,  position + vec2(-pixelSize.x,-pixelSize.y) ) // first row
-	+ texture2D( backbuffer,  position + vec2(0.,-pixelSize.y) )
-	+  0.5* texture2D( backbuffer,  position +  vec2(pixelSize.x,-pixelSize.y) )
-	+  texture2D( backbuffer,  position + vec2(-pixelSize.x,0.)) // seond row
+	return  
+	0.5* texture2D( backbuffer,  position - P.xy ) // first row
+	+ texture2D( backbuffer,  position - P.zy )
+	+  0.5* texture2D( backbuffer,  position - P.wy )
+	+  texture2D( backbuffer,  position - P.xz) // seond row
 	- 6.0* texture2D( backbuffer,  position )
-	+   texture2D( backbuffer,  position +vec2(pixelSize.x,0.) )
-	+  0.5*texture2D( backbuffer,  position +vec2(-pixelSize.x,pixelSize.y)) // third row
-	+ texture2D( backbuffer,  position +vec2(0.,pixelSize.y) )
-	+   0.5*texture2D( backbuffer,  position +vec2(pixelSize.x,pixelSize.y)   );	
+	+   texture2D( backbuffer,  position + P.xz )
+	+  0.5*texture2D( backbuffer,  position +P.wy)  // third row
+	+ texture2D( backbuffer,  position +P.zy )
+	+   0.5*texture2D( backbuffer,  position + P.xy   );	
 }
+
 
 // five point stencil
 vec4  laplacian5() {
 	return 
-	+ texture2D( backbuffer,  position +  vec2(0.,-pixelSize.y)  )
-	+  texture2D( backbuffer,  position + vec2(-pixelSize.x,0.) ) 
-	- 4.0* texture2D( backbuffer,  position  )
-	+  texture2D( backbuffer,  position + vec2(+pixelSize.x,0.)  )
-	+ texture2D( backbuffer,  position +  vec2(0.,pixelSize.y)  );
+	+  texture2D( backbuffer, position - P.zy)
+	+  texture2D( backbuffer, position - P.xz) 
+	-  4.0 * texture2D( backbuffer,  position )
+	+ texture2D( backbuffer,  position + P.xz )
+	+ texture2D( backbuffer,  position +  P.zy );
 }
 
 uniform vec2 Diffusion; slider[(0,0),(0.082,0.041),(0.2,0.2)]

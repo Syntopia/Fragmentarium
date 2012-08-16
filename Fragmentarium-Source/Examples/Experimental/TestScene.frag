@@ -2,7 +2,7 @@
 #info SphereSponge Distance Estimator.
 #define providesInit
 #define providesColor
-#include "Env-De-Raytracer.frag"
+#include "IBL-Raytracer.frag"
 #include "MathUtils.frag"
 #include "QuilezLib.frag"
 #group New Menger

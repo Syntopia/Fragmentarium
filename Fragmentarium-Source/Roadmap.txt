@@ -1,6 +1,7 @@
-Roadmap.
---------
-V0.9.2
+Roadmap
+
+V0.9.2 (august 2012)
+------
 + HDRI Panorama for background, lighting, and specular.
 + 2D shader: both a AntiAliasScale and a AASize... 
 + control wrapping and sampling of textures (#texture Name ...)
@@ -9,20 +10,25 @@ V0.9.2
 + TextureGUIWidget
   + Has layout issues
   + Always Locked
-  - Serialization?
+  + Serialization
 - IBL-raytracer: name, debug sun toggle
 + Limit number of frames in continous mode.
-   - FPS?
-- Export in RGBE?
+
+V0.9.3 (christmas 2013)
+------
 - Fix BufferShader, so that it can handle GUI widgets...
-
-Prioritized ideas:
-
 - Keyframe Animation.
+- A 2D camera which scales from the current mouse position
+
+V1.0
+----
+- Bugfixes and cleanup
+
+Other (prioritized) ideas:
+--------------------------
+- Export in RGBE
 - Mouse sensitivity
 - Fix: icons
-- A 2D camera which scales from the current mouse position
 - Commandline support
+- WebGL export [Difficult, has made some experiments]
 - Check for updates
-- WebGL export
-- Clipping planes

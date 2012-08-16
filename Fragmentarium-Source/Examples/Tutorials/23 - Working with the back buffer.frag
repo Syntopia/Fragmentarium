@@ -27,6 +27,10 @@ float rand(vec2 co){
 	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+
+#define SubframeMax 0
+#define IterationsBetweenRedraws 20
+
 #TexParameter backbuffer GL_TEXTURE_MAG_FILTER GL_NEAREST
 #TexParameter backbuffer GL_TEXTURE_WRAP_S GL_REPEAT
 #TexParameter backbuffer GL_TEXTURE_WRAP_T GL_REPEAT

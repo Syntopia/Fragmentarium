@@ -1,45 +1,63 @@
+FUTURE release notes:
 
-
-TODO list and scratch pad for Fragmentarium. /Mikael
 -----------
-I've released a new build of Fragmentarium, version 0.9.1 ("Progression").
+I've released a new build of Fragmentarium, version 0.9.11 ("In Vivo").
 It can be downloaded at Github: http://syntopia.github.com/Fragmentarium/get.html
-(As of now only Windows builds are available)
+(Binaries for Windows, Source for Windows/Linux/Mac)
 
-The usual caveats apply: Fragmentarium is very much work in progress, and is best suited for people who likes to experiment with code. 
+The (now standard) caveat apply: 
+Fragmentarium is very much work in progress, and is best suited for people who likes to experiment with code. 
 
-The main new feature is support for dual buffers and dual shaders.
-The front buffer is swapped after each frame to the backbuffer, which can be accessed as: 'uniform sampler2D backbuffer;'.
-Buffers can be created as either 8-bit or 16-bit integer, or 32-bit float.
-The new buffers makes it possible to create accumulated ray tracing, high quality AA for 2D systems, and many types of feedback systems.
-The easiest way to start exploring these features is by looking at the new tutorials (see below).
+Version 0.9.11 continues to move in the direction of progressive HDR rendering. The default raytracers now use accumulated rendering for anti-alias, shadowing, and DOF. To start the progressive rendering, Fragmentarium must be set to 'Continious' mode. 
+It is also possible to set a maximum number of rendered frames. There is a new raytracer, 'IBL-raytracer.frag' which can be used for DE's instead of the default raytracer. It uses Image Based Lighting from HDR panorama maps.
+ 
+If you need to do stuff like animation, it is still possible to use the old raytracers. They can be included as:
+"#include "DE-Raytracer-v0.9.1.frag" or "#include "DE-Raytracer-v0.9.10.frag"
 
-Minor improvements:
+Other than that there is now better support for buffer-swap systems (e.g. reaction-diffusion and game-of-life) and 
+beter control of texture look-ups.
 
-- Changed UI a bit to make it easier to change from automatic to continuous rendering.
-- Added context menu option to insert preset based on current settings.
-- Fixed error in 2D.frag, where changing aspect ratio would mess up viewport translation.			   
-- The syntax for using '2D.frag' is simpler now. Just implement: "vec3 color(vec2 c);"
-- Bugfix: Fixed some errors in the included fragments: Noise, Tetrahedron, and several of Knighty's examples were missing a 'providesInit'. 
-- Bugfix: Fixed specular bug in standard-raytracer.
-- Bugfix: Copying from web was sometimes weird (should now strip rich text).
-- Bugfix: Autosave files now creates a directory with output files (necessary since the #BufferShader directive broke the old 'include all in one file' system).
+There are also some interesting new fragments, including the absolutely amazing LivingKIFS.frag script from Kali. 
+
+New features:
+- Added maximum subframe counter (for progressive rendering).
+- Added support for HDR textures (.hdr RGBE format).
+- Tonemapping and color control in buffershader.
+- Added support for widget for changing bound textures.
+- More host defines:
+    #define SubframeMax 0
+    #define DontClearOnChange   <- when sliders/camera changes, the backbuffer is not cleared.
+    #define IterationsBetweenRedraws 20  <- makes it possible to do several steps without updating screen.
+- Added texture parameters preprocessor defines:
+	#TexParameter texture GL_TEXTURE_MIN_FILTER GL_LINEAR
+	#TexParameter texture GL_TEXTURE_MAG_FILTER GL_NEAREST
+	#TexParameter texture GL_TEXTURE_WRAP_S GL_CLAMP
+	#TexParameter texture GL_TEXTURE_WRAP_T GL_REPEAT
+- Change of syntax: when using "#define providesColor", now implement a 'vec3 baseColor(vec3)' function.
+- DE-Raytracer.frag now uses a 'Blinn-Phong with Schickl term and physical normalization'. 
+- DE-Raytracer.frag and Soft-Raytracer now uses new '3D.frag' base class.
+- Added a texture manager (should reuse and discard textures in memory automatically)
+- Added option to set OpenGL refresh rate in preferences.
+- Progressive2D.frag now supports custom filtering (using '#define providesFiltering')
+- Added support for choosing '#include' through editor context menu.
+- Using arrow keys now work when sliders have focus.
+- Now does a 'reset all' when loading new system (otherwise too confusing).
 
 New fragments:
-- Added a new 'tutorial' category, with examples of many features in Fragmentarium.
-- Soft-Raytracer.frag - An example progressive (accumulated) ray-tracer. DOF using finite aperture, HDR and tonemapping, soft shadows, and multiple ray ambient occlusion, and sub-pixel jittered high-quality anti-alias. All very experimental.
-- Progressive2D.frag, Progressive2DJulia.frag - Can be used for high-quality (progressive) anti-alias of 2D systems.
-- A Quilez inspired 'Domain Distortion' example (http://www.iquilezles.org/www/articles/warp/warp.htm)
-- A dual-buffered Game of Life example.
-- Mandelbrot Averaged Stripe Coloring example.
-- Lifted Domain Coloring example (in 2D/3D), see http://blog.hvidtfeldts.net/index.php/2012/03/lifted-domain-coloring/
-- New 'Theory' category with examples of the dual number and automatic differentiation method.
-- Some great new scripts from Knighty, for polyhedrons, knots, polychora, and hyperbolic tesselations. See http://blog.hvidtfeldts.net/index.php/2012/02/distance-estimated-polychora/ and http://blog.hvidtfeldts.net/index.php/2012/01/knots-and-polyhedra/
+- Added Kali's Creations: KaliBox, LivingKIFS, TreeBroccoli, Xray_KIFS.
+- Added Doyle-Spirals [KNIGHTY]
+- Added: Droste system
+- Added: Reaction-Diffusion.
+- Added 'Convolution.frag' example
+- Added examples of working with double precision floats and emulated double precision floats: "Include/EmulatedDouble.frag", "Theory/Mandelbrot - Emulated Doubles.frag"
+- Added 'IBL-Raytracer.frag' 
+- Added tutorials: 'progressive2D.frag' and 'pure3D.frag'
+- Added experimental: 'testScene.frag' and 'triplanarTexturing.frag'
+- Added 'Thorn.frag' [MHC]
 
-ATI users
-
-Several fragments fail on ATI cards. This seems to be due to faulty GLSL driver optimizations. A workaround is to lock the 'iterations' variable (click the padlock next to it).
-Adding a bailout check inside the main DE loop (e.g. 'if (length(z)>1000.0) break;') also seems to do the job. I don't own an ATI card, so I cannot debug this with people helping.
+Bugfixes:
+- Reflection is now working again in 'DE-Raytracer.frag'
+- Fixed filename case sensitivity error when doing reverse lookup of line numbers.
 
 Mac users
 

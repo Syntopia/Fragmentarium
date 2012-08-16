@@ -1,6 +1,6 @@
 #info Mandelbox Distance Estimator (Rrrola's version).
 #define providesInit
-#include "DE-Raytracer.frag"
+#include "DE-Raytracer-v0.9.1.frag"
 #include "MathUtils.frag"
 #group Mandelbox
 
@@ -43,28 +43,29 @@ float DE(vec3 pos) {
 
 #preset Default
 FOV = 0.684135
-Eye = -0.248252,2.3815,0.520985
-Target = 1.13531,5.29092,-3.84898
-Up = 0.164891,0.783145,0.573606
-AntiAlias = 1
-AntiAliasBlur = 1
-Detail = -3.83215
-DetailNormal = -3.02883
+Eye = -0.591849,1.81918,1.1662
+Target = 1.58082,3.67039,-3.45204
+Up = 0.540096,0.662048,0.519469
+Detail = -2.66371
+DetailAO = -1.35716
 FudgeFactor = 0.68224
 MaxRaySteps = 522
-MaxRayStepsDiv = 6
-BoundingSphere = 4.0964
 Dither = 0
+NormalBackStep = 1
 AO = 0,0,0,1
-Specular = 0.9167
 SpecularExp = 1.042
 SpotLight = 1,1,1,0.48913
 SpotLightDir = 0.61904,-0.06666
 CamLight = 1,1,1,0.60216
+CamLightMin = 0
 Glow = 1,1,1,0.01754
-Fog = 1.08724
+GlowMax = 20
+Fog = 0.64814
+HardShadow = 0
+ShadowSoft = 2
+Reflection = 0
 BaseColor = 1,1,1
-OrbitStrength = 0
+OrbitStrength = 0.63636
 X = 0.5,0.6,0.6,0.16536
 Y = 1,0.6,0,0.4
 Z = 0.8,0.78,1,0.07084
@@ -73,6 +74,10 @@ BackgroundColor = 0.239216,0.239216,0.239216
 GradientBackground = 0.7143
 CycleColors = false
 Cycles = 9.51206
+EnableFloor = false
+FloorNormal = 0,0,1
+FloorHeight = 0
+FloorColor = 1,1,1
 Iterations = 15
 ColorIterations = 2
 MinRad2 = 0.3492
@@ -81,4 +86,7 @@ Trans = 0.0365,-1.8613,0.0365
 Julia = -0.6691,-1.3028,-0.45775
 RotVector = 1,1,0
 RotAngle = 0
+AntiAlias = 1
+BoundingSphere = 12
+Specular = 4
 #endpreset

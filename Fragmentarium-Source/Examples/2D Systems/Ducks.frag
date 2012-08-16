@@ -55,8 +55,6 @@ JuliaY = 5.5384
 #preset Default
 Center = 0,0
 Zoom = 1
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 200
 PreIterations = 1
 R = 0
@@ -77,8 +75,6 @@ ColorFactor = 0.5
 #preset Cell
 Center = -490.172,-11.2585
 Zoom = -0.000334263
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 184
 PreIterations = 4
 R = 0.61875
@@ -98,8 +94,6 @@ ColorFactor = 0.5
 #preset Spooky
 Center = 0.288639,-0.855656
 Zoom = 206.094
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 261
 PreIterations = 6
 R = 0.69375
@@ -120,8 +114,6 @@ ColorFactor = 0.5
 #preset todo
 Center = 0.0983951,0.314843
 Zoom = 0.198006
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 54
 PreIterations = 9
 R = 0.44375

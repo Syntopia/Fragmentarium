@@ -128,14 +128,19 @@ namespace Fragmentarium {
 			return setSettings(preset);
 		}
 
-		void VariableEditor::resetUniforms() {
+		void VariableEditor::resetUniforms(bool clear) {
 			for (int i = 0; i < variables.count(); i++ ) {
 				delete(variables[i]);
 			}
 			variables.clear();
 			mainWindow->resetCamera(true);
-			mainWindow->render();
+			if (clear) mainWindow->render();
 		}
+
+		void VariableEditor::resetUniforms() {
+			resetUniforms(true);
+		}
+
 
 		void VariableEditor::setUserUniforms(QGLShaderProgram* shaderProgram) {
 			for (int i = 0; i < variables.count(); i++) {
@@ -301,7 +306,9 @@ namespace Fragmentarium {
 					names.append(variables[i]->getName());
 				}
 			}
-			INFO(QString("%1 locked variables: %2").arg(map.count()).arg(names.join(",")));
+			if (names.count()>0) {
+				INFO(QString("%1 locked variables: %2").arg(map.count()).arg(names.join(",")));
+			}
 
 
 			for (int i = 0; i < fs->source.count(); i++) {

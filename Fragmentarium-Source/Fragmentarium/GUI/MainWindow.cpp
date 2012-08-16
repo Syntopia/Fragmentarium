@@ -1299,6 +1299,9 @@ namespace Fragmentarium {
 		void MainWindow::loadFile(const QString &fileName)
 		{
 			insertTabPage(fileName);
+
+			QString inputText = getTextEdit()->toPlainText();
+			if (!inputText.startsWith("#donotrun")) variableEditor->resetUniforms(false);
 			if (render()) {
 				bool requiresRecompile = variableEditor->setDefault();
 				if (requiresRecompile || rebuildRequired) {

@@ -23,9 +23,6 @@ uniform int MaxRaySteps;  slider[0,56,2000]
 // Use this to boost Ambient Occlusion and Glow
 //uniform float  MaxRayStepsDiv;  slider[0,1.8,10]
 
-// Used to speed up and improve calculation
-uniform float BoundingSphere;slider[0,12,100];
-
 // Can be used to remove banding
 uniform float Dither;slider[0,0.5,1];
 
@@ -38,7 +35,7 @@ uniform float NormalBackStep; slider[0,1,10] Locked
 uniform vec4 AO; color[0,0.7,1,0.0,0.0,0.0];
 
 // The specular intensity of the directional light
-uniform float Specular; slider[0,4.0,10.0];
+uniform float Specular; slider[0,0.4,1.0];
 // The specular exponent
 uniform float SpecularExp; slider[0,16.0,100.0];
 // Limits the maximum specular strength to avoid artifacts
@@ -114,7 +111,7 @@ vec3 normal(vec3 pos, float normalDistance) {
 #group Floor
 
 uniform bool EnableFloor; checkbox[false] Locked
-uniform vec3 FloorNormal; slider[(-1,-1,-1),(0,0,0),(1,1,1)]
+uniform vec3 FloorNormal; slider[(-1,-1,-1),(0,0,1),(1,1,1)]
 uniform float FloorHeight; slider[-5,0,5]
 uniform vec3 FloorColor; color[1,1,1]
 bool floorHit = false;
@@ -263,7 +260,8 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	colorBase = vec3(0.0,0.0,0.0);
 	
 	// Check for bounding sphere
-	float dotFF = dot(from,from);
+/*	
+float dotFF = dot(from,from);
 	float d = 0.0;
 	fSteps = 0.0;
 	float dotDE = dot(direction,from);
@@ -283,17 +281,20 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			}
 		}
 	}
-	
+	*/
+
 	// We will adjust the minimum distance based on the current zoom
-	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
+	float eps = minDist;
 	float epsModified = 0.0;
-	if (sq<0.0) {
+/*	
+if (sq<0.0) {
 		// outside bounding sphere - and will never hit
 		dist = MaxDistance;
 		totalDist = MaxDistance;
 		steps = 2;
 	}  else {
 		totalDist += d; // advance ray to bounding sphere intersection
+*/
 		for (steps=0; steps<MaxRaySteps; steps++) {
 			orbitTrap = vec4(10000.0);
 			vec3 p = from + totalDist * direction;
@@ -304,13 +305,17 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 			totalDist += dist;
 			epsModified = pow(totalDist,ClarityPower)*eps;
-			if (dist < epsModified) break;
+			if (dist < epsModified) {
+				// move back
+				totalDist -= (epsModified-dist);
+				break;
+			}
                     if (totalDist > MaxDistance) {
 				fSteps -= (totalDist-MaxDistance)/dist;
 				break;
 			}
 		}
-	}
+	//}
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
  	vec3 hitColor;
 	float stepFactor = clamp((fSteps)/float(GlowMax),0.0,1.0);
@@ -341,7 +346,9 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 #else
 		hitColor = getColor();
 #endif
-	      hitColor = pow(clamp(hitColor,0.0,1.0),vec3(2.2));
+#ifndef linearGamma
+	      hitColor = pow(clamp(hitColor,0.0,1.0),vec3(Gamma));
+#endif
             if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
 		if (floorHit) {
 			hitColor = FloorColor;
@@ -359,7 +366,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	else {
 		hitColor = backColor;
 		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
-	
+		hitNormal = vec3(0.0);
 		if (DebugSun) {
 			vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));	
 			spotDir = normalize(spotDir);
@@ -375,5 +382,13 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 vec3 color(vec3 from, vec3 dir) {
 	vec3 hit = vec3(0.0);
 	vec3 hitNormal = vec3(0.0);
-	return  trace(from,dir,hit,hitNormal);
+	if (Reflection==0.) {
+		return  trace(from,dir,hit,hitNormal);
+	} else {
+		vec3 first =  trace(from,dir,hit,hitNormal);
+		if (hitNormal == vec3(0.0)) return first;
+		vec3 d = reflect(dir, hitNormal);
+		//return first +Reflection*trace(hit+d*minDist,d,hit, hitNormal);
+		return mix(first,trace(hit+d*minDist,d,hit, hitNormal),Reflection);
+	}
 }

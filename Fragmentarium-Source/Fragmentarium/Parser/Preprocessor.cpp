@@ -301,9 +301,15 @@ namespace Fragmentarium {
 				} else if (sampler2D.indexIn(s) != -1) {
 					QString name = sampler2D.cap(1);
 					fs.source[i] = "uniform sampler2D " + name + ";";
-					QString fileName = fileManager->resolveName(sampler2D.cap(2),file);
+					QString fileName;
+					try {
+						fileName = fileManager->resolveName(sampler2D.cap(2),file);	
+						INFO("Added texture: " + name + " -> " + fileName);
+					} catch (Exception& e) {
+						CRITICAL(e.getMessage());
+					}
 
-					INFO("Added texture: " + name + " -> " + fileName);
+
 					fs.textures[name] = fileName;
 
 					SamplerParameter* sp= new SamplerParameter(currentGroup, name, lastComment, fileName);
