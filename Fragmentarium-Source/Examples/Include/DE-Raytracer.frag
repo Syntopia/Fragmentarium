@@ -147,7 +147,7 @@ float DEF2(vec3 p) {
 float shadow(vec3 pos, vec3 sdir, float eps) {
 		float totalDist =2.0*eps;
 		float s = 1.0; // where 1.0 means no shadow!
- 		for (int steps=0; steps<MaxRaySteps/10 && totalDist<MaxDistance; steps++) {
+ 		for (int steps=0; steps<MaxRaySteps && totalDist<MaxDistance; steps++) {
 			vec3 p = pos + totalDist * sdir;
 			float dist = DEF2(p);
 			if (dist < eps)  return 1.0;

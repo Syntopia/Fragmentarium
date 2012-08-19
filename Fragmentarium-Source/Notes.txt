@@ -1,15 +1,19 @@
 FUTURE release notes:
 
+Fragmentarium Version 0.9.12 ("In Vivo") Released.
 -----------
-I've released a new build of Fragmentarium, version 0.9.11 ("In Vivo").
+I've released a new build of Fragmentarium, version 0.9.12 ("In Vivo").
 It can be downloaded at Github: http://syntopia.github.com/Fragmentarium/get.html
 (Binaries for Windows, Source for Windows/Linux/Mac)
 
 The (now standard) caveat apply: 
 Fragmentarium is very much work in progress, and is best suited for people who likes to experiment with code. 
 
-Version 0.9.11 continues to move in the direction of progressive HDR rendering. The default raytracers now use accumulated rendering for anti-alias, shadowing, and DOF. To start the progressive rendering, Fragmentarium must be set to 'Continious' mode. 
-It is also possible to set a maximum number of rendered frames. There is a new raytracer, 'IBL-raytracer.frag' which can be used for DE's instead of the default raytracer. It uses Image Based Lighting from HDR panorama maps.
+Version 0.9.12 continues to move Fragmentarium in the direction of progressive HDR rendering. The default raytracers now use accumulated rendering for anti-alias, shadowing, and DOF. To start the progressive rendering, Fragmentarium must be set to 'Continuous' mode. It is now also possible to set a maximum number of rendered frames. 
+
+All 2D & 3D system now come with tone mapping, gamma correction, and color control (see the 'Post' tab).
+
+There is a new raytracer, 'IBL-raytracer.frag' which can be used for DE's instead of the default raytracer. It uses Image Based Lighting from HDR panorama maps.
  
 If you need to do stuff like animation, it is still possible to use the old raytracers. They can be included as:
 "#include "DE-Raytracer-v0.9.1.frag" or "#include "DE-Raytracer-v0.9.10.frag"
@@ -45,23 +49,23 @@ New features:
 
 New fragments:
 - Added Kali's Creations: KaliBox, LivingKIFS, TreeBroccoli, Xray_KIFS.
-- Added Doyle-Spirals [KNIGHTY]
-- Added: Droste system
-- Added: Reaction-Diffusion.
-- Added 'Convolution.frag' example
+- Added Doyle-Spirals.frag [Knighty]
+- Added: Droste.frag (Escher Droste effect)
+- Added: Reaction-Diffusion.frag (Gray-Scott example)
+- Added 'Convolution.frag' example (For precalculating specular and diffuse lighting from HDR panoramas)
 - Added examples of working with double precision floats and emulated double precision floats: "Include/EmulatedDouble.frag", "Theory/Mandelbrot - Emulated Doubles.frag"
-- Added 'IBL-Raytracer.frag' 
+- Added 'IBL-Raytracer.frag' (Image Based Lighting raytracer)
 - Added tutorials: 'progressive2D.frag' and 'pure3D.frag'
 - Added experimental: 'testScene.frag' and 'triplanarTexturing.frag'
-- Added 'Thorn.frag' [MHC]
+- Added 'Thorn.frag' 
 
-Bugfixes:
+Bug fixes:
 - Reflection is now working again in 'DE-Raytracer.frag'
 - Fixed filename case sensitivity error when doing reverse lookup of line numbers.
 
 Mac users
 
-Some Mac users has reported problems with the last version of Fragmentarium. Again, I don't own a Mac, so I cannot solve these issues without help.
+Some Mac users has reported problems with the latest versions of Fragmentarium. Again, I don't own a Mac, so I cannot solve these issues without help.
 
 Finally, please read the FAQ, before asking questions: 
 http://blog.hvidtfeldts.net/index.php/2011/12/fragmentarium-faq/

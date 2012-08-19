@@ -64,7 +64,7 @@ uniform float EnvDiffuse;slider[0,1,1]
 uniform float SpecularMax; slider[0,10,100]
 uniform vec2 Sun; slider[(-3.1415,-1.57),(0,0),(3.1415,1.57)]
 uniform float SunSize; slider[0,0.01,0.4]
-
+uniform bool DebugSun; checkbox[true]
 
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
@@ -276,59 +276,33 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	floorHit = false;
 	floorDist = 0.0;
 	
-	float dist = 0.0;
 	float totalDist = 0.0;
+	float dist = 0.0;
 	
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
 	
 	// Check for bounding sphere
-	float dotFF = dot(from,from);
 	float d = 0.0;
 	fSteps = 0.0;
-	float dotDE = dot(direction,from);
-	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
-	
-	if (sq>0.0) {
-		d = -dotDE - sqrt(sq);
-		if (d<0.0) {
-			// "minimum d" solution wrong direction
-			d = -dotDE + sqrt(sq);
-			if (d<0.0) {
-				// both solution wrong direction
-				sq = -1.0;
-			} else {
-				// inside sphere
-				d = 0.0;
-			}
-		}
-	}
 	
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist; // *zoom;//*( length(zoom)/0.01 );
 	float epsModified = 0.0;
-	if (sq<0.0) {
-		// outside bounding sphere - and will never hit
-		dist = MaxDistance;
-		totalDist = MaxDistance;
-		steps = 2;
-	}  else {
-		totalDist += d; // advance ray to bounding sphere intersection
-		for (steps=0; steps<MaxRaySteps; steps++) {
-			orbitTrap = vec4(10000.0);
-			vec3 p = from + totalDist * direction;
-			dist = DEF(p);
-			//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
-			dist *= FudgeFactor;
-			
-			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
-			totalDist += dist;
-			epsModified = pow(totalDist,ClarityPower)*eps;
-			if (dist < epsModified) break;
-			if (totalDist > MaxDistance) {
-				fSteps -= (totalDist-MaxDistance)/dist;
-				break;
-			}
+	for (steps=0; steps<MaxRaySteps; steps++) {
+		orbitTrap = vec4(10000.0);
+		vec3 p = from + totalDist * direction;
+		dist = DEF(p);
+		//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
+		dist *= FudgeFactor;
+		
+		if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
+		totalDist += dist;
+		epsModified = pow(totalDist,ClarityPower)*eps;
+		if (dist < epsModified) break;
+		if (totalDist > MaxDistance) {
+			fSteps -= (totalDist-MaxDistance)/dist;
+			break;
 		}
 	}
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
@@ -390,14 +364,11 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	else {
 		vec2 c = spherical(normalize(dir));
 		vec3 col = texture2D(Background,c.yx).xyz;
-		if (dot(fromPhiTheta(Sun),normalize(dir))>1.0-SunSize) col= vec3(100.,0.,0.);
-		
+		if (DebugSun && dot(fromPhiTheta(Sun),normalize(dir))>1.0-SunSize) col= vec3(100.,0.,0.);
 		hitColor = col;
 		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 		
 	}
-	
-	
 	
 	return hitColor;
 }

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
 	QPixmap pixmap(QDir(Fragmentarium::GUI::MainWindow::getMiscDir()).absoluteFilePath("splash.png"));
 	QSplashScreen splash(pixmap, Qt::WindowStaysOnTopHint);
-	     splash.setMask(pixmap.mask());
+	splash.setMask(pixmap.mask());
 	splash.show();
 	qApp->processEvents();
 
@@ -47,10 +47,10 @@ int main(int argc, char *argv[])
 
 	Fragmentarium::GUI::MainWindow *mainWin;
 	if (args.size() <= 1) {
-		mainWin = new Fragmentarium::GUI::MainWindow();
+		mainWin = new Fragmentarium::GUI::MainWindow(&splash);
 	} else {
 		// We ignore more then one argument
-		mainWin = new Fragmentarium::GUI::MainWindow(args[1]);
+		mainWin = new Fragmentarium::GUI::MainWindow(&splash,args[1]);
 	}
 	mainWin->setSplashWidget(&splash);
     mainWin->show();

@@ -53,8 +53,8 @@ namespace Fragmentarium {
 			Q_OBJECT
 
 		public:
-			MainWindow();
-			MainWindow(const QString &fileName);
+			MainWindow(QWidget* splashWidget);
+			MainWindow(QWidget* splashWidget, const QString &fileName);
 			void setSeed(int randomSeed);
 			int getSeed();
 			void setUserUniforms(QGLShaderProgram* shaderProgram);
@@ -82,6 +82,7 @@ namespace Fragmentarium {
 			void keyReleaseEvent(QKeyEvent* ev);
 
 			public slots:
+				void showWelcomeNote();		
 				void animationControllerHidden();
 				void removeSplash();
 				void maxSubSamplesChanged(int);
@@ -183,6 +184,7 @@ namespace Fragmentarium {
 			QAction *copyAction;
 			QAction *pasteAction;
 			QAction *aboutAction;
+			QAction *welcomeAction;
 			QAction *controlAction;
 			QAction *renderAction;
 			DisplayWidget* engine;

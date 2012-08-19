@@ -1,9 +1,11 @@
 PENDING:
-Manual mode doesn't work correcly.
 Make a 'IBL-raytracer' demo. (But with which Images?)
-QDialog shown on first run, with some explanations?
-FPS counter not working?
-Make a 'non-progressive' flag, to make Kali's systems work. (Not so important, now the older versions are included)
+
+19-08-12 [MHC]	Added a welcome/warning notice.
+				Added a crash during start detection mechanism.
+				Updated shadows in DE-raytracer. Still not good.
+				Added 'tetrahedron-alternative.frag'
+				Update about page.
 
 16-08-12 [MHC] Restored 'reflections' in DE-raytracer. Removed bounding sphere check.
 			   Renamed 'Env-DE-Raytracer.frag' to 'IBL-Raytracer.frag'

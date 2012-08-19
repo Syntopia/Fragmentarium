@@ -65,6 +65,10 @@ namespace Fragmentarium {
 					checkBox->setObjectName("checkBox");
 					verticalLayout->addWidget(checkBox);
 
+					checkBox3 = new QCheckBox(tab);
+					checkBox3->setObjectName("checkBox3");
+					verticalLayout->addWidget(checkBox3);
+
 					checkBox2 = new QCheckBox(tab);
 					checkBox2->setObjectName("checkBox2");
 					verticalLayout->addWidget(checkBox2);
@@ -118,6 +122,9 @@ namespace Fragmentarium {
 					checkBox2->setText("Replace all 'float' types with 'double' types. (Not working!)");
 					checkBox2->setStatusTip(tr("Also replaces matrix and vector types."));
 
+					checkBox3->setText("Autorun Fragments on Load");
+					checkBox3->setStatusTip(tr("Disabling this might make debugging easier."));
+
 					
 
 					label->setText("Include paths:");
@@ -126,6 +133,7 @@ namespace Fragmentarium {
 					QSettings settings;
 					checkBox->setChecked(settings.value("moveMain", true).toBool());
 					checkBox2->setChecked(settings.value("doublify", false).toBool());
+					checkBox3->setChecked(settings.value("autorun", true).toBool());
 					refreshSpinBox->setValue(settings.value("refreshRate", 20).toInt());
 					lineEdit->setText(settings.value("includePaths", "Examples/Include;").toString());
 				} 
@@ -138,6 +146,7 @@ namespace Fragmentarium {
 				void saveSettings() {
 					QSettings settings;
 					settings.setValue("moveMain", checkBox->isChecked());
+					settings.setValue("autorun", checkBox3->isChecked());
 					settings.setValue("includePaths", lineEdit->text());
 					settings.setValue("doublify",  checkBox2->isChecked());
 					settings.setValue("refreshRate",  refreshSpinBox->value());
@@ -149,6 +158,7 @@ namespace Fragmentarium {
 				QVBoxLayout *verticalLayout;
 				QCheckBox *checkBox;
 				QCheckBox *checkBox2;
+				QCheckBox *checkBox3;
 				QHBoxLayout *horizontalLayout;
 				QLabel *label;
 				QLineEdit *lineEdit;
@@ -377,14 +387,14 @@ namespace Fragmentarium {
 		};
 
 
-		MainWindow::MainWindow()
+		MainWindow::MainWindow(QWidget* splashWidget) : splashWidget(splashWidget)
 		{
 			init();
 			loadFile(QDir(getExamplesDir()).absoluteFilePath("Historical 3D Fractals/Mandelbulb.frag"));
 			tabChanged(0); // to update title.
 		}
 
-		MainWindow::MainWindow(const QString &fileName)
+		MainWindow::MainWindow(QWidget* splashWidget, const QString &fileName) : splashWidget(splashWidget)
 		{
 			QDir::setCurrent(QCoreApplication::applicationDirPath ()); // Otherwise we cannot find examples + templates
 			init();
@@ -619,7 +629,7 @@ namespace Fragmentarium {
 
 			INFO(QString("Welcome to Fragmentarium version %1. A Syntopia Project.").arg(version.toLongString()));
 			INFO("");
-			WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
+			//WARNING("This is an experimental SVN checkout build. For stability use the package releases.");
 
 			fullScreenEnabled = false;
 			createOpenGLContextMenu();
@@ -627,6 +637,39 @@ namespace Fragmentarium {
 			connect(this->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
 			readSettings();
+
+			{ 
+				QSettings settings;
+				if (settings.value("firstRun", true).toBool()) {
+					removeSplash();
+					showWelcomeNote();
+				}
+				settings.setValue("firstRun", false);
+			}
+
+			{ 
+				QSettings settings;
+				if (settings.value("isStarting", false).toBool()) {
+					QString s = "It looks like the Fragmentarium crashed during the last startup.\n"
+					"\nTo prevent repeated crashes, you may choose to disable 'Autorun on Load'."
+					"\nThis option may be re-enabled through Preferences";
+
+					
+					removeSplash();
+					QMessageBox msgBox;
+					msgBox.setText(s);
+					QAbstractButton* b = msgBox.addButton(QString("Disable Autorun"),QMessageBox::AcceptRole);	
+					msgBox.addButton(QString("Enable Autorun"),QMessageBox::RejectRole);
+
+					msgBox.exec();
+					if (msgBox.clickedButton() == b) {
+						settings.setValue("autorun", false);
+					} else {
+						settings.setValue("autorun", true);
+					}
+				}
+				settings.setValue("isStarting", true);
+			}
 
 			createToolBars();
 			createStatusBar();
@@ -640,6 +683,18 @@ namespace Fragmentarium {
 			connect(animationController, SIGNAL(wasHidden()), this, SLOT(animationControllerHidden()));
 
 			renderModeChanged();
+
+		}
+
+		void MainWindow::showWelcomeNote() {
+			QString s = 
+				"This is your first run of Fragmentarium.\nPlease read this:\n\n"
+				"(1) Fragmentarium requires a decent GPU, preferably a NVIDIA or ATI discrete graphics card with recent drivers.\n\n"
+				"(2) On Windows Vista and 7, there is a built-in GPU watchdog, requiring each frame to render in less than 2 seconds. Some fragments may exceed this limit, especially on low-end graphics cards. It is possible to circumvent this, see the Fragmentarium FAQ (in the Help menu) for more information.\n\n"
+				"(3) Many examples in Fragmentarium use progressive rendering, which requires Fragmentarium to run in Continuous mode. When running in this mode, Fragmentarium uses 100% GPU power (but you may use the 'Subframe : Max' spinbox to limit the number of frames rendered. A value of zero means there is no maximum count.)\n\n";
+			QMessageBox msgBox;
+			msgBox.setText(s);
+			msgBox.exec();
 
 		}
 
@@ -769,6 +824,9 @@ namespace Fragmentarium {
 			aboutAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&About"), this);
 			aboutAction->setStatusTip(tr("Shows the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+
+			welcomeAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("Show Welcome Note"), this);
+			connect(welcomeAction, SIGNAL(triggered()), this, SLOT(showWelcomeNote()));
 
 			controlAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("&Mouse and Keyboard Help"), this);
 			controlAction->setStatusTip(tr("Shows information about how to control Fragmentarium"));
@@ -914,6 +972,7 @@ namespace Fragmentarium {
 
 			helpMenu = menuBar()->addMenu(tr("&Help"));
 			helpMenu->addAction(aboutAction);
+			helpMenu->addAction(welcomeAction);
 			helpMenu->addAction(controlAction);
 
 			helpMenu->addSeparator();
@@ -1302,7 +1361,7 @@ namespace Fragmentarium {
 
 			QString inputText = getTextEdit()->toPlainText();
 			if (!inputText.startsWith("#donotrun")) variableEditor->resetUniforms(false);
-			if (render()) {
+			if (QSettings().value("autorun", true).toBool() && render()) {
 				bool requiresRecompile = variableEditor->setDefault();
 				if (requiresRecompile || rebuildRequired) {
 					INFO("The 'default' settings needs to update the locking. You should recompile.");
@@ -1311,6 +1370,8 @@ namespace Fragmentarium {
 					//INFO("No recompile");
 				}
 			}
+			QSettings settings;
+			settings.setValue("isStarting", false);
 		}
 
 		bool MainWindow::saveFile(const QString &fileName)
@@ -1388,7 +1449,6 @@ namespace Fragmentarium {
 
 		bool MainWindow::render() {
 			logger->getListWidget()->clear();
-
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return false; } 
 			QString inputText = getTextEdit()->toPlainText();
 			if (inputText.startsWith("#donotrun")) { INFO("Not a runnable fragment."); return false; }
@@ -1720,7 +1780,8 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::removeSplash() {
-			splashWidget->close();
+			if (splashWidget) splashWidget->close();
+			splashWidget = 0;
 		}
 
 		void MainWindow::insertText() {
