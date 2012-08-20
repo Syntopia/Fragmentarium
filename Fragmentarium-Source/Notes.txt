@@ -1,8 +1,8 @@
 FUTURE release notes:
 
-Fragmentarium Version 0.9.12 ("In Vivo") Released.
+Fragmentarium Version 0.9.12 ("Prague") Released.
 -----------
-I've released a new build of Fragmentarium, version 0.9.12 ("In Vivo").
+I've released a new build of Fragmentarium, version 0.9.12 ("Prague").
 It can be downloaded at Github: http://syntopia.github.com/Fragmentarium/get.html
 (Binaries for Windows, Source for Windows/Linux/Mac)
 
@@ -11,9 +11,9 @@ Fragmentarium is very much work in progress, and is best suited for people who l
 
 Version 0.9.12 continues to move Fragmentarium in the direction of progressive HDR rendering. The default raytracers now use accumulated rendering for anti-alias, shadowing, and DOF. To start the progressive rendering, Fragmentarium must be set to 'Continuous' mode. It is now also possible to set a maximum number of rendered frames. 
 
-All 2D & 3D system now come with tone mapping, gamma correction, and color control (see the 'Post' tab).
+All 2D and 3D system now come with tone mapping, gamma correction, and color control (see the 'Post' tab).
 
-There is a new raytracer, 'IBL-raytracer.frag' which can be used for DE's instead of the default raytracer. It uses Image Based Lighting from HDR panorama maps.
+There is a new raytracer, 'IBL-raytracer.frag' which can be used for DE's instead of the default raytracer. It uses Image Based Lighting from HDR panorama maps. For an example of the new IBL raytracer, see the tutorial: "25 - Image Based Lighting.frag".
  
 If you need to do stuff like animation, it is still possible to use the old raytracers. They can be included as:
 "#include "DE-Raytracer-v0.9.1.frag" or "#include "DE-Raytracer-v0.9.10.frag"

@@ -9,6 +9,8 @@
 
 #include "hdrloader.h"
 
+#pragma warning( disable : 4244 )
+
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>

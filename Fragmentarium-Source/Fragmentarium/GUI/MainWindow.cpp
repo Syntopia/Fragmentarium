@@ -543,7 +543,7 @@ namespace Fragmentarium {
 			oldDirtyPosition = -1;
 			setFocusPolicy(Qt::StrongFocus);
 
-			version = SyntopiaCore::Misc::Version(0, 9, 1, -1, " (\"Chiaroscuro\")");
+			version = SyntopiaCore::Misc::Version(0, 9, 12, -1, " (\"Prague\")");
 			setAttribute(Qt::WA_DeleteOnClose);
 
 			QSplitter*	splitter = new QSplitter(this);

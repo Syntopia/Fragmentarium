@@ -1,0 +1,71 @@
+[Header]
+ICOfile = "Ditch-River_Thumb.jpg"
+PREVIEWfile = "Ditch-River_preview.jpg"
+Name = "Ditch River"
+Author = "Blochi"
+Location = "Skips Ditch"
+Comment = "A lot of concrete for a tiny river."
+GEOlat = 33.7017070131801400
+GEOlong = -117.9302716255188000
+Link = "http://www.hdrlabs.com/sibl/archive.html"
+Date = "2007:03:16"
+Time = "13:45:00"
+North = 0.500000
+Height = 1.600000
+
+[Background]
+BGfile = "Ditch-River_TMap.jpg"
+BGmap = 1
+BGu = 0.000000
+BGv = 0.000000
+BGheight = 4000
+
+[Enviroment]
+EVfile = "Ditch-River_Env.hdr"
+EVmap = 1
+EVu = 0.000000
+EVv = 0.000000
+EVheight = 180
+EVmulti = 1.192982
+EVgamma = 1.333333
+
+[Reflection]
+REFfile = "Ditch-River_2k.hdr"
+REFmap = 1
+REFu = 0.000000
+REFv = 0.000000
+REFheight = 1024
+REFmulti = 1.122807
+REFgamma = 1.578947
+
+[Sun]
+SUNcolor = 255,240,241
+SUNmulti = 1.500000
+SUNu = 0.172000
+SUNv = 0.224000
+
+[Plate1]
+; actually taken much closer
+PLATEfile = "DSC_9738.jpg"
+PLATEthumb = "DSC_9738_pthumb.jpg"
+PLATEpreview = "DSC_9738_preview.jpg"
+PLATEu = 0.650000
+PLATEv = 0.500000
+PLATEroll = 0.000000
+PLATEhfov  = 117.000000
+PLATErealhfov = 48.5
+PLATEwidth = 3872
+PLATEheight  = 2592
+
+[Plate2]
+; shot from much further away
+PLATEfile = "DSC_0326.jpg"
+PLATEthumb = "DSC_0326_pthumb.jpg"
+PLATEpreview = "DSC_0326_preview.jpg"
+PLATEu = 0.580741
+PLATEv = 0.477827
+PLATEroll = 0.000000
+PLATEhfov  = 93.333336
+PLATErealhfov = 57.22 
+PLATEwidth = 3872
+PLATEheight  = 2592
