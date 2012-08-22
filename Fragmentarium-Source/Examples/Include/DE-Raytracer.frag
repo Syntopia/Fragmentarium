@@ -168,10 +168,10 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	spotDir = normalize(spotDir);
 
 	float nDotL = max(0.0,dot(n,spotDir));
-       vec3 half = normalize(-dir+spotDir);
+       vec3 halfVector = normalize(-dir+spotDir);
 	float diffuse = nDotL*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
-       float hDotN = max(0.,dot(n,half));
+       float hDotN = max(0.,dot(n,halfVector));
 
 	 // An attempt at Physcical Based Specular Shading:
        // http://renderwonk.com/publications/s2010-shading-course/
