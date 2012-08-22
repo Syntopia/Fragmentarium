@@ -79,9 +79,12 @@ uniform bool EquiRectangular; checkbox[false]
 #define PI  3.14159265358979323846264
 
 // Camera position and target.
-in vec3 from,dir,dirDx,dirDy;
-in vec2 coord;
-in float zoom;
+varying vec3 from;
+varying vec3 dir;
+varying vec3 dirDx;
+varying vec3 dirDy;
+varying vec2 coord;
+varying float zoom;
 
 uniform int backbufferCounter;
 uniform sampler2D backbuffer;
