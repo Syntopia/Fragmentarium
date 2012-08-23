@@ -1,15 +1,11 @@
-#version 150
-
 // A script for providing cosinus-convoluted long-lat maps
-uniform sampler2D texture;  file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
-//uniform sampler2D texture; file[f:\hdr\Alexs_Apt_Env.hdr]
+uniform sampler2D texture;  file[Ditch-River_2k.hdr]
 
-
-//uniform sampler2D texture; file[f:\house.jpg]
 #define IterationsBetweenRedraws 10
 
 #define providesFiltering
 #define linearGamma
+#define SubframeMax 0
 #include "Progressive2D.frag"
 #define PI  3.14159265358979323846264
 
@@ -20,7 +16,6 @@ vec3 cartesianToSpherical(vec3 p) {
 	float phi = atan(p.y,p.x);
 	return vec3(r,theta,phi);
 }
-
 
 
 vec3 sphericalToCartesian(vec3 s) {
@@ -44,12 +39,19 @@ vec2 equilateralFromDirection(vec3 pos) {
 }
 
 vec2 position =  (viewCoord+vec2(1.0))/2.0;
-uniform vec2 Cursor; slider[(0,0),(1,1),(1,1)]
+
+// Can be used to place a 'cursor' on the image
+uniform vec2 Cursor; slider[(0,0),(0.23,0.81),(1,1)]
+// Size of cursor (cosinus to angle)
 uniform float CursorCos; slider[0,0,1]
+// This is size (cosinus angle) that we wil draw sample from.
 uniform float FilterSize; slider[0,0.1,1.0]
+// This is power of the dot product (1 for diffuse, higher for specular)
 uniform float Power; slider[0,1,220]
+// Check this to see image without filtering
 uniform bool PreviewImage; checkbox[false]
-uniform float PreviewPower; slider[0,5,12]
+// Use this to set the exposure
+uniform float PreviewExposure; slider[0,5,12]
 
 
 
@@ -76,22 +78,17 @@ vec4 color(vec2 pos) {
 	position.y = 1.0-position.y;
 	if (PreviewImage) {
 		vec3 vo = texture2D( texture, position).xyz;
-		return vec4(vo*pow(10,PreviewPower-5.0),1.0);
+		return vec4(vo*pow(10.0,PreviewExposure-5.0),1.0);
 	}
 	
-	if (length(position-Cursor)<0.01)  {
-		return vec4(1.0,0.0,0.0,0.0);
-	}
 	vec3 dir1x = directionFromEquilateral(Cursor);
 	vec3 dir3x = directionFromEquilateral(position);
 	float b = max(0.0,dot(dir1x,dir3x));
-	if (b>1.0-CursorCos) return vec4(1.0,1.0,1.0,1.0);
+	if (b>1.0-CursorCos) return vec4(vec3(1.0,0.0,0.0),1.0);
 	
 	
 	vec3 dir1 = directionFromEquilateral(position);
-
 	vec3 dir2 = getSample(dir1,FilterSize);
-	//vec2 p = rand(viewCoord*(float(backbufferCounter)));
 	dir1 = normalize(dir1);
 	dir2 = normalize(dir2);
 	float c = max(0.0,dot(dir1,dir2));
@@ -99,11 +96,7 @@ vec4 color(vec2 pos) {
 	
 	vec2 p = equilateralFromDirection(dir2);
 	p+=Rotate;
-	vec3 v2 = texture2D( texture,vec2(p.x,p.y)).xyz;
-	
-	//vec3 dir2 = directionFromEquilateral(p);
-	
-	//if (FilterSize == 0) w = 1.0;
+	vec3 v2 = texture2D( texture,vec2(p.x,p.y)).xyz;	
 	float w = pow(c,Power);
 
 	return vec4(pow(v2,vec3(Gamma))*w,w);

@@ -51,13 +51,11 @@ uniform float Fog; slider[0,0.0,2]
 uniform float Shadow; slider[0,0,1]
 
 
-//uniform sampler2D texture; file[C:\Users\Mikael\Desktop\Sketches3\sketchx-16.png]
-//uniform sampler2D texture; file[f:\HDR\LA_Downtown_Helipad_GoldenHour_Env.hdr]
-//uniform sampler2D texture2; file[f:\HDR\LA_Downtown_Helipad_GoldenHour_Env.hdr]
-uniform sampler2D Background; file[f:\HDR\Mt-Washington-Cave-Room_Env.hdr]
-//uniform sampler2D texture; file[f:\HDR\Alexs_Apt_Env.hdr]
-uniform sampler2D Specular; file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
-uniform sampler2D Diffuse; file[f:\HDR\Mt-Washington-Cave-Room_Ref.hdr]
+
+uniform sampler2D Background; file[Ditch-River_2k.hdr]
+uniform sampler2D Specular; file[Ditch-River_2k.hdr]
+uniform sampler2D Diffuse; file[Ditch-River_env.hdr]
+
 uniform float EnvSpecular; slider[0,1,1]
 uniform float EnvDiffuse;slider[0,1,1]
 // Limits the maximum specular strength to avoid artifacts

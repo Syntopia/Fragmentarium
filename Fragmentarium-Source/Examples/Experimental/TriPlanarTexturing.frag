@@ -6,7 +6,7 @@
 #group New Menger
 
 
-uniform sampler2D tex; file[f:\texture.jpg]
+uniform sampler2D tex; file[texture.jpg]
 uniform float TextureScale; slider[0,1,10]
 vec3 baseColor(vec3 p, vec3 n) {
 p=p*0.5+vec3(0.5);
