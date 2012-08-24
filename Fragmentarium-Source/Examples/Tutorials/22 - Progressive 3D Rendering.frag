@@ -11,7 +11,6 @@
 #include "Soft-Raytracer.frag"
 #group Trefoil
 
-#define PI 3.14159
 
 //Radius of the tubes
 uniform float tubeRadius; slider[0,0.1,0.5]

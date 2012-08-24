@@ -1,4 +1,4 @@
-#include "2D.frag"
+#include "Progressive2D.frag"
 #info Mandelbrot
 #group Mandelbrot
 
@@ -92,8 +92,6 @@ vec3 color(vec2 c) {
 #preset Default
 Center = -0.285288,-0.0120426
 Zoom = 0.854514
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 328
 R = 0
 G = 0.4
@@ -106,8 +104,6 @@ JuliaY = 1.3
 #preset Mandel2
 Center = -0.335155,0.124422
 Zoom = 630.163
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 623
 R = 0.25624
 G = 0.66875
@@ -120,8 +116,6 @@ JuliaY = 1.3
 #preset Julia1
 Center = -0.00932198,0
 Zoom = 1.26502
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 69
 R = 0.76875
 G = 0.4
@@ -134,8 +128,6 @@ JuliaY = -0.05884
 #preset Mandel3
 Center = -0.359373,0.208356
 Zoom = 113110
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 600
 R = 0
 G = 0.4
@@ -151,8 +143,6 @@ JuliaY = 1.3
 #preset Nice Julia 2
 Center = 0.44266,-0.521707
 Zoom = 1.70484
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 675
 R = 0.0125
 G = 0.13125

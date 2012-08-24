@@ -1,6 +1,6 @@
 #include "3D.frag"
-uniform sampler2D texture; file[f:\pano.jpg]
-uniform sampler2D texture2; file[f:\pano3.jpg]
+uniform sampler2D texture; file[Ditch-River_2k.hdr]
+uniform sampler2D texture2; file[Ditch-River_Env.hdr]
 
 // An example of working with 3D without a distance estimator
 
@@ -15,6 +15,7 @@ float sphereLine(vec3 pos, vec3 dir, vec3 center, float radius, out vec3 normal)
 		normal = normalize((pos+temp*dir)-center);
 		return temp;
 	}
+	normal = vec3(0.0);
 	return -1.;
 }
 
@@ -31,10 +32,10 @@ vec3 color(vec3 pos, vec3 dir) {
 	
 	vec3 normal = vec3(1.0,1.0,1.0);
 	float intersect = 10000.0;
-	vec3 finalNormal;
-	for (int i = 0; i < 6; i++) {
-		float z = (float(i)-6.0)/2.0;
-		float i = sphereLine(pos,normalize(dir),vec3(1.0,0.0+float(i),z),0.5, normal);
+	vec3 finalNormal = vec3(0.0);
+	for (int j = 0; j < 6; j++) {
+		float z = (float(j)-6.0)/2.0;
+		float i = sphereLine(pos,normalize(dir),vec3(1.0,0.0+float(j),z),0.5, normal);
 		if (i<intersect && i>0.) {
 			intersect =i;
 			finalNormal = normal;
@@ -52,7 +53,7 @@ vec3 color(vec3 pos, vec3 dir) {
 		// Theta wil be y value (after indices are shuffled)
 		vec3 col = Specular.x*texture2D(texture,spherical(normalize(reflected)).yx+f*Specular.y).xyz;
 		vec3 col2 = Diffuse.x*texture2D(texture2,spherical(normalize(finalNormal)).yx+f*Diffuse.y).xyz;
-		col2 = pow(col2,Diffuse.z);
+		col2 = pow(col2,vec3(Diffuse.z));
 		return col+col2;
 	}
 	vec2 c = spherical(normalize(dir));
@@ -65,22 +66,22 @@ vec3 color(vec3 pos, vec3 dir) {
 
 #preset Default
 FOV = 0.4
-Eye = -11.4956,3.97106,-3.43109
-Target = -1.69016,2.87276,-1.80421
-Up = 0.115064,-0.349871,-0.929705
+Eye = 8.42062,8.55686,-1.41974
+Target = 0.781867,2.10355,-1.35523
+Up = 0.0291443,-0.024509,0.999275
 EquiRectangular = false
 FocalPlane = 1
 Aperture = 0
-Gamma = 1
-ToneMapping = 1
+Gamma = 2.2222
+ToneMapping = 3
 Exposure = 1
 Brightness = 1
 Contrast = 1
 Saturation = 1
 GaussianWeight = 1
 AntiAliasScale = 2
-texture = f:\pano.jpg
-texture2 = f:\pano3.jpg
+texture = Ditch-River_2k.hdr
+texture2 = Ditch-River_Env.hdr
 Specular = 1,0
 Diffuse = 1,0,1
 #endpreset

@@ -74,7 +74,7 @@ uniform sampler2D backbuffer;
 
 
 vec2 uniformDisc(vec2 co) {
-	if (co == 0.0) return vec2(0.0);
+	if (co == vec2(0.0)) return vec2(0.0);
 	vec2 r = rand(co);
 	return sqrt(r.y)*vec2(cos(r.x*6.28),sin(r.x*6.28));
 }

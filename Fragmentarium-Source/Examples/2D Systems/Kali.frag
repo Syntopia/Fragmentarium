@@ -24,8 +24,6 @@ vec2 formula(vec2 z,vec2 c) {
 #preset Default
 Center = -0.00423807,-0.00285229
 Zoom = 3.07152
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 40
 PreIterations = 1
 R = 0
@@ -44,8 +42,6 @@ JuliaY = 1.63084
 #preset P1
 Center = -0.245621,-0.0387084
 Zoom = 0.209867
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 46
 PreIterations = 0
 R = 0.08696

@@ -1,4 +1,4 @@
-#include "2D.frag"
+#include "Progressive2D.frag"
 #info Mandelbrot
 #group Mandelbrot
 

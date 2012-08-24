@@ -13,8 +13,6 @@ uniform vec3 Eye; slider[(-50,-50,-50),(0,0,-10),(50,50,50)] NotLockable
 uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
 uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
 
-varying vec3 dirDx;
-varying vec3 dirDy;
 varying vec3 from;
 uniform vec2 pixelSize;
 varying vec2 coord;
@@ -335,43 +333,43 @@ void main() {
 		float dist = DE(p,0);
 		if (dist < minDist) {
 			gl_FragColor = vec4(getColor(),1.0);
-
+			
 		} else {
 			gl_FragColor =vec4( 0.8,0.8,0.8,1.0);
 		}
 	} else if (coord.y<0.0 && coord.x > 0.0) {
-gl_FragColor = vec4(0.0);
-int steps =3;
- for (int a = 0; a < steps; a++) {
- for (int b = 0;b < steps; b++) {
-vec2 o = vec2(float(a)*RAD*10.0,float(b)*RAD*10.0);
-		vec3 p = vec3(XLevel,((coord.x+o.x)*2.0-1.0)*PlaneZoom,ZLevel);
-		float dist = DE(p,0);
-		float del = pow(10.0,Delta);
-		float distX = DE(p+vec3(0.0,del,0.0),0);
-		float distX2 = DE(p-vec3(0.0,del,0.0),0);
-		float grad = (distX-distX2)/(2.0*del);
-		float dist2 = DE(p,1);
-		float yy = ((coord.y+o.y)*2.0+1.0)*GraphZoom;
-		if (abs(yy-dist) < 0.01*GraphZoom) {
-			gl_FragColor += vec4(0.0,0.0,1.0,1.0); // DE-plot
-		} else if (abs(yy-grad) < 0.01*GraphZoom) {
-			gl_FragColor += vec4(1.,0.0,0.,1.0); // Derivative of DE
-//return;
-		}  else if (abs(yy-dist2) < 0.01*GraphZoom) {
-			gl_FragColor += vec4(0.0,1.0,1.0,1.0); // Alt DE
-		}  else if (abs(yy) < 0.01*GraphZoom) {
-			gl_FragColor += vec4(0.0,0.0,0.0,1.0); // y = 0
-		}  else if (abs(mod(yy,1.0)) < 0.01*GraphZoom) {
-			gl_FragColor += vec4(0.0,0.0,0.0,1.0); // y units
-		} else if (abs(mod(p.y,1.0)) < 0.01*GraphZoom) {
-			gl_FragColor += vec4(0.0,0.0,0.0,1.0); // x units
-		} else {
-			gl_FragColor +=vec4( 1.,1.,1.,1.0);
+		gl_FragColor = vec4(0.0);
+		int steps =3;
+		for (int a = 0; a < steps; a++) {
+			for (int b = 0;b < steps; b++) {
+				vec2 o = vec2(float(a)*RAD*10.0,float(b)*RAD*10.0);
+				vec3 p = vec3(XLevel,((coord.x+o.x)*2.0-1.0)*PlaneZoom,ZLevel);
+				float dist = DE(p,0);
+				float del = pow(10.0,Delta);
+				float distX = DE(p+vec3(0.0,del,0.0),0);
+				float distX2 = DE(p-vec3(0.0,del,0.0),0);
+				float grad = (distX-distX2)/(2.0*del);
+				float dist2 = DE(p,1);
+				float yy = ((coord.y+o.y)*2.0+1.0)*GraphZoom;
+				if (abs(yy-dist) < 0.01*GraphZoom) {
+					gl_FragColor += vec4(0.0,0.0,1.0,1.0); // DE-plot
+				} else if (abs(yy-grad) < 0.01*GraphZoom) {
+					gl_FragColor += vec4(1.,0.0,0.,1.0); // Derivative of DE
+					//return;
+				}  else if (abs(yy-dist2) < 0.01*GraphZoom) {
+					gl_FragColor += vec4(0.0,1.0,1.0,1.0); // Alt DE
+				}  else if (abs(yy) < 0.01*GraphZoom) {
+					gl_FragColor += vec4(0.0,0.0,0.0,1.0); // y = 0
+				}  else if (abs(mod(yy,1.0)) < 0.01*GraphZoom) {
+					gl_FragColor += vec4(0.0,0.0,0.0,1.0); // y units
+				} else if (abs(mod(p.y,1.0)) < 0.01*GraphZoom) {
+					gl_FragColor += vec4(0.0,0.0,0.0,1.0); // x units
+				} else {
+					gl_FragColor +=vec4( 1.,1.,1.,1.0);
+				}
+			}
 		}
-}
-}
-gl_FragColor /= float(steps*steps);
+		gl_FragColor /= float(steps*steps);
 	}
 	else
 	gl_FragColor = vec4(clamp( trace(from,d,hit,hitNormal),0.0,1.0), 1.0);

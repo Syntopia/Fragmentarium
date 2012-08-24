@@ -1,5 +1,5 @@
 #group Burning Ship
-#include "2DJulia.frag"
+#include "Progressive2DJulia.frag"
 #include "Complex.frag"
 
 //  Burning Ship Fractal

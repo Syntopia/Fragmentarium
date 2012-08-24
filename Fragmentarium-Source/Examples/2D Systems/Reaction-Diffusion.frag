@@ -10,7 +10,7 @@
 #define IterationsBetweenRedraws 20
 #define SubframeMax 0
 
-#group post
+#group Post
 uniform float Gamma; slider[0.0,2.2,5.0]
 uniform vec3 Exposure; slider[(0.0,0.0,0.0),(1.0,1.0,1.0),(2.0,2.0,2.0)]
 uniform float Brightness; slider[0.0,1.0,5.0];
@@ -98,7 +98,6 @@ Zoom = 6.15279
 AntiAliasScale = 1
 AntiAlias = 1
 Gamma = 2.2
-ToneMapping = 1
 Exposure = 1,1,1
 Brightness = 1
 Contrast = 1
