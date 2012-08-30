@@ -1,5 +1,5 @@
 #include "2D.frag"
-#include "complex.frag"
+#include "Complex.frag"
 
 // A Escher/Droste transformation.
 //
