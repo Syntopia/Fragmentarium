@@ -1,7 +1,6 @@
 // A very simple example of video feedback systems.
 // Change to Continuous.
 #buffer RGBA32F
-#version 150
 #include "2D.frag"
 #buffershader "BufferShaderIFS.frag"
 #define DontClearOnChange
@@ -31,7 +30,6 @@ float rand(vec2 co){
 
 uniform float inNoise; slider[0,0.06,1.0]
 vec3  sample(vec2 p) {
-	// Simple version: does not work around borders
 	if (p.x > 1.0 || p.y>1.0) return vec3(0.0);
 	if (p.x < 0.0 || p.y< 0.0) return vec3(0.0);
 	vec3 v1 = texture2D( backbuffer, p ).xyz*0.8;
@@ -44,13 +42,13 @@ uniform float BIAS; slider[0,0.85,1.0]
 uniform float BIAS2; slider[0,0.7,1.0]
 
 uniform vec4 M1; slider[(-10,-10,-10,-10),(2,0,0,2),(10,10,10,10)]
-mat2 mM1 = mat2(M1);
+mat2 mM1 = mat2(M1.x,M1.y,M1.z,M1.w);
 uniform vec2 O1; slider[(-1,-1),(0,0),(1,1)]
 uniform vec4 M2; slider[(-10,-10,-10,-10),(2,0,0,2),(10,10,10,10)]
-mat2 mM2 = mat2(M2);
+mat2 mM2 = mat2(M2.x,M2.y,M2.z,M2.w);
 uniform vec2 O2; slider[(-1,-1),(0.5,1),(1,1)]
 uniform vec4 M3; slider[(-10,-10,-10,-10),(2,0,0,2),(10,10,10,10)]
-mat2 mM3 = mat2(M3);
+mat2 mM3 =mat2(M3.x,M3.y,M3.z,M3.w);
 uniform vec2 O3; slider[(-1,-1),(1,0),(1,1)]
 uniform vec2 v2; slider[(-5,-5),(0,0),(5,5)]
 vec3 color(vec2 z) {

@@ -69,8 +69,8 @@ float DE(vec3 pos) {
 	vec3 p = pos, p0 = Julia;  
 
 	float Sc;
-	vec3 ani=vec3(0,0,0); 
-	vec3 AssyS=vec3(0,0,0), AssyR=vec3(0,0,0), AssyA=vec3(0,0,0), AssySp=vec3(0,0,0), Speed=0, Amplitude=0;
+	vec3 ani=vec3(0.,0.,0.); 
+	vec3 AssyS=vec3(0.,0.,0.), AssyR=vec3(0.,0.,0.), AssyA=vec3(0.,0.,0.), AssySp=vec3(0.,0.,0.), Speed=vec3(0.), Amplitude=vec3(0.);
 
 	if (TRotSpeed>0) {
 		rot=rotationMatrix3(normalize(TRotVector),TRotSpeed*time);

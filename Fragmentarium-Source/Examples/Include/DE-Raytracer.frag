@@ -94,11 +94,11 @@ uniform bool CycleColors; checkbox[false]
 uniform float Cycles; slider[0.1,1.1,32.3]
 
 #ifdef providesNormal
-	vec3 normal(vec3 pos, float normalDistance);
+vec3 normal(vec3 pos, float normalDistance);
 
 #else
 vec3 normal(vec3 pos, float normalDistance) {
-       normalDistance = max(normalDistance*0.5, 1.0e-7);
+	normalDistance = max(normalDistance*0.5, 1.0e-7);
 	vec3 e = vec3(0.0,normalDistance,0.0);
 	vec3 n = vec3(DE(pos+e.yxx)-DE(pos-e.yxx),
 		DE(pos+e.xyx)-DE(pos-e.xyx),
@@ -106,6 +106,10 @@ vec3 normal(vec3 pos, float normalDistance) {
 	n =  normalize(n);
 	return n;
 }
+#endif
+
+#ifdef providesBackground
+vec3  backgroundColor(vec3 dir);
 #endif
 
 #group Floor
@@ -125,8 +129,8 @@ float DEF(vec3 p) {
 		if (d<floorDist) {
 			fSteps++;
 			return d;
-		}  else return floorDist;		
- 	} else {	
+		}  else return floorDist;
+	} else {
 		fSteps++;
 		return d;
 	}
@@ -136,7 +140,7 @@ float DEF2(vec3 p) {
 	if (EnableFloor) {
 		floorDist = abs(dot(floorNormal,p)-FloorHeight);
 		return min(floorDist, DE(p));
- 	} else {
+	} else {
 		return DE(p);
 	}
 }
@@ -145,16 +149,16 @@ float DEF2(vec3 p) {
 // Uses the soft-shadow approach by Quilez:
 // http://iquilezles.org/www/articles/rmshadows/rmshadows.htm
 float shadow(vec3 pos, vec3 sdir, float eps) {
-		float totalDist =2.0*eps;
-		float s = 1.0; // where 1.0 means no shadow!
- 		for (int steps=0; steps<MaxRaySteps && totalDist<MaxDistance; steps++) {
-			vec3 p = pos + totalDist * sdir;
-			float dist = DEF2(p);
-			if (dist < eps)  return 1.0;
-			s = min(s, ShadowSoft*pow((dist/totalDist),0.5));
-			totalDist += dist;
-		}
-		return 1.0-s;	
+	float totalDist =2.0*eps;
+	float s = 1.0; // where 1.0 means no shadow!
+	for (int steps=0; steps<MaxRaySteps && totalDist<MaxDistance; steps++) {
+		vec3 p = pos + totalDist * sdir;
+		float dist = DEF2(p);
+		if (dist < eps)  return 1.0;
+		s = min(s, ShadowSoft*pow((dist/totalDist),0.5));
+		totalDist += dist;
+	}
+	return 1.0-s;
 }
 
 float rand(vec2 co){
@@ -166,30 +170,30 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	shadowStrength = 0.0;
 	vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
 	spotDir = normalize(spotDir);
-
+	
 	float nDotL = max(0.0,dot(n,spotDir));
-       vec3 halfVector = normalize(-dir+spotDir);
+	vec3 halfVector = normalize(-dir+spotDir);
 	float diffuse = nDotL*SpotLight.w;
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
-       float hDotN = max(0.,dot(n,halfVector));
-
-	 // An attempt at Physcical Based Specular Shading:
-       // http://renderwonk.com/publications/s2010-shading-course/
+	float hDotN = max(0.,dot(n,halfVector));
+	
+	// An attempt at Physcical Based Specular Shading:
+	// http://renderwonk.com/publications/s2010-shading-course/
 	// (Blinn-Phong with Schickl term and physical normalization)
 	float specular =((SpecularExp+2.)/8.)*pow(hDotN,SpecularExp)*
-		(SpecularExp + (1.-SpecularExp)*pow(1.-hDotN,5.))*
-		nDotL*Specular;
-       specular = min(SpecularMax,specular);
-
+	(SpecularExp + (1.-SpecularExp)*pow(1.-hDotN,5.))*
+	nDotL*Specular;
+	specular = min(SpecularMax,specular);
+	
 	if (HardShadow>0.0) {
 		// check path from pos to spotDir
 		shadowStrength = shadow(pos+n*eps, spotDir, eps);
 		ambient = mix(ambient,0.0,HardShadow*shadowStrength);
 		diffuse = mix(diffuse,0.0,HardShadow*shadowStrength);
-		// specular = mix(specular,0.0,HardShadow*f); 
+		// specular = mix(specular,0.0,HardShadow*f);
 		if (shadowStrength>0.0) specular = 0.0; // always turn off specular, if blocked
 	}
-
+	
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }
 
@@ -206,7 +210,7 @@ float ambientOcclusion(vec3 p, vec3 n) {
 	float de = DEF(p);
 	float wSum = 0.0;
 	float w = 1.0;
-       float d = 1.0-(Dither*rand(p.xy));
+	float d = 1.0-(Dither*rand(p.xy));
 	for (float i =1.0; i <6.0; i++) {
 		// D is the distance estimate difference.
 		// If we move 'n' units in the normal direction,
@@ -241,16 +245,14 @@ vec3 getColor() {
 }
 
 #ifdef  providesColor
-	vec3 baseColor(vec3 point, vec3 normal);
+vec3 baseColor(vec3 point, vec3 normal);
 #endif
 
-//uniform float ColorDist; slider[0.1,1.1,4.3]
-//uniform float ColorDist2; slider[0.1,1.1,2.3]
 vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
 	orbitTrap = vec4(10000.0);
 	vec3 direction = normalize(dir);
-      floorHit = false;
+	floorHit = false;
 	floorDist = 0.0;
 	
 	float dist = 0.0;
@@ -259,65 +261,32 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	int steps;
 	colorBase = vec3(0.0,0.0,0.0);
 	
-	// Check for bounding sphere
-/*	
-float dotFF = dot(from,from);
-	float d = 0.0;
-	fSteps = 0.0;
-	float dotDE = dot(direction,from);
-	float sq =  dotDE*dotDE- dotFF + BoundingSphere*BoundingSphere;
 	
-	if (sq>0.0) {
-		d = -dotDE - sqrt(sq);
-		if (d<0.0) {
-			// "minimum d" solution wrong direction
-			d = -dotDE + sqrt(sq);
-			if (d<0.0) {
-				// both solution wrong direction
-				sq = -1.0;
-			} else {
-				// inside sphere
-				d = 0.0;
-			}
-		}
-	}
-	*/
-
 	// We will adjust the minimum distance based on the current zoom
 	float eps = minDist;
 	float epsModified = 0.0;
-/*	
-if (sq<0.0) {
-		// outside bounding sphere - and will never hit
-		dist = MaxDistance;
-		totalDist = MaxDistance;
-		steps = 2;
-	}  else {
-		totalDist += d; // advance ray to bounding sphere intersection
-*/
-		for (steps=0; steps<MaxRaySteps; steps++) {
-			orbitTrap = vec4(10000.0);
-			vec3 p = from + totalDist * direction;
-			dist = DEF(p);
-			//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
-			dist *= FudgeFactor;
-
-			if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
-			totalDist += dist;
-			epsModified = pow(totalDist,ClarityPower)*eps;
-			if (dist < epsModified) {
-				// move back
-				totalDist -= (epsModified-dist);
-				break;
-			}
-                    if (totalDist > MaxDistance) {
-				fSteps -= (totalDist-MaxDistance)/dist;
-				break;
-			}
+	
+	for (steps=0; steps<MaxRaySteps; steps++) {
+		orbitTrap = vec4(10000.0);
+		vec3 p = from + totalDist * direction;
+		dist = DEF(p);
+		dist *= FudgeFactor;
+		
+		if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
+		totalDist += dist;
+		epsModified = pow(totalDist,ClarityPower)*eps;
+		if (dist < epsModified) {
+			// move back
+			totalDist -= (epsModified-dist);
+			break;
 		}
-	//}
+		if (totalDist > MaxDistance) {
+			fSteps -= (totalDist-MaxDistance)/dist;
+			break;
+		}
+	}
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
- 	vec3 hitColor;
+	vec3 hitColor;
 	float stepFactor = clamp((fSteps)/float(GlowMax),0.0,1.0);
 	vec3 backColor = BackgroundColor;
 	if (GradientBackground>0.0) {
@@ -332,49 +301,51 @@ if (sq<0.0) {
 		// We hit something, or reached MaxRaySteps
 		hit = from + totalDist * direction;
 		float ao = AO.w*stepFactor ;
-
+		
 		if (floorHit) {
-			hitNormal = floorNormal;	
-			if (dot(hitNormal,direction)>0.0) hitNormal *=-1.0;	
+			hitNormal = floorNormal;
+			if (dot(hitNormal,direction)>0.0) hitNormal *=-1.0;
 		} else {
 			hitNormal= normal(hit-NormalBackStep*epsModified*direction, epsModified); // /*normalE*epsModified/eps*/
 		}
-
 		
-#ifdef  providesColor
+		
+		#ifdef  providesColor
 		hitColor = mix(BaseColor,  baseColor(hit,hitNormal),  OrbitStrength);
-#else
+		#else
 		hitColor = getColor();
-#endif
-#ifndef linearGamma
-	      hitColor = pow(clamp(hitColor,0.0,1.0),vec3(Gamma));
-#endif
-            if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
+		#endif
+		#ifndef linearGamma
+		hitColor = pow(clamp(hitColor,0.0,1.0),vec3(Gamma));
+		#endif
+		if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
 		if (floorHit) {
 			hitColor = FloorColor;
 		}
 		
-		hitColor = mix(hitColor, AO.xyz ,ao);	
+		hitColor = mix(hitColor, AO.xyz ,ao);
 		hitColor = lighting(hitNormal, hitColor,  hit,  direction,epsModified,shadowStrength);
 		// OpenGL  GL_EXP2 like fog
 		float f = totalDist;
 		hitColor = mix(hitColor, backColor, 1.0-exp(-pow(Fog,4.0)*f*f));
 		if (floorHit ) {
 			hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
-		}	
+		}
 	}
 	else {
+		#ifdef providesBackground
+		hitColor = backgroundColor(dir);
+		#else
 		hitColor = backColor;
+		#endif
 		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 		hitNormal = vec3(0.0);
 		if (DebugSun) {
-			vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));	
+			vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
 			spotDir = normalize(spotDir);
 			if (dot(spotDir,normalize(dir))>0.9) hitColor= vec3(100.,0.,0.);
 		}
 	}
-		
-//	if (totalDist>ColorDist && totalDist<ColorDist+ColorDist2) hitColor.x = 1.0;
 	
 	return hitColor;
 }
@@ -388,7 +359,6 @@ vec3 color(vec3 from, vec3 dir) {
 		vec3 first =  trace(from,dir,hit,hitNormal);
 		if (hitNormal == vec3(0.0)) return first;
 		vec3 d = reflect(dir, hitNormal);
-		//return first +Reflection*trace(hit+d*minDist,d,hit, hitNormal);
 		return mix(first,trace(hit+d*minDist,d,hit, hitNormal),Reflection);
 	}
 }

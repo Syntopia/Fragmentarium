@@ -1,5 +1,5 @@
-#buffer RGBA16
 #version 110
+#buffer RGBA16
 #include "2D.frag"
 
 // A 'Game of Life' implementation
@@ -34,7 +34,7 @@ float rand(vec2 co){
 #TexParameter backbuffer GL_TEXTURE_WRAP_S GL_REPEAT
 #TexParameter backbuffer GL_TEXTURE_WRAP_T GL_REPEAT
 
-void  isAlive(float  dx, float  dy, in out int count) {
+void  isAlive(float  dx, float  dy, inout int count) {
 	 vec4 v1 = texture2D( backbuffer,  position + pixelSize*vec2( dx, dy ) );
       	 if (v1.x==1.0) count++;
 }
