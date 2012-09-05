@@ -5,7 +5,7 @@
 uniform int  Iterations; slider[1,200,1000]
 
 // Skip this number of iterations before starting coloring
-uniform int  PreIterations; slider[0,1,100]
+uniform int  PreIterations; slider[0,1,1000]
 
 uniform float R; slider[0,0,1]
 uniform float G; slider[0,0.4,1]
@@ -67,7 +67,7 @@ vec3 color(vec2 c) {
 		for (i = 0; i < Iterations; i++) {
 			z = formula(z,(Julia ? c2 : c));
 			if (i>PreIterations) mean+=length(z);
-			if (dot(z,z)> escape) break;
+			if (dot(z,z)> escape && i>PreIterations) break;
 		}
 		mean/=float(i-PreIterations);
 		ci =  1.0 - log2(.5*log2(mean/C));
@@ -76,13 +76,13 @@ vec3 color(vec2 c) {
 		for (i = 0; i < Iterations; i++) {
 			z = formula(z,(Julia ? c2 : c));
 			if (i>PreIterations) m = mix(m,length(z),ColorFactor);
-			if (dot(z,z)> escape) break;
+			if (dot(z,z)> escape && i>PreIterations) break;
 		}
 		ci =  1.0 - log2(.5*log2(m/C));
 	} else if (ColoringType == 2) {
 		for (i = 0; i < Iterations; i++) {
 			z = formula(z,(Julia ? c2 : c));
-			if (dot(z,z)> escape) break;
+			if (dot(z,z)> escape && i>PreIterations) break;
 		}
 		ci =  float( i) + 1.0 - log2(.5*log2(dot(z,z)));	
 	}
