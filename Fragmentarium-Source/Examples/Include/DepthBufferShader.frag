@@ -91,6 +91,8 @@ void main() {
 	// Get adjacent depths
 	float texX = texture2D(frontbuffer, pos+vec2(dx,0.0)).w;
 	float texY= texture2D(frontbuffer, pos+vec2(0.0,dy)).w;
+	float texMX = texture2D(frontbuffer, pos-vec2(dx,0.0)).w;
+	float texMY= texture2D(frontbuffer, pos-vec2(0.0,dy)).w;
 	
 	// Camera reference frame
 	vec3 Dir = normalize(Target-Eye);
@@ -98,8 +100,8 @@ void main() {
 	vec3 Right = normalize( cross(Dir,UpOrtho));
 		
 	// Transform screen space normal into world space
-	vec3 v1 = dx*Right + ( texX-tex.w)*Dir;
-	vec3 v2 = dy*UpOrtho + ( texY-tex.w)*Dir;
+	vec3 v1 = 2.*dx*Right + ( texX-texMX)*Dir;
+	vec3 v2 = 2.*dy*UpOrtho + ( texY-texMY)*Dir;
 	vec3 n = normalize(cross(v1,v2));
 	
 	// Apply lighting based on screen space normal

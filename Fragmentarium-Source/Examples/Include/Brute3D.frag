@@ -88,17 +88,6 @@ varying vec3 UpOrtho;
 varying vec3 Right;
 
 
-vec2 rand2(vec2 co){
-	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
-	return
-	vec2(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
-		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631));
-}
-
-vec2 uniformDisc(vec2 co) {
-	vec2 r = rand2(co);
-	return sqrt(r.y)*vec2(cos(r.x*6.28),sin(r.x*6.28));
-}
 
 #ifdef providesInit
 void init(); // forward declare
@@ -114,9 +103,6 @@ uniform float Exposure; slider[0.0,1.0,3.0]
 uniform float Brightness; slider[0.0,1.0,5.0];
 uniform float Contrast; slider[0.0,1.0,5.0];
 uniform float Saturation; slider[0.0,1.0,5.0];
-uniform float GaussianWeight; slider[0.0,1.0,10.0];
-
-uniform float AntiAliasScale; slider[0,2,10]
 
 varying vec2 PixelScale;
 uniform float FOV;
@@ -130,8 +116,8 @@ vec4 color(vec3 cameraPos, vec3 direction,float prev);
 vec3 equiRectangularDirection(vec2 coord, vec3 dir, vec3 up, vec3 right)  {
 	vec2 r = vec2(coord.x,(1.0-coord.y)*0.5)*PI;
 	return cos(r.x)*sin(r.y)*dir+
-		 sin(r.x)*sin(r.y)*right+
-		cos(r.y)*up;
+	sin(r.x)*sin(r.y)*right+
+	cos(r.y)*up;
 }
 
 
@@ -142,17 +128,12 @@ void main() {
 	
 	vec3 rayDir =  (Dir+ coord.x*Right+coord.y*UpOrtho);
 	rayDir = normalize(rayDir);
-
+	
 	if (EquiRectangular) {
-		rayDir = equiRectangularDirection(viewCoord2, Dir, UpOrtho, Right); 
-	} 
-
+		rayDir = equiRectangularDirection(viewCoord2, Dir, UpOrtho, Right);
+	}
+	
 	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	vec4 c =  color(from,rayDir, prev.w);
-gl_FragColor =c;/*
-	if (c.w<=prev.w || backbufferCounter<2) {
-		gl_FragColor =c;
-	} else {
-		gl_FragColor=prev;
-	}*/
+	gl_FragColor =c;
 }

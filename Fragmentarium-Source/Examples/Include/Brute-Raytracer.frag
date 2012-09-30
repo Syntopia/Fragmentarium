@@ -17,6 +17,8 @@ uniform float AOStrength;slider[0,0.1,1]
 // Maximum number of  raymarching steps.
 uniform int Samples;  slider[0,100,2000]
 uniform bool Stratify; checkbox[true]
+uniform bool DebugInside; checkbox[false]
+
 
 #group Light
 
@@ -102,10 +104,13 @@ bool inside(vec3 p) {
 }
 #endif
 
+
 vec4 color(vec3 from, vec3 dir, float closest) {
 	vec3 direction = normalize(dir);
 	float dist = 0.0;
 	if (closest<=0. || closest>1.) { closest = 1.0; }
+	
+	bool startsInside = inside(from + Near * direction);
 	
 	if (Stratify) {
 		float stepSize =  closest / float(Samples);
@@ -115,7 +120,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		int steps;
 		for (steps; steps<Samples; steps++) {
 			vec3 point = from + (Near+dist*(Far-Near)) * direction;
-			if (inside(point)) break;
+			if (inside(point) != startsInside) break;
 			dist += stepSize;
 		}
 		if (steps!=Samples) closest = dist;
@@ -123,12 +128,12 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		for (int i=0; i<Samples; i++) {
 			dist = closest*rand(viewCoord*float(backbufferCounter)*i);
 			vec3 point = from + (Near+dist*(Far-Near)) * direction;
-			if (inside(point)) {
+			if (inside(point) != startsInside) {
 				closest = dist;
 			}
-		}		
+		}
 	}
-		
+	
 	if (closest >= 1.0) {
 		vec3 backColor = BackgroundColor;
 		if (GradientBackground>0.0) {
@@ -138,10 +143,19 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		return vec4(backColor,1.0);
 	}
 	
-#ifdef  providesColor
+	#ifdef  providesColor
 	vec3 hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
-#else
+	#else
 	vec3 hitColor = getColor();
-#endif
+	#endif
+	if (DebugInside) {
+		if (startsInside) {
+			hitColor = vec3(1.0,0.0,0.0);
+
+		} else {
+			hitColor = vec3(0.0,1.0,0.0);
+		}
+	}
+
 	return vec4(hitColor,closest);
 }
