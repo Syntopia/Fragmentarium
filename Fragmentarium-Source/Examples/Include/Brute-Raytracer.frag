@@ -118,7 +118,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		float dither= rand(viewCoord*float(backbufferCounter));
 		dist += dither*stepSize;
 		int steps;
-		for (steps; steps<Samples; steps++) {
+		for (steps=0; steps<Samples; steps++) {
 			vec3 point = from + (Near+dist*(Far-Near)) * direction;
 			if (inside(point) != startsInside) break;
 			dist += stepSize;
@@ -126,7 +126,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		if (steps!=Samples) closest = dist;
 	} else {
 		for (int i=0; i<Samples; i++) {
-			dist = closest*rand(viewCoord*float(backbufferCounter)*i);
+			dist = closest*rand(viewCoord*float(backbufferCounter*i));
 			vec3 point = from + (Near+dist*(Far-Near)) * direction;
 			if (inside(point) != startsInside) {
 				closest = dist;
