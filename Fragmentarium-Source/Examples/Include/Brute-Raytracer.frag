@@ -19,6 +19,7 @@ uniform int Samples;  slider[0,100,2000]
 uniform bool Stratify; checkbox[true]
 uniform bool DebugInside; checkbox[false]
 
+uniform bool SampleNeighbors; checkbox[true]
 
 #group Light
 
@@ -104,13 +105,31 @@ bool inside(vec3 p) {
 }
 #endif
 
-
+uniform vec2 pixelSize;
 vec4 color(vec3 from, vec3 dir, float closest) {
 	vec3 direction = normalize(dir);
 	float dist = 0.0;
 	if (closest<=0. || closest>1.) { closest = 1.0; }
 	
 	bool startsInside = inside(from + Near * direction);
+	
+	
+	// Check neighbors
+	if (SampleNeighbors && backbufferCounter>1) {
+		vec2 position = (viewCoord*1.0+vec2(1.0))/2.0;
+		
+		for (int dx = -1; dx<=1; dx++) {
+			for (int dy = -1; dy<=1; dy++) {
+				float dist = texture2D( backbuffer,  position + pixelSize*vec2( dx, dy ) ).w;
+				if (dist < closest) {
+					vec3 point = from + (Near+dist*(Far-Near)) * direction;
+					if (inside(point) != startsInside) {
+						closest = dist;
+					}
+				}
+			}
+		}
+	}
 	
 	if (Stratify) {
 		float stepSize =  closest / float(Samples);
@@ -125,6 +144,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		}
 		if (steps!=Samples) closest = dist;
 	} else {
+		
 		for (int i=0; i<Samples; i++) {
 			dist = closest*rand(viewCoord*float(backbufferCounter*i));
 			vec3 point = from + (Near+dist*(Far-Near)) * direction;
@@ -151,11 +171,11 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 	if (DebugInside) {
 		if (startsInside) {
 			hitColor = vec3(1.0,0.0,0.0);
-
+			
 		} else {
 			hitColor = vec3(0.0,1.0,0.0);
 		}
 	}
-
+	
 	return vec4(hitColor,closest);
 }
