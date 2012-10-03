@@ -9,13 +9,13 @@ uniform float Far; slider[0,5,12]
 
 #group Raytracer
 
-uniform float NormalScale;slider[0,0.01,0.01]
+uniform float NormalScale;slider[0,0.0006,0.01]
 uniform float AOScale;slider[0,0.01,0.05]
 uniform float Glow;slider[0,0.1,1]
-uniform float AOStrength;slider[0,0.1,1]
+uniform float AOStrength;slider[0,0.6,1]
 
 // Maximum number of  raymarching steps.
-uniform int Samples;  slider[0,100,2000]
+uniform int Samples;  slider[0,40,2000]
 uniform bool Stratify; checkbox[true]
 uniform bool DebugInside; checkbox[false]
 
@@ -32,13 +32,13 @@ uniform vec4 SpotLight; color[0.0,0.4,1.0,1.0,1.0,1.0];
 // Direction to the spot light (spherical coordinates)
 uniform vec2 SpotLightDir;  slider[(-1,-1),(0.1,0.1),(1,1)]
 // Light coming from the camera position (diffuse lightning)
-uniform vec4 CamLight; color[0,1,2,1.0,1.0,1.0];
+uniform vec4 CamLight; color[0,0.3,2,1.0,1.0,1.0];
 // Controls the minimum ambient light, regardless of directionality
 uniform float CamLightMin; slider[0.0,0.0,1.0]
 
 uniform float Fog; slider[0,0.0,2]
 
-uniform bool  ShowDepth; checkbox[true]
+uniform bool  ShowDepth; checkbox[false]
 
 vec4 orbitTrap = vec4(10000.0);
 
@@ -94,7 +94,7 @@ float rand(vec2 co){
 }
 
 #ifdef  providesColor
-vec3 color(vec3 point, vec3 normal);
+vec3 color(vec3 point);
 #endif
 
 #ifdef providesInside
@@ -163,11 +163,11 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 		return vec4(backColor,1.0);
 	}
 	
-	#ifdef  providesColor
-	vec3 hitColor = mix(BaseColor,  color(hit,hitNormal),  OrbitStrength);
-	#else
+#ifdef  providesColor
+	vec3 hitColor = mix(BaseColor,  color( from + (Near+closest*(Far-Near)) * direction),  OrbitStrength);
+#else
 	vec3 hitColor = getColor();
-	#endif
+#endif
 	if (DebugInside) {
 		if (startsInside) {
 			hitColor = vec3(1.0,0.0,0.0);

@@ -1,3 +1,7 @@
+
+
+20-08-12 -- v0.9.12 release --
+
 20-08-12 [MHC] Added tutorial: "25 - Image Based Lighting.frag" 
 19-08-12 [MHC]	Added a welcome/warning notice.
 				Added a crash during start detection mechanism.

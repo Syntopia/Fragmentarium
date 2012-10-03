@@ -1,8 +1,12 @@
 #info Mandelbulb without Distance Estimator
 
 #define providesInside
+
+#define providesColor
+
 #include "Brute-Raytracer.frag"
 #group Mandelbulb
+//#define IterationsBetweenRedraws 5
 
 // Number of fractal iterations.
 uniform int Iterations;  slider[0,9,100]
@@ -19,6 +23,10 @@ uniform float RotAngle; slider[0.00,0,180]
 
 uniform bool Julia; checkbox[false]
 uniform vec3 JuliaC; slider[(-2,-2,-2),(0,0,0),(2,2,2)]
+
+vec3 color(vec3 p) {
+	return abs(vec3(p));
+}
 
 void powN2(inout vec3 z, float zr0) {
 	float zo0 = asin( z.z/zr0 );
