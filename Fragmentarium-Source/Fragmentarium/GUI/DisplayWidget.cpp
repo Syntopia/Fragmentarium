@@ -676,7 +676,14 @@ namespace Fragmentarium {
 			// Draw a textured quad using the preview texture.
 			if (bufferShaderProgram) {
 				bufferShaderProgram->bind();
-				int l = bufferShaderProgram->uniformLocation("frontbuffer");
+
+				
+				int l = bufferShaderProgram->uniformLocation("pixelSize");
+				if (l != -1) {
+					shaderProgram->setUniformValue(l, (float)(1.0/s.width()),(float)(1.0/s.height()));
+				}
+
+				l = bufferShaderProgram->uniformLocation("frontbuffer");
 				if (l != -1) {
 					bufferShaderProgram->setUniformValue(l, 0);
 				} else {

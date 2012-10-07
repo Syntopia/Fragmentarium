@@ -37,7 +37,6 @@ uniform vec3 face2Color; color[0.0,0.0,0.0]
 uniform vec3 verticesColor; color[0.0,0.0,0.0]
 uniform vec3 segmentsColor; color[0.0,0.0,0.0]
 
-#define PI 3.14159
 vec3 nc,p,pab,pbc,pca;
 void init() {
 	float cospin=cos(PI/float(Type)), scospin=sqrt(0.75-cospin*cospin);
@@ -80,13 +79,13 @@ float D2Vertices(vec3 pos) {
 }
 uniform float Scale; slider[0.1,1.1,2.3]
 float DE(vec3 pos) {
-	float d=abs(pos.x-1-0.002*cnoise(100.0*pos.yz));
+	float d=abs(pos.x-1.-0.002*cnoise(100.0*pos.yz));
 for (int i = 0; i <1; i++) {
 pos=fold(pos);
 	
-	if(displayFaces) d=min(d,D2Planes(pos)*pow(Scale,-i));
-	if(displaySegments) d=min(d,D2Segments(pos)*pow(Scale,-i));
-	if(displayVertices) d=min(d,D2Vertices(pos)*pow(Scale,-i));
+	if(displayFaces) d=min(d,D2Planes(pos)*pow(Scale,float(-i)));
+	if(displaySegments) d=min(d,D2Segments(pos)*pow(Scale,float(-i)));
+	if(displayVertices) d=min(d,D2Vertices(pos)*pow(Scale,float(-i)));
 pos*=Scale;
 }
 
@@ -94,7 +93,7 @@ pos*=Scale;
 }
 
 vec3 baseColor(vec3 pos, vec3 normal){
-float d=abs(pos.x-1-0.002*cnoise(100.0*pos.yz));
+float d=abs(pos.x-1.-0.002*cnoise(100.0*pos.yz));
 if (DE(pos) == d) return vec3(0.1,0.15,0.1);
 
 return vec3(4.0);

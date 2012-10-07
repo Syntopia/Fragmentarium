@@ -39,6 +39,7 @@ uniform float CamLightMin; slider[0.0,0.0,1.0]
 uniform float Fog; slider[0,0.0,2]
 
 uniform bool  ShowDepth; checkbox[false]
+uniform bool  DebugNormals; checkbox[false]
 
 vec4 orbitTrap = vec4(10000.0);
 

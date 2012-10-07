@@ -16,12 +16,12 @@ uniform vec3 Target; slider[(-50,-50,-50),(0,0,0),(50,50,50)] NotLockable
 uniform vec3 Up; slider[(0,0,0),(0,1,0),(0,0,0)] NotLockable
 
 
-varying vec3 from;
+//varying vec3 from;
 uniform vec2 pixelSize;
 varying vec2 coord;
 varying vec2 viewCoord;
 varying vec2 viewCoord2;
-varying vec3 dir;
+//varying vec3 dir;
 varying vec3 Dir;
 varying vec3 UpOrtho;
 varying vec3 Right;
@@ -54,7 +54,7 @@ void main(void)
 	viewCoord = gl_Vertex.xy;
 	viewCoord2= (gl_ProjectionMatrix*gl_Vertex).xy;
 	
-	from = Eye;
+	//from = Eye;
 	Dir = normalize(Target-Eye);
 	UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
 	Right = normalize( cross(Dir,UpOrtho));
@@ -72,12 +72,12 @@ uniform bool EquiRectangular; checkbox[false]
 #define PI  3.14159265358979323846264
 
 // Camera position and target.
-varying vec3 from;
-varying vec3 dir;
-varying vec3 dirDx;
-varying vec3 dirDy;
+//varying vec3 from;
+//varying vec3 dir;
+//varying vec3 dirDx;
+//varying vec3 dirDy;
 varying vec2 coord;
-varying float zoom;
+//varying float zoom;
 
 uniform int backbufferCounter;
 uniform sampler2D backbuffer;
@@ -119,6 +119,7 @@ vec3 equiRectangularDirection(vec2 coord, vec3 dir, vec3 up, vec3 right)  {
 	sin(r.x)*sin(r.y)*right+
 	cos(r.y)*up;
 }
+uniform vec3 Eye;
 
 
 void main() {
@@ -134,6 +135,6 @@ void main() {
 	}
 	
 	vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
-	vec4 c =  color(from,rayDir, prev.w);
+	vec4 c =  color(Eye,rayDir, prev.w);
 	gl_FragColor =c;
 }

@@ -36,7 +36,6 @@ uniform vec3 face2Color; color[0.0,0.0,0.0]
 uniform vec3 verticesColor; color[0.0,0.0,0.0]
 uniform vec3 segmentsColor; color[0.0,0.0,0.0]
 
-#define PI 3.14159
 vec3 nc,p,pab,pbc,pca;
 void init() {
 	float cospin=cos(PI/float(Type)), scospin=sqrt(0.75-cospin*cospin);

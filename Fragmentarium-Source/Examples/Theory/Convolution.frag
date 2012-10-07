@@ -44,18 +44,17 @@ vec2 position =  (viewCoord+vec2(1.0))/2.0;
 uniform vec2 Cursor; slider[(0,0),(0.23,0.81),(1,1)]
 // Size of cursor (cosinus to angle)
 uniform float CursorCos; slider[0,0,1]
-// This is size (cosinus angle) that we wil draw sample from.
-uniform float FilterSize; slider[0,0.1,1.0]
+
 // This is power of the dot product (1 for diffuse, higher for specular)
-uniform float Power; slider[0,1,220]
+uniform float Power; slider[0,1,500]
 // Check this to see image without filtering
 uniform bool PreviewImage; checkbox[false]
 // Use this to set the exposure
 uniform float PreviewExposure; slider[0,5,12]
+uniform float ImageExposure; slider[0,5,12]
 
 
-
-vec3 getSample(vec3  dir, float angleSpan) {
+vec3 getSample(vec3  dir) {
 	
 	// create orthogonal vector (fails for z,y = 0)
 	vec3 o1 = normalize( vec3(0., -dir.z, dir.y));
@@ -64,7 +63,7 @@ vec3 getSample(vec3  dir, float angleSpan) {
 	// Convert to spherical coords aligned to dir;
 	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
 	r.x=r.x*2.*PI;
-	r.y=1.0-r.y*angleSpan;
+	r.y=1.0-r.y;
 
 	float oneminus = sqrt(1.0-r.y*r.y);
 	vec3 sdir = cos(r.x)*oneminus*o1+
@@ -73,31 +72,70 @@ vec3 getSample(vec3  dir, float angleSpan) {
 	
 	return sdir;
 }
+
+vec3 getSampleBiased(vec3  dir, float power) {
+	
+	// create orthogonal vector (fails for z,y = 0)
+	vec3 o1 = normalize( vec3(0., -dir.z, dir.y));
+	vec3 o2 = normalize(cross(dir, o1));
+	
+	// Convert to spherical coords aligned to dir;
+	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
+	r.x=r.x*2.*PI;
+	r.y = 1.0-r.y;
+
+	// This should be cosine^n weighted.
+	// See, e.g. http://people.cs.kuleuven.be/~philip.dutre/GI/TotalCompendium.pdf
+	// Item 36
+	r.y=pow(r.y,1.0/(power+1.0));
+
+	float oneminus = sqrt(1.0-r.y*r.y);
+	vec3 sdir = cos(r.x)*oneminus*o1+
+	sin(r.x)*oneminus*o2+
+	r.y*dir;
+	
+	return sdir;
+}
+
+uniform bool Bias; checkbox[false]
+
 uniform vec2 Rotate; slider[(-1,-1),(0,0),(1,1)]
+
 vec4 color(vec2 pos) {
 	position.y = 1.0-position.y;
+
 	if (PreviewImage) {
 		vec3 vo = texture2D( texture, position).xyz;
 		return vec4(vo*pow(10.0,PreviewExposure-5.0),1.0);
 	}
 	
-	vec3 dir1x = directionFromEquilateral(Cursor);
-	vec3 dir3x = directionFromEquilateral(position);
-	float b = max(0.0,dot(dir1x,dir3x));
+	// The direction of the current pixel
+	vec3 currentDir = directionFromEquilateral(position);
+		
+	// Check the cursor overlay
+	vec3 cursorDir = directionFromEquilateral(Cursor);
+	float b = max(0.0,dot(cursorDir,currentDir));
 	if (b>1.0-CursorCos) return vec4(vec3(1.0,0.0,0.0),1.0);
 	
-	
-	vec3 dir1 = directionFromEquilateral(position);
-	vec3 dir2 = getSample(dir1,FilterSize);
-	dir1 = normalize(dir1);
-	dir2 = normalize(dir2);
-	float c = max(0.0,dot(dir1,dir2));
+	// Get a random sample
+	vec3 sampleDir;	
+	if (Bias) {
+		sampleDir = getSampleBiased(currentDir,Power);
+	} else {
+		sampleDir = getSample(currentDir);
+	}
+
+	float c = max(0.0,dot(currentDir,sampleDir));
        if (c == 0.0) return vec4(0.0,0.0,0.0,0.0);
 	
-	vec2 p = equilateralFromDirection(dir2);
+	vec2 p = equilateralFromDirection(sampleDir);
 	p+=Rotate;
-	vec3 v2 = texture2D( texture,vec2(p.x,p.y)).xyz;	
+	vec3 v2 = texture2D( texture,p).xyz;	
 	float w = pow(c,Power);
-
-	return vec4(pow(v2,vec3(Gamma))*w,w);
+	if (Bias) {
+		w = 1.0;
+		return vec4(v2,1.0);
+	} else {
+		return vec4(v2*w,1.0*w);
+	}
 }

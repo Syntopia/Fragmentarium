@@ -1,16 +1,35 @@
 #donotrun
-// This is a shader for rendering depth maps using 
+// This is a shader for rendering depth maps using
 // screen space normals, and screen space ambient occlusion.
 // Used with the Brute-Raytracer.frag
 
 #vertex
 
+uniform float FOV;
+uniform vec3 Eye;
+uniform vec3 Target;
+uniform vec3 Up;
+
+
 varying vec2 coord;
+uniform vec2 pixelSize;
+varying vec2 viewCoord;
+varying vec3 Dir;
+varying vec3 UpOrtho;
+varying vec3 Right;
+uniform int backbufferCounter;
 
 void main(void)
 {
 	gl_Position =  gl_Vertex;
 	coord = (gl_ProjectionMatrix*gl_Vertex).xy;
+	viewCoord= coord;
+	viewCoord.x*= pixelSize.y/pixelSize.x;
+	
+	Dir = normalize(Target-Eye);
+	UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
+	Right = normalize( cross(Dir,UpOrtho));
+	viewCoord*=FOV;
 }
 
 #endvertex
@@ -42,8 +61,10 @@ vec3 ContrastSaturationBrightness(vec3  color, float brt, float sat, float con)
 }
 
 varying vec2 coord;
+varying vec2 viewCoord;
 uniform sampler2D frontbuffer;
 uniform bool ShowDepth;
+uniform bool DebugNormals;
 uniform float NormalScale;
 uniform float AOScale;
 
@@ -78,48 +99,44 @@ float rand(vec2 co){
 uniform int backbufferCounter;
 uniform float Glow;
 uniform float AOStrength;
+uniform float Near;
+uniform float Far;
+
+varying vec3 Dir;
+varying vec3 UpOrtho;
+varying vec3 Right;
 
 void main() {
 	vec2 pos = (coord+vec2(1.0))/2.0;
-
+	
 	// xyz is color, w is depth.
 	vec4 tex = texture2D(frontbuffer, pos);
 	
-	float dx = NormalScale;
-	float dy = NormalScale;
+	vec3 rayDir =  normalize(Dir+ viewCoord.x*Right+viewCoord.y*UpOrtho);
 	
-	// Get adjacent depths
-	float texX = texture2D(frontbuffer, pos+vec2(dx,0.0)).w;
-	float texY= texture2D(frontbuffer, pos+vec2(0.0,dy)).w;
-	float texMX = texture2D(frontbuffer, pos-vec2(dx,0.0)).w;
-	float texMY= texture2D(frontbuffer, pos-vec2(0.0,dy)).w;
-	
-	// Camera reference frame
-	vec3 Dir = normalize(Target-Eye);
-	vec3 UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
-	vec3 Right = normalize( cross(Dir,UpOrtho));
-		
-	// Transform screen space normal into world space
-	vec3 v1 = 2.*dx*Right + ( texX-texMX)*Dir;
-	vec3 v2 = 2.*dy*UpOrtho + ( texY-texMY)*Dir;
-	vec3 n = normalize(cross(v1,v2));
+	// Hit position in world space.
+	vec3 worldPos = Eye + (Near+tex.w*(Far-Near)) * rayDir;
+	vec3 n = normalize(cross( dFdx(worldPos), dFdy(worldPos) ));
 	
 	// Apply lighting based on screen space normal
 	vec3 c = tex.xyz;
+	if (DebugNormals) c = abs(vec3(n));
 	if (tex.w==1.0) {
 		// Background - no hits.
 	} else {
 		vec3 spotDir = vec3(sin(SpotLightDir.x*3.1415)*cos(SpotLightDir.y*3.1415/2.0), sin(SpotLightDir.y*3.1415/2.0)*sin(SpotLightDir.x*3.1415), cos(SpotLightDir.x*3.1415));
 		spotDir = normalize(spotDir);
-		vec3 r = Dir - 2.0 * dot(n, Dir) * n;
+		vec3 r =reflect(Dir,n);//, Dir - 2.0 * dot(n, Dir) * n;
 		float s = max(0.0,dot(spotDir,r));
-		float diffuse = max(0.0,dot(n,spotDir))*SpotLight.w;
+		float d=  max(0.0,dot(n,spotDir));
+		float diffuse =d*SpotLight.w;
 		float ambient = max(CamLightMin,dot(-n, Dir))*CamLight.w;
 		float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
-		c = (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*tex.xyz;
+		c = (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*c;
 	}
 	
-       // Apply tone mapping
+	
+	// Apply tone mapping
 	if (ToneMapping==1) {
 		// Linear
 		c = c*Exposure;
@@ -138,7 +155,7 @@ void main() {
 		c*=Exposure;
 		c = c/(1.+c);
 	}
-
+	
 	// Apply gamma and filtering.
 	c = pow(c, vec3(1.0/Gamma));
 	c = ContrastSaturationBrightness(c, Brightness, Saturation, Contrast);
@@ -148,9 +165,9 @@ void main() {
 		gl_FragColor = vec4(vec3(1.0-tex.w),1.0);
 	} else {
 		// Naive Screen Space Ambient Occlusion
-             // TODO: improve
-		dx = AOScale;//*(1.0-tex.w);
-		dy = AOScale;//*(1.0-tex.w);
+		// TODO: improve
+		float dx = AOScale;//*(1.0-tex.w);
+		float dy = AOScale;//*(1.0-tex.w);
 		float occ = 0.;
 		float samples = 0.;
 		for (float x = -5.; x<=5.; x++) {

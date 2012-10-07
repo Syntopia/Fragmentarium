@@ -88,8 +88,12 @@ void main() {
 #ifdef providesFiltering
 	 vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	vec4 new = color(coord.xy);
-      gl_FragColor = prev+vec4( pow(new.xyz,vec3(Gamma)) , new.w);
+#ifdef linearGamma
+     gl_FragColor = prev+ new;
 #else
+     gl_FragColor = prev+vec4( pow(new.xyz,vec3(Gamma)) , new.w);
+#endif
+ #else
 	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter+1)) );
 	float w =1.0;
       if (GaussianAA) {

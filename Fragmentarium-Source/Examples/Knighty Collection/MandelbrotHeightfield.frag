@@ -32,7 +32,7 @@ uniform float JuliaY; slider[-2,1.3,2]
 vec2 c2 = vec2(JuliaX,JuliaY);
 
 
-vec3 color(vec3 pos, vec3 n) {
+vec3 baseColor(vec3 pos, vec3 n) {
 	
 	vec2 z = Julia ?  pos.xy : vec2(0.0,0.0);
 	
