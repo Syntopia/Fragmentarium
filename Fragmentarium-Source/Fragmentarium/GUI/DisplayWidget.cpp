@@ -522,6 +522,10 @@ namespace Fragmentarium {
 			int w = width()/(previewFactor+1);
 			int h = height()/(previewFactor+1);
 
+			//w = (previewFactor+1)*width();
+			//h = (previewFactor+1)*height();
+
+
 			GLenum type = GL_RGBA8;
 			QString b = "None";
 			if (bufferType==RGBA8) { b = "RGBA8"; }

@@ -21,12 +21,15 @@ float sphereLine(vec3 pos, vec3 dir, vec3 center, float radius, out vec3 normal)
 
 #define PI  3.14159265358979323846264
 
-vec2 spherical(vec3 dir) {
-	return vec2( acos(dir.z)/PI, atan(dir.y,dir.x)/(2.0*PI) );
+vec3 equirectangularMap(vec3 dir, sampler2D sampler) {
+	dir = normalize(dir);
+	vec2 longlat = vec2(atan(dir.y,dir.x),acos(dir.z));
+ 	return texture2D(sampler,longlat/vec2(2.0*PI,PI) ).xyz;
+	
 }
 
-uniform vec2 Specular; slider[(0,0),(1,0),(1,0.1)]
-uniform vec3 Diffuse;slider[(0,0,0),(1,0,1),(1,0.1,10)]
+uniform float Specular; slider[0,1,1]
+uniform float Diffuse;slider[0,1,1]
 
 vec3 color(vec3 pos, vec3 dir) {
 	
@@ -43,22 +46,12 @@ vec3 color(vec3 pos, vec3 dir) {
 	}
 	
 	if (intersect<10000.) {
-		
-		vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
-		
 		vec3 reflected = -2.0*dot(dir,finalNormal)*finalNormal+dir;
-		//  vec3 reflectedP = reflected +
-		// Angle of perturbated vector
-		// (cos(phi1)*cos(phi2)*cos(theta2 - theta1) + sin(phi1)*sin(phi2))
-		// Theta wil be y value (after indices are shuffled)
-		vec3 col = Specular.x*texture2D(texture,spherical(normalize(reflected)).yx+f*Specular.y).xyz;
-		vec3 col2 = Diffuse.x*texture2D(texture2,spherical(normalize(finalNormal)).yx+f*Diffuse.y).xyz;
-		col2 = pow(col2,vec3(Diffuse.z));
+		vec3 col = Specular*equirectangularMap(reflected, texture);
+		vec3 col2 = Diffuse*equirectangularMap(finalNormal, texture2);
 		return col+col2;
 	}
-	vec2 c = spherical(normalize(dir));
-	vec3 col = texture2D(texture,c.yx).xyz;
-	
+	vec3 col =equirectangularMap(dir,texture);
 	return col;
 }
 

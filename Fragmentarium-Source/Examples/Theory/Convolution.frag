@@ -5,7 +5,7 @@ uniform sampler2D texture;  file[Ditch-River_2k.hdr]
 
 #define providesFiltering
 #define linearGamma
-#define SubframeMax 0
+//#define SubframeMax 0
 #include "Progressive2D.frag"
 #define PI  3.14159265358979323846264
 
@@ -51,17 +51,23 @@ uniform float Power; slider[0,1,500]
 uniform bool PreviewImage; checkbox[false]
 // Use this to set the exposure
 uniform float PreviewExposure; slider[0,5,12]
-uniform float ImageExposure; slider[0,5,12]
 
+uniform bool Stratify; checkbox[true]
+
+vec2 cx=
+vec2(
+	floor(mod(backbufferCounter*1.0,10.)),
+	 floor(mod(backbufferCounter*0.1,10.))
+	)/10.0;
 
 vec3 getSample(vec3  dir) {
-	
 	// create orthogonal vector (fails for z,y = 0)
 	vec3 o1 = normalize( vec3(0., -dir.z, dir.y));
 	vec3 o2 = normalize(cross(dir, o1));
 	
 	// Convert to spherical coords aligned to dir;
 	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
+	if (Stratify) {r*=0.1; r+= cx;}
 	r.x=r.x*2.*PI;
 	r.y=1.0-r.y;
 
@@ -69,9 +75,10 @@ vec3 getSample(vec3  dir) {
 	vec3 sdir = cos(r.x)*oneminus*o1+
 	sin(r.x)*oneminus*o2+
 	r.y*dir;
-	
 	return sdir;
 }
+
+
 
 vec3 getSampleBiased(vec3  dir, float power) {
 	
@@ -81,6 +88,7 @@ vec3 getSampleBiased(vec3  dir, float power) {
 	
 	// Convert to spherical coords aligned to dir;
 	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
+	if (Stratify) {r*=0.1; r+= cx;}
 	r.x=r.x*2.*PI;
 	r.y = 1.0-r.y;
 

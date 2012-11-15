@@ -63,7 +63,7 @@ uniform float SpecularMax; slider[0,10,100]
 uniform vec2 Sun; slider[(-3.1415,-1.57),(0,0),(3.1415,1.57)]
 uniform float SunSize; slider[0,0.01,0.4]
 uniform bool DebugSun; checkbox[true]
-
+uniform vec2 RotateMap; slider[(0,0),(1,1),(1,1)]
 vec4 orbitTrap = vec4(10000.0);
 float fractionalCount = 0.0;
 
@@ -191,20 +191,23 @@ float rand(vec2 co){
 	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+vec3 equirectangularMap(sampler2D sampler, vec3 dir) {
+	// Convert (normalized) dir to spherical coordinates.	
+	dir = normalize(dir);
+	vec2 longlat = vec2(atan(dir.y,dir.x),acos(dir.z));
+	// Normalize, and lookup in equirectangular map.
+ 	return texture2D(sampler,RotateMap+longlat/vec2(2.0*PI,PI)).xyz;
+}
+
+
 vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shadowStrength) {
 	shadowStrength = 0.0;
-	
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
-	//float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
 	vec3 reflected = -2.0*dot(dir,n)*n+dir;
-	
-	//vec2 f = rand2(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);
-	vec3 diffuse =  EnvDiffuse*texture2D(Diffuse,spherical(normalize(n)).yx).xyz;
-	
-	vec3 specular = EnvSpecular*texture2D(Specular,spherical(normalize(reflected)).yx).xyz;
+	vec3 diffuse =  EnvDiffuse*equirectangularMap(Diffuse,n); 
+	vec3 specular = EnvSpecular*equirectangularMap(Specular,reflected); 
 	specular = min(vec3(SpecularMax),specular);
-	
-	
+		
 	if (Shadow>0.0) {
 		// check path from pos to spotDir
 		shadowStrength = 1.0-shadow(pos+n*eps,eps);
@@ -267,6 +270,7 @@ vec3 getColor() {
 vec3 baseColor(vec3 point, vec3 normal);
 #endif
 
+
 vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	hit = vec3(0.0);
 	orbitTrap = vec4(10000.0);
@@ -291,9 +295,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		orbitTrap = vec4(10000.0);
 		vec3 p = from + totalDist * direction;
 		dist = DEF(p);
-		//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
 		dist *= FudgeFactor;
-		
 		if (steps == 0) dist*=(Dither*rand(direction.xy))+(1.0-Dither);
 		totalDist += dist;
 		epsModified = pow(totalDist,ClarityPower)*eps;
@@ -306,8 +308,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 	if (EnableFloor && dist ==floorDist*FudgeFactor) floorHit = true;
 	vec3 hitColor;
 	float stepFactor = clamp((fSteps)/float(GlowMax),0.0,1.0);
-	vec3 backColor = texture2D(Background,spherical(normalize(dir)).yx).xyz;
-	
+	vec3 backColor = equirectangularMap(Background, dir);
 	
 	if (  steps==MaxRaySteps) orbitTrap = vec4(0.0);
 	
@@ -324,29 +325,24 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			hitNormal= normal(hit-NormalBackStep*epsModified*direction, epsModified); // /*normalE*epsModified/eps*/
 		}
 		
-		
-		#ifdef  providesColor
+#ifdef  providesColor
 		hitColor = mix(BaseColor, baseColor(hit,hitNormal),  OrbitStrength);
-		#else
+#else
 		hitColor = getColor();
-		#endif
+#endif
 		if (DetailAO<0.0) ao = ambientOcclusion(hit, hitNormal);
 		
 		if (floorHit) {
-			vec2 c = spherical(normalize(dir));
-			hitColor =texture2D(Background,c.yx).xyz;
+			hitColor = equirectangularMap(Background, dir);
 			if (ShowFloor) {
 				vec3 proj = hit-dot(hit, FloorNormal)*hit;
 				if (mod(proj.x,1.0)<0.1 || mod(proj.y,1.0)<0.1)
 				hitColor = vec3(0.0);
 				if (mod(proj.x,1.0)<0.03 || mod(proj.y,1.0)<0.03)
-				hitColor = vec3(1.0);
-				
+				hitColor = vec3(1.0);				
 			}
-		}
-		
-		hitColor = mix(hitColor, AO.xyz ,ao);
-		
+		}		
+		hitColor = mix(hitColor, AO.xyz ,ao);		
 		
 		// OpenGL  GL_EXP2 like fog
 		//		float f = totalDist;
@@ -360,12 +356,10 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		}
 	}
 	else {
-		vec2 c = spherical(normalize(dir));
-		vec3 col = texture2D(Background,c.yx).xyz;
+		vec3 col = equirectangularMap(Background, dir);
 		if (DebugSun && dot(fromPhiTheta(Sun),normalize(dir))>1.0-SunSize) col= vec3(100.,0.,0.);
 		hitColor = col;
-		hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
-		
+		//hitColor +=Glow.xyz*stepFactor* Glow.w*(1.0-shadowStrength);
 	}
 	
 	return hitColor;

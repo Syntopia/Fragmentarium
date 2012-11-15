@@ -113,11 +113,32 @@ void main() {
 	vec4 tex = texture2D(frontbuffer, pos);
 	
 	vec3 rayDir =  normalize(Dir+ viewCoord.x*Right+viewCoord.y*UpOrtho);
-	
+
+	float dx = NormalScale;
+	float dy = NormalScale;	
+
+	// Hardware version: unfortunately introduces artifacts...
 	// Hit position in world space.
-	vec3 worldPos = Eye + (Near+tex.w*(Far-Near)) * rayDir;
-	vec3 n = normalize(cross( dFdx(worldPos), dFdy(worldPos) ));
+	// vec3 worldPos = Eye + (Near+tex.w*(Far-Near)) * rayDir;
+	// vec3 n = normalize(cross( dFdx(worldPos), dFdy(worldPos) ));
 	
+	// Get adjacent depths
+	float texX = texture2D(frontbuffer, pos+vec2(dx,0.0)).w;
+	float texY= texture2D(frontbuffer, pos+vec2(0.0,dy)).w;
+	float texMX = texture2D(frontbuffer, pos-vec2(dx,0.0)).w;
+	float texMY= texture2D(frontbuffer, pos-vec2(0.0,dy)).w;
+	
+	// Camera reference frame
+	vec3 Dir = normalize(Target-Eye);
+	vec3 UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
+	vec3 Right = normalize( cross(Dir,UpOrtho));
+		
+	// Transform screen space normal into world space
+	vec3 v1 = 2.*dx*Right + ( texX-texMX)*Dir;
+	vec3 v2 = 2.*dy*UpOrtho + ( texY-texMY)*Dir;
+	vec3 n = normalize(cross(v1,v2));
+	
+
 	// Apply lighting based on screen space normal
 	vec3 c = tex.xyz;
 	if (DebugNormals) c = abs(vec3(n));
