@@ -75,6 +75,7 @@ namespace Fragmentarium {
 			FileManager* getFileManager() { return &fileManager; }
 			void setSubFrameDisplay(int i);
 			void setSubFrameMax(int i);
+			int getSubFrameMax() { return frameSpinBox->value(); }
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);
 			void dropEvent(QDropEvent *ev);

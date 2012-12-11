@@ -4,13 +4,11 @@
 
 #group Camera
 
-uniform float Near; slider[0,0,12]
-uniform float Far; slider[0,5,12]
 
 #group Raytracer
 
-uniform float NormalScale;slider[0,0.0006,0.01]
-uniform float AOScale;slider[0,0.01,0.05]
+uniform float NormalScale;slider[0,1,5]
+uniform float AOScale;slider[0,1,5]
 uniform float Glow;slider[0,0.1,1]
 uniform float AOStrength;slider[0,0.6,1]
 
@@ -18,8 +16,14 @@ uniform float AOStrength;slider[0,0.6,1]
 uniform int Samples;  slider[0,40,2000]
 uniform bool Stratify; checkbox[true]
 uniform bool DebugInside; checkbox[false]
-
+uniform bool CentralDifferences; checkbox[true]
 uniform bool SampleNeighbors; checkbox[true]
+
+uniform float Near; slider[0,0,12]
+uniform float Far; slider[0,5,12]
+
+uniform bool  ShowDepth; checkbox[false]
+uniform bool  DebugNormals; checkbox[false]
 
 #group Light
 
@@ -38,8 +42,6 @@ uniform float CamLightMin; slider[0.0,0.0,1.0]
 
 uniform float Fog; slider[0,0.0,2]
 
-uniform bool  ShowDepth; checkbox[false]
-uniform bool  DebugNormals; checkbox[false]
 
 vec4 orbitTrap = vec4(10000.0);
 

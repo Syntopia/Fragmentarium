@@ -23,19 +23,21 @@ namespace Fragmentarium {
 			verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
 			label = new QLabel(this);
 			label->setObjectName(QString::fromUtf8("label"));
-
 			verticalLayout->addWidget(label);
-
 			tilesSlider = new QSlider(this);
 			tilesSlider->setObjectName(QString::fromUtf8("tilesSlider"));
 			tilesSlider->setOrientation(Qt::Horizontal);
-
 			verticalLayout->addWidget(tilesSlider);
-
 			verticalSpacer = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
 			verticalLayout->addItem(verticalSpacer);
-
+			
+			label5 = new QLabel(this);
+			verticalLayout->addWidget(label5);
+			paddingSlider = new QSlider(this);
+			paddingSlider->setObjectName(QString::fromUtf8("tilesSlider"));
+			paddingSlider->setOrientation(Qt::Horizontal);
+			verticalLayout->addWidget(paddingSlider);
+			verticalLayout->addItem( new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
 			QHBoxLayout* hLayout2 = new QHBoxLayout(this);
 			hLayout2->setObjectName(QString::fromUtf8("verticalLayout2"));
@@ -177,7 +179,11 @@ namespace Fragmentarium {
 			tilesSlider->setMinimum(1);
 			tilesSlider->setValue(3);
 			tilesSlider->setMaximum(30);
+			paddingSlider->setMinimumHeight(0);
+			paddingSlider->setMaximum(100);
+			paddingSlider->setValue(0);
 			connect(tilesSlider, SIGNAL(valueChanged(int)), this, SLOT(tilesChanged(int)));
+			connect(paddingSlider, SIGNAL(valueChanged(int)), this, SLOT(tilesChanged(int)));
 			connect(uniqueCheckBox, SIGNAL(clicked()), this, SLOT(updateFileName()));
 			connect(autoSaveCheckBox, SIGNAL(clicked()), this, SLOT(updateFileName()));
 			connect(fileButton, SIGNAL(clicked()), this, SLOT(chooseFile()));
@@ -300,12 +306,21 @@ namespace Fragmentarium {
 
 		void OutputDialog::tilesChanged(int) {
 			int t = tilesSlider->value();
+			double mp = (double)((t*width*t*height)/(1024.0*1024.0));
 			label->setText(QString("Render quality: (%1x%2 tiles - %3x%4 pixels - %5 MegaPixel):").arg(t).arg(t).arg(t*width).arg(t*height)
-				.arg((double)((t*width*t*height)/(1024.0*1024.0)),0,'f',1));
+				.arg(mp,0,'f',1));
+
+			float f = paddingSlider->value()/100.0;
+			float fd = 1.0/(1.0+f);
+			label5->setText(QString("Padding %1%: (resulting size: %3x%4 pixels - %5 MegaPixel):").arg((float)(f*100.),0,'f',1).arg((int)(fd*t*width)).arg((int)(fd*t*height)).arg(mp*fd*fd,0,'f',1));
 		}
 
 		int OutputDialog::getTiles() {
 			return tilesSlider->value();
+		}
+
+		float OutputDialog::getPadding() {
+			return paddingSlider->value()/100.0;
 		}
 
 	}

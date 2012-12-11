@@ -39,6 +39,7 @@ namespace Fragmentarium {
 				length = 10.0;
 				fps = 25;
 				startFrame = 1;
+				subFrame = 0;
 			}
 			
 			void setRunning(bool v) {
@@ -60,20 +61,25 @@ namespace Fragmentarium {
 				return f;
 			}
 
-			float getTimeFromDisplay() {
-				if (!isRunning()) return time;
-				if (isRecording()) {
-					setFrame(startFrame++);
-				} else {
-					float elapsedTime = startTime.msecsTo(QTime::currentTime())/1000.0;
-					setTime(startAnimTime+elapsedTime, false);
-			    }
+			void advanceFrame() {
+				startFrame++;
 				if (time>=length ) {
 					running = false;
 					recording = false;
 					INFO("Reached end. Stopping...");
 				}
 				emit updateSliders();
+				
+			}
+
+			float getTimeFromDisplay() {
+				if (!isRunning()) return time;
+				if (isRecording()) {
+					setFrame(startFrame);
+				} else {
+					float elapsedTime = startTime.msecsTo(QTime::currentTime())/1000.0;
+					setTime(startAnimTime+elapsedTime, false);
+			    }
 				return time;
 			}
 
@@ -103,10 +109,12 @@ namespace Fragmentarium {
 
 			float getLength() { return length; } 
 			float getTime() { return time; } 
+			int getSubFrame() { return subFrame; };
+			void setSubFrame(int v) { this->subFrame = v; }
 			int getFps() { return fps; } 
 			bool isRunning() { return running; } 
 			bool isRecording() { return recording; } 
-			void setRecording(bool r) { recording = r;  startFrame = 0; } 
+			void setRecording(bool r) { recording = r;  startFrame = 0; subFrame = 0;} 
 			void setLength(float l) { length = l; }
 			void setFps(int f) { fps = f; }
 
@@ -120,6 +128,7 @@ namespace Fragmentarium {
 			void updateSliders();
 		private:
 			int startFrame; 
+			int subFrame;
 			float time; // Current time
 			float length;
 			bool recording;

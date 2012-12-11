@@ -1,12 +1,31 @@
 // A script for providing cosinus-convoluted long-lat maps
 uniform sampler2D texture;  file[Ditch-River_2k.hdr]
 
-#define IterationsBetweenRedraws 10
+#define IterationsBetweenRedraws 100
 
 #define providesFiltering
 #define linearGamma
 //#define SubframeMax 0
-#include "Progressive2D.frag"
+
+#buffer RGBA32F
+#buffershader "BufferShader.frag"
+#vertex
+
+#group Camera
+varying vec2 viewCoord;
+
+void main(void)
+{
+	gl_Position =  gl_Vertex;
+	viewCoord = (gl_Vertex).xy;
+}
+#endvertex
+
+#group Settings
+varying vec2 viewCoord;
+uniform sampler2D backbuffer;
+uniform int backbufferCounter;
+
 #define PI  3.14159265358979323846264
 
 // returns (r,theta [0..pi],phi [-pi,pi])
@@ -17,6 +36,13 @@ vec3 cartesianToSpherical(vec3 p) {
 	return vec3(r,theta,phi);
 }
 
+
+vec2 rand(vec2 co){
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return
+	vec2(fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
+		fract(cos(dot(co.xy ,vec2(4.898,7.23))) * 23421.631));
+}
 
 vec3 sphericalToCartesian(vec3 s) {
 	return s.x*vec3(sin(s.y)*cos(s.z), sin(s.z)*sin(s.y), cos(s.y));
@@ -90,8 +116,7 @@ vec3 getSampleBiased(vec3  dir, float power) {
 	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
 	if (Stratify) {r*=0.1; r+= cx;}
 	r.x=r.x*2.*PI;
-	r.y = 1.0-r.y;
-
+	
 	// This should be cosine^n weighted.
 	// See, e.g. http://people.cs.kuleuven.be/~philip.dutre/GI/TotalCompendium.pdf
 	// Item 36
@@ -108,7 +133,7 @@ vec3 getSampleBiased(vec3  dir, float power) {
 uniform bool Bias; checkbox[false]
 
 uniform vec2 Rotate; slider[(-1,-1),(0,0),(1,1)]
-
+uniform float Multi; slider[0,1,10]
 vec4 color(vec2 pos) {
 	position.y = 1.0-position.y;
 
@@ -133,17 +158,40 @@ vec4 color(vec2 pos) {
 		sampleDir = getSample(currentDir);
 	}
 
-	float c = max(0.0,dot(currentDir,sampleDir));
-       if (c == 0.0) return vec4(0.0,0.0,0.0,0.0);
-	
+//	float c = max(0.0,dot(currentDir,sampleDir));
+      float c = max(0.0,dot(normalize(currentDir),normalize(sampleDir)));
+  //if (c <  0.01) return vec4(0.0,0.0,0.0,0.0);
+   
 	vec2 p = equilateralFromDirection(sampleDir);
 	p+=Rotate;
 	vec3 v2 = texture2D( texture,p).xyz;	
 	float w = pow(c,Power);
+  	vec3 sample = v2*w;
 	if (Bias) {
-		w = 1.0;
-		return vec4(v2,1.0);
+		return vec4(v2/(1.+Power),1.0);
 	} else {
-		return vec4(v2*w,1.0*w);
+		return vec4(sample*Multi,1.0);
 	}
+}
+
+varying vec2 coord;
+#group Post
+uniform float Gamma; slider[0.0,2.2,5.0]
+// 1: Linear, 2: Exponential, 3: Filmic, 4: Reinhart
+uniform int ToneMapping; slider[1,1,4]
+uniform float Exposure; slider[0.0,1.0,30.0]
+uniform float Brightness; slider[0.0,1.0,5.0];
+uniform float Contrast; slider[0.0,1.0,5.0];
+uniform float Saturation; slider[0.0,1.0,5.0];
+
+uniform float AARange; slider[0.0,2.,15.3]
+uniform float AAExp; slider[0.0,1,15.3]
+uniform bool GaussianAA; checkbox[true]
+
+
+void main() {
+      vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
+	vec4 new = color(coord.xy);
+	if (new!=new) { new =vec4( 1.0);  } // NAN check
+      gl_FragColor = prev+new;
 }

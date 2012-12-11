@@ -1,4 +1,12 @@
 
+19-11-12 [MHC]
+				 Animations now support progressive rendering
+				 Tile rendering now has added padding option
+				 Fixed Animation offset bug
+				 Brute raytracer
+				 Fixed DepthBufferShader bug
+				 New sigmoid tone mapper
+				 IBL raytracer can now rotate maps
 
 20-08-12 -- v0.9.12 release --
 

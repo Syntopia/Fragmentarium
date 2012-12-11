@@ -22,8 +22,6 @@ uniform vec3 Light; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
 #group ReactionDiffusion
 
 uniform sampler2D backbuffer;
-uniform float time;
-
 
 vec2 position = (viewCoord*1.0+vec2(1.0))/2.0;
 
@@ -68,10 +66,12 @@ uniform vec2 Diffusion; slider[(0,0),(0.082,0.041),(0.2,0.2)]
 uniform float k; slider[0,0.064,0.1]
 uniform float f; slider[0,0.035,0.1]
 uniform float timeStep; slider[0,1.,2]
+uniform int backbufferCounter;
+
 vec3 color(vec2 z) {
 	// Seed
-	if (time < 0.1) {
-		if (length(z)<0.1+0.5*rand(z+time)) {
+	if (backbufferCounter <3) {
+		if (length(z)<0.1+0.5*rand(z+float(backbufferCounter))) {
 			return vec3(1.0,0.0,0.0);
 		}  else {
 			return vec3(0.0,1.0,0.0);

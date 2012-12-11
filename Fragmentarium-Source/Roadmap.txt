@@ -11,20 +11,22 @@ V0.9.12 (august 2012)
   + Has layout issues
   + Always Locked
   + Serialization
-- IBL-raytracer: name, debug sun toggle
++ IBL-raytracer: name, debug sun toggle
 + Limit number of frames in continous mode.
 
 V0.9.13 (christmas 2013)
 ------
+- Non-DE raytracer
+- Path tracer
+- Padding for high resolution rendering 
 - Fix BufferShader, so that it can handle GUI widgets...
-- Keyframe Animation.
 - A 2D camera which scales from the current mouse position
-- Make a 'non-progressive' flag, to make Kali's systems work. (Not so important, now the older versions are included)
 - Check up on Manual and Animation mode.
 - Export in RGBE
 
 V1.0 (early 2014)
 ----
+- Keyframe Animation.
 - Bugfixes and cleanup
 
 Other (prioritized) ideas:

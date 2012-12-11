@@ -161,7 +161,14 @@ namespace Fragmentarium {
 			pendingRedraws = requiredRedraws;
 			if (!tiles) {
 				if (clear) {
-					clearBackBuffer();
+					if (animationSettings && animationSettings->isRecording()) {	
+						maxSubFrames = mainWindow->getSubFrameMax();
+						if (animationSettings->getSubFrame() == maxSubFrames-1) {
+							clearBackBuffer();
+						}
+					} else {
+						clearBackBuffer();
+					}
 				} else {
 					backBufferCounter = 0;
 				}
@@ -418,12 +425,13 @@ namespace Fragmentarium {
 		}
 
 
-		void DisplayWidget::setupTileRender(int tiles, int tileFrameMax, QString fileName) {
+		void DisplayWidget::setupTileRender(int tiles, float padding, int tileFrameMax, QString fileName) {
 			outputFile = fileName;
 			this->tiles = tiles;
 			tilesCount = 0;
 			this->tileFrameMax = tileFrameMax;
 			this->tileFrame = 0;
+			this->padding = padding;
 			requireRedraw(true);
 			tileRenderStart = QDateTime::currentDateTime();
 		}
@@ -489,8 +497,9 @@ namespace Fragmentarium {
 			float y = (tilesCount % tiles) - (tiles-1)/2.0;
 
 			glLoadIdentity();
+			
 			glTranslatef( x * (2.0/tiles) , y * (2.0/tiles), 1.0);
-			glScalef( 1.0/tiles,1.0/tiles,1.0);	
+			glScalef( (1.0+padding)/tiles,(1.0+padding)/tiles,1.0);	
 
 			if (tileFrame >= tileFrameMax-1) {
 				tilesCount++;
@@ -596,17 +605,32 @@ namespace Fragmentarium {
 				shaderProgram->setUniformValue(l, (float)(1.0/w),(float)(1.0/h));
 			}
 
+			l = shaderProgram->uniformLocation("globalPixelSize");
+			if (l != -1) {
+				int d = tiles;
+				if (d<1) d = 1;
+				if (viewFactor > 0) {
+					d = viewFactor+1.;
+				}
+				shaderProgram->setUniformValue(l, ((float)d/w),((float)d/h));
+			}
+
 			l = shaderProgram->uniformLocation("time");
 			if (l != -1) {
 				float t = 0;
 				if (animationSettings) {
 					t = animationSettings->getTimeFromDisplay();
 				} else if (continuous) {
-					t = (time.msecsTo(QTime::currentTime())/1000.0);
+					t = 0; //(time.msecsTo(QTime::currentTime())/1000.0);
 				} else {
 					t = 0;
 				}
 				shaderProgram->setUniformValue(l, (float)t);
+			} else {
+				if (animationSettings && animationSettings->isRecording()) {
+					WARNING("Cancelling animation - no 'time' variable found.");
+					animationSettings->setRecording(false);
+				}
 			}
 
 			if (bufferType!=None) {
@@ -685,6 +709,17 @@ namespace Fragmentarium {
 				int l = bufferShaderProgram->uniformLocation("pixelSize");
 				if (l != -1) {
 					shaderProgram->setUniformValue(l, (float)(1.0/s.width()),(float)(1.0/s.height()));
+				}
+
+				l = bufferShaderProgram->uniformLocation("globalPixelSize");
+				if (l != -1) {
+					int d = tiles;
+					if (d<1) d = 1;
+
+					if (viewFactor > 0) {
+						d = viewFactor+ 1.;
+					}
+					shaderProgram->setUniformValue(l, (d/(float)s.width()),(d/(float)s.height()));
 				}
 
 				l = bufferShaderProgram->uniformLocation("frontbuffer");
@@ -774,12 +809,26 @@ namespace Fragmentarium {
 
 			// Animation
 			if (animationSettings && animationSettings->isRecording()) {
+
+				maxSubFrames = mainWindow->getSubFrameMax();
+				int sub = animationSettings->getSubFrame()+1;
+				animationSettings->setSubFrame(sub);
+				backBufferCounter = sub;
 				QString filename = animationSettings->getFileName();
-				QImage im = grabFrameBuffer();
-				INFO("Saving frame: " + filename );
-				bool succes = im.save(filename);
-				if (!succes) {
-					WARNING("Save failed! Filename: " + filename);
+				INFO(QString("Rendering subframe (%1/%2) for : %3 - %4").arg(animationSettings->getSubFrame()).arg(maxSubFrames).arg(filename).arg(backBufferCounter));
+				mainWindow->setSubFrameDisplay(sub);
+				
+				if (sub>=maxSubFrames) {
+					animationSettings->advanceFrame();
+					animationSettings->setSubFrame(0);
+
+					QImage im = grabFrameBuffer();
+					INFO("Saving frame: " + filename );
+					
+					bool succes = im.save(filename);
+					if (!succes) {
+						WARNING("Save failed! Filename: " + filename);
+					}
 				}
 			}
 
@@ -789,6 +838,16 @@ namespace Fragmentarium {
 				if (!tileFrameMax || (tileFrame == 0)) {
 					QImage im = grabFrameBuffer();
 				//	QImage im = previewBuffer->toImage();
+					if (padding>0.0)  {
+						int w = im.width();
+						int h = im.height();
+						int nw = (int)(w / (1.0 + padding));
+						int nh = (int)(h / (1.0 + padding));
+						int ox = (w-nw)/2;
+						int oy = (h-nh)/2;
+						im = im.copy(ox,oy,nw,nh);
+					}
+
 					cachedTileImages.append(im);
 					INFO("Stored image: " + QString::number(cachedTileImages.count()));
 				}

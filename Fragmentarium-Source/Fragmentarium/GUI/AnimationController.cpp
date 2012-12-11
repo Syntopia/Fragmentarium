@@ -216,9 +216,9 @@ namespace Fragmentarium {
 			fpsSpinBox->setMaximum(100);
 			fpsSpinBox->setValue(animationSettings.getFps());
 			
-			timeSlider->setMinimum(0);
+			timeSlider->setMinimum(1);
 			timeSlider->setMaximum(animationSettings.totalFrames());
-			timeSlider->setValue(0);
+			timeSlider->setValue(1);
 
 			timeSpinBox->setMinimum(0);
 			timeSpinBox->setMaximum(animationSettings.getLength());

@@ -48,7 +48,7 @@ namespace SyntopiaCore {
 		}
 
 		void ListWidgetLogger::log(QString message, LogLevel priority) {
-			if (listWidget->count() > 50) {
+			if (listWidget->count() > 100) {
 				listWidget->setUpdatesEnabled(false);
 				while (listWidget->count() > 20) {
 					delete(listWidget->takeItem(0));

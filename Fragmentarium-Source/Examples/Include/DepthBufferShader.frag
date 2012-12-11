@@ -101,10 +101,13 @@ uniform float Glow;
 uniform float AOStrength;
 uniform float Near;
 uniform float Far;
+uniform vec2 globalPixelSize;
+uniform vec2 pixelSize;
 
 varying vec3 Dir;
 varying vec3 UpOrtho;
 varying vec3 Right;
+uniform bool CentralDifferences; 
 
 void main() {
 	vec2 pos = (coord+vec2(1.0))/2.0;
@@ -113,32 +116,51 @@ void main() {
 	vec4 tex = texture2D(frontbuffer, pos);
 	
 	vec3 rayDir =  normalize(Dir+ viewCoord.x*Right+viewCoord.y*UpOrtho);
-
-	float dx = NormalScale;
-	float dy = NormalScale;	
-
+	
+	float ssx = (pixelSize.x/globalPixelSize.x);
+	float dx = NormalScale*pixelSize.x;
+	float dy = NormalScale*pixelSize.y;
+	//dx = NormalScale*0.001;
+	// dy = NormalScale*0.001;
+	
 	// Hardware version: unfortunately introduces artifacts...
 	// Hit position in world space.
 	// vec3 worldPos = Eye + (Near+tex.w*(Far-Near)) * rayDir;
 	// vec3 n = normalize(cross( dFdx(worldPos), dFdy(worldPos) ));
 	
-	// Get adjacent depths
-	float texX = texture2D(frontbuffer, pos+vec2(dx,0.0)).w;
-	float texY= texture2D(frontbuffer, pos+vec2(0.0,dy)).w;
-	float texMX = texture2D(frontbuffer, pos-vec2(dx,0.0)).w;
-	float texMY= texture2D(frontbuffer, pos-vec2(0.0,dy)).w;
 	
 	// Camera reference frame
 	vec3 Dir = normalize(Target-Eye);
 	vec3 UpOrtho = normalize( Up-dot(Dir,Up)*Dir );
 	vec3 Right = normalize( cross(Dir,UpOrtho));
-		
-	// Transform screen space normal into world space
-	vec3 v1 = 2.*dx*Right + ( texX-texMX)*Dir;
-	vec3 v2 = 2.*dy*UpOrtho + ( texY-texMY)*Dir;
-	vec3 n = normalize(cross(v1,v2));
-	
+	vec3 n;
 
+	if (CentralDifferences) {
+		// -- Central difference derivative
+		// Get adjacent depths
+		float texX = texture2D(frontbuffer, pos+vec2(dx,0.0)).w;
+		float texY= texture2D(frontbuffer, pos+vec2(0.0,dy)).w;
+		float texMX = texture2D(frontbuffer, pos-vec2(dx,0.0)).w;
+		float texMY= texture2D(frontbuffer, pos-vec2(0.0,dy)).w;
+		
+		// Transform screen space normal into world space
+		vec3 v1 = 2.*dx*Right + ( texX-texMX)*Dir/ssx;
+		vec3 v2 = 2.*dy*UpOrtho + ( texY-texMY)*Dir/ssx;
+		 n = normalize(cross(v1,v2));
+	} else {
+		// -- Forward difference derivative
+		// Get adjacent depths
+		float texMX = texture2D(frontbuffer, pos-vec2(dx,0.0)).w;
+		float texMY= texture2D(frontbuffer, pos-vec2(0.0,dy)).w;
+		
+		// Transform screen space normal into world space
+		vec3 v1 = dx*Right + ( tex.w-texMX)*Dir/ssx;
+		vec3 v2 = dy*UpOrtho + ( tex.w-texMY)*Dir/ssx;
+		n = normalize(cross(v1,v2));
+	}
+	
+	
+	
 	// Apply lighting based on screen space normal
 	vec3 c = tex.xyz;
 	if (DebugNormals) c = abs(vec3(n));
@@ -187,8 +209,8 @@ void main() {
 	} else {
 		// Naive Screen Space Ambient Occlusion
 		// TODO: improve
-		float dx = AOScale;//*(1.0-tex.w);
-		float dy = AOScale;//*(1.0-tex.w);
+		float dx = AOScale*globalPixelSize.x;
+		float dy = AOScale*globalPixelSize.y;
 		float occ = 0.;
 		float samples = 0.;
 		for (float x = -5.; x<=5.; x++) {
@@ -196,8 +218,8 @@ void main() {
 				if (x*x+y*y>=25.) continue;
 				float texX = texture2D(frontbuffer,
 					pos+vec2(
-						dx*(x+ rand(vec2(x,y)+pos)),
-						dy*(y+ rand(vec2(y,x)+pos))
+						dx*(x-0.5+1.0*rand(vec2(x+y,y)+pos)),
+						dy*(y-0.5+1.0*rand(vec2(y,x*2.)+pos))
 						) ).w;
 				if (texX>=tex.w) occ+=1.;
 				samples++;

@@ -984,6 +984,12 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::tileBasedRender() {
+
+			if (viewSlider->value() != 0 || previewSlider->value()) {
+				CRITICAL("'Tile Preview' and 'Preview' must both be set to zero, before rendering tiles.");
+				return;
+			}
+
 			OutputDialog od(this, engine->width(), engine->height());
 			if (od.exec() == QDialog:: Accepted) {
 				if (od.doSaveFragment()) {
@@ -1048,7 +1054,7 @@ namespace Fragmentarium {
 						WARNING(e.getMessage());
 					}
 				}
-				engine->setupTileRender(od.getTiles(),od.getFrames(), od.getFileName());
+				engine->setupTileRender(od.getTiles(),od.getPadding(), od.getFrames(), od.getFileName());
 			};			
 		}
 
