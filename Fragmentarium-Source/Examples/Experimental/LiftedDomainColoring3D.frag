@@ -1,4 +1,4 @@
-#info Mandelbrot set 2.5D
+#info Lifted domain coloring
 #define providesInit
 #define providesColor
 #include "Soft-Raytracer.frag"
@@ -33,7 +33,6 @@ uniform float JuliaY; slider[-2,1.3,2]
 vec2 c2 = vec2(JuliaX,JuliaY);
 
 
-#define PI 3.141592
 // Hue in radians
 vec3 HSVtoRGB(vec3 hsv) {
 	/// Implementation based on: http://en.wikipedia.org/wiki/HSV_color_space

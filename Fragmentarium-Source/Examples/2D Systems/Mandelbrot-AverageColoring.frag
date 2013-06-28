@@ -95,8 +95,6 @@ vec3 color(vec2 c) {
 #preset Default
 Center = -0.587525,0.297888
 Zoom = 1.79585
-AntiAliasScale = 1
-AntiAlias = 1
 Iterations = 278
 R = 0
 G = 0.4
@@ -116,7 +114,6 @@ EscapeRadius2 = 74468
 #preset Julia
 Center = -0.302544,-0.043626
 Zoom = 4.45019
-AntiAliasScale = 1
 Iterations = 464
 R = 0.58824
 G = 0.3728
@@ -131,5 +128,4 @@ Test = 1
 EscapeRadius2 = 91489
 Multiplier = 0.4424
 StripeDensity = 2.5
-AntiAlias = 2
 #endpreset

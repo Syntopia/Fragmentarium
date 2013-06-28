@@ -179,7 +179,7 @@ vec3 lighting(vec3 n, vec3 color, vec3 pos, vec3 dir, float eps, out float shado
 	float ambient = max(CamLightMin,dot(-n, dir))*CamLight.w;
 	float specular = (SpecularExp<=0.0) ? 0.0 : pow(s,SpecularExp)*Specular;
 	
-	if (dot(n,dir)<0.0) { specular = 0.0; }
+	//if (dot(n,dir)<0.0) { specular = 0.0; }
 	
 	return (SpotLight.xyz*diffuse+CamLight.xyz*ambient+ specular*SpotLight.xyz)*color;
 }

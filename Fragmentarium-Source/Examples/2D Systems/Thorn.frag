@@ -33,6 +33,4 @@ MapZoom = 2.1
 EscapeSize = 5.12666
 ColoringType = 0
 ColorFactor = 0.50667
-MinRadius = 0
-Scaling = -3.4774
 #endpreset

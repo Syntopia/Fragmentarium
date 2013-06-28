@@ -1,4 +1,4 @@
-#include "2D.frag"
+#include "Progressive2D.frag"
 #info Mandelbrot with Distance Estimation
 #group Mandelbrot
 
@@ -71,7 +71,7 @@ vec3 color(vec2 c) {
 		//	dr = length(z)*dr*2.0;
 		z = complexMul(z,z) + (Julia ? c2 : c);
 		
-		if (dot(z,z)> BR*BR*BR*BR) break;
+		if (dot(z,z)>100) break;
 	}
 	if ( i == Iterations) return vec3(0.0);
 	
@@ -80,7 +80,6 @@ vec3 color(vec2 c) {
 	
 	
 	float de =(Zoom/100.0)* r*log2(r)/dr;
-	if (mod(de*2000.0,1.0) > 0.9) return vec3(1.0,0.0,0.0);
 	if (de<BR/1000000.0) return vec3(0.0,0.0,0.0);
 	//if (mod(de*2000,1.0) > 0.5) return vec3(0.9);
 	
@@ -91,8 +90,6 @@ vec3 color(vec2 c) {
 #preset Default
 Center = -0.0644841,-0.00353997
 Zoom = 1
-AntiAliasScale = 1
-AntiAlias = 2
 Iterations = 181
 R = 0
 G = 0.4

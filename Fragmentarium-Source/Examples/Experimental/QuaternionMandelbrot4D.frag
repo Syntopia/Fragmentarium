@@ -1,11 +1,24 @@
 #info 4D Quaternion Mandelbrot Distance Estimator
+#define providesInit
 #include "DE-Raytracer.frag"
+#include "MathUtils.frag"
 #group 4D Quaternion Mandelbrot
+uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
 
-// This is Mandelbrot variation 
+uniform float RotAngle; slider[0.00,0,180]
+
+mat3 rot;
+
+void init() {
+	rot = rotationMatrix3(normalize(RotVector), RotAngle);
+}
+
+
+
+// This is Mandelbrot variation
 // of the usual 4D Quaternion Julia
 
-// The straight forward implementation 
+// The straight forward implementation
 // yields a boring, symmetriical object,
 // but after adding a reflection we
 // get some more Mandelbrot like.
@@ -15,14 +28,14 @@ uniform int Iterations;  slider[0,16,100]
 uniform int ColorIterations;  slider[0,16,100]
 // Breakout distance
 uniform float Threshold; slider[0,10,100]
-
+uniform float cz; slider[-2,0,2]
 float DE(vec3 pos) {
-	vec4 p = vec4(pos, 0.0);
+	vec4 p = vec4(pos, cz);
+	p.yzw*=rot;
 	vec4 dp = vec4(1.0, 0.0,0.0,0.0);
 	for (int i = 0; i < Iterations; i++) {
 		dp = 2.0* vec4(p.x*dp.x-dot(p.yzw, dp.yzw), p.x*dp.yzw+dp.x*p.yzw+cross(p.yzw, dp.yzw));
 		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) +  vec4(pos, 0.0);
-		p.yz = -p.zy;
 		float p2 = dot(p,p);
 		if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,p2)));
 		if (p2 > Threshold) break;

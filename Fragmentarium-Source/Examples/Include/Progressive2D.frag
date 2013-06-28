@@ -94,7 +94,7 @@ void main() {
      gl_FragColor = prev+vec4( pow(new.xyz,vec3(Gamma)) , new.w);
 #endif
  #else
-	vec2 r = uniformDisc( viewCoord*(float(backbufferCounter+1)) );
+	vec2 r = uniformDisc(vec2( 1.0*(float(backbufferCounter+1)) ));
 	float w =1.0;
       if (GaussianAA) {
 	 	// Gaussian

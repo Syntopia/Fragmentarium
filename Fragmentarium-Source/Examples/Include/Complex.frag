@@ -29,7 +29,7 @@ vec2 cMul(vec2 a, vec2 b) {
 
 vec2 cPower(vec2 z, float n) {
 	float r2 = dot(z,z);
-	return pow(r2,n/2.0)*vec2(cos(n*atan(z.y/z.x)),sin(n*atan(z.y/z.x)));
+	return pow(r2,n/2.0)*vec2(cos(n*atan(z.y,z.x)),sin(n*atan(z.y,z.x)));
 }
 
 

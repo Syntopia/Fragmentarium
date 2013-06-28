@@ -15,7 +15,7 @@ uniform float FudgeFactor;slider[0,1,1];
 
 float minDist = pow(10.0,Detail);
 float aoEps = pow(10.0,DetailAO);
-float MaxDistance = 100.0;
+float MaxDistance = 100000.0;
 
 // Maximum number of  raymarching steps.
 uniform int MaxRaySteps;  slider[0,56,2000]
