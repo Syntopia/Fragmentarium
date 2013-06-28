@@ -657,6 +657,7 @@ namespace Fragmentarium {
 			mainWindow->setUserUniforms(shaderProgram);
 			glColor3d(1.0,1.0,1.0);
 
+			/*
 			if (disableRedraw) {
 				QTime tx = QTime::currentTime();
 				glRectf(-1,-1,1,1); 
@@ -666,6 +667,13 @@ namespace Fragmentarium {
 			} else {
 				glRectf(-1,-1,1,1); 
 			}
+			*/
+			glBegin(GL_TRIANGLES);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  0.0f);	
+			glTexCoord2f(2.0f, 0.0f); glVertex3f( 3.0f, -1.0f,  0.0f);	
+			glTexCoord2f(0.0f, 2.0f); glVertex3f( -1.0f,  3.0f,  0.0f);	
+			//glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  0.0f);	
+			glEnd();
 
 			glFinish();// <-- should we call this?
 			shaderProgram->release();
@@ -744,15 +752,26 @@ namespace Fragmentarium {
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			
 			glEnable(GL_TEXTURE_2D);
+
+
+			/*
 			glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  0.0f);	
 			glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  0.0f);	
 			glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  0.0f);	
 			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  0.0f);	
-			
-			
 			glEnd();
+			*/
+
+			glBegin(GL_TRIANGLES);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  0.0f);	
+			glTexCoord2f(2.0f, 0.0f); glVertex3f( 3.0f, -1.0f,  0.0f);	
+			glTexCoord2f(0.0f, 2.0f); glVertex3f( -1.0f,  3.0f,  0.0f);	
+			//glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  0.0f);	
+			glEnd();
+
 			if (bufferShaderProgram) bufferShaderProgram->release();
 
 		}
