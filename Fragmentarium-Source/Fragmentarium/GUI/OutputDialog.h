@@ -20,63 +20,70 @@
 
 
 namespace Fragmentarium {
-   namespace GUI {
-      class OutputDialog : public QDialog
-      {
-         Q_OBJECT
-      public:
-         OutputDialog(QWidget* parent, int w, int h);
-         ~OutputDialog();
-         int getTiles();
-		 float getPadding();
-		 int getFrames() { return frameSpinBox->value(); }
-      public slots:
-         void chooseFile();
-         void tilesChanged(int);
-         void updateFileName(const QString &);
-         void updateFileName();
-         QString getFileName();
-         QString getFragmentFileName();
-         bool doSaveFragment() { return autoSaveCheckBox; }
+	namespace GUI {
+		class OutputDialog : public QDialog
+		{
+			Q_OBJECT
+		public:
+			OutputDialog(QWidget* parent, int w, int h);
+			~OutputDialog();
+			int getTiles();
+			float getPadding();
+			int getFrames() { return frameSpinBox->value(); }
+			int getFPS() {return fpsSpinBox->value(); } 
+			int getMaxTime() {return animCheckBox->isChecked() ? endTimeSpinBox->value() : 0; } 
 
-      private:
-         QString uniqueFileName;
-         int width;
-         int height;
-         QVBoxLayout *verticalLayout;
-         QLabel *label;
-         QSlider *tilesSlider;
-         QSpacerItem *verticalSpacer;
-         QLabel *label_2;
-         QSlider *downsamplingSlider;
-         QHBoxLayout *horizontalLayout_4;
-         QLabel *label_4;
-         QSpinBox *filterSizeSpinBox;
-         QSpacerItem *horizontalSpacer_3;
-         QSpacerItem *verticalSpacer_2;
-         QCheckBox *displayCheckBox;
-         QSpacerItem *verticalSpacer_3;
-         QHBoxLayout *horizontalLayout;
-         QLabel *label_3;
-         QLineEdit *filenameEdit;
-         QPushButton *fileButton;
-         QHBoxLayout *horizontalLayout_2;
-         QSpacerItem *horizontalSpacer;
-         QCheckBox *uniqueCheckBox;
-         QHBoxLayout *horizontalLayout_3;
-         QSpacerItem *horizontalSpacer_2;
-         QCheckBox *autoSaveCheckBox;
-         QSpacerItem *verticalSpacer_4;
-         QDialogButtonBox *buttonBox;
-		 QSpinBox* frameSpinBox;
+		public slots:
+			void animationChanged();
+			void chooseFile();
+			void updateTotalTiles(int);
+			void tilesChanged(int);
+			void updateFileName(const QString &);
+			void updateFileName();
+			QString getFileName();
+			QString getFragmentFileName();
+			bool doSaveFragment() { return autoSaveCheckBox; }
 
-		 QSlider* paddingSlider;
-		QLabel* label5;
+		private:
+			QString uniqueFileName;
+			int width;
+			int height;
+			QVBoxLayout *verticalLayout;
+			QLabel *label;
+			QSlider *tilesSlider;
+			QSpacerItem *verticalSpacer;
+			QHBoxLayout *horizontalLayout_4;
+			QSpinBox *filterSizeSpinBox;
+			QSpacerItem *horizontalSpacer_3;
+			QSpacerItem *verticalSpacer_2;
+			QSpacerItem *verticalSpacer_3;
+			QHBoxLayout *horizontalLayout;
+			QLabel *label_3;
+			QLineEdit *filenameEdit;
+			QPushButton *fileButton;
+			QHBoxLayout *horizontalLayout_2;
+			QSpacerItem *horizontalSpacer;
+			QCheckBox* animCheckBox;
+			QCheckBox *uniqueCheckBox;
+			QLayout* fpsLayout;
+			QLayout* endTimeLayout;
+			
+			QSpinBox* endTimeSpinBox;
+			QSpinBox* fpsSpinBox;
 
-         QStringList extensions;
-         QString fragmentFileName;
-      };
-   }
+			QHBoxLayout *horizontalLayout_3;
+			QSpacerItem *horizontalSpacer_2;
+			QCheckBox *autoSaveCheckBox;
+			QSpacerItem *verticalSpacer_4;
+			QDialogButtonBox *buttonBox;
+			QSpinBox* frameSpinBox;
+			QSlider* paddingSlider;
+			QLabel* label5;
+			QLabel* totalFrames;
+			QStringList extensions;
+			QString fragmentFileName;
+		};
+	}
 }
 
 

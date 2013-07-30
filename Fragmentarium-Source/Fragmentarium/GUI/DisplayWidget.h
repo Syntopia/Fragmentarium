@@ -4,6 +4,7 @@
 #include <QGLWidget>
 #include <QMainWindow>
 #include <QGLFramebufferObject>
+#include <QProgressDialog>
 #include <QPoint>
 #include <QList>
 #include <QGLShaderProgram>
@@ -11,7 +12,6 @@
 #include "SyntopiaCore/Math/Vector3.h"
 #include "SyntopiaCore/Math/Matrix4.h"
 #include "../Parser/Preprocessor.h"
-#include "AnimationController.h"
 #include "CameraControl.h"
 
 namespace Fragmentarium {
@@ -27,18 +27,26 @@ namespace Fragmentarium {
 		class DisplayWidget : public QGLWidget {
 			Q_OBJECT
 		public:
+
+			enum DrawingState { Progressive, Animation, Tiled };
+
 			/// Constructor
 			DisplayWidget(QGLFormat format, MainWindow* mainWindow, QWidget* parent);
 
 			/// Destructor
 			~DisplayWidget();
 
+			void clearTileBuffer();
+			QImage render(float padding, float time, int subframes, int w, int h, int tile, int tileMax, QProgressDialog* progress, int* steps, int totalSteps);
+
 			/// Use this whenever an redraw is required.
 			/// Calling this function multiple times will still only result in one redraw
 			void requireRedraw(bool clear);
 			void clearWorld();
 			void updateRefreshRate();
-
+			void setState(DrawingState state);
+			DrawingState getState() { return drawingState; }
+			boolean isContinuous() { return continuous; }
 			void reset();
 			void setContextMenu(QMenu* contextMenu) { this->contextMenu = contextMenu; }
 			void resetCamera(bool fullReset);
@@ -51,25 +59,26 @@ namespace Fragmentarium {
 			void setDisableRedraw(bool value) { disableRedraw = value; }
 			bool isRedrawDisabled() { return disableRedraw; }
 			CameraControl* getCameraControl() { return cameraControl; }
-			void setupTileRender(int tiles, float padding, int tileFrameMax, QString outputFile);
+			//void setupTileRender(int tiles, float padding, int tileFrameMax, QString outputFile);
 			void resetTime() { time = QTime::currentTime(); }
 			void setViewFactor(int val);
 			void setPreviewFactor(int val);
 			FragmentSource* getFragmentSource() { return &fragmentSource; }
-			void setAnimationSettings(AnimationSettings* a) { animationSettings = a; }
 			void keyReleaseEvent(QKeyEvent* ev);
 			void keyPressEvent(QKeyEvent* ev);
 			void setMaxSubFrames(int i ) { maxSubFrames = i; }
 			void uniformsHasChanged();
 			void setClearOnChange(bool v) { clearOnChange = v; }
 		
+			void updatePerspective();	
 		public slots:
+			void updateBuffers();
 			void clearPreviewBuffer();
 			void timerSignal();
 		protected:
 			void tileRender();
-			void drawFragmentProgram(int w,int h);
-			void drawToFrameBufferObject();
+			void drawFragmentProgram(int w,int h, bool toBuffer);
+			void drawToFrameBufferObject(QGLFramebufferObject* buffer);
 			void mouseMoveEvent(QMouseEvent* ev) ; 
 			void contextMenuEvent (QContextMenuEvent* ev);
 			void mouseReleaseEvent ( QMouseEvent * ev);
@@ -87,6 +96,7 @@ namespace Fragmentarium {
 		private:
 			QGLFramebufferObject* previewBuffer;
 			QGLFramebufferObject* backBuffer;
+			QGLFramebufferObject* hiresBuffer;
 			bool continuous;
 			bool disableRedraw;
 			bool fragmentShader;
@@ -94,18 +104,19 @@ namespace Fragmentarium {
 			QGLShaderProgram* bufferShaderProgram;
 
 			void clearBackBuffer();
-			void updatePerspective();	
+			void setViewPort(int w, int h);
 			void makeBuffers();
 			int pendingRedraws; // the number of times we must redraw 
 			int requiredRedraws;
 			QColor backgroundColor;
-			int backBufferCounter;
+			int subframeCounter;
 
 			QMenu* contextMenu;
 
 			bool disabled;
 			int tileFrame;
 			int tileFrameMax;
+			bool fitWindow;
 
 			MainWindow* mainWindow;
 			CameraControl* cameraControl;
@@ -113,13 +124,11 @@ namespace Fragmentarium {
 			QTime time;
 			QTime fpsTimer;
 			int fpsCounter;
-			int tiles;
 			float padding;
 			int tilesCount;
-			QVector<QImage> cachedTileImages;
+			int tiles;
 			int viewFactor;
 			int previewFactor;
-			AnimationSettings* animationSettings;
 			QString outputFile;
 			enum BufferType { None, RGBA8, RGBA16, RGBA32F };
 			BufferType bufferType;
@@ -134,6 +143,9 @@ namespace Fragmentarium {
 
 			bool clearOnChange;
 			int iterationsBetweenRedraws;
+			int bufferSizeX;
+			int bufferSizeY;
+			DrawingState drawingState;
 		};
 	};
 

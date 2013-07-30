@@ -25,7 +25,7 @@ varying vec2 viewCoord2;
 varying vec3 Dir;
 varying vec3 UpOrtho;
 varying vec3 Right;
-uniform int backbufferCounter;
+uniform int subframe;
 varying vec2 PixelScale;
 
 #ifdef providesInit
@@ -79,7 +79,7 @@ uniform bool EquiRectangular; checkbox[false]
 varying vec2 coord;
 //varying float zoom;
 
-uniform int backbufferCounter;
+uniform int subframe;
 uniform sampler2D backbuffer;
 varying vec2 viewCoord;
 varying vec2 viewCoord2;

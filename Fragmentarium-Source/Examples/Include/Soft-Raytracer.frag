@@ -154,7 +154,7 @@ float shadow(vec3 pos, float eps) {
 	vec3 o2 = normalize(cross(sunDir, o1));
 	
 	// Convert to spherical coords aliigned to sunDir;
-	vec2 r = rand2(viewCoord*(float(backbufferCounter)+1.0));
+	vec2 r = rand2(viewCoord*(float(subframe)+1.0));
 	r.x=r.x*2.*PI;
 	r.y= 1.0-r.y*SunSize;
 	float oneminus = sqrt(1.0-r.y*r.y);
@@ -172,7 +172,7 @@ float shadow(vec3 pos, float eps) {
 
 float getAO(vec3 from, vec3 normal) {
 	float totalDist = 0.0; //ShadowBackstep*minDist;
-	vec3 direction = rand3(123.3*viewCoord.xy*(1.0+float(backbufferCounter)))-vec3(0.5);
+	vec3 direction = rand3(123.3*viewCoord.xy*(1.0+float(subframe)))-vec3(0.5);
 	float maxDist =  pow(10.0,DetailAO/10.0);
 	if (dot(direction, normal)<0.0) direction*=-1.0;
 	direction = normalize(direction);
@@ -306,7 +306,7 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			dist = DE(p);
 			//dist = clamp(dist, 0.0, MaxDistance)*FudgeFactor;
 			dist *= FudgeFactor;
-			if (steps == 0) dist*=(Dither*rand1(direction.xy*float(backbufferCounter+1)))+(1.0-Dither);
+			if (steps == 0) dist*=(Dither*rand1(direction.xy*float(subframe+1)))+(1.0-Dither);
 			
 			
 			totalDist += dist;

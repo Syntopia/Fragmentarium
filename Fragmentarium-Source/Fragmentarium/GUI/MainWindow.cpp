@@ -22,7 +22,6 @@
 #include "MainWindow.h"
 #include "OutputDialog.h"
 #include "VariableEditor.h"
-#include "AnimationController.h"
 #include "../../SyntopiaCore/Logging/ListWidgetLogger.h"
 #include "../../SyntopiaCore/Exceptions/Exception.h"
 #include "../../Fragmentarium/Parser/Preprocessor.h"
@@ -40,7 +39,7 @@ using namespace Fragmentarium::Parser;
 namespace Fragmentarium {
 	namespace GUI {
 
-		
+
 		namespace {
 			int MaxRecentFiles = 5;
 
@@ -73,7 +72,7 @@ namespace Fragmentarium {
 					checkBox2->setObjectName("checkBox2");
 					verticalLayout->addWidget(checkBox2);
 
-					
+
 
 					QHBoxLayout* horizontalLayout2 = new QHBoxLayout();
 					horizontalLayout2->setObjectName("horizontalLayout2");
@@ -125,7 +124,7 @@ namespace Fragmentarium {
 					checkBox3->setText("Autorun Fragments on Load");
 					checkBox3->setStatusTip(tr("Disabling this might make debugging easier."));
 
-					
+
 
 					label->setText("Include paths:");
 					tabWidget->setTabText(tabWidget->indexOf(tab),  "Main");
@@ -186,12 +185,13 @@ namespace Fragmentarium {
 				preprocessorMenu->addAction("#define SubframeMax 20", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#TexParameter textureName GL_TEXTURE_MAG_FILTER GL_NEAREST", textEdit , SLOT(insertText()));
 				preprocessorMenu->addAction("#TexParameter textureName GL_TEXTURE_WRAP_S GL_CLAMP", textEdit , SLOT(insertText()));
-				
+
 
 
 
 				QMenu *uniformMenu = new QMenu("Special Uniforms", 0);
 				uniformMenu->addAction("uniform float time;", textEdit , SLOT(insertText()));
+				uniformMenu->addAction("uniform int subframe;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform vec2 pixelSize;", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform int i; slider[0,1,2]", textEdit , SLOT(insertText()));
 				uniformMenu->addAction("uniform float f; slider[0,1,2]", textEdit , SLOT(insertText()));
@@ -205,9 +205,9 @@ namespace Fragmentarium {
 
 				QMenu *presetMenu = new QMenu("Presets", 0);
 				presetMenu->addAction("Insert Preset from Current Settings",mainWindow, SLOT(insertPreset()));
-				
+
 				QMenu *includeMenu = new QMenu("Include (from Preferences Paths)", 0);
-				
+
 				QStringList filter; filter << "*.frag";
 				QSettings settings;
 				QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
@@ -223,7 +223,7 @@ namespace Fragmentarium {
 				menu->insertMenu(before, uniformMenu);
 				menu->insertMenu(before, presetMenu);
 				menu->insertMenu(before, includeMenu);
-			
+
 				menu->insertSeparator(before);
 			}
 		}
@@ -240,7 +240,7 @@ namespace Fragmentarium {
 			insertPlainText(text.section("//",0,0)); // strip comments
 		}
 
-		
+
 		void TextEdit::insertFromMimeData ( const QMimeData * source )
 		{
 			QTextEdit::insertPlainText ( source->text() );
@@ -389,6 +389,10 @@ namespace Fragmentarium {
 
 		MainWindow::MainWindow(QWidget* splashWidget) : splashWidget(splashWidget)
 		{
+			bufferXSpinBox = 0;
+			bufferYSpinBox = 0;
+			lastStoredTime = 0;
+			bufferSizeMultiplier = 1;
 			init();
 			loadFile(QDir(getExamplesDir()).absoluteFilePath("Historical 3D Fractals/Mandelbulb.frag"));
 			tabChanged(0); // to update title.
@@ -534,10 +538,13 @@ namespace Fragmentarium {
 
 		void MainWindow::init()
 		{
+			lastStoredTime = 0;
+
 			setAcceptDrops(true);
+			lastTime = new QTime(); 
+			lastTime->start();
 
 			rebuildRequired = false;
-
 			hasBeenResized = true;
 
 			oldDirtyPosition = -1;
@@ -651,10 +658,10 @@ namespace Fragmentarium {
 				QSettings settings;
 				if (settings.value("isStarting", false).toBool()) {
 					QString s = "It looks like the Fragmentarium crashed during the last startup.\n"
-					"\nTo prevent repeated crashes, you may choose to disable 'Autorun on Load'."
-					"\nThis option may be re-enabled through Preferences";
+						"\nTo prevent repeated crashes, you may choose to disable 'Autorun on Load'."
+						"\nThis option may be re-enabled through Preferences";
 
-					
+
 					removeSplash();
 					QMessageBox msgBox;
 					msgBox.setText(s);
@@ -674,16 +681,9 @@ namespace Fragmentarium {
 			createToolBars();
 			createStatusBar();
 			createMenus();
-
-			animationController = new AnimationController(this);
-			animationController->setAllowedAreas(Qt::BottomDockWidgetArea);
-			addDockWidget(Qt::BottomDockWidgetArea, animationController, Qt::Vertical);
-			animationController->setFloating(true);
-			connect(((AnimationController*)animationController)->getAnimationSettings(), SIGNAL(timeUpdated()), this, SLOT(callRedraw()));
-			connect(animationController, SIGNAL(wasHidden()), this, SLOT(animationControllerHidden()));
-
 			renderModeChanged();
 
+			play();
 		}
 
 		void MainWindow::showWelcomeNote() {
@@ -698,11 +698,6 @@ namespace Fragmentarium {
 
 		}
 
-		void MainWindow::animationControllerHidden() {
-			INFO("Animation Controller closed. Switching to automatic render mode.");
-			renderModeChanged();
-
-		}
 
 		void MainWindow::setUserUniforms(QGLShaderProgram* shaderProgram) {
 			if (!variableEditor || !shaderProgram) return;
@@ -735,8 +730,8 @@ namespace Fragmentarium {
 				dockLog->show();
 				menuBar()->show();
 				statusBar()->show();
-				fileToolBar->show();
-				editToolBar->show();
+				fileToolBar->hide();
+				editToolBar->hide();
 				renderToolBar->show();
 				tabBar->show();
 				renderModeToolBar->show();
@@ -825,6 +820,7 @@ namespace Fragmentarium {
 			aboutAction->setStatusTip(tr("Shows the About box"));
 			connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
 
+
 			welcomeAction = new QAction(QIcon(":/Icons/documentinfo.png"), tr("Show Welcome Note"), this);
 			connect(welcomeAction, SIGNAL(triggered()), this, SLOT(showWelcomeNote()));
 
@@ -895,7 +891,7 @@ namespace Fragmentarium {
 			// -- Render Menu --
 			renderMenu = menuBar()->addMenu(tr("&Render"));
 			renderMenu->addAction(renderAction);
-			renderMenu->addAction("High Resolution Render", this, SLOT(tileBasedRender()));
+			renderMenu->addAction("High Resolution and Animation Render", this, SLOT(tileBasedRender()));
 			renderMenu->addSeparator();
 			renderMenu->addAction("Output Preprocessed Script (for Debug)", this, SLOT(showDebug()));
 			renderMenu->addSeparator();
@@ -971,6 +967,8 @@ namespace Fragmentarium {
 			menuBar()->addMenu(mc);
 
 			helpMenu = menuBar()->addMenu(tr("&Help"));
+
+			
 			helpMenu->addAction(aboutAction);
 			helpMenu->addAction(welcomeAction);
 			helpMenu->addAction(controlAction);
@@ -984,13 +982,7 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::tileBasedRender() {
-
-			if (viewSlider->value() != 0 || previewSlider->value()) {
-				CRITICAL("'Tile Preview' and 'Preview' must both be set to zero, before rendering tiles.");
-				return;
-			}
-
-			OutputDialog od(this, engine->width(), engine->height());
+			OutputDialog od(this, bufferXSpinBox->value(),bufferYSpinBox->value());
 			if (od.exec() == QDialog:: Accepted) {
 				if (od.doSaveFragment()) {
 					QString fileName = od.getFragmentFileName();
@@ -1009,7 +1001,7 @@ namespace Fragmentarium {
 						QString append = "\n\n#preset default\n" + variableEditor->getSettings() + "\n#endpreset\n\n";
 						QString final = prepend + fs.getText() + append;
 
-						
+
 						QString f = od.getFileName();
 						QDir oDir(QFileInfo(f).absolutePath());
 						QString subdirName = f + " Files";
@@ -1021,7 +1013,7 @@ namespace Fragmentarium {
 							return;
 						}
 						subdirName = oDir.filePath(subdirName); // full name
-						
+
 
 						QFile fileStream(subdirName + "/" + fileName);
 						if (!fileStream.open(QFile::WriteOnly | QFile::Text)) {
@@ -1035,7 +1027,7 @@ namespace Fragmentarium {
 						QTextStream out(&fileStream);
 						out << final;
 						INFO("Saved fragment + settings as: " + fileName);
-	
+
 						// Copy files.
 						QStringList ll = p.getDependencies();
 						foreach (QString l, ll) {
@@ -1044,9 +1036,9 @@ namespace Fragmentarium {
 							if (!QFile::copy(from,to)) {
 								QMessageBox::warning(this, tr("Fragmentarium"),
 									tr("Could not copy dependency:\n'%1' to \n'%2'.")
-								.arg(from)
-								.arg(to));
-							return;
+									.arg(from)
+									.arg(to));
+								return;
 							}
 
 						}
@@ -1054,32 +1046,94 @@ namespace Fragmentarium {
 						WARNING(e.getMessage());
 					}
 				}
-				engine->setupTileRender(od.getTiles(),od.getPadding(), od.getFrames(), od.getFileName());
+
+				engine->clearTileBuffer();
+				DisplayWidget::DrawingState oldState = engine->getState();
+				engine->setState(DisplayWidget::Tiled);
+				int maxTiles = od.getTiles();
+				float padding = od.getPadding();
+				int maxSubframes = od.getFrames();
+				QString fileName = od.getFileName();
+				int fps = od.getFPS();
+				int maxTime = od.getMaxTime();
+				int timeSteps = fps*maxTime;
+
+				if (timeSteps==0) {
+					timeSteps = 1;
+				}
+
+				int totalSteps= timeSteps*maxTiles*maxTiles*maxSubframes;
+				int steps = 0;
+				QProgressDialog progress("Rendering", "Abort", 0, totalSteps, this);
+				progress.setWindowModality(Qt::WindowModal);
+				progress.setValue(0);
+				progress.setMinimumDuration(0);
+
+				int w = bufferXSpinBox->value();
+				int h = bufferYSpinBox->value();
+				for (int timeStep = 0; timeStep<timeSteps ; timeStep++) {
+					float time = timeStep/(float)fps;
+
+					if (progress.wasCanceled()) { 
+						break;
+					}
+
+					QVector<QImage> cachedTileImages;
+					for (int tile = 0; tile<maxTiles*maxTiles; tile++) {
+
+						if (progress.wasCanceled()) { 
+							break;
+						}
+
+						QImage im = engine->render(padding,time, maxSubframes, w,h, tile, maxTiles, &progress, &steps, totalSteps);
+
+						if (padding>0.0)  {
+							int w = im.width();
+							int h = im.height();
+							int nw = (int)(w / (1.0 + padding));
+							int nh = (int)(h / (1.0 + padding));
+							int ox = (w-nw)/2;
+							int oy = (h-nh)/2;
+							im = im.copy(ox,oy,nw,nh);
+						}
+
+						cachedTileImages.append(im);
+					}
+					// Now assemble image
+					if (!progress.wasCanceled()) { 
+						int w = cachedTileImages[0].width();
+						int h = cachedTileImages[0].height();
+						QImage finalImage(w*maxTiles,h*maxTiles,cachedTileImages[0].format());
+
+						INFO(QString("Created combined image (%1,%2)").arg(finalImage.width()).arg(finalImage.height()));
+						// Isn't there a Qt function to copy entire images?
+						for (int i = 0; i < maxTiles*maxTiles; i++) {
+							int dx = (i / maxTiles);
+							int dy = (maxTiles-1)-(i % maxTiles);
+							for (int x = 0; x < w; x++) {
+								for (int y = 0; y < h; y++) {
+									QRgb p = cachedTileImages[i].pixel(x,y);
+									finalImage.setPixel(x+w*dx,y+h*dy,p);
+								}
+							}
+						}
+						if (timeSteps==1) { 
+							QDialog* qd = new QDialog();
+							QVBoxLayout *l = new QVBoxLayout;
+							QLabel* label = new QLabel();
+							label->setPixmap(QPixmap::fromImage(finalImage));
+							l->addWidget(label);
+							qd->setLayout(l);
+							qd->show();		
+						}
+					}
+				}
+
+				engine->setState(oldState);
+				progress.setValue(totalSteps);
 			};			
-		}
 
-		TileRenderDialog::TileRenderDialog(QWidget* parent, int w, int h) : QDialog(parent), w(w), h(h) {
-			setWindowTitle("Select number of tiles");
-			QVBoxLayout* layout = new QVBoxLayout(this);
-			tileLabel = new QLabel("Resolution: XxX", this);
-			layout->addWidget(tileLabel);
-			tileSlider = new QSlider(Qt::Horizontal, this);
-			layout->addWidget(tileSlider);
-			tileSlider->setMinimum(1);
-			tileSlider->setValue(3);
-			tileSlider->setMaximum(20);
-			connect(tileSlider, SIGNAL(valueChanged(int)), this, SLOT(tilesChanged(int)));
-			tilesChanged(0);
-
-			QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-			layout->addWidget(buttonBox);
-			connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-			connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-		}
-
-		void TileRenderDialog::tilesChanged(int) {
-			int t = tileSlider->value();
-			tileLabel->setText(QString("Resolution: %1x%2 (%3 Megapixels)").arg(t*w).arg(t*h).arg((double)((t*w*t*h)/(1024.0*1024.0)),0,'f',1));
+			engine->clearTileBuffer();
 		}
 
 		void MainWindow::pasteSelected() {
@@ -1144,11 +1198,49 @@ namespace Fragmentarium {
 			fileToolBar->addAction(newAction);
 			fileToolBar->addAction(openAction);
 			fileToolBar->addAction(saveAction);
+			fileToolBar->hide();
+
 
 			editToolBar = addToolBar(tr("Edit Toolbar"));
 			editToolBar->addAction(cutAction);
 			editToolBar->addAction(copyAction);
 			editToolBar->addAction(pasteAction);
+			editToolBar->hide();
+
+			bufferToolBar = addToolBar(tr("Buffer Dimensions"));
+			bufferToolBar->addWidget(new QLabel("Buffer Size. X: ", this));
+			bufferXSpinBox = new QSpinBox(bufferToolBar);
+			bufferXSpinBox->setRange(0,1000);
+			bufferXSpinBox->setValue(10);
+			bufferXSpinBox->setSingleStep(1);
+			bufferToolBar->addWidget(bufferXSpinBox);
+			bufferToolBar->addWidget(new QLabel("Y: ", this));
+			bufferYSpinBox = new QSpinBox(bufferToolBar);
+			bufferYSpinBox->setRange(0,1000);
+			bufferYSpinBox->setValue(10);
+			bufferYSpinBox->setSingleStep(1);
+
+			bufferSizeControl = new QPushButton("Lock to window size", bufferToolBar);
+			QMenu* menu = new QMenu();
+			bufferAction1 = menu->addAction("Lock to window size");
+			bufferAction1_2 = menu->addAction("Lock to 1/2 window size");
+			bufferAction1_4 = menu->addAction("Lock to 1/4 window size");
+			bufferAction1_6 = menu->addAction("Lock to 1/6 window size");
+			menu->addSeparator();
+			bufferActionZ2 = menu->addAction("Tile preview (2x zoom)");
+			bufferActionZ4= menu->addAction("Tile preview (4x zoom)");
+			bufferActionZ6 = menu->addAction("Tile preview (6x zoom)");
+			menu->addSeparator();
+			bufferActionCustom = menu->addAction("Custom size");
+			bufferSizeControl->setMenu(menu);
+
+			connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(bufferActionChanged(QAction*)));
+
+			connect(menu, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
+
+			bufferToolBar->addWidget(bufferYSpinBox);
+			bufferToolBar->addWidget(bufferSizeControl);
+
 
 			renderToolBar = addToolBar(tr("Render Toolbar"));
 			renderToolBar->addAction(renderAction);
@@ -1159,144 +1251,195 @@ namespace Fragmentarium {
 
 			renderModeToolBar->addWidget(new QLabel("Render mode:", this));
 
-			
-			autoRefreshButton = new QPushButton( "Auto",renderModeToolBar);
-			autoRefreshButton->setCheckable(true);
-			autoRefreshButton->setChecked(true);
-			manualRefreshButton = new QPushButton("Manual",renderModeToolBar);
-			manualRefreshButton->setCheckable(true);
-			continousRefreshButton = new QPushButton( "Continuous",renderModeToolBar);
-			continousRefreshButton->setCheckable(true);
-			animationButton = new QPushButton("Animation", renderModeToolBar );
-			animationButton->setCheckable(true);
+
+			progressiveButton = new QPushButton( "Progressive (subframe)",renderModeToolBar);
+			progressiveButton->setCheckable(true);
+			progressiveButton->setChecked(true);
+			animationButton2 = new QPushButton( "Animation (time)",renderModeToolBar);
+			animationButton2->setCheckable(true);
+
 			QButtonGroup* bg =new QButtonGroup(renderModeToolBar);
-			bg->addButton(autoRefreshButton);
-			bg->addButton(manualRefreshButton);
-			bg->addButton(continousRefreshButton);
-			bg->addButton(animationButton);
-			
-			connect(autoRefreshButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
-			connect(manualRefreshButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
-			connect(continousRefreshButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
-			connect(animationButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
-			
-			renderModeToolBar->addWidget(autoRefreshButton);
-			renderModeToolBar->addWidget(manualRefreshButton);
-			renderModeToolBar->addWidget(continousRefreshButton);
-			renderModeToolBar->addWidget(animationButton);
+			bg->addButton(progressiveButton);
+			bg->addButton(animationButton2);
 
-			/*
-			renderCombo->addItem("Automatic");
-			renderCombo->addItem("Manual");
-			renderCombo->addItem("Continuous");
-			renderCombo->addItem("Animation");
-			//renderCombo->addItem("Custom Resolution");
-			connect(renderCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(renderModeChanged(int)));
-			renderModeToolBar->addWidget(renderCombo);
-			*/
-			
-			renderButton = new QPushButton(renderModeToolBar);
-			renderButton->setText("");
-			// renderButton->setShortcut(Qt::Key_F6); doesn't work?
-			connect(renderButton, SIGNAL(clicked()), this, SLOT(callRedraw()));
-			renderModeToolBar->addWidget(renderButton);
+			connect(progressiveButton, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
+			connect(animationButton2, SIGNAL(clicked()), this, SLOT(renderModeChanged()));
 
-			viewLabel = new QLabel("Tile Preview (off)", renderModeToolBar);
-			viewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
-			viewSlider->setTickInterval(1);
-			viewSlider->setMinimum(0);
-			viewSlider->setMaximum(12);
-			viewSlider->setTickPosition(QSlider::TicksBelow);
-			viewSlider->setMaximumWidth(100);
-			connect(viewSlider, SIGNAL(sliderReleased()), this, SLOT(viewSliderChanged()));
-			renderModeToolBar->addWidget(viewLabel);
-			renderModeToolBar->addWidget(viewSlider);
-			viewSliderChanged();
+			renderModeToolBar->addWidget(progressiveButton);
+			renderModeToolBar->addWidget(animationButton2);
 
-			previewLabel = new QLabel("Preview (off)", renderModeToolBar);
-			previewSlider = new QSlider(Qt::Horizontal,renderModeToolBar);
-			previewSlider->setTickInterval(1);
-			previewSlider->setMinimum(0);
-			previewSlider->setMaximum(4);
-			previewSlider->setTickPosition(QSlider::TicksBelow);
-			previewSlider->setMaximumWidth(100);
-			connect(previewSlider, SIGNAL(sliderReleased()), this, SLOT(previewSliderChanged()));
-			renderModeToolBar->addWidget(previewLabel);
-			renderModeToolBar->addWidget(previewSlider);
+
+			rewindAction = new QAction(QIcon(":/Icons/player_rew.png"), tr("&Rewind"), this);
+			rewindAction->setShortcut(tr("F2"));
+			rewindAction->setStatusTip(tr("Rewinds animation."));
+			connect(rewindAction, SIGNAL(triggered()), this, SLOT(rewind()));
+
+			playAction = new QAction(QIcon(":/Icons/player_play.png"), tr("&Start"), this);
+			playAction->setShortcut(tr("F2"));
+			playAction->setStatusTip(tr("Starts animation or subframe rendering."));
+			connect(playAction, SIGNAL(triggered()), this, SLOT(play()));
+
+			stopAction = new QAction(QIcon(":/Icons/player_stop.png"), tr("&Stop"), this);
+			stopAction->setShortcut(tr("F2"));
+			stopAction->setStatusTip(tr("Stops animation or subframe rendering."));
+			connect(stopAction, SIGNAL(triggered()), this, SLOT(stop()));
+			stopAction->setEnabled(false);
+
+			renderModeToolBar->addAction(rewindAction);
+			renderModeToolBar->addAction(playAction);
+			renderModeToolBar->addAction(stopAction);
+
+
 
 			frameLabel = new QLabel("Subframe 1. Max: ", renderModeToolBar);
 			renderModeToolBar->addWidget(frameLabel);
 			frameSpinBox = new QSpinBox(renderModeToolBar);
-			frameSpinBox->setRange(0,1000);
+			frameSpinBox->setRange(0,10000);
 			frameSpinBox->setValue(10);
 			frameSpinBox->setSingleStep(5);
 
 			connect(frameSpinBox, SIGNAL(valueChanged(int)), this, SLOT(maxSubSamplesChanged(int)));
-			
+
 			renderModeToolBar->addWidget(frameSpinBox);
-			
+
+
+
+			addToolBarBreak();
+			timeToolBar = addToolBar(tr("Time"));
+
+			timeLabel = new QLabel("Time: 0s ", renderModeToolBar);
+			timeLabel->setFixedWidth(80);
+			timeToolBar->addWidget(timeLabel);
+
+			timeSlider = new QSlider(Qt::Horizontal, this);
+			timeSlider->setMinimum(0);
+			timeSlider->setValue(0);
+			timeSlider->setMaximum(10000);
+			connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeChanged(int)));
+			timeToolBar->addWidget(timeSlider);
+
+			timeMaxSpinBox = new QSpinBox(renderModeToolBar);
+			timeMaxSpinBox->setRange(0,10000);
+			timeMaxSpinBox->setValue(100);
+			timeMaxSpinBox->setSingleStep(10);
+			connect(timeMaxSpinBox, SIGNAL(valueChanged(int)), this, SLOT(timeMaxChanged(int)));
+			timeToolBar->addWidget(timeMaxSpinBox);
+		}
+
+
+		double MainWindow::getTimeSliderValue() {
+			return (timeSlider->value()/10000.0)*timeMaxSpinBox->value();
+		}
+
+		void MainWindow::setTimeSliderValue(double value) {
+			timeSlider->setValue(value*10000.0/timeMaxSpinBox->value());
+		}
+
+		void MainWindow::bufferActionChanged(QAction* action) {
+			bufferSizeControl->setText(action->text());
+			if (action == bufferAction1) {
+				bufferSizeMultiplier = 1;	
+			} else if (action == bufferAction1_2) {
+				bufferSizeMultiplier = 2;	
+			} else if (action == bufferAction1_4) {
+				bufferSizeMultiplier = 4;	
+			} else if (action == bufferAction1_6) {
+				bufferSizeMultiplier = 6;	
+			} else if (action == bufferActionZ2) {
+				bufferSizeMultiplier = -2;	
+			} else if (action == bufferActionZ4) {
+				bufferSizeMultiplier = -4;	
+			} else if (action == bufferActionZ6) {
+				bufferSizeMultiplier = -6;	
+			} else if (action == bufferActionCustom) {
+				bufferSizeMultiplier = 0;	
+			}  
+			engine->updateBuffers();
+		}
+
+		void MainWindow::timeChanged(int) {
+			INFO("TimeChanged");
+			lastTime->restart();
+			lastStoredTime = getTimeSliderValue();
+			getTime();
+			engine->requireRedraw(true);
+		}
+
+		void MainWindow::rewind() {
+			lastTime->restart();
+			lastStoredTime = 0;
+			getTime();
+		}
+
+		void MainWindow::play() {
+			playAction->setEnabled(false);
+			stopAction->setEnabled(true);
+			lastTime->restart();
+			INFO(QString("Restarting: last stored time to %1").arg(lastStoredTime));
+
+			engine->setContinuous(true);
+			getTime();
+		}
+
+		void MainWindow::stop() {
+			playAction->setEnabled(true);
+			stopAction->setEnabled(false);
+			lastStoredTime = getTime();
+			INFO(QString("Stopping: last stored time set to %1").arg(lastStoredTime));
+
+			engine->setContinuous(false);
+			getTime();
 		}
 
 		void MainWindow::maxSubSamplesChanged(int i) {
 			engine->setMaxSubFrames(i);
 		}
 
-		void MainWindow::viewSliderChanged() {
-			int v = viewSlider->value();
-			if (v>0) {
-				viewLabel->setText(QString("  Tile Preview (%1x)").arg(abs(v+1)));
-			} else {
-				viewLabel->setText(QString("  Tile Preview (off)"));
-			}
-			engine->setViewFactor(v);
-		}
-
-		void MainWindow::previewSliderChanged() {
-			int v = previewSlider->value();
-			if (v>0) {
-				previewLabel->setText(QString("  Preview (%1x)").arg(abs(v+1)));
-			} else {
-				previewLabel->setText(QString("  Preview (off)"));
-			}
-			engine->setPreviewFactor(v);
-		}
-
-
 		void MainWindow::setSubFrameMax(int i) {
 			frameSpinBox->setValue(i);
 			engine->setMaxSubFrames(i);
 		}
 
-		void MainWindow::renderModeChanged() {
-			
-			QObject* o = QObject::sender();
-			if (o == 0 || o == autoRefreshButton) {
-				INFO("Automatic screen updates. Every time a parameter or camera changes, an update is triggered.");
-				engine->setMaxSubFrames(0);
-			} else if (o == manualRefreshButton) {
-				INFO("Manual screen updates. Press 'update' to refresh the screen.");
-				engine->setMaxSubFrames(0);
-			} else if (o == continousRefreshButton) {
-				INFO("Continuous screen updates. Updates at a fixed interval.");
-				engine->setMaxSubFrames(frameSpinBox->value());
-			}  else if (o == animationButton) {
-				INFO("Animation mode. Use controller to jump in time.");
-				engine->setMaxSubFrames(0);
-			}
-			if (o == animationButton) {
-				animationController->show();
-				engine->setAnimationSettings(((AnimationController*)animationController)->getAnimationSettings());
-				animationController->resize(animationController->width(), animationController->minimumHeight());
-			} else {
-				engine->setAnimationSettings(0);
-				animationController->hide();
-			}
-			renderButton->setEnabled(o!=autoRefreshButton && o!=animationButton);
-			renderButton->setText( (o==continousRefreshButton) ? "Reset Time" : "Update (F6)");
-			engine->setContinuous(o==continousRefreshButton);
-			engine->setDisableRedraw(o == manualRefreshButton);
+		double MainWindow::getTime() {
+			DisplayWidget::DrawingState state = engine->getState();
 
-			if (o!=continousRefreshButton) setFPS(0);
+			double time = 0.0;
+			if (!engine->isContinuous()) {
+				// The engine is not in 'running' mode. Return last stored paused time.
+				time = lastStoredTime;
+			} else {
+				if (state == DisplayWidget::Progressive) {
+					time = lastStoredTime;
+				} else if (state == DisplayWidget::Animation) {
+					time = lastStoredTime + lastTime->elapsed()/1000.0;
+				} else if (state == DisplayWidget::Tiled) {
+
+				}
+			}
+			timeLabel->setText(QString("Time: %1 s").arg(time));
+			timeSlider->blockSignals(true);
+			setTimeSliderValue(time);
+			timeSlider->blockSignals(false);
+			return time;
+		}
+
+		void MainWindow::renderModeChanged() {
+			engine->setMaxSubFrames(frameSpinBox->value());
+
+			QObject* o = QObject::sender();
+			if (o == 0 || o == progressiveButton) {
+				lastStoredTime = getTime();
+				engine->setState(DisplayWidget::Progressive);
+				getTime();
+			} else if (o == animationButton2) {
+				lastStoredTime = getTime();
+				
+				engine->setState(DisplayWidget::Animation);
+				lastTime->restart();
+				getTime();
+			} 
+
+			engine->setDisableRedraw(false);
 		}
 
 		void MainWindow::setSubFrameDisplay(int i) {
@@ -1306,12 +1449,13 @@ namespace Fragmentarium {
 		void MainWindow::callRedraw() {
 			bool state = engine->isRedrawDisabled();
 			engine->setDisableRedraw(false);
-
+			/*
 			if (continousRefreshButton->isChecked()) {
-				engine->resetTime();
+			engine->resetTime();
 			} else {
-				engine->requireRedraw(true);
+			engine->requireRedraw(true);
 			}
+			*/
 			engine->setDisableRedraw(state);
 
 		}
@@ -1465,7 +1609,7 @@ namespace Fragmentarium {
 			QTime start = QTime::currentTime();
 			fileManager.setIncludePaths(includePaths);
 			fileManager.setOriginalFileName(filename);
-					
+
 			Preprocessor p(&fileManager);
 			bool doublify = settings.value("doublify", false).toBool();
 
@@ -1545,7 +1689,7 @@ namespace Fragmentarium {
 				// fs->sourceFiles[fs->sourceFile[i]]->fileName()
 				if (fs->lines[i] == blockNumber && 
 					QString::compare(filename,fs->sourceFileNames[fs->sourceFile[i]], Qt::CaseInsensitive)==0
-				) ex.append(QString::number(i+4));
+					) ex.append(QString::number(i+4));
 			}
 			if (ex.count()) {
 				x = " Line in preprocessed script: " + ex.join(",");
@@ -1803,6 +1947,39 @@ namespace Fragmentarium {
 			getEngine()->updateRefreshRate();
 		}
 
+		void MainWindow::getBufferSize(int w, int h, int& bufferSizeX, int& bufferSizeY, bool& fitWindow) {
+			if (!bufferXSpinBox || !bufferYSpinBox) return;
+			if (bufferSizeMultiplier>0) {
+				// Locked to a fraction of the window size
+				bufferSizeX = w/bufferSizeMultiplier;
+				bufferSizeY = h/bufferSizeMultiplier;
+				bufferXSpinBox->setValue(bufferSizeX);
+				bufferYSpinBox->setValue(bufferSizeY);
+				fitWindow = true;
+			} else if (bufferSizeMultiplier<=0) {
+				bufferSizeX = bufferXSpinBox->value();
+				bufferSizeY =  bufferYSpinBox->value();
+
+				float f = bufferSizeX/(float)w;
+				bool downsized = false;
+				if (f>1.0) {
+					downsized = true;
+					bufferSizeX/=f;
+					bufferSizeY/=f;
+				}
+
+				f = bufferSizeY/(float)h;
+				if (f>1.0) {
+					downsized = true;
+					bufferSizeX/=f;
+					bufferSizeY/=f;
+				}
+
+
+				fitWindow = false;
+			} 
+		}
+
 		void MainWindow::indent() {
 			if (tabBar->currentIndex() == -1) { WARNING("No open tab"); return; } 
 
@@ -1830,14 +2007,16 @@ namespace Fragmentarium {
 		}
 
 		void MainWindow::setFPS(float fps) {
-
+			/*
 			if (!continousRefreshButton->isChecked()) {
-				fpsLabel->setText("FPS: n.a.");
-				return;
+			fpsLabel->setText("FPS: n.a.");
+			return;
 			}
-
+			*/
 			if (fps>0) {
 				fpsLabel->setText("FPS: " + QString::number(fps, 'f' ,1) + " (" +  QString::number(1.0/fps, 'f' ,1) + "s)");
+			} else {
+				fpsLabel->setText("FPS: n.a.");
 			}
 		}
 

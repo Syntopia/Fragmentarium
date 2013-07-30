@@ -1,6 +1,6 @@
 #info Notice: set Render mode to Continous
 #infoTheli-at's Pseudo Kleinian (Scale 1 JuliaBox + Something
-#include "Soft-Raytracer.frag"
+#include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group PseudoKleinian
 
@@ -77,29 +77,33 @@ float DE(vec3 p){
 
 #preset Default
 FOV = 0.54166
-Eye = 0.938095,2.89797,2.39606
-Target = -9.14404,1.76701,1.92423
-Up = -0.0447157,-0.0180655,0.998804
-AntiAlias = 1
+Eye = 0.482529,2.90462,2.51987
+Target = -9.25067,0.0356616,2.95014
+Up = 0.0415153,0.00112303,0.999137
+EquiRectangular = false
+FocalPlane = 0.8108
+Aperture = 0.0122
+Gamma = 2.08335
+ToneMapping = 3
+Exposure = 1.19388
+Brightness = 1
+Contrast = 1
+Saturation = 1
+GaussianWeight = 1
+AntiAliasScale = 2
 Detail = -2.35396
 DetailAO = -0.5
 FudgeFactor = 1
 MaxRaySteps = 56
-BoundingSphere = 10
 Dither = 0.39474
 NormalBackStep = 1
 AO = 0,0,0,0.7
-Specular = 3.9796
 SpecularExp = 16
-SpotLight = 1,1,1,0.4
-SpotLightDir = 0.90362,0.51808
 CamLight = 1,1,1,1.57746
 CamLightMin = 0
 Glow = 1,1,1,0
 GlowMax = 20
 Fog = 0.37038
-HardShadow = 0
-ShadowSoft = 2
 Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 1
@@ -122,8 +126,13 @@ C = 0.21052,0.3158,-0.03508
 TThickness = 0.01
 DEoffset = 0
 Offset = 0.88888,0,0
-FocalPlane = 0.8108
-Aperture = 0.0122
+Specular = 0.4
+SpecularMax = 10
+SpotLight = 1,1,1,0.4
+SpotLightDir = 0.1,0.1
+HardShadow = 0
+ShadowSoft = 2
+DebugSun = false
 #endpreset
 
 #preset p2

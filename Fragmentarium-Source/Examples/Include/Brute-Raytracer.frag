@@ -118,7 +118,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 	
 	
 	// Check neighbors
-	if (SampleNeighbors && backbufferCounter>1) {
+	if (SampleNeighbors && subframe>1) {
 		vec2 position = (viewCoord*1.0+vec2(1.0))/2.0;
 		
 		for (int dx = -1; dx<=1; dx++) {
@@ -137,7 +137,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 	if (Stratify) {
 		float stepSize =  closest / float(Samples);
 		
-		float dither= rand(viewCoord*float(backbufferCounter));
+		float dither= rand(viewCoord*float(subframe));
 		dist += dither*stepSize;
 		int steps;
 		for (steps=0; steps<Samples; steps++) {
@@ -149,7 +149,7 @@ vec4 color(vec3 from, vec3 dir, float closest) {
 	} else {
 		
 		for (int i=0; i<Samples; i++) {
-			dist = closest*rand(viewCoord*float(backbufferCounter*i));
+			dist = closest*rand(viewCoord*float(subframe*i));
 			vec3 point = from + (Near+dist*(Far-Near)) * direction;
 			if (inside(point) != startsInside) {
 				closest = dist;

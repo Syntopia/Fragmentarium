@@ -1,4 +1,16 @@
+Currently pending issues: 
+- No files saved from the output dialog. 
+- Restore debug build in VS
+- Restore Qt Creator build
+- Buffer size: tile preview
+- Knighty collection, cleanup
+- Check for new frags.
+- Remove 'Replace all floats' preferences and code.
 
+
+30-07-13 [MHC]   New High-resolution render dialog and new time and subframe control. Buffer size can now be controlled explicitly.
+				 The old 'backbufferCounter' is now 'subframe'
+28-06-13 [MHC]   Bugfix: now uses a triangle instead of a quad to render shaders.
 19-11-12 [MHC]
 				 Animations now support progressive rendering
 				 Tile rendering now has added padding option

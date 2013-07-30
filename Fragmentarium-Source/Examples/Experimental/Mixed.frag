@@ -98,7 +98,6 @@ Detail = -2.10616
 DetailAO = -0.5
 FudgeFactor = 1
 MaxRaySteps = 56
-BoundingSphere = 2
 Dither = 0.5
 AO = 0,0,0,0.7
 Specular = 3.4167

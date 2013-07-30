@@ -84,8 +84,6 @@ vec3 color(vec2 c) {
 #preset Default
 Center = -0.285288,-0.0120426
 Zoom = 0.854514
-AntiAliasScale = 1
-AntiAlias = 3
 Iterations = 328
 R = 0
 G = 0.4

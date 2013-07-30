@@ -4,7 +4,7 @@
 // based on a special uniform 'time' variable.
 //
 // To see this in action, you must
-// change the Render mode to 'Continuous' - 
+// change the Render mode to 'Animation (time)' - 
 // otherwise the system will only render changes 
 // when something changes.
 

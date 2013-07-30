@@ -25,9 +25,9 @@ uniform vec3 RotVector; slider[(0,0,0),(1,1,1),(1,1,1)]
 uniform float RotAngle; slider[0.00,0,180]
 
 mat3 rot;
-
+uniform float time;
 void init() {
-	 rot = rotationMatrix3(normalize(RotVector), RotAngle);
+	 rot = rotationMatrix3(normalize(RotVector), RotAngle+time*10.0);
 }
 
 // This is my power function, based on the standard spherical coordinates as defined here:

@@ -40,9 +40,10 @@ vec3[](
 float DE(vec3 z)
 {
 	
-	vec3 c;
+	vec3 c =vec3(0.0);
 	int n = 0;
-	float dist, d;
+	float dist = 0; 
+	float d = 0;
 
 	while (n < Iterations) {
 		for (int i = 0; i < vertices.length(); i++) {

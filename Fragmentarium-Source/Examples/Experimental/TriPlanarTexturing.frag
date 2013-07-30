@@ -126,8 +126,5 @@ SpecularExp = 20
 SpotLight = 1,1,1,4.8889
 SpotLightPos = -2.2222,10,4.8148
 SpotLightSize = 0.1
-HardShadow = 0.83077 NotLocked
-ShadowSoft = 1.613
 Reflection = 0
-ShadowBackstep = 2
 #endpreset

@@ -14,21 +14,37 @@ uniform float Threshold; slider[0,10,100]
 // Quaterion Constant
 uniform vec4 C; slider[(-1,-1,-1,-1),(0.18,0.88,0.24,0.16),(1,1,1,1)]
 
+// Mul = 2 is standard stereographic projection
+uniform float Mul; slider[0,2,3]
+vec4 stereographic3Sphere(vec3 p) {
+	float n = dot(p,p)+1.;
+	return vec4(Mul*p,n-2.)/n;
+}
 
 // The inline expanded quaterion multiplications make this DE
-// look much worse than it actually is.
+// look much worse than it actually i
+
+
+vec2 complexMul(vec2 a, vec2 b) {
+	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
+}
+
+uniform vec3 Offset; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
 float DE(vec3 pos) {
-	vec4 p = vec4(pos, 0.0);
-	vec4 dp = vec4(1.0, 0.0,0.0,0.0);
+float rr = length(pos);
+vec4 p4 = stereographic3Sphere(pos);
+p4.xyz += Offset;
+//vec4 p=vec4(2.*pos,-1.+rr*rr)*1./(1.+rr*rr);//Inverse stereographic projection of pos: z4 lies onto the unit 3-sphere centered at 0.
+	vec2 p = p4.xy;
+	vec2 c = p4.zw;
+	float dp = 1.0;
 	for (int i = 0; i < Iterations; i++) {
-		dp = 2.0* vec4(p.x*dp.x-dot(p.yzw, dp.yzw), p.x*dp.yzw+dp.x*p.yzw+cross(p.yzw, dp.yzw));
-		p = vec4(p.x*p.x-dot(p.yzw, p.yzw), vec3(2.0*p.x*p.yzw)) + C;
-		float p2 = dot(p,p);
-		orbitTrap = min(orbitTrap, abs(vec4(p.xyz,p2)));
-		if (p2 > Threshold) break;
+		dp = 2.0*length(p)*dp + 1.0;
+		p = complexMul(p,p)+c;
+		if (dot(p,p) > Threshold) break;
 	}
 	float r = length(p);
-	return  0.5 * r * log(r) / length(dp);
+	return  0.5 * r * log(r) / abs(dp);
 }
 
 #preset Default
@@ -51,10 +67,10 @@ Detail = -3.01273
 DetailAO = -0.5
 FudgeFactor = 1
 MaxRaySteps = 104
+BoundingSphere = 2
 Dither = 0.5
 NormalBackStep = 1
 AO = 0.529412,0.352941,0,0.7
-Specular = 1.5
 SpecularExp = 16
 SpecularMax = 10
 SpotLight = 1,1,1,0.38043

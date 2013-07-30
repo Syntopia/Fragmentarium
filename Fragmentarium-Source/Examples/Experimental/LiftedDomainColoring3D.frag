@@ -174,8 +174,6 @@ CamLightMin = 0.5303
 Glow = 1,1,1,0.55556
 GlowMax = 24
 Fog = 0.144
-HardShadow = 0.83077 NotLocked
-ShadowSoft = 1.9354
 Reflection = 0
 BaseColor = 1,1,1
 OrbitStrength = 1
@@ -205,5 +203,4 @@ GridWidth = -1.628
 SpotLight = 1,1,1,0
 SpotLightPos = 7.4074,-0.3704,3.3334
 SpotLightSize = 0.1
-ShadowBackstep = 2
 #endpreset

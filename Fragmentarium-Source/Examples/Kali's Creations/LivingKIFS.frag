@@ -4,7 +4,6 @@
 #include "MathUtils.frag"
 #include "DE-Raytracer-v0.9.1.frag"
 
-#info Default Raytracer (by Syntopia)
 #camera 3D
 
 #group Fractal
@@ -72,31 +71,31 @@ float DE(vec3 pos) {
 	vec3 ani=vec3(0.,0.,0.); 
 	vec3 AssyS=vec3(0.,0.,0.), AssyR=vec3(0.,0.,0.), AssyA=vec3(0.,0.,0.), AssySp=vec3(0.,0.,0.), Speed=vec3(0.), Amplitude=vec3(0.);
 
-	if (TRotSpeed>0) {
+	if (TRotSpeed>0.0) {
 		rot=rotationMatrix3(normalize(TRotVector),TRotSpeed*time);
 		p*=rot;
 	}
-	if (TransSpeed>0) {
-		p+=normalize(TransVector)*time*TransSpeed*10;
+	if (TransSpeed>0.0) {
+		p+=normalize(TransVector)*time*TransSpeed*10.0;
 	}
-	if (ImpulseStrength>0) {
+	if (ImpulseStrength>0.0) {
 		p+=normalize(TransVector)*(0.8+sin(time*ImpulseRate+ImpulseOffset))*ImpulseStrength;
 	}
-	if (WaveAmp>0) {
+	if (WaveAmp>0.0) {
 		float wz=WaveZoom*WaveZoom;
-		p+=cos(p*WaveLength/wz+time*WaveSpeed*10)*WaveAmp*.5*wz;
+		p+=cos(p*WaveLength/wz+time*WaveSpeed*10.0)*WaveAmp*.5*wz;
 	}
 
 		AssyS=p*ScaleVary*Scale*ScaleVaryStrength*.02;
 		AssyR=p*RotVary*RotVaryStrength*.2;
 
 
-	if (SpeedAdjust>0 && AmplitudeAdjust>0) {
+	if (SpeedAdjust>0.0 && AmplitudeAdjust>0.0) {
 		AssyA=p*AmpVary*AmpVaryStrength*.5;
-		AssySp=p*SpeedVary*SpeedVaryStrength*2;
-		Speed=(Speeds*SpeedAdjust*10);
+		AssySp=p*SpeedVary*SpeedVaryStrength*2.0;
+		Speed=(Speeds*SpeedAdjust*10.0);
 		Amplitude=(Amplitudes+AssyA)*AmplitudeAdjust*.5;
-		if (UniformSpeed) Speed=vec3(Speed.x,Speed.x,Speed.x)*2;
+		if (UniformSpeed) Speed=vec3(Speed.x,Speed.x,Speed.x)*2.0;
 		if (UniformAmplitude) Amplitude=vec3(Amplitude.x,Amplitude.x,Amplitude.x);
 		if (AnimationFunction==1) {
 			ani.x=sin(time*Speed.x+AssySp.x);
@@ -124,12 +123,12 @@ float DE(vec3 pos) {
        }
 	Sc=clamp(Scale+(AssyS.x+AssyS.y+AssyS.z),MinMaxScale.x,MinMaxScale.y);
 
-	float l=0;
-	float lc=0;
-	float prevl=0;
+	float l=0.0;
+	float lc=0.0;
+	float prevl=0.0;
 	int i=0;
 	int i2=0;
-	if (ColoringType>1) orbitTrap=vec4(0,0,0,0);
+	if (ColoringType>1) orbitTrap=vec4(0.0);
 	rot = rotationMatrix3(normalize(RotVector+ani+AssyR), RotAngle);
 	for (i=0; i<Iterations; i++) {
 		prevl=l;
@@ -140,12 +139,12 @@ float DE(vec3 pos) {
 		p*=rot;
 		l=length(p);
 		if (i<ColorIterations) {
-			if (ColoringType==2) orbitTrap+=exp(-1/abs(l-prevl+ColorOffset));		
+			if (ColoringType==2) orbitTrap+=exp(-1.0/abs(l-prevl+ColorOffset));		
 			if (ColoringType==3) orbitTrap+=abs(l-prevl+ColorOffset);		
 			if (ColoringType==1) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,0)));
 		}
 	}
-	if (ColoringType==3) orbitTrap/=ColorIterations;		
+	if (ColoringType==3) orbitTrap/=float(ColorIterations);		
 	orbitTrap*=ColorScale;
 	float de1=l*pow(Sc, -float(Iterations))-Fatness;
 	return de1;

@@ -17,7 +17,7 @@ namespace Fragmentarium {
 			if (objectName().isEmpty())
 				setObjectName(QString::fromUtf8("OutputDialog"));
 			resize(353,237);
-			setWindowTitle("High Resolution Render");
+			setWindowTitle("High Resolution and Animation Render");
 
 			verticalLayout = new QVBoxLayout(this);
 			verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
@@ -43,64 +43,68 @@ namespace Fragmentarium {
 			hLayout2->setObjectName(QString::fromUtf8("verticalLayout2"));
 			QLabel* label2 = new QLabel("Number of frames (for progressive rendering):",this);
 			label2->setObjectName(QString::fromUtf8("label"));
-
 			hLayout2->addWidget(label2);
-
 			frameSpinBox = new QSpinBox(this);
 			frameSpinBox->setMaximum(2000);
 			frameSpinBox->setMinimum(1);
-
 			frameSpinBox->setObjectName(QString::fromUtf8("frameSpinBox"));
-
+			connect(frameSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateTotalTiles(int)));
+			
 			hLayout2->addWidget(frameSpinBox);
 			verticalLayout->addLayout(hLayout2);
 
+			verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
 
-			label_2 = new QLabel(this);
-			label_2->setObjectName(QString::fromUtf8("label_2"));
+			// Anim params
+			{
+			QHBoxLayout* hl = new QHBoxLayout();
+			animCheckBox = new QCheckBox("Render animation", this);
+			hl->addWidget(animCheckBox);
+			verticalLayout->addLayout(hl);
+			}
+			connect(animCheckBox, SIGNAL(clicked()), this, SLOT(animationChanged()));
+			
+			{
+			QHBoxLayout* hl = new QHBoxLayout();
+			hl->addItem(new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum));
+			hl->addWidget(new QLabel("End time:",this));
+			endTimeSpinBox = new QSpinBox(this);
+			endTimeSpinBox->setMinimum(0);
+			endTimeSpinBox->setMaximum(1000);
+			endTimeSpinBox->setValue(100);
+			hl->addWidget(endTimeSpinBox);
+			verticalLayout->addLayout(hl);
+			endTimeLayout = hl;
+			}
 
-			verticalLayout->addWidget(label_2);
+			{
+			QHBoxLayout* hl = new QHBoxLayout();
+			hl->addItem(new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum));
+			hl->addWidget(new QLabel("FPS:    ",this));
+			fpsSpinBox = new QSpinBox(this);
+			fpsSpinBox->setMinimum(1);
+			fpsSpinBox->setMaximum(100);
+			fpsSpinBox->setValue(25);
+			hl->addWidget(fpsSpinBox);
+			verticalLayout->addLayout(hl);
+			fpsLayout = hl;
+			}
 
-			downsamplingSlider = new QSlider(this);
-			downsamplingSlider->setObjectName(QString::fromUtf8("downsamplingSlider"));
-			downsamplingSlider->setOrientation(Qt::Horizontal);
-
-			verticalLayout->addWidget(downsamplingSlider);
-
-			horizontalLayout_4 = new QHBoxLayout();
-			horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
-			label_4 = new QLabel(this);
-			label_4->setObjectName(QString::fromUtf8("label_4"));
-
-			horizontalLayout_4->addWidget(label_4);
-
-			filterSizeSpinBox = new QSpinBox(this);
-			filterSizeSpinBox->setObjectName(QString::fromUtf8("filterSizeSpinBox"));
-			filterSizeSpinBox->setMaximumSize(QSize(80, 16777215));
-			filterSizeSpinBox->setMaximum(16);
-			filterSizeSpinBox->setValue(2);
-
-			horizontalLayout_4->addWidget(filterSizeSpinBox);
-
-			horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-			horizontalLayout_4->addItem(horizontalSpacer_3);
+			verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
 
-			verticalLayout->addLayout(horizontalLayout_4);
+			QHBoxLayout* hLayout21 = new QHBoxLayout(this);
+			hLayout21->setObjectName(QString::fromUtf8("verticalLayout2"));
+			totalFrames = new QLabel("...",this);
+			hLayout21->addWidget(totalFrames);
+			verticalLayout->addLayout(hLayout21);
+			
+			verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
-			verticalSpacer_2 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
-			verticalLayout->addItem(verticalSpacer_2);
-
-			displayCheckBox = new QCheckBox(this);
-			displayCheckBox->setObjectName(QString::fromUtf8("displayCheckBox"));
-
-			verticalLayout->addWidget(displayCheckBox);
+			
 
 			verticalSpacer_3 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
 			verticalLayout->addItem(verticalSpacer_3);
 
 			horizontalLayout = new QHBoxLayout();
@@ -168,9 +172,6 @@ namespace Fragmentarium {
 			QMetaObject::connectSlotsByName(this);
 
 			label->setText(QApplication::translate("OutputDialog", "Render quality: (2x2 tiles - 1630x1920 pixels - 3.1 MPixel):", 0, QApplication::UnicodeUTF8));
-			label_2->setText(QApplication::translate("OutputDialog", "Output image: ( xXx pixels - x MPixel)", 0, QApplication::UnicodeUTF8));
-			label_4->setText(QApplication::translate("OutputDialog", "Downsampling filter size (Lanczos):", 0, QApplication::UnicodeUTF8));
-			displayCheckBox->setText(QApplication::translate("OutputDialog", "Display after rendering", 0, QApplication::UnicodeUTF8));
 			label_3->setText(QApplication::translate("OutputDialog", "Filename", 0, QApplication::UnicodeUTF8));
 			fileButton->setText(QApplication::translate("OutputDialog", "File...", 0, QApplication::UnicodeUTF8));
 			uniqueCheckBox->setText(QApplication::translate("OutputDialog", "Add unique ID to name ()", 0, QApplication::UnicodeUTF8));
@@ -198,26 +199,33 @@ namespace Fragmentarium {
 			QSettings settings;
 			uniqueCheckBox->setChecked(settings.value("outputdialog.unique", true).toBool());
 			autoSaveCheckBox->setChecked(settings.value("outputdialog.autosave", true).toBool());
-			displayCheckBox->setChecked(settings.value("outputdialog.display", false).toBool());
 			filenameEdit->setText(settings.value("outputdialog.filename", "out.png").toString());
-
 			tilesChanged(0);
+			updateTotalTiles(0);
+			animationChanged();
+		}
 
-			// Disable the stuff that is not implemented yet...
-			label_2->setHidden(true);
-			label_4->setHidden(true);
-			displayCheckBox->setHidden(true);
-			//autoSaveCheckBox->setHidden(true);
-			downsamplingSlider->setHidden(true);
-			filterSizeSpinBox->setHidden(true);
-
+		void OutputDialog::animationChanged() {
+			if (animCheckBox->isChecked()) {
+				INFO("isChecked()");
+				fpsLayout->setEnabled(true);
+				endTimeLayout->setEnabled(true);
+				fpsSpinBox->setEnabled(true);
+				endTimeSpinBox->setEnabled(true);
+			} else {
+				INFO("isNotChecked()");
+				fpsLayout->setEnabled(false);
+				endTimeLayout->setEnabled(false);
+				fpsSpinBox->setEnabled(false);
+				endTimeSpinBox->setEnabled(false);
+			}
+			updateTotalTiles(0);
 		}
 
 		OutputDialog::~OutputDialog() {
 			QSettings settings;
 			settings.setValue("outputdialog.unique", uniqueCheckBox->isChecked());
 			settings.setValue("outputdialog.autosave", autoSaveCheckBox->isChecked());
-			settings.setValue("outputdialog.display", displayCheckBox->isChecked());
 			settings.setValue("outputdialog.filename", filenameEdit->text());
 		}
 
@@ -285,7 +293,7 @@ namespace Fragmentarium {
 					}
 
 					QString testName = filenameEdit->text();
-					while (QFile(testName).exists()) {
+					while (QFile(testName).exists() || QFile(testName+ " Files").exists()) {
 						testName = stripped + "-" + QString::number(number++) + "." + extension;
 					}
 					uname = testName;
@@ -313,6 +321,21 @@ namespace Fragmentarium {
 			float f = paddingSlider->value()/100.0;
 			float fd = 1.0/(1.0+f);
 			label5->setText(QString("Padding %1%: (resulting size: %3x%4 pixels - %5 MegaPixel):").arg((float)(f*100.),0,'f',1).arg((int)(fd*t*width)).arg((int)(fd*t*height)).arg(mp*fd*fd,0,'f',1));
+			updateTotalTiles(0);
+		}
+
+		void OutputDialog::updateTotalTiles(int) {
+			int t = tilesSlider->value();
+			int s = frameSpinBox->value();
+			if (animCheckBox->isChecked()) {
+				int fps = fpsSpinBox->value();
+				int length = endTimeSpinBox->value();
+				totalFrames->setText(QString("Total tiles: %1x%2x%3x%4 = %5").arg(t).arg(s).arg(fps).arg(length).arg(fps*length*s));
+			} else {
+				totalFrames->setText(QString("Total tiles: %1x%2 = %4").arg(t).arg(s).arg(t*s));
+			}
+			
+			// Tiles x subframes x animframes
 		}
 
 		int OutputDialog::getTiles() {

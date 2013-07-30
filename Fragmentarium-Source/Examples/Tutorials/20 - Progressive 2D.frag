@@ -18,7 +18,7 @@ vec3 color(vec2 v) {
 	float r = dot(v,v);
 	float a = 1.0;
 	if (mod(r,1.0)<0.5) a =1.0-a;
-	if (v.y>0) a = 1.0-a;
+	if (v.y>0.0) a = 1.0-a;
 	return vec3(a);
 }
 

@@ -14,11 +14,23 @@ uniform float Threshold; slider[0,10,100]
 // Quaterion Constant
 uniform vec4 C; slider[(-1,-1,-1,-1),(0.18,0.88,0.24,0.16),(1,1,1,1)]
 
+// Mul = 2 is standard stereographic projection
+uniform float Mul; slider[0,2,3]
+vec4 stereographic3Sphere(vec3 p) {
+	float n = dot(p,p)+1.;
+	return vec4(Mul*p,n-2.)/n;
+}
 
 // The inline expanded quaterion multiplications make this DE
-// look much worse than it actually is.
+// look much worse than it actually i
+
+uniform vec3 Offset; slider[(-1,-1,-1),(1,1,1),(1,1,1)]
 float DE(vec3 pos) {
-	vec4 p = vec4(pos, 0.0);
+float rr = length(pos);
+vec4 p = stereographic3Sphere(pos);
+p.xyz += Offset;
+//vec4 p=vec4(2.*pos,-1.+rr*rr)*1./(1.+rr*rr);//Inverse stereographic projection of pos: z4 lies onto the unit 3-sphere centered at 0.
+	
 	vec4 dp = vec4(1.0, 0.0,0.0,0.0);
 	for (int i = 0; i < Iterations; i++) {
 		dp = 2.0* vec4(p.x*dp.x-dot(p.yzw, dp.yzw), p.x*dp.yzw+dp.x*p.yzw+cross(p.yzw, dp.yzw));
@@ -33,9 +45,9 @@ float DE(vec3 pos) {
 
 #preset Default
 FOV = 0.4
-Eye = -0.821733,-1.82625,2.23376
-Target = 2.11612,4.20274,-5.18381
-Up = -0.902532,-0.0745699,-0.424118
+Eye = -0.15121,-0.897225,0.385303
+Target = -5.15691,3.34215,-7.16259
+Up = -0.574708,-0.814765,-0.0764826
 EquiRectangular = false
 FocalPlane = 1
 Aperture = 0
@@ -54,19 +66,12 @@ MaxRaySteps = 104
 Dither = 0.5
 NormalBackStep = 1
 AO = 0.529412,0.352941,0,0.7
-Specular = 1.5
-SpecularExp = 16
-SpecularMax = 10
-SpotLight = 1,1,1,0.38043
-SpotLightDir = 0.1,0.1
 CamLight = 1,1,1,1
 CamLightMin = 0
 Glow = 1,1,1,0.16667
 GlowMax = 20
 Fog = 0
-HardShadow = 0
-ShadowSoft = 2
-Reflection = 0
+SpecularMax = 10
 DebugSun = false
 BaseColor = 1,1,1
 OrbitStrength = 0.8
@@ -84,7 +89,16 @@ FloorHeight = 0
 FloorColor = 1,1,1
 Iterations = 16
 Threshold = 10
-C = 0.18,0.88,0.24,0.16
+C = 0.18,0.36364,0.12122,0.60606
+Mul = 2.10237
+Offset = 1,1,1
+Specular = 1.5
+SpecularExp = 16
+SpotLight = 1,1,1,0.38043
+SpotLightDir = 0.1,0.1
+HardShadow = 0
+ShadowSoft = 2
+Reflection = 0
 #endpreset
 
 #preset Round

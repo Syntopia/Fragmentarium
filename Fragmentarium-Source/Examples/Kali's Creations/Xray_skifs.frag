@@ -86,8 +86,8 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 		}
 	}
 	vec3 p;
-	float bright=0;
-	float dant=0;
+	float bright=0.0;
+	float dant=0.0;
 	if (sq<0.0) {
 		dist = MaxDistance;
 		totalDist = MaxDistance;
@@ -101,24 +101,24 @@ vec3 trace(vec3 from, vec3 dir, inout vec3 hit, inout vec3 hitNormal) {
 			totalDist += dist;
                     if (totalDist > MaxDistance) break;
 			if (Mode==1) {			
-				bright+=exp(-1*abs(dist-dant))-sqrt(totalDist)*Fade;
+				bright+=exp(-1.0*abs(dist-dant))-sqrt(totalDist)*Fade;
 			}
 			if (Mode==3) {			
 				bright+=dist;
 			}
 		}
 	}
-      vec3 XColor;
+      vec3 XColor = vec3(0.0);
 	if (Mode==1) {
 		bright=bright*Brightness*.02;
 		XColor = mix(BackgroundColor,BaseColor, bright);
 		}
 	if (Mode==2) {
-		bright=steps*Brightness*.02;
+		bright=float(steps)*Brightness*.02;
 		XColor = mix(BackgroundColor,BaseColor, bright);
 		}
 	if (Mode==3) {
-		bright=bright/steps/Brightness;
+		bright=bright/float(steps)/Brightness;
 		XColor = mix(BaseColor,BackgroundColor, bright);
 		}
 

@@ -7,7 +7,7 @@
 
 // These are Fragmentarium host defines.
 #define DontClearOnChange
-#define IterationsBetweenRedraws 20
+#define IterationsBetweenRedraws 30
 #define SubframeMax 0
 
 #group Post
@@ -66,12 +66,12 @@ uniform vec2 Diffusion; slider[(0,0),(0.082,0.041),(0.2,0.2)]
 uniform float k; slider[0,0.064,0.1]
 uniform float f; slider[0,0.035,0.1]
 uniform float timeStep; slider[0,1.,2]
-uniform int backbufferCounter;
+uniform int subframe;
 
 vec3 color(vec2 z) {
 	// Seed
-	if (backbufferCounter <3) {
-		if (length(z)<0.1+0.5*rand(z+float(backbufferCounter))) {
+	if (subframe <3) {
+		if (length(z)<0.1+0.5*rand(z+float(subframe))) {
 			return vec3(1.0,0.0,0.0);
 		}  else {
 			return vec3(0.0,1.0,0.0);

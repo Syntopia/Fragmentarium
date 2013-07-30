@@ -24,7 +24,7 @@ void main(void)
 #group Settings
 varying vec2 viewCoord;
 uniform sampler2D backbuffer;
-uniform int backbufferCounter;
+uniform int subframe;
 
 #define PI  3.14159265358979323846264
 
@@ -82,8 +82,8 @@ uniform bool Stratify; checkbox[true]
 
 vec2 cx=
 vec2(
-	floor(mod(backbufferCounter*1.0,10.)),
-	 floor(mod(backbufferCounter*0.1,10.))
+	floor(mod(float(subframe)*1.0,10.)),
+	 floor(mod(float(subframe)*0.1,10.))
 	)/10.0;
 
 vec3 getSample(vec3  dir) {
@@ -92,7 +92,7 @@ vec3 getSample(vec3  dir) {
 	vec3 o2 = normalize(cross(dir, o1));
 	
 	// Convert to spherical coords aligned to dir;
-	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
+	vec2 r = rand(viewCoord*(float(subframe)+1.0));
 	if (Stratify) {r*=0.1; r+= cx;}
 	r.x=r.x*2.*PI;
 	r.y=1.0-r.y;
@@ -113,7 +113,7 @@ vec3 getSampleBiased(vec3  dir, float power) {
 	vec3 o2 = normalize(cross(dir, o1));
 	
 	// Convert to spherical coords aligned to dir;
-	vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0));
+	vec2 r = rand(viewCoord*(float(subframe)+1.0));
 	if (Stratify) {r*=0.1; r+= cx;}
 	r.x=r.x*2.*PI;
 	

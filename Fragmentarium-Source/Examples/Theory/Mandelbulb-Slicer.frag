@@ -140,7 +140,6 @@ BackgroundColor = 0.607843,0.866667,0.560784
 GradientBackground = 0.3261
 CycleColors = true
 Cycles = 4.04901
-EnableFloor = false
 FloorNormal = 0,0,0
 FloorHeight = 0
 FloorColor = 1,1,1

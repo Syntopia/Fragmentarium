@@ -61,7 +61,7 @@ uniform vec2 pixelSize;
 void init(); // forward declare
 #endif
 
-uniform int backbufferCounter;
+uniform int subframe;
 
 vec2 rand(vec2 co){
 	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
@@ -84,7 +84,7 @@ void main() {
 #ifdef providesInit
 	init();
 #endif
-    //  vec2 r = rand(viewCoord*(float(backbufferCounter)+1.0))-vec2(0.5);	
+    //  vec2 r = rand(viewCoord*(float(subframe)+1.0))-vec2(0.5);	
 #ifdef providesFiltering
 	 vec4 prev = texture2D(backbuffer,(viewCoord+vec2(1.0))/2.0);
 	vec4 new = color(coord.xy);
@@ -94,7 +94,7 @@ void main() {
      gl_FragColor = prev+vec4( pow(new.xyz,vec3(Gamma)) , new.w);
 #endif
  #else
-	vec2 r = uniformDisc(vec2( 1.0*(float(backbufferCounter+1)) ));
+	vec2 r = uniformDisc(vec2( 1.0*(float(subframe+1)) ));
 	float w =1.0;
       if (GaussianAA) {
 	 	// Gaussian

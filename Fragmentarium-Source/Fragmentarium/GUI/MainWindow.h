@@ -31,22 +31,8 @@ namespace Fragmentarium {
 			bool hasBeenSavedOnce;			
 		};
 
-
 		// An input dialog for the tile based render thingy
-		class TileRenderDialog: public QDialog {
-			Q_OBJECT
-		public:
-			TileRenderDialog(QWidget* parent, int w, int h);
-			int getTiles() { return tileSlider->value(); }
-			public slots:
-				void tilesChanged(int);
-		private: 
-			QLabel* tileLabel;
-			QSlider* tileSlider;
-			int w;
-			int h;
-		};
-
+		
 		/// The main window of the application.
 		class MainWindow : public QMainWindow
 		{
@@ -57,6 +43,7 @@ namespace Fragmentarium {
 			MainWindow(QWidget* splashWidget, const QString &fileName);
 			void setSeed(int randomSeed);
 			int getSeed();
+			double getTime();
 			void setUserUniforms(QGLShaderProgram* shaderProgram);
 			DisplayWidget* getEngine() { return engine; };
 			static QString getExamplesDir();
@@ -75,70 +62,72 @@ namespace Fragmentarium {
 			FileManager* getFileManager() { return &fileManager; }
 			void setSubFrameDisplay(int i);
 			void setSubFrameMax(int i);
+			void getBufferSize(int w, int h, int& bufferSizeX, int& bufferSizeY, bool& fitWindow);
 			int getSubFrameMax() { return frameSpinBox->value(); }
+			double getTimeSliderValue();
+			void setTimeSliderValue(double value);
+
 		protected:
 			void dragEnterEvent(QDragEnterEvent *ev);
 			void dropEvent(QDropEvent *ev);
 			void closeEvent(QCloseEvent* ev);
 			void keyReleaseEvent(QKeyEvent* ev);
 
-			public slots:
-				void showWelcomeNote();		
-				void animationControllerHidden();
-				void removeSplash();
-				void maxSubSamplesChanged(int);
-				void viewSliderChanged();
-				void previewSliderChanged();
-				void tileBasedRender();
-				void makeScreenshot();
-				void callRedraw();
-				void showDebug();
-				void pasteSelected();
-				void renderModeChanged();
-				void saveParameters();
-				void loadParameters();
-				void indent();
-				void preferences();
-				void insertText();
-				void variablesChanged(bool lockedChanged);
-				void closeTab(int id);
-				void cut();
-				void copy();
-				void paste();
-				void cursorPositionChanged();
-				void tabChanged(int index);
-				void closeTab();
-				void launchSfHome();
-				void launchGallery();
-				void launchGLSLSpecs();
-				void launchFAQ();
-				void launchIntro();
-				void launchReferenceHome();
-				void openFile();
-				void newFile();
-				void insertPreset();
-				void open();
-				bool save();
-				bool saveAs();
-				void about();
-				void showControlHelp();
-				void documentWasModified();
-				bool render();
-				void toggleFullScreen();
+		public slots:
+			void timeChanged(int);
+			void bufferActionChanged(QAction* action);
+			void rewind();
+			void play();
+			void stop();
+			void showWelcomeNote();		
+			void removeSplash();
+			void maxSubSamplesChanged(int);
+			void tileBasedRender();
+			void makeScreenshot();
+			void callRedraw();
+			void showDebug();
+			void pasteSelected();
+			void renderModeChanged();
+			void saveParameters();
+			void loadParameters();
+			void indent();
+			void preferences();
+			void insertText();
+			void variablesChanged(bool lockedChanged);
+			void closeTab(int id);
+			void cut();
+			void copy();
+			void paste();
+			void cursorPositionChanged();
+			void tabChanged(int index);
+			void closeTab();
+			void launchSfHome();
+			void launchGallery();
+			void launchGLSLSpecs();
+			void launchFAQ();
+			void launchIntro();
+			void launchReferenceHome();
+			void openFile();
+			void newFile();
+			void insertPreset();
+			void open();
+			bool save();
+			bool saveAs();
+			void about();
+			void showControlHelp();
+			void documentWasModified();
+			bool render();
+			void toggleFullScreen();
 
 		private:
-			QPushButton* autoRefreshButton;
-			QPushButton* manualRefreshButton;
-			QPushButton* continousRefreshButton;
-			QPushButton* animationButton;
-
-
+			QSpinBox* timeMaxSpinBox;
+			QPushButton* animationButton2;
+			QPushButton* progressiveButton;
+			QPushButton* bufferSizeControl;
+			int bufferSizeMultiplier;
 			QList<QWidget *> disabledWidgets;
 			QLabel* buildLabel;
-			QSlider* viewSlider;
-			QSlider* previewSlider;
-			QLabel* viewLabel;
-			QLabel* previewLabel;
+			QLabel* timeLabel;
 			void setRecentFile(const QString &fileName);
 			QTextEdit* insertTabPage(QString filename);
 			QTextEdit* getTextEdit();
@@ -173,8 +162,16 @@ namespace Fragmentarium {
 			QToolBar *fileToolBar;
 			QToolBar *renderToolBar;
 			QToolBar *renderModeToolBar;
-			QPushButton* renderButton;
+			QToolBar *timeToolBar;
+			
+			QSlider* timeSlider;
 			QToolBar *editToolBar;
+			QToolBar *bufferToolBar;
+			QSpinBox *bufferXSpinBox;
+			QSpinBox *bufferYSpinBox;
+
+			QTime* lastTime;
+			double lastStoredTime;
 			QAction *newAction;
 			QAction *openAction;
 			QAction *saveAction;
@@ -203,11 +200,22 @@ namespace Fragmentarium {
 			QAction* recentFileSeparator;
 			QLabel* fpsLabel;
 			QWidget* splashWidget;
-			QDockWidget* animationController;
 			bool rebuildRequired;
 			FileManager fileManager;
 			QLabel* frameLabel;
 			QSpinBox* frameSpinBox;
+			QAction* rewindAction;
+			QAction* playAction;
+			QAction* stopAction;
+
+			QAction* bufferAction1;
+			QAction* bufferAction1_2;
+			QAction* bufferAction1_4;
+			QAction* bufferAction1_6;
+			QAction* bufferActionZ2;
+			QAction* bufferActionZ4;
+			QAction* bufferActionZ6;
+			QAction* bufferActionCustom;
 
 		};
 
@@ -220,13 +228,12 @@ namespace Fragmentarium {
 			void contextMenuEvent(QContextMenuEvent *event);
 			void insertFromMimeData (const QMimeData * source );
 
-			public slots:
-				void insertText();
+		public slots:
+			void insertText();
 		private:
 			MainWindow* mainWindow;
 
 		};
-
 
 	}
 }

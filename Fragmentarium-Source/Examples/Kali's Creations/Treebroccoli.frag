@@ -536,8 +536,8 @@ mat3 rot;
 
 //float absScalem1 = abs(Scale - 1.0);
 //float AbsScaleRaisedTo1mIters = pow(abs(Scale), float(1-Iterations));
-float expsmoothing = 0;
-float l = 0;
+float expsmoothing = 0.0;
+float l = 0.0;
 
 
 

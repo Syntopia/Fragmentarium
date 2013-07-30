@@ -71,7 +71,7 @@ vec3 color(vec2 c) {
 		//	dr = length(z)*dr*2.0;
 		z = complexMul(z,z) + (Julia ? c2 : c);
 		
-		if (dot(z,z)>100) break;
+		if (dot(z,z)>100.0) break;
 	}
 	if ( i == Iterations) return vec3(0.0);
 	
