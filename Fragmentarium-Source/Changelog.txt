@@ -1,13 +1,14 @@
 Currently pending issues: 
-- No files saved from the output dialog. 
-- Restore debug build in VS
-- Restore Qt Creator build
+- Check for new frags.
+
+
+31-07-13 [MHC] Fixed:
++ No files saved from the output dialog.
++ Restore debug build in VS
++ Restore Qt Creator build
 + Buffer size: tile preview
 + Knighty collection, cleanup
-- Check for new frags.
 + Remove 'Replace all floats' preferences and code.
-
-
 30-07-13 [MHC]   New High-resolution render dialog and new time and subframe control. Buffer size can now be controlled explicitly.
 				 The old 'backbufferCounter' is now 'subframe'
 28-06-13 [MHC]   Bugfix: now uses a triangle instead of a quad to render shaders.
@@ -351,7 +352,7 @@ Release of Fragmentarium 0.5.6 [57h]
 		 Began Uniform Groups.
 
 13-12-10 Added color sliders.
-[1½h]
+[1h]
 
 12-12-10 My first GLSL 3D raytracer is up and running. 
          Ported Menger + Icosa. 

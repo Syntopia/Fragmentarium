@@ -14,23 +14,23 @@ V0.9.12 (august 2012)
 + IBL-raytracer: name, debug sun toggle
 + Limit number of frames in continous mode.
 
-V0.9.13 (christmas 2013)
+V1.0.0 (august 2013)
 ------
-- Non-DE raytracer
-- Path tracer
-- Padding for high resolution rendering 
-- Fix BufferShader, so that it can handle GUI widgets...
-- A 2D camera which scales from the current mouse position
-- Check up on Manual and Animation mode.
-- Export in RGBE
++ Non-DE raytracer
++ Padding for high resolution rendering
++ New Progressive and Animation mode.
++ New output dialog
 
-V1.0 (early 2014)
+V1.5 (christmas 2014)
 ----
+- Path tracer
+- Fix BufferShader, so that it can handle GUI widgets...
 - Keyframe Animation.
-- Bugfixes and cleanup
 
 Other (prioritized) ideas:
 --------------------------
+- Export in RGBE
+- A 2D camera which scales from the current mouse position
 - Mouse sensitivity
 - Fix: icons
 - Commandline support
