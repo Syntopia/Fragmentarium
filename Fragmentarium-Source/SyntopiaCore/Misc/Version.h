@@ -5,42 +5,42 @@
 
 
 namespace SyntopiaCore {
-	namespace Misc {	
+    namespace Misc {
 
-		/// For keeping track of versions
-		/// Having a formalized version object, can
-		/// be helpful when checking the internet for updates.
-		class Version {
-		public:
-			/// Constructor.
-			/// Settings revision or build to -1 indicates they are not in use.
-			Version();
-			Version(int major, int minor, int revision = -1, int build = -1, QString codename = "");
+        /// For keeping track of versions
+        /// Having a formalized version object, can
+        /// be helpful when checking the internet for updates.
+        class Version {
+        public:
+            /// Constructor.
+            /// Settings revision or build to -1 indicates they are not in use.
+            Version();
+            Version(int major, int minor, int revision = -1, int build = -1, QString codename = "");
 
-			/// Long human-readable version.
-			QString toLongString() const;
+            /// Long human-readable version.
+            QString toLongString() const;
 
-			/// Returns a list of versions, newer than 'this' version,
-			/// by reading an XML-file from the specified URL.
-			///
-			/// Todo: Implement
-			QList<Version> GetNewVersions(QString url) const;
+            /// Returns a list of versions, newer than 'this' version,
+            /// by reading an XML-file from the specified URL.
+            ///
+            /// Todo: Implement
+            QList<Version> GetNewVersions(QString url) const;
 
-			/// Comparisons
-			bool operator<(const Version &rhs) const;
-			bool operator>(const Version &rhs) const;
-			bool operator==(const Version &rhs) const;
+            /// Comparisons
+            bool operator<(const Version &rhs) const;
+            bool operator>(const Version &rhs) const;
+            bool operator==(const Version &rhs) const;
 
-		private:
-			int major;
-			int minor;
-			int revision;
-			int build;
-			QString codename;
-		};
+        private:
+            int major;
+            int minor;
+            int revision;
+            int build;
+            QString codename;
+        };
 
 
-	}
+    }
 }
 
 

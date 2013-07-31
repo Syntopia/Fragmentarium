@@ -6,9 +6,9 @@
 
 
 namespace SyntopiaCore {
-	namespace Misc {	
-		QString GetImageFileName(QWidget* parent, QString label);
-	}
+    namespace Misc {
+        QString GetImageFileName(QWidget* parent, QString label);
+    }
 }
 
 

@@ -19,67 +19,67 @@
 
 /// The editor window for GUI variables (uniforms)
 namespace Fragmentarium {
-	namespace GUI {
+    namespace GUI {
 
-		using namespace SyntopiaCore::Logging;
-		using namespace SyntopiaCore::Math;
+        using namespace SyntopiaCore::Logging;
+        using namespace SyntopiaCore::Math;
 
-		class MainWindow;  // forward
-		class ComboSlider; // forward
+        class MainWindow;  // forward
+        class ComboSlider; // forward
 
-		/// The Variable Editor window.
-		class VariableEditor : public QWidget {
-			Q_OBJECT
-		public:
-			VariableEditor(QWidget* parent, MainWindow* mainWindow);
+        /// The Variable Editor window.
+        class VariableEditor : public QWidget {
+            Q_OBJECT
+        public:
+            VariableEditor(QWidget* parent, MainWindow* mainWindow);
 
-			void updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI);
-			void updateCamera(CameraControl* c);
-			void setUserUniforms(QGLShaderProgram* shaderProgram);
-			QString getSettings();
-			bool setSettings(QString text);
-			void createGroup(QString g);
-			VariableWidget* getWidgetFromName(QString name);
-			void setPresets(QMap<QString, QString> presets);
-			ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
-			bool setDefault();
-			void substituteLockedVariables(Parser::FragmentSource* fs);
-			void updateTextures(Parser::FragmentSource* fs, FileManager* fileManager);
-		protected:
-			bool eventFilter(QObject *obj, QEvent *ev);
-		signals:
+            void updateFromFragmentSource(Parser::FragmentSource* fs, bool* showGUI);
+            void updateCamera(CameraControl* c);
+            void setUserUniforms(QGLShaderProgram* shaderProgram);
+            QString getSettings();
+            bool setSettings(QString text);
+            void createGroup(QString g);
+            VariableWidget* getWidgetFromName(QString name);
+            void setPresets(QMap<QString, QString> presets);
+            ComboSlider* getCurrentComboSlider() { return currentComboSlider; }
+            bool setDefault();
+            void substituteLockedVariables(Parser::FragmentSource* fs);
+            void updateTextures(Parser::FragmentSource* fs, FileManager* fileManager);
+        protected:
+            bool eventFilter(QObject *obj, QEvent *ev);
+        signals:
 
-			void changed(bool lockedChanged);
+            void changed(bool lockedChanged);
 
-			public slots:
-				void sliderDestroyed(QObject* o);
-				void focusChanged(QWidget* oldWidget,QWidget* newWidget);
-				bool applyPreset();
-				void resetUniforms();
-				void resetUniforms(bool clear);
-				void resetGroup();
-				void lockGroup();
-				void unlockGroup();
-				void copy();
-				void paste();
-				void childChanged(bool lockedChanged);
+        public slots:
+            void sliderDestroyed(QObject* o);
+            void focusChanged(QWidget* oldWidget,QWidget* newWidget);
+            bool applyPreset();
+            void resetUniforms();
+            void resetUniforms(bool clear);
+            void resetGroup();
+            void lockGroup();
+            void unlockGroup();
+            void copy();
+            void paste();
+            void childChanged(bool lockedChanged);
 
-		private:
-			QMap<QString, QString> presets;
-			MainWindow* mainWindow;
-			QSpacerItem* spacer;
-			QVector<VariableWidget*> variables;
-			QVBoxLayout* layout;
-			QComboBox* presetComboBox;
-			QWidget* currentWidget;
+        private:
+            QMap<QString, QString> presets;
+            MainWindow* mainWindow;
+            QSpacerItem* spacer;
+            QVector<VariableWidget*> variables;
+            QVBoxLayout* layout;
+            QComboBox* presetComboBox;
+            QWidget* currentWidget;
 
-			QMap<QString, QWidget*> tabs;
-			QMap<QWidget*, QWidget*> spacers;
-			QTabWidget* tabWidget;
-			ComboSlider* currentComboSlider;
-		};
+            QMap<QString, QWidget*> tabs;
+            QMap<QWidget*, QWidget*> spacers;
+            QTabWidget* tabWidget;
+            ComboSlider* currentComboSlider;
+        };
 
 
-	}
+    }
 }
 

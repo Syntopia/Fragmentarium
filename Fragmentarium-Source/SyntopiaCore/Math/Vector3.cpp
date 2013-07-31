@@ -2,7 +2,7 @@
 
 
 namespace SyntopiaCore {
-	namespace Math {	
-	}
+    namespace Math {
+    }
 }
 

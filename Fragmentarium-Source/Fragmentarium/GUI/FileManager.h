@@ -11,27 +11,26 @@
 
 /// Small class for handling include paths
 namespace Fragmentarium {
-	namespace GUI {
+    namespace GUI {
 
-		class FileManager {
-		public:
-			FileManager() {};
+        class FileManager {
+        public:
+            FileManager() {}
+            void setOriginalFileName(QString f) { originalFileName = f; }
+            void setIncludePaths(QStringList paths) { includePaths = paths; }
+            QString resolveName(QString fileName);
+            QString resolveName(QString fileName, QString originalFileName);
+            bool fileExists(QString fileName);
+            QStringList getFiles(QStringList filters);
+            QStringList getImageFiles();
 
-			void setOriginalFileName(QString f) { originalFileName = f; }
-			void setIncludePaths(QStringList paths) { includePaths = paths; }
-			QString resolveName(QString fileName);
-			QString resolveName(QString fileName, QString originalFileName);
-			bool fileExists(QString fileName);
-			QStringList getFiles(QStringList filters);
-			QStringList getImageFiles();
-
-		private:
-			QString originalFileName;
-			QStringList includePaths;
-			QMap<QString, QStringList> cachedFilters;
-		};
+        private:
+            QString originalFileName;
+            QStringList includePaths;
+            QMap<QString, QStringList> cachedFilters;
+        };
 
 
-	}
+    }
 }
 

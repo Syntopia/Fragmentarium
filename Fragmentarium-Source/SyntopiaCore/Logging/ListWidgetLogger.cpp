@@ -5,85 +5,82 @@
 #include <QApplication>
 
 namespace SyntopiaCore {
-	namespace Logging {
+    namespace Logging {
+        namespace {
+            class ListWidget : public QListWidget {
+            public:
+                ListWidget(QWidget* parent) : QListWidget(parent) {
+                }
 
-		namespace {
+                void contextMenuEvent(QContextMenuEvent* ev) {
+                    QMenu contextMenu;
+                    QAction copyAction("Copy to Clipboard", &contextMenu);
+                    QAction clearAction("Clear", &contextMenu);
+                    contextMenu.addAction(&copyAction);
+                    contextMenu.addAction(&clearAction);
+                    QAction* choice = contextMenu.exec(ev->globalPos());
+                    if (choice == &copyAction) {
+                        QClipboard *clipboard = QApplication::clipboard();
+                        QList<QListWidgetItem*> items = selectedItems();
+                        QStringList l;
+                        foreach (QListWidgetItem* i, items) {
+                            l.append(i->text());
+                        }
+                        INFO(QString("Copied %1 lines to clipboard").arg(l.count()));
+                        clipboard->setText(l.join("\n"));
 
-			
-			class ListWidget : public QListWidget {
-			public: 
-				ListWidget(QWidget* parent) : QListWidget(parent) {
-				}
+                    } else if (choice == &clearAction) {
+                        clear();
+                    }
+                }
+            };
+        }
 
-				void contextMenuEvent(QContextMenuEvent* ev) {
-					QMenu contextMenu;
-					QAction copyAction("Copy to Clipboard", &contextMenu);
-					QAction clearAction("Clear", &contextMenu);
-					contextMenu.addAction(&copyAction);
-					contextMenu.addAction(&clearAction);
-					QAction* choice = contextMenu.exec(ev->globalPos());
-					if (choice == &copyAction) {
-						QClipboard *clipboard = QApplication::clipboard();
-						QList<QListWidgetItem*> items = selectedItems();
-						QStringList l;
-						foreach (QListWidgetItem* i, items) {
-							l.append(i->text());
-						}
-						INFO(QString("Copied %1 lines to clipboard").arg(l.count()));
-						clipboard->setText(l.join("\n"));
-					
-					} else if (choice == &clearAction) {
-						clear();
-					}
-				}
-			};
-		}
+        ListWidgetLogger::ListWidgetLogger(QWidget* parent) : parent(parent) {
+            listWidget = new ListWidget(parent);
+            listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        }
 
-		ListWidgetLogger::ListWidgetLogger(QWidget* parent) : parent(parent) { 	
-			listWidget = new ListWidget(parent); 
-			listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-		}
+        ListWidgetLogger::~ListWidgetLogger() {
+        }
 
-		ListWidgetLogger::~ListWidgetLogger() { 
-		}
+        void ListWidgetLogger::log(QString message, LogLevel priority) {
+            if (listWidget->count() > 100) {
+                listWidget->setUpdatesEnabled(false);
+                while (listWidget->count() > 20) {
+                    delete(listWidget->takeItem(0));
+                }
+                listWidget->setUpdatesEnabled(true);
+            }
 
-		void ListWidgetLogger::log(QString message, LogLevel priority) {
-			if (listWidget->count() > 100) {
-				listWidget->setUpdatesEnabled(false);
-				while (listWidget->count() > 20) {
-					delete(listWidget->takeItem(0));
-				}
-				listWidget->setUpdatesEnabled(true);
-			}
-		
 
-			QListWidgetItem* i = new QListWidgetItem(message, listWidget);
+            QListWidgetItem* i = new QListWidgetItem(message, listWidget);
 
-			// Levels: NoneLevel, DebugLevel, TimingLevel, InfoLevel, WarningLevel, CriticalLevel, AllLevel
+            // Levels: NoneLevel, DebugLevel, TimingLevel, InfoLevel, WarningLevel, CriticalLevel, AllLevel
 
-			if ( priority == InfoLevel ) {
-				i->setBackgroundColor(QColor(255,255,255));
-			} else if ( priority == ScriptInfoLevel ) {
-				i->setBackgroundColor(QColor(50,50,50));
-				i->setForeground(QBrush(QColor(255,255,255)));
-				QFont f = i->font();
-				f.setBold(true);
-				i->setFont(f);
-			} else if ( priority == WarningLevel ) {
-				parent->show();
-				i->setBackgroundColor(QColor(255,243,73));
-			} else if ( priority == CriticalLevel ) {
-				parent->show();
-				i->setBackgroundColor(QColor(255,2,0));
-			} else if ( priority == TimingLevel ) {
-				parent->show();
-				i->setBackgroundColor(QColor(25,255,0));
-			} else {
-				i->setBackgroundColor(QColor(220,220,220));
-			}
-			listWidget->scrollToItem(i); 
+            if ( priority == InfoLevel ) {
+                i->setBackgroundColor(QColor(255,255,255));
+            } else if ( priority == ScriptInfoLevel ) {
+                i->setBackgroundColor(QColor(50,50,50));
+                i->setForeground(QBrush(QColor(255,255,255)));
+                QFont f = i->font();
+                f.setBold(true);
+                i->setFont(f);
+            } else if ( priority == WarningLevel ) {
+                parent->show();
+                i->setBackgroundColor(QColor(255,243,73));
+            } else if ( priority == CriticalLevel ) {
+                parent->show();
+                i->setBackgroundColor(QColor(255,2,0));
+            } else if ( priority == TimingLevel ) {
+                parent->show();
+                i->setBackgroundColor(QColor(25,255,0));
+            } else {
+                i->setBackgroundColor(QColor(220,220,220));
+            }
+            listWidget->scrollToItem(i);
 
-		}
+        }
 
-	}
+    }
 }

@@ -9,24 +9,24 @@
 #include "Logging.h"
 
 namespace SyntopiaCore {
-	namespace Logging {
-		
-		class ListWidgetLogger : public Logger {
-		public:
-			ListWidgetLogger(QWidget* parent);
+    namespace Logging {
 
-			virtual ~ListWidgetLogger();
+        class ListWidgetLogger : public Logger {
+        public:
+            ListWidgetLogger(QWidget* parent);
 
-			/// This method all loggers must implement
-			void log(QString message, LogLevel priority);
+            virtual ~ListWidgetLogger();
 
-			QListWidget* getListWidget() { return listWidget; }
-			
-		private:
-			QListWidget* listWidget;
-			QWidget* parent;
-		};
-		
-	}
+            /// This method all loggers must implement
+            void log(QString message, LogLevel priority);
+
+            QListWidget* getListWidget() { return listWidget; }
+
+        private:
+            QListWidget* listWidget;
+            QWidget* parent;
+        };
+
+    }
 }
 
