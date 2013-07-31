@@ -36,7 +36,6 @@ HEADERS += ../ThirdPartyCode/glextensions.h \
            ../SyntopiaCore/Misc/Persistence.h \
            ../SyntopiaCore/Misc/Version.h \
            ../ThirdPartyCode/MersenneTwister/MersenneTwister.h \
-		  ../Fragmentarium/GUI/OutputDialog.h \
 			../SyntopiaCore/Math/Vector4.h \
     ../Fragmentarium/GUI/OutputDialog.h \
     ../Fragmentarium/GUI/FileManager.h \
@@ -59,7 +58,6 @@ SOURCES += ../Fragmentarium/Main.cpp \
            ../SyntopiaCore/Misc/Misc.cpp \
            ../SyntopiaCore/Misc/Persistence.cpp \
            ../SyntopiaCore/Misc/Version.cpp \
-		../Fragmentarium/GUI/OutputDialog.cpp \
     ../Fragmentarium/GUI/OutputDialog.cpp \
     ../Fragmentarium/GUI/FileManager.cpp \
     ../ThirdPartyCode/hdrloader.cpp

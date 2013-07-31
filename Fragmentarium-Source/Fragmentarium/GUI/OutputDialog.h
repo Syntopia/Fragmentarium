@@ -32,9 +32,11 @@ namespace Fragmentarium {
             int getFrames() { return frameSpinBox->value(); }
             int getFPS() {return fpsSpinBox->value(); }
             int getMaxTime() {return animCheckBox->isChecked() ? endTimeSpinBox->value() : 0; }
+            bool preview() { return previewFrameCheckbox->isChecked(); }
 
         public slots:
             void animationChanged();
+            void previewToggled(bool);
             void chooseFile();
             void updateTotalTiles(int);
             void tilesChanged(int);
@@ -46,6 +48,7 @@ namespace Fragmentarium {
 
         private:
             QString uniqueFileName;
+            QCheckBox* previewFrameCheckbox;
             int width;
             int height;
             QVBoxLayout *verticalLayout;

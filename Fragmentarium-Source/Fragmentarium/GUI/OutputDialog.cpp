@@ -17,6 +17,8 @@ namespace Fragmentarium {
             resize(353,237);
             setWindowTitle("High Resolution and Animation Render");
 
+            // --------- Tiles
+
             verticalLayout = new QVBoxLayout(this);
             verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
             label = new QLabel(this);
@@ -29,17 +31,20 @@ namespace Fragmentarium {
             verticalSpacer = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
             verticalLayout->addItem(verticalSpacer);
 
+            // ------------- Padding
+
             label5 = new QLabel(this);
             verticalLayout->addWidget(label5);
             paddingSlider = new QSlider(this);
-            paddingSlider->setObjectName(QString::fromUtf8("tilesSlider"));
             paddingSlider->setOrientation(Qt::Horizontal);
             verticalLayout->addWidget(paddingSlider);
             verticalLayout->addItem( new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
+            // ----------- Subframes
+
             QHBoxLayout* hLayout2 = new QHBoxLayout(this);
             hLayout2->setObjectName(QString::fromUtf8("verticalLayout2"));
-            QLabel* label2 = new QLabel("Number of frames (for progressive rendering):",this);
+            QLabel* label2 = new QLabel("Number of subframes (for progressive rendering):",this);
             label2->setObjectName(QString::fromUtf8("label"));
             hLayout2->addWidget(label2);
             frameSpinBox = new QSpinBox(this);
@@ -54,7 +59,8 @@ namespace Fragmentarium {
             verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
 
-            // Anim params
+            // --------- Anim params -------------
+
             {
                 QHBoxLayout* hl = new QHBoxLayout();
                 animCheckBox = new QCheckBox("Render animation", this);
@@ -91,15 +97,28 @@ namespace Fragmentarium {
 
             verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
+            // ----- Total tiles ---------
+
             QHBoxLayout* hLayout21 = new QHBoxLayout(this);
-            hLayout21->setObjectName(QString::fromUtf8("verticalLayout2"));
             totalFrames = new QLabel("...",this);
             hLayout21->addWidget(totalFrames);
             verticalLayout->addLayout(hLayout21);
             verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
-
             verticalSpacer_3 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
             verticalLayout->addItem(verticalSpacer_3);
+
+            // -----Preview Dialog  -----------------------
+
+            QHBoxLayout* hLayout21x = new QHBoxLayout(this);
+            previewFrameCheckbox = new QCheckBox("Preview frame in window",this);
+            hLayout21x->addWidget(previewFrameCheckbox);
+            verticalLayout->addLayout(hLayout21x);
+            verticalLayout->addItem(new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed));
+            verticalSpacer_3 = new QSpacerItem(20, 13, QSizePolicy::Minimum, QSizePolicy::Fixed);
+            verticalLayout->addItem(verticalSpacer_3);
+            connect(previewFrameCheckbox, SIGNAL(toggled(bool)), this, SLOT(previewToggled(bool)));
+
+            // ---- Filename ----------------------
 
             horizontalLayout = new QHBoxLayout();
             horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -144,12 +163,13 @@ namespace Fragmentarium {
 
             horizontalLayout_3->addWidget(autoSaveCheckBox);
 
-
             verticalLayout->addLayout(horizontalLayout_3);
 
             verticalSpacer_4 = new QSpacerItem(20, 95, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
             verticalLayout->addItem(verticalSpacer_4);
+
+            // ----- Standard buttons -------------
 
             buttonBox = new QDialogButtonBox(this);
             buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
@@ -198,20 +218,27 @@ namespace Fragmentarium {
         }
 
         void OutputDialog::animationChanged() {
+            previewFrameCheckbox->setEnabled(!animCheckBox->isChecked());
             if (animCheckBox->isChecked()) {
-                INFO("isChecked()");
+                previewFrameCheckbox->setChecked(false);
                 fpsLayout->setEnabled(true);
                 endTimeLayout->setEnabled(true);
                 fpsSpinBox->setEnabled(true);
                 endTimeSpinBox->setEnabled(true);
             } else {
-                INFO("isNotChecked()");
                 fpsLayout->setEnabled(false);
                 endTimeLayout->setEnabled(false);
                 fpsSpinBox->setEnabled(false);
                 endTimeSpinBox->setEnabled(false);
             }
             updateTotalTiles(0);
+        }
+
+        void OutputDialog::previewToggled(bool)
+        {
+            filenameEdit->setEnabled(!previewFrameCheckbox->isChecked());
+            autoSaveCheckBox->setEnabled(!previewFrameCheckbox->isChecked());
+            uniqueCheckBox->setEnabled(!previewFrameCheckbox->isChecked());
         }
 
         OutputDialog::~OutputDialog() {
@@ -318,11 +345,12 @@ namespace Fragmentarium {
 
         void OutputDialog::updateTotalTiles(int) {
             int t = tilesSlider->value();
+            t = t*t;
             int s = frameSpinBox->value();
             if (animCheckBox->isChecked()) {
                 int fps = fpsSpinBox->value();
                 int length = endTimeSpinBox->value();
-                totalFrames->setText(QString("Total tiles: %1x%2x%3x%4 = %5").arg(t).arg(s).arg(fps).arg(length).arg(fps*length*s));
+                totalFrames->setText(QString("Total tiles: %1x%2x%3x%4 = %5").arg(t).arg(s).arg(fps).arg(length).arg(fps*length*s*t));
             } else {
                 totalFrames->setText(QString("Total tiles: %1x%2 = %4").arg(t).arg(s).arg(t*s));
             }

@@ -666,6 +666,7 @@ namespace Fragmentarium {
             this->tiles = tileMax;
             this->tilesCount = tile;
             this->padding = padding;
+            mainWindow->setLastStoredTime(time);
             if (hiresBuffer==0) {
                 hiresBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, GL_RGBA8);
             }

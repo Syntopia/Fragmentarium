@@ -436,7 +436,12 @@ namespace Fragmentarium {
             }  else {
                 ev->ignore();
             }
-        };
+        }
+
+        void MainWindow::bufferSpinBoxChanged(int)
+        {
+            QToolTip::showText(this->bufferSizeControl->pos(),"Set combobox to 'custom-size' to apply size.",0/*this->bufferXSpinBox*/);
+        }
 
 
         bool MainWindow::save()
@@ -527,7 +532,7 @@ namespace Fragmentarium {
             oldDirtyPosition = -1;
             setFocusPolicy(Qt::StrongFocus);
 
-            version = SyntopiaCore::Misc::Version(0, 9, 12, -1, " (\"Prague\")");
+            version = SyntopiaCore::Misc::Version(0, 9, 51, -1, " (\"Amber\")");
             setAttribute(Qt::WA_DeleteOnClose);
 
             QSplitter*	splitter = new QSplitter(this);
@@ -1034,6 +1039,7 @@ namespace Fragmentarium {
                 int fps = od.getFPS();
                 int maxTime = od.getMaxTime();
                 int timeSteps = fps*maxTime;
+                bool preview = od.preview();
 
                 if (timeSteps==0) {
                     timeSteps = 1;
@@ -1094,14 +1100,29 @@ namespace Fragmentarium {
                                 }
                             }
                         }
-                        if (timeSteps==1) {
+                        if (preview) {
                             QDialog* qd = new QDialog();
                             QVBoxLayout *l = new QVBoxLayout;
                             QLabel* label = new QLabel();
                             label->setPixmap(QPixmap::fromImage(finalImage));
-                            l->addWidget(label);
+
+                            QScrollArea* scrollArea = new QScrollArea;
+                            scrollArea->setBackgroundRole(QPalette::Dark);
+                            scrollArea->setWidget(label);
+
+                            l->addWidget(scrollArea);
                             qd->setLayout(l);
                             qd->show();
+                        } else {
+                            QString name = fileName;
+                            if (timeSteps>1) {
+                                int lastPoint = fileName.lastIndexOf(".");
+                                name = QString("%1.%2.%3").arg(fileName.left(lastPoint))
+                                        .arg((int)timeStep,5,10,QChar('0'))
+                                        .arg(fileName.right(fileName.size()-lastPoint-1));
+                            }
+                            INFO("Saving file: " + name);
+                            finalImage.save(name);
                         }
                     }
                 }
@@ -1194,6 +1215,8 @@ namespace Fragmentarium {
             bufferYSpinBox->setRange(0,1000);
             bufferYSpinBox->setValue(10);
             bufferYSpinBox->setSingleStep(1);
+            connect(bufferXSpinBox, SIGNAL(valueChanged(int)), this, SLOT(bufferSpinBoxChanged(int)));
+            connect(bufferYSpinBox, SIGNAL(valueChanged(int)), this, SLOT(bufferSpinBoxChanged(int)));
 
             bufferSizeControl = new QPushButton("Lock to window size", bufferToolBar);
             QMenu* menu = new QMenu();
@@ -1286,7 +1309,7 @@ namespace Fragmentarium {
             timeMaxSpinBox->setRange(0,10000);
             timeMaxSpinBox->setValue(100);
             timeMaxSpinBox->setSingleStep(10);
-           // connect(timeMaxSpinBox, SIGNAL(valueChanged(int)), this, SLOT(timeMaxChanged(int)));
+            // connect(timeMaxSpinBox, SIGNAL(valueChanged(int)), this, SLOT(timeMaxChanged(int)));
             timeToolBar->addWidget(timeMaxSpinBox);
         }
 
@@ -1360,7 +1383,7 @@ namespace Fragmentarium {
             DisplayWidget::DrawingState state = engine->getState();
 
             double time = 0.0;
-            if (!engine->isContinuous()) {
+            if (!engine->isContinuous() || state == DisplayWidget::Tiled) {
                 // The engine is not in 'running' mode. Return last stored paused time.
                 time = lastStoredTime;
             } else {
@@ -1368,8 +1391,6 @@ namespace Fragmentarium {
                     time = lastStoredTime;
                 } else if (state == DisplayWidget::Animation) {
                     time = lastStoredTime + lastTime->elapsed()/1000.0;
-                } else if (state == DisplayWidget::Tiled) {
-
                 }
             }
             timeLabel->setText(QString("Time: %1 s").arg(time));
@@ -1892,8 +1913,12 @@ namespace Fragmentarium {
                 // Locked to a fraction of the window size
                 bufferSizeX = w/bufferSizeMultiplier;
                 bufferSizeY = h/bufferSizeMultiplier;
+                bufferXSpinBox->blockSignals(true);
+                bufferYSpinBox->blockSignals(true);
                 bufferXSpinBox->setValue(bufferSizeX);
                 bufferYSpinBox->setValue(bufferSizeY);
+                bufferXSpinBox->blockSignals(false);
+                bufferYSpinBox->blockSignals(false);
                 fitWindow = true;
             } else if (bufferSizeMultiplier<=0) {
                 bufferSizeX = bufferXSpinBox->value();

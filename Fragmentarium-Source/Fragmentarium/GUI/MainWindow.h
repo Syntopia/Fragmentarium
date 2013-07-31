@@ -41,9 +41,8 @@ namespace Fragmentarium {
         public:
             MainWindow(QWidget* splashWidget);
             MainWindow(QWidget* splashWidget, const QString &fileName);
-            void setSeed(int randomSeed);
-            int getSeed();
             double getTime();
+            void setLastStoredTime(float time) { lastStoredTime = time; }
             void setUserUniforms(QGLShaderProgram* shaderProgram);
             DisplayWidget* getEngine() { return engine; }
             static QString getExamplesDir();
@@ -74,6 +73,7 @@ namespace Fragmentarium {
             void keyReleaseEvent(QKeyEvent* ev);
 
         public slots:
+            void bufferSpinBoxChanged(int);
             void timeChanged(int);
             void bufferActionChanged(QAction* action);
             void rewind();
