@@ -212,9 +212,6 @@ namespace Fragmentarium {
 			QAction* bufferAction1_2;
 			QAction* bufferAction1_4;
 			QAction* bufferAction1_6;
-			QAction* bufferActionZ2;
-			QAction* bufferActionZ4;
-			QAction* bufferActionZ6;
 			QAction* bufferActionCustom;
 
 		};

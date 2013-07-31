@@ -120,7 +120,7 @@ namespace Fragmentarium {
 
 					INFO("Including buffershader: " + fName);
 					QString a = f.readAll();
-					FragmentSource bs = parse(a, fName, false, isCreatingAutoSave);
+					FragmentSource bs = parse(a, fName, false);
 					fs->bufferShaderSource = new FragmentSource(bs);
 					dependencies.append(fName);
 					if (!dontAdd && isCreatingAutoSave) {
@@ -182,7 +182,7 @@ namespace Fragmentarium {
 			return fs;
 		}
 
-		FragmentSource Preprocessor::parse(QString input, QString file, bool moveMain, bool doublify) {
+		FragmentSource Preprocessor::parse(QString input, QString file, bool moveMain) {
 			INFO("Parse: " + file);
 			FragmentSource fs;
 
@@ -318,11 +318,7 @@ namespace Fragmentarium {
 				} 
 				else if (floatSlider.indexIn(s) != -1) {
 					QString name = floatSlider.cap(1);
-					if (doublify) {
-						fs.source[i] = "uniform Float " + name + ";";
-					} else {
-						fs.source[i] = "uniform float " + name + ";";
-					}
+					fs.source[i] = "uniform float " + name + ";";
 					QString fromS = floatSlider.cap(2);
 					QString defS = floatSlider.cap(3);
 					QString toS = floatSlider.cap(4);
@@ -344,11 +340,7 @@ namespace Fragmentarium {
 				}
 				else if (floatColorChooser.indexIn(s) != -1) {
 					QString name = floatColorChooser.cap(1);
-					if (doublify) {
-						fs.source[i] = "uniform Vec4 " + name + ";";
-					} else {
-						fs.source[i] = "uniform vec4 " + name + ";";
-					}
+					fs.source[i] = "uniform vec4 " + name + ";";
 					QString fromS = floatColorChooser.cap(2);
 					QString defS = floatColorChooser.cap(3);
 					QString toS = floatColorChooser.cap(4);
@@ -372,11 +364,7 @@ namespace Fragmentarium {
 				else if (float3Slider.indexIn(s) != -1) {
 
 					QString name = float3Slider.cap(1);
-					if (doublify) {
-						fs.source[i] = "uniform Vec3 " + name + ";";
-					} else {
-						fs.source[i] = "uniform vec3 " + name + ";";
-					}
+					fs.source[i] = "uniform vec3 " + name + ";";
 					Vector3f from = parseVector3f(float3Slider.cap(2), float3Slider.cap(3), float3Slider.cap(4));
 					Vector3f defaults = parseVector3f(float3Slider.cap(5), float3Slider.cap(6), float3Slider.cap(7));
 					Vector3f to = parseVector3f(float3Slider.cap(8), float3Slider.cap(9), float3Slider.cap(10));
@@ -387,11 +375,7 @@ namespace Fragmentarium {
 				} else if (float4Slider.indexIn(s) != -1) {
 
 					QString name = float4Slider.cap(1);
-					if (doublify) {
-						fs.source[i] = "uniform Vec4 " + name + ";";
-					} else {
-						fs.source[i] = "uniform vec4 " + name + ";";
-					}
+					fs.source[i] = "uniform vec4 " + name + ";";
 					Vector4f from = parseVector4f(float4Slider.cap(2), float4Slider.cap(3), float4Slider.cap(4), float4Slider.cap(5));
 					Vector4f defaults = parseVector4f(float4Slider.cap(6), float4Slider.cap(7), float4Slider.cap(8), float4Slider.cap(9));
 					Vector4f to = parseVector4f(float4Slider.cap(10), float4Slider.cap(11), float4Slider.cap(12), float4Slider.cap(13));
@@ -401,11 +385,7 @@ namespace Fragmentarium {
 					fs.params.append(fp);
 				} else if (float2Slider.indexIn(s) != -1) {
 					QString name = float2Slider.cap(1);
-					if (doublify) {
-						fs.source[i] = "uniform Vec2 " + name + ";";
-					} else {
-						fs.source[i] = "uniform vec2 " + name + ";";
-					}
+					fs.source[i] = "uniform vec2 " + name + ";";
 					Vector3f from = parseVector2f(float2Slider.cap(2), float2Slider.cap(3));
 					Vector3f defaults = parseVector2f(float2Slider.cap(4), float2Slider.cap(5));
 					Vector3f to = parseVector2f(float2Slider.cap(6), float2Slider.cap(7));
@@ -415,11 +395,8 @@ namespace Fragmentarium {
 					fs.params.append(fp);
 				} else if (colorChooser.indexIn(s) != -1) {
 					QString name = colorChooser.cap(1);
-					if (doublify) {
-						fs.source[i] = "uniform Vec3 " + name + ";";
-					} else {
-						fs.source[i] = "uniform vec3 " + name + ";";
-					}Vector3f defaults = parseVector3f(colorChooser.cap(2), colorChooser.cap(3), colorChooser.cap(4));
+					fs.source[i] = "uniform vec3 " + name + ";";
+					Vector3f defaults = parseVector3f(colorChooser.cap(2), colorChooser.cap(3), colorChooser.cap(4));
 					ColorParameter* cp= new ColorParameter(currentGroup, name, lastComment, defaults);
 					setLockType(cp, colorChooser.cap(5));
 					fs.params.append(cp);
@@ -495,15 +472,8 @@ namespace Fragmentarium {
 					lastComment = "";
 				}
 
-				if (doublify) {
-					fs.source[i].replace("float","double");
-					fs.source[i].replace("vec2","dvec2");
-					fs.source[i].replace("vec3","dvec3");
-					fs.source[i].replace("vec4","dvec4");
-					fs.source[i].replace("mat2","dmat2");
-					fs.source[i].replace("mat3","dmat3");
-					fs.source[i].replace("mat4","dmat4");
-				}
+				
+				/*
 				fs.source[i].replace("Float","float");
 				fs.source[i].replace("Vec2","vec2");
 				fs.source[i].replace("Vec3","vec3");
@@ -511,6 +481,7 @@ namespace Fragmentarium {
 				fs.source[i].replace("Mat2","mat2");
 				fs.source[i].replace("Mat3","mat3");
 				fs.source[i].replace("Mat4","mat4");
+				*/
 
 				if (inVertex && !fs.source[i].contains("#endvertex")) {
 					fs.vertexSource.append(fs.source[i]);

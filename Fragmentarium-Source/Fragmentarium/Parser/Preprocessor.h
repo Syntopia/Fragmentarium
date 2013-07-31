@@ -244,7 +244,7 @@ namespace Fragmentarium {
 
 		public:
 			Preprocessor(FileManager* fileManager) : fileManager(fileManager), isCreatingAutoSave(false) {};
-			FragmentSource parse(QString input, QString fileName, bool moveMain, bool doublify);
+			FragmentSource parse(QString input, QString fileName, bool moveMain);
 			FragmentSource createAutosaveFragment(QString input, QString fileName);
 			void parseSource(FragmentSource* fs,QString input, QString fileName, bool dontAdd);
 			QStringList getDependencies() { return dependencies; }

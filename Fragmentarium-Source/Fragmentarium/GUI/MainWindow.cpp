@@ -68,10 +68,7 @@ namespace Fragmentarium {
 					checkBox3->setObjectName("checkBox3");
 					verticalLayout->addWidget(checkBox3);
 
-					checkBox2 = new QCheckBox(tab);
-					checkBox2->setObjectName("checkBox2");
-					verticalLayout->addWidget(checkBox2);
-
+				
 
 
 					QHBoxLayout* horizontalLayout2 = new QHBoxLayout();
@@ -118,9 +115,6 @@ namespace Fragmentarium {
 					checkBox->setText("Move main() to end");
 					checkBox->setStatusTip(tr("For compatibility with some GPU's."));
 
-					checkBox2->setText("Replace all 'float' types with 'double' types. (Not working!)");
-					checkBox2->setStatusTip(tr("Also replaces matrix and vector types."));
-
 					checkBox3->setText("Autorun Fragments on Load");
 					checkBox3->setStatusTip(tr("Disabling this might make debugging easier."));
 
@@ -131,7 +125,6 @@ namespace Fragmentarium {
 
 					QSettings settings;
 					checkBox->setChecked(settings.value("moveMain", true).toBool());
-					checkBox2->setChecked(settings.value("doublify", false).toBool());
 					checkBox3->setChecked(settings.value("autorun", true).toBool());
 					refreshSpinBox->setValue(settings.value("refreshRate", 20).toInt());
 					lineEdit->setText(settings.value("includePaths", "Examples/Include;").toString());
@@ -147,7 +140,6 @@ namespace Fragmentarium {
 					settings.setValue("moveMain", checkBox->isChecked());
 					settings.setValue("autorun", checkBox3->isChecked());
 					settings.setValue("includePaths", lineEdit->text());
-					settings.setValue("doublify",  checkBox2->isChecked());
 					settings.setValue("refreshRate",  refreshSpinBox->value());
 				}
 
@@ -156,7 +148,6 @@ namespace Fragmentarium {
 				QWidget *tab;
 				QVBoxLayout *verticalLayout;
 				QCheckBox *checkBox;
-				QCheckBox *checkBox2;
 				QCheckBox *checkBox3;
 				QHBoxLayout *horizontalLayout;
 				QLabel *label;
@@ -1227,10 +1218,6 @@ namespace Fragmentarium {
 			bufferAction1_4 = menu->addAction("Lock to 1/4 window size");
 			bufferAction1_6 = menu->addAction("Lock to 1/6 window size");
 			menu->addSeparator();
-			bufferActionZ2 = menu->addAction("Tile preview (2x zoom)");
-			bufferActionZ4= menu->addAction("Tile preview (4x zoom)");
-			bufferActionZ6 = menu->addAction("Tile preview (6x zoom)");
-			menu->addSeparator();
 			bufferActionCustom = menu->addAction("Custom size");
 			bufferSizeControl->setMenu(menu);
 
@@ -1345,12 +1332,6 @@ namespace Fragmentarium {
 				bufferSizeMultiplier = 4;	
 			} else if (action == bufferAction1_6) {
 				bufferSizeMultiplier = 6;	
-			} else if (action == bufferActionZ2) {
-				bufferSizeMultiplier = -2;	
-			} else if (action == bufferActionZ4) {
-				bufferSizeMultiplier = -4;	
-			} else if (action == bufferActionZ6) {
-				bufferSizeMultiplier = -6;	
 			} else if (action == bufferActionCustom) {
 				bufferSizeMultiplier = 0;	
 			}  
@@ -1568,12 +1549,11 @@ namespace Fragmentarium {
 			QString filename = tabInfo[tabBar->currentIndex()].filename;
 			QSettings settings;
 			bool moveMain = settings.value("moveMain", true).toBool();
-			bool doublify = settings.value("doublify", false).toBool();
 			QStringList includePaths = settings.value("includePaths", "Examples/Include;").toString().split(";", QString::SkipEmptyParts);
 			fileManager.setIncludePaths(includePaths);
 			Preprocessor p(&fileManager);	
 			try {
-				FragmentSource fs = p.parse(inputText,filename,moveMain,doublify);
+				FragmentSource fs = p.parse(inputText,filename,moveMain);
 				QString prepend =  "#define highp\n"
 					"#define mediump\n"
 					"#define lowp\n";
@@ -1611,10 +1591,9 @@ namespace Fragmentarium {
 			fileManager.setOriginalFileName(filename);
 
 			Preprocessor p(&fileManager);
-			bool doublify = settings.value("doublify", false).toBool();
 
 			try {
-				FragmentSource fs = p.parse(inputText,filename,moveMain, doublify);
+				FragmentSource fs = p.parse(inputText,filename,moveMain);
 				bool showGUI = false;
 				highlightBuildButton(false);
 				variableEditor->updateFromFragmentSource(&fs, &showGUI);

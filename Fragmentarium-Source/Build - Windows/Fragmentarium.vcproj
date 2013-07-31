@@ -373,6 +373,18 @@
 			<File
 				RelativePath=".\tmp\moc\release_shared\moc_DisplayWidget.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\tmp\moc\debug_shared\moc_DisplayWidget.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\tmp\moc\release_shared\moc_MainWindow.cpp"
@@ -472,11 +484,21 @@
 					RelativePath="..\Fragmentarium\GUI\DisplayWidget.h"
 					>
 					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc DisplayWidget"
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE  -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_release&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/DisplayWidget.h -o tmp\moc\debug_shared\moc_DisplayWidget.cpp"
+							Outputs="tmp\moc\debug_shared\moc_DisplayWidget.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
 						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="DisplayWidget"
+							Description="Moc DisplayWidget"
 							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE  -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_release&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/DisplayWidget.h -o tmp\moc\release_shared\moc_DisplayWidget.cpp&#x0D;&#x0A;"
 							Outputs="tmp\moc\release_shared\moc_DisplayWidget.cpp"
 						/>
@@ -535,6 +557,15 @@
 					RelativePath="..\Fragmentarium\GUI\OutputDialog.h"
 					>
 					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE  -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc\debug_release&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/OutputDialog.h -o tmp\moc\release_shared\moc_OutputDialog.cpp"
+							Outputs="tmp\moc\release_shared\moc_OutputDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
 						Name="Release|Win32"
 						>
 						<Tool
@@ -580,6 +611,16 @@
 				<File
 					RelativePath="..\Fragmentarium\GUI\VariableWidget.h"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc VariableWidget.h "
+							CommandLine="$(QT4DIR)\bin\moc.exe -DNDEBUG -D_WINDOWS -DUNICODE  -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtCore&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include\QtGui&quot; -I &quot;$(QT4DIR)\include&quot; -I &quot;$(QT4DIR)\include\ActiveQt&quot; -I &quot;tmp\moc&quot; -I &quot;.&quot; -I&quot;$(QT4DIR)\mkspecs\win32-msvc2005&quot; ../Fragmentarium/GUI/VariableWidget.h -o tmp\moc\rmoc_VariableWidget.cpp"
+							Outputs="tmp\moc\rmoc_VariableWidget.cpp"
+						/>
+					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
 						>

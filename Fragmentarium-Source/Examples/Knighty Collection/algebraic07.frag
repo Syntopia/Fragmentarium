@@ -1,5 +1,5 @@
 #info algebraic surfaces (and others) Distance Estimator (knighty 2011)
-#include "Soft-Raytracer.frag"
+#include "DE-Raytracer.frag"
 #include "MathUtils.frag"
 #group DE parametres
 
@@ -157,12 +157,10 @@ FOV = 0.4
 Eye = -15.9787,-0.635857,4.14709
 Target = -6.31873,0.13991,1.68084
 Up = 0.239221,0.0231391,0.94428
-AntiAlias = 1
 Detail = -4
 DetailAO = -1.28569
 FudgeFactor = 1
 MaxRaySteps = 400
-BoundingSphere = 9
 Dither = 0.2807
 NormalBackStep = 1
 AO = 0,0,0,0.81633
