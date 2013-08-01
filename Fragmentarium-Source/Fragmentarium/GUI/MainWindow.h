@@ -73,6 +73,7 @@ namespace Fragmentarium {
             void keyReleaseEvent(QKeyEvent* ev);
 
         public slots:
+            void clearTextures();
             void bufferSpinBoxChanged(int);
             void timeChanged(int);
             void bufferActionChanged(QAction* action);
@@ -213,7 +214,7 @@ namespace Fragmentarium {
             QAction* bufferAction1_4;
             QAction* bufferAction1_6;
             QAction* bufferActionCustom;
-
+            QAction* clearTexturesAction;
         };
 
         // A modified QTextEdit with an extended context menu

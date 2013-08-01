@@ -306,6 +306,9 @@ namespace Fragmentarium {
 
                                 // TODO: If I don't keep this line, HDR images don't work.
                                 // It must be a symptom of some kind of error in the OpenGL setup.
+                                //
+                                // UPDATE: This disables the mip-mapping. There is probably a good
+                                // reason why mip-mapping doesn't work (floats unsupported? Not a power-of two?)
                                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                                 if (fragmentSource.textureParams.contains(textureName)) {
                                     setGlTexParameter(fragmentSource.textureParams[textureName]);
@@ -337,6 +340,10 @@ namespace Fragmentarium {
                                 textureCacheUsed[texturePath] = true;
                             }
                             glBindTexture(GL_TEXTURE_2D,textureID);
+
+                            // Disable mip-mapping per default.
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
                             //INFO(QString("Binding %0 (ID: %1) to active texture %2").arg(textureName+":"+texturePath).arg(textureID).arg(u));
 
                             shaderProgram->setUniformValue(l, (GLuint)u);
@@ -355,20 +362,35 @@ namespace Fragmentarium {
             nextActiveTexture = u;
             setupBufferShader();
 
-            // Check for unused textures
-            QMapIterator<QString, int> i(TextureCache);
-            while (i.hasNext()) {
-                i.next();
-                if (!textureCacheUsed.contains(i.key())) {
+            clearTextureCache(&textureCacheUsed);
+
+        }
+
+        void DisplayWidget::clearTextureCache(QMap<QString, bool>* textureCacheUsed) {
+            if (textureCacheUsed) {
+                // Check for unused textures
+                QMutableMapIterator<QString, int> i(TextureCache);
+                while (i.hasNext()) {
+                    i.next();
+                    if (!textureCacheUsed->contains(i.key())) {
+                        INFO("Removing texture from cache: " +i.key());
+                        GLuint id = i.value();
+                        glDeleteTextures(1, &id);
+                        i.remove();
+                    }
+                }
+            } else {
+                QMapIterator<QString, int> i(TextureCache);
+                while (i.hasNext()) {
+                    i.next();
                     INFO("Removing texture from cache: " +i.key());
                     GLuint id = i.value();
                     glDeleteTextures(1, &id);
-                    TextureCache.remove(i.key());
-                } else {
-                    //INFO("Used texture: " +i.key());
                 }
+                TextureCache.clear();
             }
         }
+
 
         void DisplayWidget::setupBufferShader() {
             if (bufferShaderProgram) {
@@ -444,6 +466,8 @@ namespace Fragmentarium {
             int w = width()/(previewFactor+1);
             int h = height()/(previewFactor+1);
 
+
+
             if (bufferSizeX!=0) {
                 w = bufferSizeX;
                 h = bufferSizeY;
@@ -451,6 +475,7 @@ namespace Fragmentarium {
 
             GLenum type = GL_RGBA8;
             QString b = "None";
+            b = "RGBA8"; // As of now, we never do direct renders. Always two buffers.
             if (bufferType==RGBA8) { b = "RGBA8"; }
             else if (bufferType==RGBA16) { b = "RGBA16";  type = GL_RGBA16; }
             else if (bufferType==RGBA32F)  { b = "RGBA32F";  type = 0x8814 /*GL_RGBA32F*/; }
@@ -458,7 +483,7 @@ namespace Fragmentarium {
 
             QString bufferString;
             if (bufferType==None) {
-                if (previewFactor==0) {
+                if (false && previewFactor==0) {
                     bufferString = QString("No buffers. Direct render as %1x%2 %3.").arg(w).arg(h).arg("RGBA8");
                 } else {
                     bufferString = QString("Created front buffer as %1x%2 %3.").arg(w).arg(h).arg("RGBA8");
@@ -475,7 +500,7 @@ namespace Fragmentarium {
             delete(backBuffer); backBuffer = 0;
 
             if (bufferType==None) {
-                if (previewFactor==0) {
+                if (false && previewFactor==0) {
                 } else {
                     previewBuffer = new QGLFramebufferObject(w, h, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, type);
                 }
@@ -492,14 +517,19 @@ namespace Fragmentarium {
         }
 
         void DisplayWidget::setViewPort(int w, int h) {
-            if (fitWindow /*&& drawingState != Tiled*/) {
-                glViewport( 0, 0, w, h);
-            } else {
-                glViewport( 0, 0,bufferSizeX<w ? bufferSizeX : w, bufferSizeY<h ? bufferSizeY : h);
-            }
+            if (drawingState == Tiled) {
+                glViewport( 0, 0,bufferSizeX, bufferSizeY);
+            } else
+                if (fitWindow) {
+                    glViewport( 0, 0, w, h);
+                } else {
+                    glViewport( 0, 0,bufferSizeX<w ? bufferSizeX : w, bufferSizeY<h ? bufferSizeY : h);
+                }
         }
 
         void DisplayWidget::drawFragmentProgram(int w,int h, bool toBuffer) {
+            //static int c = 0;
+            //INFO(QString("Draw fragment program: %1").arg(c++));
             shaderProgram->bind();
 
             glDisable( GL_CULL_FACE );
@@ -561,6 +591,8 @@ namespace Fragmentarium {
                 l = shaderProgram->uniformLocation("subframe");
                 if (l != -1) {
                     shaderProgram->setUniformValue(l, subframeCounter);
+                    //INFO(QString("Setting subframe: %1").arg(subframeCounter));
+
                 }
             }
 
@@ -574,11 +606,14 @@ namespace Fragmentarium {
             glTexCoord2f(0.0f, 2.0f); glVertex3f( -1.0f,  3.0f,  0.0f);
             glEnd();
 
-            glFinish();// <-- should we call this?
+            //   glFinish();// <-- should we call this? (NO, burns a lot of CPU)
             shaderProgram->release();
         }
 
         void DisplayWidget::drawToFrameBufferObject(QGLFramebufferObject* buffer) {
+            //static int c = 0;
+            //INFO(QString("drawToFrameBufferObject: %1").arg(c++));
+
             if (previewBuffer == 0 || !previewBuffer->isValid()) {
                 WARNING("Non valid FBO");
                 return;
@@ -634,11 +669,11 @@ namespace Fragmentarium {
             glLoadIdentity();
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            if (bufferShaderProgram) {
+            //if (bufferShaderProgram) {
                 setViewPort(width(),height());
-            } else {
-                glViewport(0, 0, width(),height());
-            }
+            //} else {
+            //    glViewport(0, 0, width(),height());
+            //}
             glActiveTexture(GL_TEXTURE0); // non-standard (>OpenGL 1.3) gl extension
             glBindTexture(GL_TEXTURE_2D, previewBuffer->texture());
 
@@ -657,8 +692,14 @@ namespace Fragmentarium {
             if (buffer && !buffer->release()) { WARNING("Failed to release target buffer"); return; }
         }
 
+        /**
+         * Call this before and after performing a tile render.
+         * @brief DisplayWidget::clearTileBuffer
+         */
         void DisplayWidget::clearTileBuffer()  {
             delete(hiresBuffer);
+            mainWindow->getBufferSize(width(), height(),bufferSizeX, bufferSizeY, fitWindow);
+            makeBuffers();
             hiresBuffer = 0;
         }
 
@@ -722,6 +763,7 @@ namespace Fragmentarium {
                 return;
             }
 
+
             if ((doClearBackBuffer || drawingState == DisplayWidget::Animation) && backBuffer) {
                 if (!previewBuffer->bind()) { WARNING("Failed to bind previewBuffer BFO"); return; }
                 glClearColor(0.0f,0.0f,0.0f,0.0f);
@@ -729,20 +771,31 @@ namespace Fragmentarium {
                 if (!previewBuffer->release()) { WARNING("Failed to release previewBuffer FBO");  }
                 subframeCounter = 0;
                 doClearBackBuffer = false;
+            } else {
+                if (doClearBackBuffer) {
+                    subframeCounter = 0;
+                    doClearBackBuffer = false;
+                }
             }
 
             if (drawingState == DisplayWidget::Progressive) {
-                if (backBuffer && subframeCounter>=maxSubFrames && maxSubFrames>0) {
+                if (subframeCounter>=maxSubFrames && maxSubFrames>0) {
                     return;
                 }
             }
 
             QTime t = QTime::currentTime();
+            qglClearColor(Qt::white);
+            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
             if (previewBuffer) {
                 drawToFrameBufferObject(0);
             } else {
-                drawFragmentProgram(width(),height(), false);
+                drawFragmentProgram(width(),height(), true);
+                if (drawingState == DisplayWidget::Progressive) {
+                    subframeCounter++;
+                    mainWindow->setSubFrameDisplay(subframeCounter);
+                }
             }
 
             QTime cur = QTime::currentTime();
@@ -753,18 +806,21 @@ namespace Fragmentarium {
             // If the render takes more than 0.5 seconds, we will directly measure fps from one frame.
             if (ms>500) {
                 fps = 1000.0f/((float)ms);
+                mainWindow->setFPS(fps);
             } else {
-                // Else measure over two seconds.
-                long ms2 = fpsTimer.msecsTo(cur);
-                if (ms2>2000 || ms2<0) {
-                    fps = fpsCounter/(ms2/1000.0);
-                    fpsTimer = cur;
-                    fpsCounter = 0;
+                if (drawingState == Animation && isContinuous()) {
+                    // Else measure over two seconds.
+                    long ms2 = fpsTimer.msecsTo(cur);
+                    if (ms2>2000 || ms2<0) {
+                        fps = fpsCounter/(ms2/1000.0);
+                        fpsTimer = cur;
+                        fpsCounter = 0;
+                        mainWindow->setFPS(fps);
+                    }
+                } else {
+                    mainWindow->setFPS(0);
                 }
             }
-
-            mainWindow->setFPS(fps);
-            // if (tiles) requireRedraw(true);
 
         }
 

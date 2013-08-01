@@ -21,7 +21,7 @@ V1.0.0 (august 2013)
 + New Progressive and Animation mode.
 + New output dialog
 
-V1.5 (christmas 2014)
+V1.5 (christmas 2013)
 ----
 - Path tracer
 - Fix BufferShader, so that it can handle GUI widgets...

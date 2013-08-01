@@ -103,7 +103,7 @@ void main() {
 	      // Lancos
 	      // w = sin(r.x)*sin(r.x/AARange)*sin(r.y)*sin(r.y/AARange)/(r.x*r.x*r.y*r.y*AARange*AARange);
 	      // if (w!=w) w = 1.0;
-	} else {  w =pow( 1.0-length(r),1.0);};
+	} // else {  w =pow( 1.0-length(r),1.0);};
 
 	r*=AARange;
 	vec2 c = coord.xy+aaScale*r;

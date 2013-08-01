@@ -71,6 +71,7 @@ namespace Fragmentarium {
             void setClearOnChange(bool v) { clearOnChange = v; }
 
             void updatePerspective();
+            void clearTextureCache(QMap<QString, bool>* textureCacheUsed);
         public slots:
             void updateBuffers();
             void clearPreviewBuffer();

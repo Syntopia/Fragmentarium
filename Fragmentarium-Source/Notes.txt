@@ -7,7 +7,7 @@ I have redesigned the UI in order to simplify it. This should solve some fundame
 [UI]
 
 Now there are only two modes:
-- Progressive, for creating accumulated images (such as multiple samples per pixels). An uniform named 'subframe' keeps track of the current frame (and replaces the old 'backbufferCounter' uniform).
+- Progressive, for creating accumulated images (e.g. as multiple samples per pixels). An uniform named 'subframe' keeps track of the current frame (and replaces the old 'backbufferCounter' uniform).
 - Animation, where a single 'time' uniform can be used to control dynamics.
 
 The buffer size no longer needs to be locked to the window size, although it is possible to do so. This means it is now possible to work with buffers with different aspect ratio and size than the OpenGL window.
@@ -20,11 +20,11 @@ As can be seen, it is now possible to render animations at arbitrary resolution 
 
 The code has also been cleaned up. The prefered build environment is now Qt Creator 2.7 together with Qt 4.8.5(a project file has been added), though the old VS2008 project has been updated and is working as well (and the Debug configuration now works).
 
-The plan is to remove the worst bugs from this in the next couple of weeks, and then release this as version 1.0, since Fragmentarium is becoming somewhat stable. So please report bugs to me.
+The plan is to remove the worst bugs from this in the next couple of weeks, and then release this as version 1.0, since Fragmentarium is becoming somewhat stable. So please report bugs and/or suggestions to me.
 
 After version 1.0, my plan is to start working on integrating some of the key frame interpolation into Fragmentarium.
 
-
+Also, if you have any frags you think should be part of the standard distribution please send them to me.
 
 
 

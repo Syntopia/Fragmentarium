@@ -254,8 +254,8 @@ namespace Fragmentarium {
                 floatSlider = QRegExp("^\\s*uniform\\s+float\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$");
                 intSlider = QRegExp("^\\s*uniform\\s+int\\s+(\\S+)\\s*;\\s*slider\\[(\\S+),(\\S+),(\\S+)\\].*$");
                 boolChooser = QRegExp("^\\s*uniform\\s+bool\\s+(\\S+)\\s*;\\s*checkbox\\[(\\S+)\\].*$");
-                replace = QRegExp("^#replace\\s+\"([^\"]+)\"\\s+\"([^\"]+)\"\\s*$"); // Look for #reaplace "var1" "var2"
                 sampler2D = QRegExp("^\\s*uniform\\s+sampler2D\\s+(\\S+)\\s*;\\s*file\\[(.*)\\].*$");
+                preprocessor = QRegExp("^\\s*\\#.*$");
 
                 expression.setCaseSensitivity(Qt::CaseInsensitive);
                 primitives.setCaseSensitivity(Qt::CaseInsensitive);
@@ -289,53 +289,58 @@ namespace Fragmentarium {
                 QString current;
                 int startMatch = 0;
                 if (float2Slider.exactMatch(text) || float3Slider.exactMatch(text) || float4Slider.exactMatch(text) || colorChooser.exactMatch(text) || floatSlider.exactMatch(text) ||
-                        intSlider.exactMatch(text) || boolChooser.exactMatch(text) || replace.exactMatch(text) ||
+                        intSlider.exactMatch(text) || boolChooser.exactMatch(text) ||
                         sampler2D.exactMatch(text) || floatColorChooser.exactMatch(text)) {
                     setFormat(0, text.length()-1, preprocessor2Format);
                 }
 
-                for (int i = 0; i < text.length(); i++) {
-                    if ((i > 0) && text.at(i) == '*' && text.at(i-1) == '/') {
-                        // Multi-line comment begins
-                        setFormat(i-1, text.length()-i+1, commentFormat);
-                        setCurrentBlockState(1);
-                        return;
-                    }
-
-                    if ((i > 0) && text.at(i) == '/' && text.at(i-1) == '*') {
-                        // Multi-line comment ends
-                        setFormat(0, i, commentFormat);
-                        if (currentBlockState() != 0) {
-                            setCurrentBlockState(0);
+                if (preprocessor.exactMatch(text) ) {
+                    setFormat(0, text.length()-1, preprocessorFormat);
+                } else
+                {
+                    for (int i = 0; i < text.length(); i++) {
+                        if ((i > 0) && text.at(i) == '*' && text.at(i-1) == '/') {
+                            // Multi-line comment begins
+                            setFormat(i-1, text.length()-i+1, commentFormat);
+                            setCurrentBlockState(1);
+                            return;
                         }
-                        continue;
-                    }
 
-                    if (text.at(0) == '#') {
-                        // Preprocessor format
-                        setFormat(0, text.length(), preprocessorFormat);
-                        continue;
-                    }
+                        if ((i > 0) && text.at(i) == '/' && text.at(i-1) == '*') {
+                            // Multi-line comment ends
+                            setFormat(0, i, commentFormat);
+                            if (currentBlockState() != 0) {
+                                setCurrentBlockState(0);
+                            }
+                            continue;
+                        }
 
-                    if ((i > 0) && (i < text.length()-2) && text.at(i) == '/' && text.at(i-1) == '/') {
-                        // Single-line comments
-                        setFormat(i-1, text.length()-i+1, commentFormat);
-                        break;
-                    }
+                        if (text.at(0) == '#') {
+                            // Preprocessor format
+                            setFormat(0, text.length(), preprocessorFormat);
+                            continue;
+                        }
 
-                    bool delimiter = !text.at(i).isLetterOrNumber();//(text.at(i) == '(' || text.at(i) == ')' || text.at(i) == '{' || text.at(i) == '\t' || text.at(i) == '}' || text.at(i) == ' '  || (text.at(i) == '\r') || (text.at(i) == '\n'));
-                    bool lastChar = (i==text.length()-1);
-                    if (delimiter || lastChar) {
-                        if (lastChar && !delimiter) current += text.at(i);
-                        int adder = (i==text.length()-1 ? 1 : 0);
-                        if (expression.exactMatch(current)) setFormat(startMatch, i-startMatch+adder, keywordFormat);
-                        if (primitives.exactMatch(current)) setFormat(startMatch, i-startMatch+adder, primitiveFormat);
-                        if (randomNumber.exactMatch(current)) setFormat(startMatch, i-startMatch+adder, preprocessorFormat);
-                        if (text.at(i) == '{' || text.at(i) == '}') setFormat(i, 1, bracketFormat);
-                        startMatch = i;
-                        current = "";
-                    } else {
-                        current += text.at(i);
+                        if ((i > 0) && (i < text.length()-2) && text.at(i) == '/' && text.at(i-1) == '/') {
+                            // Single-line comments
+                            setFormat(i-1, text.length()-i+1, commentFormat);
+                            break;
+                        }
+
+                        bool delimiter = !text.at(i).isLetterOrNumber();//(text.at(i) == '(' || text.at(i) == ')' || text.at(i) == '{' || text.at(i) == '\t' || text.at(i) == '}' || text.at(i) == ' '  || (text.at(i) == '\r') || (text.at(i) == '\n'));
+                        bool lastChar = (i==text.length()-1);
+                        if (delimiter || lastChar) {
+                            if (lastChar && !delimiter) current += text.at(i);
+                            int adder = (i==text.length()-1 ? 1 : 0);
+                            if (expression.exactMatch(current)) setFormat(startMatch, i-startMatch+adder, keywordFormat);
+                            if (primitives.exactMatch(current)) setFormat(startMatch, i-startMatch+adder, primitiveFormat);
+                            if (randomNumber.exactMatch(current)) setFormat(startMatch, i-startMatch+adder, preprocessorFormat);
+                            if (text.at(i) == '{' || text.at(i) == '}') setFormat(i, 1, bracketFormat);
+                            startMatch = i;
+                            current = "";
+                        } else {
+                            current += text.at(i);
+                        }
                     }
                 }
             }
@@ -356,7 +361,7 @@ namespace Fragmentarium {
             QRegExp floatSlider;
             QRegExp intSlider;
             QRegExp boolChooser;
-            QRegExp replace;
+            QRegExp preprocessor;
             QRegExp sampler2D;
             QRegExp floatColorChooser;
 
@@ -436,6 +441,11 @@ namespace Fragmentarium {
             }  else {
                 ev->ignore();
             }
+        }
+
+        void MainWindow::clearTextures()
+        {
+            engine->clearTextureCache(false);
         }
 
         void MainWindow::bufferSpinBoxChanged(int)
@@ -521,6 +531,7 @@ namespace Fragmentarium {
         void MainWindow::init()
         {
             lastStoredTime = 0;
+            engine = 0;
 
             setAcceptDrops(true);
             lastTime = new QTime();
@@ -810,6 +821,10 @@ namespace Fragmentarium {
             controlAction->setStatusTip(tr("Shows information about how to control Fragmentarium"));
             connect(controlAction, SIGNAL(triggered()), this, SLOT(showControlHelp()));
 
+            clearTexturesAction = new QAction(tr("Clear Texture Cache"), this);
+            connect(clearTexturesAction, SIGNAL(triggered()), this, SLOT(clearTextures()));
+
+
             sfHomeAction = new QAction(QIcon(":/Icons/agt_internet.png"), tr("&Project Homepage (web link)"), this);
             sfHomeAction->setStatusTip(tr("Open the project page in a browser."));
             connect(sfHomeAction, SIGNAL(triggered()), this, SLOT(launchSfHome()));
@@ -956,6 +971,9 @@ namespace Fragmentarium {
             helpMenu->addAction(controlAction);
 
             helpMenu->addSeparator();
+            helpMenu->addAction(clearTexturesAction);
+            helpMenu->addSeparator();
+
             helpMenu->addAction(sfHomeAction);
             helpMenu->addAction(galleryAction);
             helpMenu->addAction(glslHomeAction);
@@ -1029,9 +1047,9 @@ namespace Fragmentarium {
                     }
                 }
 
-                engine->clearTileBuffer();
                 DisplayWidget::DrawingState oldState = engine->getState();
                 engine->setState(DisplayWidget::Tiled);
+                engine->clearTileBuffer();
                 int maxTiles = od.getTiles();
                 float padding = od.getPadding();
                 int maxSubframes = od.getFrames();
@@ -1101,7 +1119,7 @@ namespace Fragmentarium {
                             }
                         }
                         if (preview) {
-                            QDialog* qd = new QDialog();
+                            QDialog* qd = new QDialog(this);
                             QVBoxLayout *l = new QVBoxLayout;
                             QLabel* label = new QLabel();
                             label->setPixmap(QPixmap::fromImage(finalImage));
@@ -1206,13 +1224,13 @@ namespace Fragmentarium {
             bufferToolBar = addToolBar(tr("Buffer Dimensions"));
             bufferToolBar->addWidget(new QLabel("Buffer Size. X: ", this));
             bufferXSpinBox = new QSpinBox(bufferToolBar);
-            bufferXSpinBox->setRange(0,1000);
+            bufferXSpinBox->setRange(0,8000);
             bufferXSpinBox->setValue(10);
             bufferXSpinBox->setSingleStep(1);
             bufferToolBar->addWidget(bufferXSpinBox);
             bufferToolBar->addWidget(new QLabel("Y: ", this));
             bufferYSpinBox = new QSpinBox(bufferToolBar);
-            bufferYSpinBox->setRange(0,1000);
+            bufferYSpinBox->setRange(0,8000);
             bufferYSpinBox->setValue(10);
             bufferYSpinBox->setSingleStep(1);
             connect(bufferXSpinBox, SIGNAL(valueChanged(int)), this, SLOT(bufferSpinBoxChanged(int)));
@@ -1402,7 +1420,7 @@ namespace Fragmentarium {
 
         void MainWindow::renderModeChanged() {
             engine->setMaxSubFrames(frameSpinBox->value());
-
+            setFPS(-1);
             QObject* o = QObject::sender();
             if (o == 0 || o == progressiveButton) {
                 lastStoredTime = getTime();
@@ -1908,6 +1926,11 @@ namespace Fragmentarium {
         }
 
         void MainWindow::getBufferSize(int w, int h, int& bufferSizeX, int& bufferSizeY, bool& fitWindow) {
+            if (engine && engine->getState()==DisplayWidget::Tiled) {
+                bufferSizeX = bufferXSpinBox->value();
+                bufferSizeY =  bufferYSpinBox->value();
+                return;
+            }
             if (!bufferXSpinBox || !bufferYSpinBox) return;
             if (bufferSizeMultiplier>0) {
                 // Locked to a fraction of the window size

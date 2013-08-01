@@ -24,6 +24,7 @@ namespace Fragmentarium {
             QStringList getFiles(QStringList filters);
             QStringList getImageFiles();
 
+
         private:
             QString originalFileName;
             QStringList includePaths;
