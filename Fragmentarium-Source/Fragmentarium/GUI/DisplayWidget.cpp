@@ -610,7 +610,7 @@ namespace Fragmentarium {
             shaderProgram->release();
         }
 
-        void DisplayWidget::drawToFrameBufferObject(QGLFramebufferObject* buffer) {
+        void DisplayWidget::drawToFrameBufferObject(QGLFramebufferObject* buffer, bool drawLast) {
             //static int c = 0;
             //INFO(QString("drawToFrameBufferObject: %1").arg(c++));
 
@@ -620,18 +620,20 @@ namespace Fragmentarium {
             }
             QSize s = previewBuffer->size();
 
-            for (int i = 0; i <= iterationsBetweenRedraws; i++) {
-                if (backBuffer) {
-                    // swap backbuffer
-                    QGLFramebufferObject* temp = backBuffer;
-                    backBuffer= previewBuffer;
-                    previewBuffer = temp;
-                    subframeCounter++;
-                }
+            if (!drawLast) {
+                for (int i = 0; i <= iterationsBetweenRedraws; i++) {
+                    if (backBuffer) {
+                        // swap backbuffer
+                        QGLFramebufferObject* temp = backBuffer;
+                        backBuffer= previewBuffer;
+                        previewBuffer = temp;
+                        subframeCounter++;
+                    }
 
-                if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; }
-                drawFragmentProgram(s.width(),s.height(), true);
-                if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; }
+                    if (!previewBuffer->bind()) { WARNING("Failed to bind FBO"); return; }
+                    drawFragmentProgram(s.width(),s.height(), true);
+                    if (!previewBuffer->release()) { WARNING("Failed to release FBO"); return; }
+                }
             }
             mainWindow->setSubFrameDisplay(subframeCounter);
 
@@ -670,7 +672,7 @@ namespace Fragmentarium {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             //if (bufferShaderProgram) {
-                setViewPort(width(),height());
+            setViewPort(width(),height());
             //} else {
             //    glViewport(0, 0, width(),height());
             //}
@@ -732,7 +734,7 @@ namespace Fragmentarium {
                                        .arg(w).arg(h));
 
                 (*steps)++;
-                drawToFrameBufferObject(hiresBuffer);
+                drawToFrameBufferObject(hiresBuffer, false);
             }
             return hiresBuffer->toImage();
         }
@@ -775,21 +777,22 @@ namespace Fragmentarium {
                 if (doClearBackBuffer) {
                     subframeCounter = 0;
                     doClearBackBuffer = false;
+                    qglClearColor(Qt::black);
+                    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
                 }
             }
 
             if (drawingState == DisplayWidget::Progressive) {
                 if (subframeCounter>=maxSubFrames && maxSubFrames>0) {
+                    drawToFrameBufferObject(0, true);
                     return;
                 }
             }
 
             QTime t = QTime::currentTime();
-            qglClearColor(Qt::white);
-            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
             if (previewBuffer) {
-                drawToFrameBufferObject(0);
+                drawToFrameBufferObject(0, false);
             } else {
                 drawFragmentProgram(width(),height(), true);
                 if (drawingState == DisplayWidget::Progressive) {
@@ -859,7 +862,17 @@ namespace Fragmentarium {
                 cameraControl->updateState();
             }
 
-            if (pendingRedraws || continuous) updateGL();
+            if (pendingRedraws) {
+                 updateGL();
+            } else if (continuous) {
+                if (drawingState == DisplayWidget::Progressive &&
+                        (subframeCounter>=maxSubFrames && maxSubFrames>0)) {
+                    // Ignore this.
+                }
+                else {
+                    updateGL();
+                }
+            }
         }
 
         void DisplayWidget::initializeGL()

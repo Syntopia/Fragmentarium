@@ -79,7 +79,7 @@ namespace Fragmentarium {
         protected:
             void tileRender();
             void drawFragmentProgram(int w,int h, bool toBuffer);
-            void drawToFrameBufferObject(QGLFramebufferObject* buffer);
+            void drawToFrameBufferObject(QGLFramebufferObject* buffer, bool drawLast);
             void mouseMoveEvent(QMouseEvent* ev) ;
             void contextMenuEvent (QContextMenuEvent* ev);
             void mouseReleaseEvent ( QMouseEvent * ev);
