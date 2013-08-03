@@ -184,7 +184,7 @@ void main() {
 		}
 		occ /= samples;
 		if (tex.w==1.0) {
-			gl_FragColor = vec4(c+Glow*Vec3(1.0-occ),1.0);
+			gl_FragColor = vec4(c+Glow*vec3(1.0-occ),1.0);
 		} else {
 			gl_FragColor = vec4(mix(c,c*occ,AOStrength),1.0);
 		}
