@@ -1,7 +1,10 @@
-Currently pending issues: 
-- Check for new frags.
-- The texture error.
+01-08-13 [MHC]
+- Clear texture cache function
+- Restored FPS
+- Fixed bugs for non-buffered shaders
+- No more mip-maps for non-HDR textures.
 - Old (non-progressive) modes must be checked. They should not burn GPU.
+- Much less (50%->25%) CPU burn by removing glFinish().
 
 31-07-13 [MHC] Fixed:
 + No files saved from the output dialog.

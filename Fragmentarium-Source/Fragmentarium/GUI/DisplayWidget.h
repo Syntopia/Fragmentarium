@@ -46,7 +46,7 @@ namespace Fragmentarium {
             void updateRefreshRate();
             void setState(DrawingState state);
             DrawingState getState() { return drawingState; }
-            boolean isContinuous() { return continuous; }
+            bool isContinuous() { return continuous; }
             void reset();
             void setContextMenu(QMenu* contextMenu) { this->contextMenu = contextMenu; }
             void resetCamera(bool fullReset);

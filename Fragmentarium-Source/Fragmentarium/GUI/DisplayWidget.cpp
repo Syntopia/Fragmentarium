@@ -269,6 +269,11 @@ namespace Fragmentarium {
                     WARNING("Trying to use a backbuffer, but no bufferType set.");
                     WARNING("Use the buffer define, e.g.: '#buffer RGBA8' ");
                 }
+            } else {
+                // Apparently we must always bind the backbuffer texture.
+                // FIX: this indicates an error in the later binding of user textures.
+                glActiveTexture(GL_TEXTURE0+u); // non-standard (>OpenGL 1.3) gl extension
+                u++;
             }
 
 
