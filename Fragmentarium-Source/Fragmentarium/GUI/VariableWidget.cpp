@@ -566,7 +566,7 @@ namespace Fragmentarium {
         // SamplerWidget ------------------------------------------------------------------
 
         SamplerWidget::SamplerWidget(FileManager* fileManager, QWidget* parent, QWidget* variableEditor,QString name, QString defaultValue)
-            : fileManager(fileManager), VariableWidget(parent, variableEditor, name), defaultValue(defaultValue) {
+            : VariableWidget(parent, variableEditor, name), fileManager(fileManager), defaultValue(defaultValue) {
             QHBoxLayout* l = new QHBoxLayout(widget);
             l->setSpacing(2);
             l->setContentsMargins (0,0,0,0);

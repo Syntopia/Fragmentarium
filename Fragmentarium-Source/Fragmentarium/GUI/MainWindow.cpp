@@ -445,7 +445,7 @@ namespace Fragmentarium {
 
         void MainWindow::clearTextures()
         {
-            engine->clearTextureCache(false);
+            engine->clearTextureCache(0);
         }
 
         void MainWindow::bufferSpinBoxChanged(int)
