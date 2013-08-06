@@ -1107,17 +1107,18 @@ namespace Fragmentarium {
                         QImage finalImage(w*maxTiles,h*maxTiles,cachedTileImages[0].format());
 
                         INFO(QString("Created combined image (%1,%2)").arg(finalImage.width()).arg(finalImage.height()));
-                        // Isn't there a Qt function to copy entire images?
+
+                        QPainter painter(&finalImage);
                         for (int i = 0; i < maxTiles*maxTiles; i++) {
                             int dx = (i / maxTiles);
                             int dy = (maxTiles-1)-(i % maxTiles);
-                            for (int x = 0; x < w; x++) {
-                                for (int y = 0; y < h; y++) {
-                                    QRgb p = cachedTileImages[i].pixel(x,y);
-                                    finalImage.setPixel(x+w*dx,y+h*dy,p);
-                                }
-                            }
+                            int xoff = dx*w; int yoff = dy*h;
+                            // Thanks to 3dickulus for pointing out how to properly copy images:
+                            QRect target(xoff, yoff, w, h);
+                            QRect source(0, 0, w, h);
+                            painter.drawImage(target, cachedTileImages[i], source);
                         }
+
                         if (preview) {
                             QDialog* qd = new QDialog(this);
                             QVBoxLayout *l = new QVBoxLayout;

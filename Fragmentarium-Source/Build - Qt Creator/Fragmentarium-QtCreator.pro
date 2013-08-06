@@ -63,7 +63,7 @@ SOURCES += ../Fragmentarium/Main.cpp \
     ../ThirdPartyCode/hdrloader.cpp
 RESOURCES += ../Fragmentarium.qrc
 CONFIG+=opengl
-QT+=xml opengl script
+QT+=xml opengl
 
 OTHER_FILES += \
     ../notes.txt \
@@ -71,6 +71,14 @@ OTHER_FILES += \
     ../Bugs.txt \
     ../roadmap.txt
 
+
+win32-msvc2008|win32-msvc2010 {
+        # Enable Level 4 compiler warnings
+        QMAKE_CXXFLAGS_WARN_ON -= -W3
+        QMAKE_CXXFLAGS_WARN_ON += -W4
+        # Hush some known Qt warnings
+        QMAKE_CXXFLAGS += -wd4127 -wd4512 -wd4189
+}
 
 
 
