@@ -320,7 +320,8 @@ namespace Fragmentarium {
                 float y = comboSlider2->getValue();
                 float z = comboSlider3->getValue();
                 float a = sqrt((1-z*z)/(y*y+x*x));
-                if (y*y+x*x == 0) {
+                //if (y*y+x*x == 0) {
+                if (fabs(y*y+x*x)<1E-8) {
                     a = 0;
                     comboSlider3->blockSignals(true);
                     comboSlider3->setValue((z>0) ? 1.0 : -1.0);
