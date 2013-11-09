@@ -3,7 +3,7 @@
 // Double emulation based on GLSL Mandelbrot Shader by Henry Thasler (www.thasler.org/blog)
 //
 // Emulation based on Fortran-90 double-single package. See http://crd.lbl.gov/~dhbailey/mpdist/
-// Substract: res = ds_add(a, b) => res = a + b
+// Add: res = ds_add(a, b) => res = a + b
 vec2 add (vec2 dsa, vec2 dsb)
 {
 	vec2 dsc;
@@ -18,7 +18,7 @@ vec2 add (vec2 dsa, vec2 dsb)
 	return dsc;
 }
 
-// Substract: res = ds_sub(a, b) => res = a - b
+// Subtract: res = ds_sub(a, b) => res = a - b
 vec2 sub (vec2 dsa, vec2 dsb)
 {
 	vec2 dsc;
@@ -73,6 +73,46 @@ vec2 mul (vec2 dsa, vec2 dsb)
 	
 	dsc.x = t1 + t2;
 	dsc.y = t2 - (dsc.x - t1);
+	
+	return dsc;
+}
+
+// Divide: res = ds_div(a, b) => res = a / b
+vec2 div (vec2 dsa, vec2 dsb)
+{
+	vec2 dsc;
+	float a1, a2, b1, b2, cona, conb, split = 8193.;
+	float c11, c21, c2, e, t1, t2, s1, s2;
+	float t11, t12, t21, t22;
+	
+	s1 = dsa.x / dsb.x;
+	cona = s1 * split;
+	conb = dsb.x * split;
+	a1 = cona - (cona - s1);
+	b1 = conb - (conb - dsb.x);
+	a2 = s1 - a1;
+	b2 = dsb.x - b1;
+	
+	c11 = s1 * dsb.x;
+	c21 = (((a1 * b1 - c11) + a1 * b2) + a2 * b1) + a2 * b2;
+	
+	c2 = s1 * dsb.y;
+	
+	t1 = c11 + c2;
+	e = t1 - c11;
+	t2 = ((c2 - e) + (c11 - (t1 - e))) + c21;
+	
+	t12 = t1 + t2;
+	t22 = t2 - (t12 - t1);
+	
+	t11 = dsa.x - t12;
+	e = t11 - dsa.x;
+	t21 = ((-t12 - e) + (dsa.x - (t11 - e))) + dsa.y - t22;
+	
+	s2 = (t11 + t21) / dsb.x;
+	
+	dsc.x = s1 + s2;
+	dsc.y = s2 - (dsc.x - s1);
 	
 	return dsc;
 }
