@@ -183,11 +183,11 @@ namespace Fragmentarium {
 
             QMetaObject::connectSlotsByName(this);
 
-            label->setText(QApplication::translate("OutputDialog", "Render quality: (2x2 tiles - 1630x1920 pixels - 3.1 MPixel):", 0, QApplication::UnicodeUTF8));
-            label_3->setText(QApplication::translate("OutputDialog", "Filename", 0, QApplication::UnicodeUTF8));
-            fileButton->setText(QApplication::translate("OutputDialog", "File...", 0, QApplication::UnicodeUTF8));
-            uniqueCheckBox->setText(QApplication::translate("OutputDialog", "Add unique ID to name ()", 0, QApplication::UnicodeUTF8));
-            autoSaveCheckBox->setText(QApplication::translate("OutputDialog", "Autosave fragment (as [ImageOutputName].frag)", 0, QApplication::UnicodeUTF8));
+            label->setText(QApplication::translate("OutputDialog", "Render quality: (2x2 tiles - 1630x1920 pixels - 3.1 MPixel):", 0));
+            label_3->setText(QApplication::translate("OutputDialog", "Filename", 0));
+            fileButton->setText(QApplication::translate("OutputDialog", "File...", 0));
+            uniqueCheckBox->setText(QApplication::translate("OutputDialog", "Add unique ID to name ()",0 ));
+            autoSaveCheckBox->setText(QApplication::translate("OutputDialog", "Autosave fragment (as [ImageOutputName].frag)", 0));
 
             tilesSlider->setMinimum(1);
             tilesSlider->setValue(3);

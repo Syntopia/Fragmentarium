@@ -320,7 +320,7 @@ namespace Fragmentarium {
                                 }
 
                                 HDRLoaderResult result;
-                                HDRLoader::load(texturePath.toAscii().data(), result);
+                                HDRLoader::load(texturePath.toLatin1().data(), result);
                                 INFO(QString("Hdrloader found HDR image: %1 x %2").arg(result.width).arg(result.height));
                                 glTexImage2D(GL_TEXTURE_2D, 0, 0x8815  , result.width, result.height, 0, GL_RGB, GL_FLOAT, result.cols);
 

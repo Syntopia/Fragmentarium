@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = fragmentarium
 DEPENDPATH += .. \
               ../Fragmentarium \
               ../ThirdPartyCode \
@@ -62,8 +62,8 @@ SOURCES += ../Fragmentarium/Main.cpp \
     ../Fragmentarium/GUI/FileManager.cpp \
     ../ThirdPartyCode/hdrloader.cpp
 RESOURCES += ../Fragmentarium.qrc
-CONFIG+=opengl
-QT+=xml opengl
+CONFIG+=opengl widgets
+QT+=xml opengl script widgets
 
 OTHER_FILES += \
     ../notes.txt \
