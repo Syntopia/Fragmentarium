@@ -1,10 +1,8 @@
 Prerequisites
 =============
 
-First install Qt Open Source for Mac (version 4.5.x):
+First install Qt Open Source for Mac:
 http://qt-project.org/downloads
-
-Note: QT Version 5 will not compile this code currently without some modification.
 
 Download
 ========
@@ -17,17 +15,17 @@ and type the following:
 
     cd Fragmentarium/Fragmentarium-Source/
     qmake -project -after "CONFIG += opengl"
-    qmake -spec macx-xcode Fragmentarium.pro
+    qmake -spec macx-xcode Fragmentarium-Source.pro
 
 Now an XCode project file has been created. Open this file in XCode.
 
-Right click on the "External Frameworks and Libraries" and add QtScript.framework, QtOpenGL.framework and QtXml.framework by browsing to their locations. 
-The header files now need to be added: go to 'Project | Edit Active Target 'Fragmentarium'' and go to the Build tab. Add the following header search paths:
+Right click on the "Frameworks" and add QtWidgets.framework and QtOpenGL.framework by browsing to their locations at [Qt install location]/[version]/[platform]/lib/ (e.g. ~/Qt/5.3/clang_64/lib).
+The header files now need to be added: click on project and go to the Build tab. Add the following header search paths:
 
-    '/Library/Frameworks/QtOpenGL.framework/Headers' 
-    '/Library/Frameworks/QtScript.framework/Headers' 
-    '/Library/Frameworks/QtXML.framework/Headers'
+    '[Qt install location]/[version]/[platform]/lib/QtWidgets.framework/Versions/5/Headers'
+    '[Qt install location]/[version]/[platform]/lib/QtOpenGL.framework/Versions/5/Headers'
 
+You may also need to do the same for QtScript.framework and QtXml.framework.
 It might also be necessary to add the SyntopiaCore folder and check the recursive flag.
 It should now be possible to compile and run Fragmentium from XCode.
 

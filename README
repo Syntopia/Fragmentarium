@@ -11,9 +11,7 @@ Features:
  * Includes simple raytracer for distance estimated systems
  * Many examples including Mandelbulb, Mandelbox, Kaleidoscopic IFS, and Julia Quaternion.   
 
-Fragmentarium is built in C++, OpenGL/GLSL, and Qt 4.
-
-Fragmentarium is currently in the early development phase, so expect some rough edges!
+Fragmentarium is built in C++, OpenGL/GLSL, and Qt 5.
 
 For more information see:
 http://syntopia.github.com/Fragmentarium
