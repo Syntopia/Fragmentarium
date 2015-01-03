@@ -62,7 +62,7 @@ namespace Fragmentarium {
 
         QString FileManager::resolveName(QString fileName, QString originalFileName) {
             // First check absolute filenames
-            if (QFileInfo(fileName).isAbsolute()) return fileName;
+            if (QFileInfo(fileName).isAbsolute() && QFileInfo(fileName).exists()) return fileName;
 
             QStringList pathsTried;
 

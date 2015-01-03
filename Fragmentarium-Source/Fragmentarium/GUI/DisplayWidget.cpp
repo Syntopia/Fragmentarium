@@ -31,6 +31,13 @@ namespace Fragmentarium {
                 if (f & QGLFormat::OpenGL_Version_2_0) s.append("OpenGL2.0");
                 if (f & QGLFormat::OpenGL_Version_2_1) s.append("OpenGL2.1");
                 if (f & QGLFormat::OpenGL_Version_3_0) s.append("OpenGL3.0");
+                if (f & QGLFormat::OpenGL_Version_3_1) s.append("OpenGL3.1");
+                if (f & QGLFormat::OpenGL_Version_3_2) s.append("OpenGL3.2");
+                if (f & QGLFormat::OpenGL_Version_3_3) s.append("OpenGL3.3");
+                if (f & QGLFormat::OpenGL_Version_4_0) s.append("OpenGL4.0");
+                if (f & QGLFormat::OpenGL_Version_4_1) s.append("OpenGL4.1");
+                if (f & QGLFormat::OpenGL_Version_4_2) s.append("OpenGL4.2");
+                if (f & QGLFormat::OpenGL_Version_4_3) s.append("OpenGL4.3");
                 if (f & QGLFormat::OpenGL_ES_CommonLite_Version_1_0) s.append("OpenGL_ES_CL_1.0");
                 if (f & QGLFormat::OpenGL_ES_Common_Version_1_0) s.append("OpenGL_ES_C_1.0");
                 if (f & QGLFormat::OpenGL_ES_CommonLite_Version_1_1) s.append("OpenGL_ES_CL_1.1");
@@ -758,6 +765,10 @@ namespace Fragmentarium {
             if (!shownInfo) {
                 shownInfo = true;
                 INFO("This video card supports: " + GetOpenGLFlags().join(", "));
+                qDebug(" - OpenGL Vendor: %s", glGetString(GL_VENDOR));
+                qDebug(" - OpenGL Version: %s", glGetString(GL_VERSION));
+                qDebug(" - OpenGL Renderer: %s", glGetString(GL_RENDERER));
+                qDebug(" - OpenGL Shading Language Version: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
             }
             if (height() == 0 || width() == 0) return;
 
@@ -868,7 +879,7 @@ namespace Fragmentarium {
             }
 
             if (pendingRedraws) {
-                 updateGL();
+                updateGL();
             } else if (continuous) {
                 if (drawingState == DisplayWidget::Progressive &&
                         (subframeCounter>=maxSubFrames && maxSubFrames>0)) {

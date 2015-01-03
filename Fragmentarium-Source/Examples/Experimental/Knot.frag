@@ -4,7 +4,7 @@
 // http://www.fractalforums.com/new-theories-and-research/not-fractal-but-funny-trefoil-knot-routine
 
 #define providesColor
-#include "Soft-Raytracer.frag"
+#include "Path-Raytracer4.frag"
 
 
 #group Knot
@@ -15,24 +15,14 @@ uniform float R5; slider[0.0,1.6,2.3]
 uniform float a; slider[0,1,5]
 uniform float b; slider[0,1,5]
 uniform float polyfoldOrder; slider[0,2,15]
-void rotate(inout vec2 v, float angle) {
-	v = vec2(cos(angle)*v.x+sin(angle)*v.y,
+vec2 rotate(vec2 v, float angle) {
+	return  vec2(cos(angle)*v.x+sin(angle)*v.y,
 		-sin(angle)*v.x+cos(angle)*v.y);
 }
 
 vec3 baseColor(vec3 p, vec3 n) {
-	vec3 pos = p;
-	float mobius = ((a+b)/polyfoldOrder) * atan(p.y,p.x);
-	p.x = length(p.xy)-R1;
-	rotate(p.xz,mobius);
-	float m = polyfoldOrder/ (2.*PI);
-	float angle = floor(.5+m*(PI/2.-atan(p.x,p.z)))/m;
-	rotate(p.yz,R5);
-	rotate(p.xz,angle);
-	p.x =p.x -  R3;
-	float ang = abs(4.0*(PI/2.-atan(p.x,p.z))/3.1415);
-	if (mod(ang,0.4)<0.02) return vec3(0.0,0.0,0.0);
-	return vec3(2.0);
+
+	return vec3(1.0);
 }
 
 
@@ -41,12 +31,12 @@ float maxDim(vec2 a) { return max(a.x,a.y); }
 float DE(vec3 p) {
 	float mobius = ((a+b)/polyfoldOrder) * atan(p.y,p.x);
 	p.x = length(p.xy)-R1;
-	rotate(p.xz,mobius);
+	p.xz = rotate(p.xz,mobius);
 	
 	float m = polyfoldOrder/ (2.*PI);
 	float angle = floor(.5+m*(PI/2.-atan(p.x,p.z)))/m;
-	rotate(p.yz,R5);
-	rotate(p.xz,angle);
+	p.yz = rotate(p.yz,R5);
+	p.xz = rotate(p.xz,angle);
 	p.x =p.x -  R3;
 	return length(p.xz)-R2;
 }
