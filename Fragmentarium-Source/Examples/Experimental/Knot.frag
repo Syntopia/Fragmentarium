@@ -4,7 +4,7 @@
 // http://www.fractalforums.com/new-theories-and-research/not-fractal-but-funny-trefoil-knot-routine
 
 #define providesColor
-#include "Path-Raytracer4.frag"
+#include "Sky-Pathtracer.frag"
 
 
 #group Knot
@@ -27,8 +27,11 @@ vec3 baseColor(vec3 p, vec3 n) {
 
 
 float maxDim(vec2 a) { return max(a.x,a.y); }
-
+uniform float RX; slider[0,1,62]
+uniform float RZ; slider[0,1,6]
 float DE(vec3 p) {
+p.xz = rotate(p.xz,RX);
+p.yz = rotate(p.yz,RZ);
 	float mobius = ((a+b)/polyfoldOrder) * atan(p.y,p.x);
 	p.x = length(p.xy)-R1;
 	p.xz = rotate(p.xz,mobius);

@@ -101,8 +101,8 @@ float traceShadow(vec3 from, vec3 dir) {
 	float dist = 1000.0;
 	
 	float totalDist = 0.0;
-	for (int steps=0; steps<MaxRaySteps && dist > eps; steps++) {
-		dist = DE(from + totalDist * direction) * FudgeFactor;
+	for (int steps=0; steps<MaxRaySteps/5 && dist > eps; steps++) {
+		dist = DE(from + totalDist * direction) ;
 		totalDist += dist;
 	}
 	return (dist < eps) ? 0.0 : 1.0;

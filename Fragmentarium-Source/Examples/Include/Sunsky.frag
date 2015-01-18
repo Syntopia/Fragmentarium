@@ -18,10 +18,8 @@
 // https://github.com/SimonWallner/kocmoc-demo/blob/RTVIS/media/shaders/sky.frag
 // where it was MIT licensed:
 // https://github.com/SimonWallner/kocmoc-demo/blob/RTVIS/README.rst
-
-
-const float turbidity = 2.0;
-const float rayleighCoefficient = 2.5;
+#group Sky
+uniform float turbidity; slider[1,2,16]
 
 const float mieCoefficient = 0.005;
 const float mieDirectionalG = 0.80;
@@ -49,7 +47,11 @@ const float mieZenithLength = 1.25E3;
 const vec3 up = vec3(0.0, 0.0, 1.0);
 
 const float sunIntensity = 1000.0;
-const float sunAngularDiameterCos = 0.99983194915; // 66 arc seconds -> degrees, and the cosine of that
+
+// Angular sun size - physical sun is 0.53 degrees
+uniform float sunSize; slider[0,1,10]
+
+ float sunAngularDiameterCos = cos(sunSize*pi/180.0);
 
 // earth shadow hack
 const float cutoffAngle = pi/1.95;
@@ -77,17 +79,66 @@ float SunIntensity(float zenithAngleCos)
 }
 
 uniform vec2 SunPos; slider[(0,0),(0,0.2),(1,1)]
-
+uniform float SkyFactor; slider[0,1,100]
 vec3 fromSpherical(vec2 p) {
 	return vec3(
 		cos(p.x)*sin(p.y),
 		sin(p.x)*sin(p.y),
 		cos(p.y));
 }
-
+uniform float time;
 vec3 sunDirection = normalize(fromSpherical((SunPos-vec2(0.0,0.5))*vec2(6.28,3.14)));
 	
-vec3 sunsky(vec3 viewDir, bool excludeSun)
+vec3 sun(vec3 viewDir)
+{
+	
+	// Cos Angles
+	float cosViewSunAngle = dot(viewDir, sunDirection);
+	float cosSunUpAngle = dot(sunDirection, up);
+	float cosUpViewAngle = dot(up, viewDir);
+
+	float sunE = SunIntensity(cosSunUpAngle);  // Get sun intensity based on how high in the sky it is
+	// extinction (asorbtion + out scattering)
+	// rayleigh coeficients
+	vec3 rayleighAtX = vec3(5.176821E-6, 1.2785348E-5, 2.8530756E-5);
+	
+	// mie coefficients
+	vec3 mieAtX = totalMie(primaryWavelengths, K, turbidity) * mieCoefficient;
+	
+	// optical length
+	// cutoff angle at 90 to avoid singularity in next formula.
+	float zenithAngle = max(0.0, cosUpViewAngle);
+	
+	float rayleighOpticalLength = rayleighZenithLength / zenithAngle;
+	float mieOpticalLength = mieZenithLength / zenithAngle;
+	
+	
+	// combined extinction factor
+	vec3 Fex = exp(-(rayleighAtX * rayleighOpticalLength + mieAtX * mieOpticalLength));
+	
+	// in scattering
+	vec3 rayleighXtoEye = rayleighAtX * RayleighPhase(cosViewSunAngle);
+	vec3 mieXtoEye = mieAtX *  hgPhase(cosViewSunAngle, mieDirectionalG);
+	
+	vec3 totalLightAtX = rayleighAtX + mieAtX;
+	vec3 lightFromXtoEye = rayleighXtoEye + mieXtoEye;
+	
+	vec3 somethingElse = sunE * (lightFromXtoEye / totalLightAtX);
+	
+	vec3 sky = somethingElse * (1.0 - Fex);
+	sky *= mix(vec3(1.0),pow(somethingElse * Fex,vec3(0.5)),clamp(pow(1.0-dot(up, sunDirection),5.0),0.0,1.0));
+	// composition + solar disc
+	
+//	float sundisk = smoothstep(sunAngularDiameterCos,sunAngularDiameterCos+0.00002,cosViewSunAngle);
+	float sundisk = 
+		sunAngularDiameterCos < cosViewSunAngle ? 1.0 : 0.0;
+	//	smoothstep(sunAngularDiameterCos,sunAngularDiameterCos+0.00002,cosViewSunAngle);
+	vec3 sun = (sunE * 19000.0 * Fex)*sundisk;
+	
+	return 0.01*sun;
+}
+
+vec3 sky(vec3 viewDir)
 {
 	
 	// Cos Angles
@@ -130,5 +181,53 @@ vec3 sunsky(vec3 viewDir, bool excludeSun)
 	float sundisk = smoothstep(sunAngularDiameterCos,sunAngularDiameterCos+0.00002,cosViewSunAngle);
 	vec3 sun = (sunE * 19000.0 * Fex)*sundisk;
 	
-	return 0.01*(excludeSun ? sky : sun+sky);
+	return SkyFactor*0.01*(sky);
+}
+
+vec3 sunsky(vec3 viewDir)
+{
+	
+	// Cos Angles
+	float cosViewSunAngle = dot(viewDir, sunDirection);
+	float cosSunUpAngle = dot(sunDirection, up);
+	float cosUpViewAngle = dot(up, viewDir);
+		if (sunAngularDiameterCos == 1.0) {
+	 return vec3(1.0,0.0,0.0);	
+}
+	float sunE = SunIntensity(cosSunUpAngle);  // Get sun intensity based on how high in the sky it is
+	// extinction (asorbtion + out scattering)
+	// rayleigh coeficients
+	vec3 rayleighAtX = vec3(5.176821E-6, 1.2785348E-5, 2.8530756E-5);
+	
+	// mie coefficients
+	vec3 mieAtX = totalMie(primaryWavelengths, K, turbidity) * mieCoefficient;
+	
+	// optical length
+	// cutoff angle at 90 to avoid singularity in next formula.
+	float zenithAngle = max(0.0, cosUpViewAngle);
+	
+	float rayleighOpticalLength = rayleighZenithLength / zenithAngle;
+	float mieOpticalLength = mieZenithLength / zenithAngle;
+	
+	
+	// combined extinction factor
+	vec3 Fex = exp(-(rayleighAtX * rayleighOpticalLength + mieAtX * mieOpticalLength));
+	
+	// in scattering
+	vec3 rayleighXtoEye = rayleighAtX * RayleighPhase(cosViewSunAngle);
+	vec3 mieXtoEye = mieAtX *  hgPhase(cosViewSunAngle, mieDirectionalG);
+	
+	vec3 totalLightAtX = rayleighAtX + mieAtX;
+	vec3 lightFromXtoEye = rayleighXtoEye + mieXtoEye;
+	
+	vec3 somethingElse = sunE * (lightFromXtoEye / totalLightAtX);
+	
+	vec3 sky = somethingElse * (1.0 - Fex);
+	sky *= mix(vec3(1.0),pow(somethingElse * Fex,vec3(0.5)),clamp(pow(1.0-dot(up, sunDirection),5.0),0.0,1.0));
+	// composition + solar disc
+	
+	float sundisk = smoothstep(sunAngularDiameterCos,sunAngularDiameterCos+0.00002,cosViewSunAngle);
+	vec3 sun = (sunE * 19000.0 * Fex)*sundisk;
+	
+	return 0.01*(sun+sky);
 }
