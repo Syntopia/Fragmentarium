@@ -86,7 +86,8 @@ namespace Fragmentarium {
             void mousePressEvent ( QMouseEvent * ev);
             void initializeGL();
             void paintEvent(QPaintEvent * ev);
-
+            int pixelWidth();
+            int pixelHeight();
             /// Actual drawing is implemented here
             void paintGL();
 

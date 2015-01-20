@@ -475,8 +475,8 @@ namespace Fragmentarium {
         void DisplayWidget::makeBuffers() {
             makeCurrent();
 
-            int w = width()/(previewFactor+1);
-            int h = height()/(previewFactor+1);
+            int w = pixelWidth()/(previewFactor+1);
+            int h = pixelHeight()/(previewFactor+1);
 
 
 
@@ -561,7 +561,7 @@ namespace Fragmentarium {
             glMatrixMode(GL_PROJECTION);
             tileRender();
 
-            cameraControl->transform(width(), height());
+            cameraControl->transform(pixelWidth(), pixelHeight());
 
             int l = shaderProgram->uniformLocation("pixelSize");
             if (l != -1) {
@@ -684,7 +684,7 @@ namespace Fragmentarium {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             //if (bufferShaderProgram) {
-            setViewPort(width(),height());
+            setViewPort(pixelWidth(),pixelHeight());
             //} else {
             //    glViewport(0, 0, width(),height());
             //}
@@ -712,7 +712,7 @@ namespace Fragmentarium {
          */
         void DisplayWidget::clearTileBuffer()  {
             delete(hiresBuffer);
-            mainWindow->getBufferSize(width(), height(),bufferSizeX, bufferSizeY, fitWindow);
+            mainWindow->getBufferSize(pixelWidth(), pixelHeight(),bufferSizeX, bufferSizeY, fitWindow);
             makeBuffers();
             hiresBuffer = 0;
         }
@@ -770,7 +770,7 @@ namespace Fragmentarium {
                 qDebug(" - OpenGL Renderer: %s", glGetString(GL_RENDERER));
                 qDebug(" - OpenGL Shading Language Version: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
             }
-            if (height() == 0 || width() == 0) return;
+            if (pixelHeight() == 0 || pixelWidth() == 0) return;
 
 
             if (pendingRedraws > 0) pendingRedraws--;
@@ -810,7 +810,7 @@ namespace Fragmentarium {
             if (previewBuffer) {
                 drawToFrameBufferObject(0, false);
             } else {
-                drawFragmentProgram(width(),height(), true);
+                drawFragmentProgram(pixelWidth(),pixelHeight(), true);
                 if (drawingState == DisplayWidget::Progressive) {
                     subframeCounter++;
                     mainWindow->setSubFrameDisplay(subframeCounter);
@@ -854,9 +854,9 @@ namespace Fragmentarium {
         }
 
         void DisplayWidget::updatePerspective() {
-            if (height() == 0 || width() == 0) return;
-            mainWindow->getBufferSize(width(), height(),bufferSizeX, bufferSizeY, fitWindow);
-            QString infoText = QString("[%1x%2] Aspect=%3").arg(width()).arg(height()).arg((float)width()/height());
+            if (pixelHeight() == 0 || pixelWidth() == 0) return;
+            mainWindow->getBufferSize(pixelWidth(), pixelHeight(),bufferSizeX, bufferSizeY, fitWindow);
+            QString infoText = QString("[%1x%2] Aspect=%3").arg(pixelWidth()).arg(pixelHeight()).arg((float)pixelWidth()/pixelHeight());
             mainWindow-> statusBar()->showMessage(infoText, 5000);
         }
 
@@ -902,6 +902,14 @@ namespace Fragmentarium {
             glEnable(GL_POINT_SMOOTH);
             glEnable(GL_POLYGON_SMOOTH);
             glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+        }
+
+        int DisplayWidget::pixelWidth() {
+            return width() * devicePixelRatio();
+        }
+
+        int DisplayWidget::pixelHeight() {
+            return height() * devicePixelRatio();
         }
 
         void DisplayWidget::wheelEvent(QWheelEvent* e) {
