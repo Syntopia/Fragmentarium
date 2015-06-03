@@ -86,6 +86,10 @@ namespace Fragmentarium {
             void mousePressEvent ( QMouseEvent * ev);
             void initializeGL();
             void paintEvent(QPaintEvent * ev);
+#if (QT_VERSION <= QT_VERSION_CHECK(4,8,2))
+            // support Debian Wheezy's old Qt version
+            double devicePixelRatio();
+#endif
             int pixelWidth();
             int pixelHeight();
             /// Actual drawing is implemented here
