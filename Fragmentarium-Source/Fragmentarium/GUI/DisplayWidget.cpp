@@ -35,7 +35,7 @@ namespace Fragmentarium {
                 if (f & QGLFormat::OpenGL_Version_3_2) s.append("OpenGL3.2");
                 if (f & QGLFormat::OpenGL_Version_3_3) s.append("OpenGL3.3");
                 if (f & QGLFormat::OpenGL_Version_4_0) s.append("OpenGL4.0");
-#if (QT_VERSION > QT_VERSION_CHECK(4,8,2))
+#if (QT_VERSION > QT_VERSION_CHECK(4,9,9))
                 // support Debian Wheezy's old Qt version
                 if (f & QGLFormat::OpenGL_Version_4_1) s.append("OpenGL4.1");
                 if (f & QGLFormat::OpenGL_Version_4_2) s.append("OpenGL4.2");
@@ -907,7 +907,7 @@ namespace Fragmentarium {
             glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
         }
 
-#if (QT_VERSION <= QT_VERSION_CHECK(4,8,2))
+#if (QT_VERSION <= QT_VERSION_CHECK(4,9,9))
         // support Debian Wheezy's old Qt version
         double DisplayWidget::devicePixelRatio() {
             return 1;
