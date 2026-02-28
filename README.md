@@ -1,3 +1,5 @@
+*update 2026:*: Fragmentarium lives on in Fragmentarium Web: https://github.com/Syntopia/FragmentariumWeb 
+
 *Update:* I do not plan any further releases of Fragmentarium. For an actively maintained version, please see this fork:
 https://github.com/3Dickulus/FragM
 
